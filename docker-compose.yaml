@@ -1,0 +1,22 @@
+services:
+
+  backend:
+    container_name: backend
+    build: backend/
+    env_file:
+      - .env    
+    ports:
+      - "${BACKEND_HOST_PORT}:8080"
+    volumes:
+      -  ./backend/app:/code/app
+
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    restart: always
+    ports:
+      - "${MONGO_CONTAINER_PORT}:27017"
+    env_file:
+      - .env 
+    volumes:
+      - ./mongodb/db:/data/db:rw
