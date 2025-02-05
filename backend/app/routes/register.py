@@ -31,8 +31,8 @@ async def forgot_password(email: EmailStr = embed) -> Response:
     user = await User.by_email(email)
     if user is None:
         raise HTTPException(404, "No user found with that email")
-    if user.email_confirmed_at is not None:
-        raise HTTPException(400, "Email is already verified")
+    # if user.email_confirmed_at is not None:
+    #     raise HTTPException(400, "Email is already verified")
     if user.disabled:
         raise HTTPException(400, "Your account is disabled")
     token = access_security.create_access_token(user.jwt_subject)

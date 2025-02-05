@@ -7,6 +7,8 @@ from pydantic import BaseModel
 class Settings(BaseModel):
     """Server config settings."""
     
+    root_url: str = config("ROOT_URL", default="http://localhost:8080")
+    
     # MONGO ENGINE SETTINGS
     mongo_user: str = config("MONGO_INITDB_ROOT_USERNAME")
     mongo_pass: str = config("MONGO_INITDB_ROOT_PASSWORD")
