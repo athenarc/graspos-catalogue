@@ -8,10 +8,20 @@ from pydantic import BaseModel, EmailStr
 
 
 class UserAuth(BaseModel):
-    """User register and login auth."""
+    """User login auth."""
 
     email: EmailStr
     password: str
+
+
+class UserAuthRegister(BaseModel):
+    """User register auth."""
+
+    email: EmailStr
+    password: str
+    first_name: str
+    last_name: str
+    username: str
 
 
 class UserUpdate(BaseModel):
@@ -22,6 +32,8 @@ class UserUpdate(BaseModel):
     # User information
     first_name: str | None = None
     last_name: str | None = None
+    super_user: bool | None = False
+    username: str
 
 
 class UserOut(UserUpdate):
@@ -36,6 +48,10 @@ class User(Document, UserOut):
 
     password: str
     email_confirmed_at: datetime | None = None
+    super_user: bool | None = False
+    first_name: str
+    last_name: str
+    username: str
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"

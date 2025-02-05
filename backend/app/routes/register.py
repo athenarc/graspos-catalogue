@@ -3,24 +3,31 @@
 from fastapi import APIRouter, Body, HTTPException, Response
 from pydantic import EmailStr
 
-from models.user import User, UserAuth, UserOut
+from models.user import User, UserAuthRegister, UserOut
 from jwt import access_security, user_from_token
 from util.mail import send_password_reset_email
 from util.password import hash_password
 from datetime import datetime
+
 router = APIRouter(prefix="/register", tags=["Register"])
 
 embed = Body(..., embed=True)
 
 
 @router.post("", response_model=UserOut)
-async def user_registration(user_auth: UserAuth):  # type: ignore[no-untyped-def]
+async def user_registration(
+        user_auth: UserAuthRegister): 
     """Create a new user."""
     user = await User.by_email(user_auth.email)
     if user is not None:
         raise HTTPException(409, "User with that email already exists")
     hashed = hash_password(user_auth.password)
-    user = User(email=user_auth.email, password=hashed, email_confirmed_at=datetime.now())
+    user = User(email=user_auth.email,
+                password=hashed,
+                email_confirmed_at=datetime.now(),
+                first_name=user_auth.first_name,
+                last_name=user_auth.last_name,
+                username=user_auth.username)
     await user.create()
     return user
 
@@ -41,7 +48,9 @@ async def forgot_password(email: EmailStr = embed) -> Response:
 
 
 @router.post("/reset-password/{token}", response_model=UserOut)
-async def reset_password(token: str, password: str = embed):  # type: ignore[no-untyped-def]
+async def reset_password(token: str,
+                         password: str = embed
+                         ):  # type: ignore[no-untyped-def]
     """Reset user password from token value."""
     user = await user_from_token(token)
     if user is None:
