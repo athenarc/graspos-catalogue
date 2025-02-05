@@ -6,10 +6,10 @@ import bcrypt
 # path = "../../" + Path.cwd() / ".env"
 path = Path(__file__).parents[2] / ".env"
 env = path.read_text()
-target = 'SALT="'
+target = "SALT='"
 start = env.find(target) + len(target)
 prefix, postfix = env[:start], env[start:]
-end = postfix.find('"')
+end = postfix.find("'")
 output = prefix + str(bcrypt.gensalt())[2:-1] + postfix[end:]
 with path.open("w") as out:
     out.write(output)
