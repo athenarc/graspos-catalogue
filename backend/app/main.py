@@ -1,12 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from db import init_database
-from routers.router import dataset_router
-
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     init_database
-
+from routes.router import dataset_router
 
 app = FastAPI(
     title="GRASPOS Catalogue API",

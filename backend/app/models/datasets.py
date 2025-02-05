@@ -1,3 +1,5 @@
+"""Dataset models."""
+
 from beanie import Document
 from datetime import datetime
 
