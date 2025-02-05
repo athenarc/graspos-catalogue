@@ -8,7 +8,7 @@ from models.dataset import Dataset
 from models.user import User
 from db import db
 from config import CONFIG
-
+from fastapi.middleware.cors import CORSMiddleware
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -35,6 +35,15 @@ app.include_router(user.router)
 app.include_router(auth.router)
 app.include_router(mail.router)
 app.include_router(register.router)
+
+origins = [
+    "http://localhost:5173",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_methods=["*"],
+)
 
 import secrets
 from fastapi import Depends, FastAPI, HTTPException, status
