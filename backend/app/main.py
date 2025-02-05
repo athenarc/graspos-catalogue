@@ -22,6 +22,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-app.include_router(dataset_router, prefix="/api/datasets")
+app.include_router(dataset_router, prefix="/api/datasets", tags=["Datasets"])
 
 
