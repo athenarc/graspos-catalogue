@@ -11,3 +11,12 @@ export function useLogin() {
     }
   });
 }
+
+export function useUserInformation() {
+    return useQuery({
+      queryKey: ["environments"],
+      queryFn: () =>
+        // axios.get(process.env.REACT_APP_BACKEND_HOST + `/environments`).then(({ data }) => data),
+        axios.get(`http://localhost:8000/user`).then(({ data }) => data),
+    });
+  }
