@@ -1,5 +1,7 @@
+"""Dataset router."""
+
 from fastapi import APIRouter, HTTPException
-from models.datasets import Dataset
+from models.dataset import Dataset
 from beanie import PydanticObjectId
 
 dataset_router = APIRouter()
