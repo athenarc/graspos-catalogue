@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 import { useLogin } from "../queries/data";
 
-export default function Login({ setToken }) {
+export default function Login({ handleSetToken }) {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [emailError, setEmailError] = useState("");
@@ -30,17 +30,16 @@ export default function Login({ setToken }) {
         { email, password },
         {
           onSuccess: (data) => {
-            setToken(data.data.access_token);
+            handleSetToken(data?.data?.access_token);
           },
           onError: (data) => {
-            if (data?.response?.data?.detail[0].msg){
-              setEmailError(data?.response?.data?.detail[0].msg);
-            }else if (data?.response?.data?.detail){
+            if (data?.response?.data?.detail[0]?.msg) {
+              setEmailError(data?.response?.data?.detail[0]?.msg);
+            } else if (data?.response?.data?.detail) {
               setPasswordError(data?.response?.data?.detail);
-            }else{
+            } else {
               setPasswordError("An error occurred");
             }
-            
           },
         }
       );
@@ -87,7 +86,6 @@ export default function Login({ setToken }) {
               defaultValue=""
               error={emailError !== ""}
               helperText={emailError}
-              value={email}
               onChange={(e) => handleEmailChange(e.target.value)}
               sx={{ width: "80%" }}
             />
@@ -100,7 +98,6 @@ export default function Login({ setToken }) {
               type="password"
               error={passwordError !== ""}
               helperText={passwordError}
-              value={password}
               autoComplete="current-password"
               onChange={(e) => handlePasswordChange(e.target.value)}
               sx={{ width: "80%" }}

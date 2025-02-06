@@ -1,21 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Login from "./components/Login";
 import AppLayout from "./components/AppLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import useToken from "./useToken";
 
 function App() {
-  const [token, setToken] = useState(null);
-
+  const { token, setToken } = useToken();
   function handleLogout() {
     setToken(null);
+  }
+  function handleSetToken(token) {
+    setToken(token);
   }
   const queryClient = new QueryClient();
   if (!token) {
     return (
       <QueryClientProvider client={queryClient}>
-        <Login setToken={setToken} />
+        <Login handleSetToken={handleSetToken} />
       </QueryClientProvider>
     );
   }
