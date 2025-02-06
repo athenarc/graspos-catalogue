@@ -1,8 +1,7 @@
-import { Button, Grid2 as Grid } from "@mui/material";
+import { Button, Chip, Grid2 as Grid } from "@mui/material";
 import logo from "../assets/graspos-logo.png";
 
-export default function MenuBar({ handleLogout }) {
- 
+export default function MenuBar({ handleLogout, user }) {
   return (
     <Grid
       container
@@ -21,9 +20,11 @@ export default function MenuBar({ handleLogout }) {
         <Button variant="outlined" sx={{ mr: 1 }}>
           Profile
         </Button>
-        <Button variant="outlined" sx={{ mr: 2 }} onClick={handleLogout}>
+        <Button variant="outlined" sx={{ mr: 1 }} onClick={handleLogout}>
           Logout
         </Button>
+
+        <Chip label={user?.username?.toUpperCase()} sx={{ mr: 2 }}></Chip>
       </Grid>
     </Grid>
   );

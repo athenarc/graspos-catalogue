@@ -8,6 +8,7 @@ import useToken from "./useToken";
 
 function App() {
   const { token, setToken } = useToken();
+
   function handleLogout() {
     setToken(null);
   }
@@ -28,7 +29,7 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={<AppLayout handleLogout={handleLogout} />}
+            element={<AppLayout handleLogout={handleLogout} handleSetToken={handleSetToken} />}
           ></Route>
         </Routes>
       </BrowserRouter>
