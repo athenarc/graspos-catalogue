@@ -9,7 +9,7 @@ from util.mail import send_password_reset_email
 from util.password import hash_password
 from datetime import datetime
 
-router = APIRouter(prefix="/register", tags=["Register"])
+router = APIRouter(prefix="/api/v1/register", tags=["Register"])
 
 embed = Body(..., embed=True)
 

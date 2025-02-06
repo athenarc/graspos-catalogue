@@ -10,7 +10,7 @@ from jwt import access_security, user_from_token
 from util.mail import send_verification_email
 
 
-router = APIRouter(prefix="/mail", tags=["Mail"])
+router = APIRouter(prefix="/api/v1/mail", tags=["Mail"])
 
 
 @router.post("/verify")

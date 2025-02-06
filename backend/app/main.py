@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from routes.dataset import dataset_router
-from routes import user, auth, mail, register
+from routes import user, auth, mail, register, dataset
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 from models.dataset import Dataset
@@ -30,7 +29,7 @@ app = FastAPI(
     openapi_url=None,
 )
 
-app.include_router(dataset_router, prefix="/api/datasets", tags=["Datasets"])
+app.include_router(dataset.router)
 app.include_router(user.router)
 app.include_router(auth.router)
 app.include_router(mail.router)
@@ -41,8 +40,10 @@ origins = [
 ]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_methods=["*"],
+    allow_headers=["*"],
+    
 )
 
 import secrets
