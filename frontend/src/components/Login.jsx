@@ -10,31 +10,31 @@ import { useState } from "react";
 import { useLogin } from "../queries/data";
 
 export default function Login({ handleSetToken }) {
-  const [email, setEmail] = useState();
+  const [username, setUsername] = useState();
   const [password, setPassword] = useState();
-  const [emailError, setEmailError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const login = useLogin();
 
   function submitLogin() {
-    if (!email) {
-      setEmailError("Email can not be empty");
+    if (!username) {
+      setUsernameError("Username can not be empty");
     }
     if (!password) {
       setPasswordError("Password can not be empty");
     }
-    if (!email || !password) {
+    if (!username || !password) {
       return;
     } else {
       login.mutate(
-        { email, password },
+        { username, password },
         {
           onSuccess: (data) => {
             handleSetToken(data?.data?.access_token);
           },
           onError: (data) => {
             if (data?.response?.data?.detail[0]?.msg) {
-              setEmailError(data?.response?.data?.detail[0]?.msg);
+              setUsernameError(data?.response?.data?.detail[0]?.msg);
             } else if (data?.response?.data?.detail) {
               setPasswordError(data?.response?.data?.detail);
             } else {
@@ -45,9 +45,9 @@ export default function Login({ handleSetToken }) {
       );
     }
   }
-  function handleEmailChange(value) {
-    setEmailError("");
-    setEmail(value);
+  function handleUsernameChange(value) {
+    setUsernameError("");
+    setUsername(value);
   }
   function handlePasswordChange(value) {
     setPasswordError("");
@@ -82,11 +82,11 @@ export default function Login({ handleSetToken }) {
             <TextField
               required
               id="outlined-required"
-              label="Email"
+              label="Username"
               defaultValue=""
-              error={emailError !== ""}
-              helperText={emailError}
-              onChange={(e) => handleEmailChange(e.target.value)}
+              error={usernameError !== ""}
+              helperText={usernameError}
+              onChange={(e) => handleUsernameChange(e.target.value)}
               sx={{ width: "80%" }}
             />
           </CardContent>
