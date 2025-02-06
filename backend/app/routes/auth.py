@@ -15,7 +15,8 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 @router.post("/login")
 async def login(user_auth: UserAuth) -> RefreshToken:
     """Authenticate and returns the user's JWT."""
-    user = await User.by_email(user_auth.email)
+    # user = await User.by_email(user_auth.email)
+    user = await User.by_username(user_auth.username)
     if user is None or hash_password(user_auth.password) != user.password:
         raise HTTPException(status_code=401, detail="Incorrect email or password")
     if user.email_confirmed_at is None:
