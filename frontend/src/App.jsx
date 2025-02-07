@@ -5,6 +5,8 @@ import Login from "./components/Login";
 import AppLayout from "./components/AppLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import useToken from "./useToken";
+import Profile from "./components/Profile";
+import Resources from "./components/Resources";
 
 function App() {
   const { token, setToken } = useToken();
@@ -29,8 +31,16 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={<AppLayout handleLogout={handleLogout} handleSetToken={handleSetToken} />}
-          ></Route>
+            element={
+              <AppLayout
+                handleLogout={handleLogout}
+                handleSetToken={handleSetToken}
+              />
+            }
+          >
+            <Route path="profile" element={<Profile />}></Route>
+            <Route path="resources" element={<Resources />}></Route>
+          </Route>
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
