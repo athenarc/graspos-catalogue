@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api/v1/register", tags=["Register"])
 
 embed = Body(..., embed=True)
 
-
+ 
 @router.post("", response_model=UserOut)
 async def user_registration(
         user_auth: UserAuthRegister): 
@@ -21,12 +21,15 @@ async def user_registration(
     user = await User.by_email(user_auth.email)
     if user is not None:
         raise HTTPException(409, "User with that email already exists")
+    
+    user = await User.by_username(user_auth.username)
+    if user is not None:
+        raise HTTPException(409, "User with that username already exists")
+    
     hashed = hash_password(user_auth.password)
     user = User(email=user_auth.email,
                 password=hashed,
                 email_confirmed_at=datetime.now(),
-                first_name=user_auth.first_name,
-                last_name=user_auth.last_name,
                 username=user_auth.username)
     await user.create()
     return user
