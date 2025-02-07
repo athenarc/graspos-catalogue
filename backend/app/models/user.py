@@ -16,12 +16,13 @@ class UserAuth(BaseModel):
 
 class UserAuthRegister(BaseModel):
     """User register auth."""
-
+    
+    username: str
     email: EmailStr
     password: str
-    first_name: str
-    last_name: str
-    username: str
+    first_name: Optional[str] = None 
+    last_name: Optional[str] = None 
+    
 
 
 class UserUpdate(BaseModel):
@@ -49,8 +50,8 @@ class User(Document, UserOut):
     password: str
     email_confirmed_at: datetime | None = None
     super_user: bool | None = False
-    first_name: str
-    last_name: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     username: str
 
     def __repr__(self) -> str:
