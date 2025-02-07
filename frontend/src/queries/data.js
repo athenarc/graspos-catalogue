@@ -13,6 +13,20 @@ export function useLogin() {
   });
 }
 
+export function useRegister() {
+  return useMutation({
+    mutationFn: ({ username, password, email, first_name, last_name }) => {
+      return axios.post(process.env.REACT_APP_BACKEND_HOST + `register`, {
+        username,
+        password,
+        email,
+        first_name,
+        last_name
+      });
+    },
+  });
+}
+
 export function useUserInformation() {
   const { token } = useToken();
   return useQuery({
