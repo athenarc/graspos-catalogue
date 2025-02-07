@@ -6,10 +6,9 @@ import {
   CardHeader,
   IconButton,
   Table,
+  TableBody,
   TableCell,
-  TableHead,
   TableRow,
-  Typography,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { useOutletContext } from "react-router-dom";
@@ -36,50 +35,56 @@ export default function Profile() {
       </CardHeader>
       <CardContent>
         <Table>
-          <TableRow>
-            <TableCell>Username: </TableCell>
-            <TableCell colSpan={2}> {user?.username}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Name: </TableCell>
-            <TableCell> {user?.first_name}</TableCell>
-            <TableCell>
-              <IconButton>
-                <EditIcon />
-              </IconButton>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Last Name: </TableCell>
-            <TableCell> {user?.last_name}</TableCell>
-            <TableCell>
-              <IconButton>
-                <EditIcon />
-              </IconButton>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Email: </TableCell>
-            <TableCell> {user?.email}</TableCell>
-            <TableCell>
-              <IconButton>
-                <EditIcon />
-              </IconButton>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Organization: </TableCell>
-            <TableCell> {user?.organization}</TableCell>
-            <TableCell>
-              <IconButton>
-                <EditIcon />
-              </IconButton>
-            </TableCell>
-          </TableRow>
+          <TableBody>
+            <TableRow>
+              <TableCell>Username: </TableCell>
+              <TableCell colSpan={2}> {user?.username}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Name: </TableCell>
+              <TableCell> {user?.first_name}</TableCell>
+              <TableCell>
+                <IconButton>
+                  <EditIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Last Name: </TableCell>
+              <TableCell> {user?.last_name}</TableCell>
+              <TableCell>
+                <IconButton>
+                  <EditIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Email: </TableCell>
+              <TableCell> {user?.email}</TableCell>
+              <TableCell>
+                <IconButton>
+                  <EditIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Organization: </TableCell>
+              <TableCell> {user?.organization}</TableCell>
+              <TableCell>
+                <IconButton>
+                  <EditIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+          </TableBody>
         </Table>
       </CardContent>
       <CardActions>
-        <Button disabled={true} variant="contained" onClick={(e) => submitLogin(e)}>
+        <Button
+          disabled={true}
+          variant="contained"
+          onClick={(e) => submitLogin(e)}
+        >
           Save
         </Button>
       </CardActions>
