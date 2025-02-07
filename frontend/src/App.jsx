@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Login from "./components/Login";
@@ -25,7 +24,8 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route
-              path="/"
+              index
+              path="*"
               element={<Login handleSetToken={handleSetToken} />}
             ></Route>
             <Route
