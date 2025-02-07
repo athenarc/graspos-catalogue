@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Login from "./components/Login";
+import Register from "./components/Register";
 import AppLayout from "./components/AppLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import useToken from "./useToken";
@@ -21,7 +22,18 @@ function App() {
   if (!token) {
     return (
       <QueryClientProvider client={queryClient}>
-        <Login handleSetToken={handleSetToken} />
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/"
+              element={<Login handleSetToken={handleSetToken} />}
+            ></Route>
+            <Route
+              path="/register"
+              element={<Register handleSetToken={handleSetToken} />}
+            />
+          </Routes>
+        </BrowserRouter>
       </QueryClientProvider>
     );
   }

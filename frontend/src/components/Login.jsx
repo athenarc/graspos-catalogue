@@ -5,9 +5,11 @@ import {
   CardContent,
   CardHeader,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useState } from "react";
 import { useLogin } from "../queries/data";
+import { Link } from "react-router-dom";
 
 export default function Login({ handleSetToken }) {
   const [username, setUsername] = useState();
@@ -59,6 +61,7 @@ export default function Login({ handleSetToken }) {
         height: "100%",
         background:
           "linear-gradient(65deg, #005A83 20%, #036595 20%, #0571A4 40%, #005A83 40%);",
+        borderRadius: "0px",
       }}
     >
       <CardContent>
@@ -102,6 +105,12 @@ export default function Login({ handleSetToken }) {
               onChange={(e) => handlePasswordChange(e.target.value)}
               sx={{ width: "80%" }}
             />
+          </CardContent>
+          <CardContent>
+            <Typography variant="subtitle2">Don't have an account?</Typography>
+            <Typography variant="subtitle2">
+              Register <Link to={"register"}>here</Link>!
+            </Typography>
           </CardContent>
           <CardContent sx={{ m: 2 }}>
             <Button variant="contained" onClick={(e) => submitLogin(e)}>
