@@ -3,8 +3,7 @@
 from pathlib import Path
 import bcrypt
 
-# path = "../../" + Path.cwd() / ".env"
-path = Path(__file__).parents[2] / ".env"
+path = Path(__file__).parents[0] / ".env"
 env = path.read_text()
 target = "SALT='"
 start = env.find(target) + len(target)
