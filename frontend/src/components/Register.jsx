@@ -27,6 +27,7 @@ export default function Register({ handleSetToken }) {
   const register = useRegister();
 
   function submitRegister() {
+
     if (!username) {
       setUsernameError("Username can not be empty");
     }
@@ -37,8 +38,10 @@ export default function Register({ handleSetToken }) {
       setEmailError("Email can not be empty");
     }
     if (!username || !password || !email) {
+      
       return;
     } else {
+      console.log("mutate")
       register.mutate(
         { username, password, email, firstName, lastName },
         {

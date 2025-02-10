@@ -33,6 +33,7 @@ export default function Login({ handleSetToken }) {
         {
           onSuccess: (data) => {
             handleSetToken(data?.data?.access_token);
+            window.location.href = "/";
           },
           onError: (data) => {
             if (data?.response?.data?.detail[0]?.msg) {
@@ -109,12 +110,12 @@ export default function Login({ handleSetToken }) {
           <CardContent>
             <Typography variant="subtitle2">Don't have an account?</Typography>
             <Typography variant="subtitle2">
-              Register <Link to={"register"}>here</Link>!
+              Register <Link to={"/register"}>here</Link>!
             </Typography>
           </CardContent>
           <CardContent sx={{ m: 2 }}>
             <Button variant="contained" onClick={(e) => submitLogin(e)}>
-              Submit
+              Login
             </Button>
           </CardContent>
         </Card>
