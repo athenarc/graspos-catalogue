@@ -34,7 +34,7 @@ class UserUpdate(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
     super_user: bool | None = False
-    username: str
+    username: str | None = False
 
 
 class UserOut(UserUpdate):
