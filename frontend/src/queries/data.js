@@ -13,6 +13,23 @@ export function useLogin() {
   });
 }
 
+export function useUpdateUser() {
+  const { token } = useToken();
+  return useMutation({
+    mutationFn: ({data}) => {
+      return axios.patch(
+        process.env.REACT_APP_BACKEND_HOST + `user`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    },
+  });
+}
+
 export function useRegister() {
   return useMutation({
     mutationFn: ({ username, password, email, first_name, last_name }) => {
@@ -21,7 +38,7 @@ export function useRegister() {
         password,
         email,
         first_name,
-        last_name
+        last_name,
       });
     },
   });
@@ -39,6 +56,6 @@ export function useUserInformation() {
           },
         })
         .then(({ data }) => data)
-        .catch((error) => error)
+        .catch((error) => error),
   });
 }
