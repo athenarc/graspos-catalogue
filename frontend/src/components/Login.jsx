@@ -82,7 +82,7 @@ export default function Login({ handleSetToken }) {
           >
             Login
           </CardHeader>
-          <CardContent sx={{ m: 2, mt: 4 }}>
+          <CardContent sx={{ m: 1, mt: 4 }}>
             <TextField
               required
               id="outlined-required"
@@ -94,7 +94,7 @@ export default function Login({ handleSetToken }) {
               sx={{ width: "80%" }}
             />
           </CardContent>
-          <CardContent sx={{ m: 2 }}>
+          <CardContent sx={{ m: 1 }}>
             <TextField
               required
               id="outlined-password-input"
@@ -107,13 +107,13 @@ export default function Login({ handleSetToken }) {
               sx={{ width: "80%" }}
             />
           </CardContent>
-          <CardContent sx={{ m: 2 }}>
+          <CardContent sx={{ m: 1 }}>
             <Typography variant="subtitle2">Don't have an account?</Typography>
             <Typography variant="subtitle2">
               Register <Link to={"/register"}>here</Link>!
             </Typography>
           </CardContent>
-          <CardContent sx={{ m: 2 }}>
+          <CardContent sx={{ m: 1 }}>
             <Button variant="contained" onClick={(e) => submitLogin(e)}>
               Login
             </Button>
