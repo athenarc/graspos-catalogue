@@ -1,9 +1,11 @@
 /* eslint-disable react/prop-types */
 import {
+  Stack,
   Button,
   Card,
   CardContent,
   CardHeader,
+  Paper,
   TextField,
   Typography,
 } from "@mui/material";
@@ -57,69 +59,63 @@ export default function Login({ handleSetToken }) {
     setPassword(value);
   }
   return (
-    <Card
-      sx={{
-        height: "100%",
-        background:
-          "linear-gradient(65deg, #005A83 20%, #036595 20%, #0571A4 40%, #005A83 40%);",
-        borderRadius: "0px",
-      }}
+    <Paper
+      component={Stack}
+      direction="column"
+      justifyContent="center"
+      sx={{ height: "100%", background: "inherit" }}
     >
-      <CardContent>
-        <Card
-          p={2}
-          sx={{
-            maxWidth: 400,
-            margin: "auto",
-            mt: "30vh",
-            height: "100%",
-            borderRadius: "10px",
-          }}
+      <Card
+        p={2}
+        sx={{
+          width: 400,
+          margin: "auto",
+          borderRadius: "10px",
+        }}
+      >
+        <CardHeader
+          title="Login Form"
+          sx={{ backgroundColor: "#338BCB", color: "white" }}
         >
-          <CardHeader
-            title="Login Form"
-            sx={{ backgroundColor: "#338BCB", color: "white" }}
-          >
+          Login
+        </CardHeader>
+        <CardContent sx={{ m: 1, mt: 4 }}>
+          <TextField
+            required
+            id="outlined-required"
+            label="Username"
+            defaultValue=""
+            error={usernameError !== ""}
+            helperText={usernameError}
+            onChange={(e) => handleUsernameChange(e.target.value)}
+            sx={{ width: "80%" }}
+          />
+        </CardContent>
+        <CardContent sx={{ m: 1 }}>
+          <TextField
+            required
+            id="outlined-password-input"
+            label="Password"
+            type="password"
+            error={passwordError !== ""}
+            helperText={passwordError}
+            autoComplete="current-password"
+            onChange={(e) => handlePasswordChange(e.target.value)}
+            sx={{ width: "80%" }}
+          />
+        </CardContent>
+        <CardContent sx={{ m: 1 }}>
+          <Typography variant="subtitle2">Don't have an account?</Typography>
+          <Typography variant="subtitle2">
+            Register <Link to={"/register"}>here</Link>!
+          </Typography>
+        </CardContent>
+        <CardContent sx={{ m: 1 }}>
+          <Button variant="contained" onClick={(e) => submitLogin(e)}>
             Login
-          </CardHeader>
-          <CardContent sx={{ m: 1, mt: 4 }}>
-            <TextField
-              required
-              id="outlined-required"
-              label="Username"
-              defaultValue=""
-              error={usernameError !== ""}
-              helperText={usernameError}
-              onChange={(e) => handleUsernameChange(e.target.value)}
-              sx={{ width: "80%" }}
-            />
-          </CardContent>
-          <CardContent sx={{ m: 1 }}>
-            <TextField
-              required
-              id="outlined-password-input"
-              label="Password"
-              type="password"
-              error={passwordError !== ""}
-              helperText={passwordError}
-              autoComplete="current-password"
-              onChange={(e) => handlePasswordChange(e.target.value)}
-              sx={{ width: "80%" }}
-            />
-          </CardContent>
-          <CardContent sx={{ m: 1 }}>
-            <Typography variant="subtitle2">Don't have an account?</Typography>
-            <Typography variant="subtitle2">
-              Register <Link to={"/register"}>here</Link>!
-            </Typography>
-          </CardContent>
-          <CardContent sx={{ m: 1 }}>
-            <Button variant="contained" onClick={(e) => submitLogin(e)}>
-              Login
-            </Button>
-          </CardContent>
-        </Card>
-      </CardContent>
-    </Card>
+          </Button>
+        </CardContent>
+      </Card>
+    </Paper>
   );
 }

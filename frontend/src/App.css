@@ -2,5 +2,11 @@
   width: 100vw;
   height: 100vh;
   text-align: center;
-  background-color: #E5E5E5;
+  background: linear-gradient(
+    65deg,
+    #005a83 20%,
+    #036595 20%,
+    #0571a4 40%,
+    #005a83 40%
+  );
 }
