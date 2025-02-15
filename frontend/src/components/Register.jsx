@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import CircularProgress from "@mui/material/CircularProgress";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
-import Notification from "./Alert";
+import Notification from "./Notification";
 
 export default function Register({ handleSetToken }) {
   const {

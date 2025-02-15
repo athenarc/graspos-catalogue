@@ -11,10 +11,10 @@ import { useForm } from "react-hook-form";
 import { useUpdateUser } from "../queries/data";
 import SaveIcon from "@mui/icons-material/Save";
 import CircularProgress from "@mui/material/CircularProgress";
-import Notification from "./Alert";
+import Notification from "./Notification";
 
 export default function Profile() {
-  const { user } = useOutletContext();
+  const { user, height } = useOutletContext();
   const {
     register,
     handleSubmit,
@@ -24,49 +24,65 @@ export default function Profile() {
   const onSubmit = (data) => {
     updateUser.mutate({ data });
   };
+  
   return (
     <>
       <Card
-        p={2}
+        p={1}
         sx={{
-          height: "auto",
-          margin: "auto",
-          marginTop: "10vh",
-          maxWidth: "30vw",
-          borderRadius: "10px",
+          height: height,
+          background:
+            "linear-gradient(65deg, #005A83 20%, #036595 20%, #0571A4 40%, #005A83 40%);",
+          borderRadius: "0px",
         }}
       >
-        <Box
+        <Card
           component="form"
-          sx={{ "& .MuiTextField-root": { m: 1, width: "25ch" } }}
           noValidate
-          autoComplete="off"
           onSubmit={handleSubmit(onSubmit)}
+          p={2}
+          sx={{
+            maxWidth: 600,
+            margin: "auto",
+            mt: "10vh",
+            borderRadius: "10px",
+          }}
         >
           <CardHeader
             title="My profile"
             sx={{ backgroundColor: "#338BCB", color: "white" }}
-          >
-            Login
-          </CardHeader>
-          <CardContent sx={{ mt: 4 }}>
+          ></CardHeader>
+          <CardContent sx={{ display: "flex", p: 3, mt: 3 }}>
             <TextField
-              {...register("first_name", { value: user?.first_name })}
-              label="First Name"
+              required
+              {...register("username", {
+                value: user?.username,
+                required: "Username can not be empty",
+              })}
+              label="Username"
+              error={!!errors?.username}
+              helperText={errors?.username?.message}
+              sx={{ mr: 3, width: "100%" }}
             />
             <TextField
-              {...register("last_name", {
-                value: user?.last_name,
+              required
+              {...register("password", {
+                value: user?.password,
+                required: "Password can not be empty",
               })}
-              label="Last Name"
+              label="Password"
+              type="password"
+              error={!!errors?.password}
+              helperText={errors?.password?.message}
+              sx={{ width: "100%" }}
             />
           </CardContent>
-
-          <CardContent>
+          <CardContent sx={{ p: 3 }}>
             <TextField
+              required
               {...register("email", {
                 value: user?.email,
-                required: "Field can not be empty",
+                required: "Email can not be empty",
                 pattern: {
                   value:
                     /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -76,13 +92,29 @@ export default function Profile() {
               label="Email"
               error={!!errors?.email}
               helperText={errors?.email?.message}
+              sx={{ width: "100%" }}
+            />
+          </CardContent>
+          <CardContent sx={{ display: "flex", p: 3 }}>
+            <TextField
+              {...register("first_name", { value: user?.first_name })}
+              label="First Name"
+              sx={{ width: "100%", mr: 3 }}
             />
             <TextField
-              {...register("organization", { value: user?.organization })}
-              label="Organization"
+              {...register("last_name", { value: user?.last_name })}
+              label="Last Name"
+              sx={{ width: "100%" }}
             />
           </CardContent>
 
+          <CardContent sx={{ p: 3 }}>
+            <TextField
+              {...register("organization", { value: user?.organization })}
+              label="Organization"
+              sx={{ width: "100%" }}
+            />
+          </CardContent>
           <CardContent>
             <Button
               type="submit"
@@ -102,7 +134,7 @@ export default function Profile() {
               )}
             </Button>
           </CardContent>
-        </Box>
+        </Card>
       </Card>
       {updateUser.isSuccess ? (
         <Notification message={"User information was updated successfully"} />
