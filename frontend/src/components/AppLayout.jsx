@@ -1,26 +1,23 @@
-// import Card from '@mui/material/Card';
-
+import { useEffect } from "react";
 import { useUserInformation } from "../queries/data";
 import MenuBar from "./MenuBar";
 import useToken from "../useToken";
-import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import useWindowDimensions from "./WindowDimensions";
 
-export default function AppLayout({ handleLogout, handleSetToken }) {
+export default function AppLayout({ handleLogout }) {
   const userInformation = useUserInformation();
   const { user, setUser } = useToken();
+  const { height, width } = useWindowDimensions();
 
   useEffect(() => {
-    if (userInformation?.data?.response?.status === 401) {
-      handleSetToken(null);
-    }
-    setUser(userInformation?.data ?? null);
-  }, [userInformation]);
+    setUser(userInformation?.data);
+  }, [userInformation?.data, user]);
 
   return (
     <>
-      <MenuBar handleLogout={handleLogout} />
-      <Outlet context={{ user: user }} />
+      <MenuBar user={user} handleLogout={handleLogout} />
+      <Outlet context={{ user: user, height: height }} />
     </>
   );
 }
