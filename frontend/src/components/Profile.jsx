@@ -22,18 +22,21 @@ export default function Profile() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({ defaultValues: user });
+  } = useForm();
 
   const updateUser = useUpdateUser();
   const onSubmit = (data) => {
-    updateUser.mutate(data, {
-      onSuccess: () => {
-        setMessage("User information updated successfully!");
-      },
-      onError: (error) => {
-        setMessage(error?.response?.data?.detail);
-      },
-    });
+    updateUser.mutate(
+      { data },
+      {
+        onSuccess: () => {
+          setMessage("User information updated successfully!");
+        },
+        onError: (error) => {
+          setMessage(error?.response?.data?.detail);
+        },
+      }
+    );
   };
 
   useEffect(() => {
@@ -44,6 +47,8 @@ export default function Profile() {
     <>
       <Card
         component="form"
+        noValidate
+        id="user-update-form"
         onSubmit={handleSubmit(onSubmit)}
         p={2}
         sx={{
@@ -60,31 +65,8 @@ export default function Profile() {
         <CardContent sx={{ display: "flex", p: 3, mt: 3 }}>
           <TextField
             required
-            key={user?.username}
-            {...register("username", {
-              required: "Username can not be empty",
-            })}
-            label="Username"
-            error={!!errors?.username}
-            helperText={errors?.username?.message}
-            sx={{ mr: 3, width: "100%" }}
-          />
-          <TextField
-            required
-            {...register("password", {
-              required: "Password can not be empty",
-            })}
-            label="Password"
-            type="password"
-            error={!!errors?.password}
-            helperText={errors?.password?.message}
-            sx={{ width: "100%" }}
-          />
-        </CardContent>
-        <CardContent sx={{ p: 3 }}>
-          <TextField
-            required
             {...register("email", {
+              value: user?.email,
               required: "Email can not be empty",
               pattern: {
                 value:
@@ -100,12 +82,14 @@ export default function Profile() {
         </CardContent>
         <CardContent sx={{ display: "flex", p: 3 }}>
           <TextField
-            {...register("first_name", {})}
+            {...register("first_name", {
+              value: user?.first_name,
+            })}
             label="First Name"
             sx={{ width: "100%", mr: 3 }}
           />
           <TextField
-            {...register("last_name", {})}
+            {...register("last_name", { value: user?.email })}
             label="Last Name"
             sx={{ width: "100%" }}
           />

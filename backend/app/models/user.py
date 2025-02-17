@@ -22,6 +22,7 @@ class UserAuthRegister(BaseModel):
     password: str
     first_name: Optional[str] = None 
     last_name: Optional[str] = None 
+    organization: Optional[str] = None 
     
 
 
@@ -35,6 +36,7 @@ class UserUpdate(BaseModel):
     last_name: str | None = None
     super_user: bool | None = False
     username: str | None = False
+    organization: str | None = False
 
 
 class UserOut(UserUpdate):
@@ -53,6 +55,7 @@ class User(Document, UserOut):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     username: str
+    organization: Optional[str] = None
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"

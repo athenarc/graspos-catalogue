@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "./interceptor";
 export function useLogin() {
   return useMutation({
@@ -9,12 +9,17 @@ export function useLogin() {
 }
 
 export function useUpdateUser() {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (data) => {
+    mutationFn: ({ data }) => {
       return axiosInstance.patch(
         process.env.REACT_APP_BACKEND_HOST + `user`,
         data
       );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["user"]);
     },
   });
 }
