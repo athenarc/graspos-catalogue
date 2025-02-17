@@ -55,7 +55,7 @@ class User(Document, UserOut):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     username: str
-    organization: Optional[str] = None
+    organization: str | None = None
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"
