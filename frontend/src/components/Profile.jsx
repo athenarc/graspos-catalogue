@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   Card,
@@ -8,36 +8,42 @@ import {
 } from "@mui/material";
 import { useOutletContext } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useUpdateUser } from "../queries/data";
+import { useUpdateUser, useUserInformation } from "../queries/data";
 import SaveIcon from "@mui/icons-material/Save";
 import CircularProgress from "@mui/material/CircularProgress";
 import Notification from "./Notification";
 
 export default function Profile() {
   const { user } = useOutletContext();
+
   const [message, setMessage] = useState("");
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm({ mode: "onBlur" });
+  } = useForm({ defaultValues: user });
+
   const updateUser = useUpdateUser();
   const onSubmit = (data) => {
     updateUser.mutate(data, {
-      onSuccess: (data, variables, context) => {
+      onSuccess: () => {
         setMessage("User information updated successfully!");
       },
-      onError: (error, variables, context) => {
-        setMessage(updateUser?.error?.response?.data?.detail);
+      onError: (error) => {
+        setMessage(error?.response?.data?.detail);
       },
     });
   };
+
+  useEffect(() => {
+    reset(user);
+  }, [user, reset]);
 
   return (
     <>
       <Card
         component="form"
-        noValidate
         onSubmit={handleSubmit(onSubmit)}
         p={2}
         sx={{
@@ -48,14 +54,14 @@ export default function Profile() {
         }}
       >
         <CardHeader
-          title="My profile"
+          title={user?.username}
           sx={{ backgroundColor: "#338BCB", color: "white" }}
         ></CardHeader>
         <CardContent sx={{ display: "flex", p: 3, mt: 3 }}>
           <TextField
             required
+            key={user?.username}
             {...register("username", {
-              value: user?.username,
               required: "Username can not be empty",
             })}
             label="Username"
@@ -66,7 +72,6 @@ export default function Profile() {
           <TextField
             required
             {...register("password", {
-              value: user?.password,
               required: "Password can not be empty",
             })}
             label="Password"
@@ -80,7 +85,6 @@ export default function Profile() {
           <TextField
             required
             {...register("email", {
-              value: user?.email,
               required: "Email can not be empty",
               pattern: {
                 value:
@@ -96,12 +100,12 @@ export default function Profile() {
         </CardContent>
         <CardContent sx={{ display: "flex", p: 3 }}>
           <TextField
-            {...register("first_name", { value: user?.first_name })}
+            {...register("first_name", {})}
             label="First Name"
             sx={{ width: "100%", mr: 3 }}
           />
           <TextField
-            {...register("last_name", { value: user?.last_name })}
+            {...register("last_name", {})}
             label="Last Name"
             sx={{ width: "100%" }}
           />
@@ -109,7 +113,9 @@ export default function Profile() {
 
         <CardContent sx={{ p: 3 }}>
           <TextField
-            {...register("organization", { value: user?.organization })}
+            {...register("organization", {
+              value: user?.organization,
+            })}
             label="Organization"
             sx={{ width: "100%" }}
           />

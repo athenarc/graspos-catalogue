@@ -8,13 +8,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useAuth } from "./AuthContext";
 import { useLogin } from "../queries/data";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
-export default function Login({ handleSetLocation }) {
-  const { handleLogin } = useAuth();
+export default function Login({ handleSetLocation, handleLogin }) {
+  
   const {
     register,
     handleSubmit,
@@ -30,26 +29,11 @@ export default function Login({ handleSetLocation }) {
         onSuccess: (data) => {
           handleLogin(data?.data?.access_token);
         },
-        onError: (data) => {
-          if (data?.response?.data?.detail[0]?.msg) {
-            setUsernameError(data?.response?.data?.detail[0]?.msg);
-            setError("username", {
-              type: "server",
-              message: data?.response?.data?.detail[0]?.msg,
-            });
-          } else if (data?.response?.data?.detail) {
-            setPasswordError(data?.response?.data?.detail);
-            setError("password", {
-              type: "server",
-              message: data?.response?.data?.detail,
-            });
-          } else {
-            setPasswordError("An error occurred");
-            setError("password", {
-              type: "server",
-              message: "An error occured",
-            });
-          }
+        onError: (error) => {
+          setError("password", {
+            type: "server",
+            message: error?.response?.data?.detail,
+          });
         },
       }
     );

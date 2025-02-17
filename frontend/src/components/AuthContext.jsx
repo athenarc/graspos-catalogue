@@ -1,5 +1,4 @@
 import React, { createContext, useState, useContext } from "react";
-
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -9,16 +8,12 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const getToken = () => {
     const tokenString = localStorage.getItem("token");
-    var userToken = "";
-    try {
-      userToken = JSON.parse(tokenString);
-    } catch (error) {
-      return null;
+    if (tokenString) {
+      const token = JSON.parse(localStorage.getItem("token"));
+      return token;
     }
-    return userToken;
+    return null;
   };
-
-  const [user, setUser] = useState(null);
   const [token, setToken] = useState(getToken());
 
   const handleLogin = (data) => {
@@ -30,13 +25,13 @@ export const AuthProvider = ({ children }) => {
     setUser(data);
   };
   const handleLogout = () => {
-    setUser(null);
     setToken(null);
+    localStorage.clear();
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, token, handleLogin, handleLogout, handleUser }}
+      value={{ token, handleLogin, handleLogout }}
     >
       {children}
     </AuthContext.Provider>

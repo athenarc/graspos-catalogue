@@ -18,17 +18,4 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-axiosInstance.interceptors.response.use(
-  function (response) {
-    return response;
-  },
-  function (error) {
-    if (error.response && error.response.status === 401) {
-      // localStorage.clear();
-      // window.location.href = "/";
-    }
-    return Promise.reject(error);
-  }
-);
-
 export default axiosInstance;
