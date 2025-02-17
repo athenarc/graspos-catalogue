@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, AlertTitle, Snackbar } from "@mui/material";
+import { Alert, Snackbar } from "@mui/material";
 
 export default function Notification({ message, requestStatus = "success" }) {
   const [open, setOpen] = useState(true);

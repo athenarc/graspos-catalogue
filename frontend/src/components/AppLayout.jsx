@@ -12,6 +12,7 @@ export default function AppLayout() {
   const userInformation = useUserInformation();
   const { height } = useWindowDimensions();
   const [location, setLocation] = useState("login");
+
   function handleSetLocation(location) {
     setLocation(location);
   }

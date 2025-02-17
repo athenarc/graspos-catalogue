@@ -1,7 +1,5 @@
 import axios from "axios";
 
-import { useAuth } from "../components/AuthContext";
-
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_HOST,
   timeout: 1000,
