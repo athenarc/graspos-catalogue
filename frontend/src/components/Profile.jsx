@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Button,
   Card,
@@ -14,14 +15,22 @@ import Notification from "./Notification";
 
 export default function Profile() {
   const { user } = useOutletContext();
+  const [message, setMessage] = useState("");
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty },
+    formState: { errors },
   } = useForm({ mode: "onBlur" });
   const updateUser = useUpdateUser();
   const onSubmit = (data) => {
-    updateUser.mutate({ data });
+    updateUser.mutate(data, {
+      onSuccess: (data, variables, context) => {
+        setMessage("User information updated successfully!");
+      },
+      onError: (error, variables, context) => {
+        setMessage(updateUser?.error?.response?.data?.detail);
+      },
+    });
   };
 
   return (
@@ -125,8 +134,8 @@ export default function Profile() {
           </Button>
         </CardContent>
       </Card>
-      {updateUser.isSuccess ? (
-        <Notification message={"User information was updated successfully"} />
+      {updateUser.isSuccess || updateUser.isError ? (
+        <Notification requestStatus={updateUser?.status} message={message} />
       ) : (
         ""
       )}

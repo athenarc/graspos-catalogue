@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import {
   Stack,
   Button,
@@ -9,55 +8,52 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useAuth } from "./AuthContext";
 import { useLogin } from "../queries/data";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
 
-export default function Login({ handleSetToken }) {
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
-  const [usernameError, setUsernameError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+export default function Login({ handleSetLocation }) {
+  const { handleLogin } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm({ mode: "onBlur" });
   const login = useLogin();
 
-  function submitLogin() {
-    if (!username) {
-      setUsernameError("Username can not be empty");
-    }
-    if (!password) {
-      setPasswordError("Password can not be empty");
-    }
-    if (!username || !password) {
-      return;
-    } else {
-      login.mutate(
-        { username, password },
-        {
-          onSuccess: (data) => {
-            handleSetToken(data?.data?.access_token);
-            window.location.href = "/";
-          },
-          onError: (data) => {
-            if (data?.response?.data?.detail[0]?.msg) {
-              setUsernameError(data?.response?.data?.detail[0]?.msg);
-            } else if (data?.response?.data?.detail) {
-              setPasswordError(data?.response?.data?.detail);
-            } else {
-              setPasswordError("An error occurred");
-            }
-          },
-        }
-      );
-    }
-  }
-  function handleUsernameChange(value) {
-    setUsernameError("");
-    setUsername(value);
-  }
-  function handlePasswordChange(value) {
-    setPasswordError("");
-    setPassword(value);
-  }
+  const onSubmit = (data) => {
+    login.mutate(
+      { data },
+      {
+        onSuccess: (data) => {
+          handleLogin(data?.data?.access_token);
+        },
+        onError: (data) => {
+          if (data?.response?.data?.detail[0]?.msg) {
+            setUsernameError(data?.response?.data?.detail[0]?.msg);
+            setError("username", {
+              type: "server",
+              message: data?.response?.data?.detail[0]?.msg,
+            });
+          } else if (data?.response?.data?.detail) {
+            setPasswordError(data?.response?.data?.detail);
+            setError("password", {
+              type: "server",
+              message: data?.response?.data?.detail,
+            });
+          } else {
+            setPasswordError("An error occurred");
+            setError("password", {
+              type: "server",
+              message: "An error occured",
+            });
+          }
+        },
+      }
+    );
+  };
   return (
     <Paper
       component={Stack}
@@ -67,6 +63,9 @@ export default function Login({ handleSetToken }) {
     >
       <Card
         p={2}
+        component="form"
+        noValidate
+        onSubmit={handleSubmit(onSubmit)}
         sx={{
           width: 400,
           margin: "auto",
@@ -81,37 +80,48 @@ export default function Login({ handleSetToken }) {
         </CardHeader>
         <CardContent sx={{ m: 1, mt: 4 }}>
           <TextField
+            {...register("username", {
+              required: "Username can not be empty",
+            })}
             required
             id="outlined-required"
             label="Username"
-            defaultValue=""
-            error={usernameError !== ""}
-            helperText={usernameError}
-            onChange={(e) => handleUsernameChange(e.target.value)}
+            error={!!errors?.username}
+            helperText={errors?.username?.message}
             sx={{ width: "80%" }}
           />
         </CardContent>
         <CardContent sx={{ m: 1 }}>
           <TextField
+            {...register("password", {
+              required: "Password can not be empty",
+            })}
             required
             id="outlined-password-input"
             label="Password"
             type="password"
-            error={passwordError !== ""}
-            helperText={passwordError}
+            error={!!errors?.password}
+            helperText={errors?.password?.message}
             autoComplete="current-password"
-            onChange={(e) => handlePasswordChange(e.target.value)}
             sx={{ width: "80%" }}
           />
         </CardContent>
         <CardContent sx={{ m: 1 }}>
           <Typography variant="subtitle2">Don't have an account?</Typography>
           <Typography variant="subtitle2">
-            Register <Link to={"/register"}>here</Link>!
+            Register{" "}
+            <Link
+              onClick={() => {
+                handleSetLocation("register");
+              }}
+            >
+              here
+            </Link>
+            !
           </Typography>
         </CardContent>
         <CardContent sx={{ m: 1 }}>
-          <Button variant="contained" onClick={(e) => submitLogin(e)}>
+          <Button type="submit" variant="contained" disabled={login.isLoading}>
             Login
           </Button>
         </CardContent>

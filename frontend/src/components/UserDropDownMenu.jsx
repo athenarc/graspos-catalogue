@@ -8,13 +8,9 @@ import {
   Menu,
   MenuItem,
   Tooltip,
-  Typography,
 } from "@mui/material";
 
-import PersonAdd from "@mui/icons-material/PersonAdd";
-import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
-import { Link } from "react-router-dom";
 
 export default function UserDropDownMenu({
   user,
@@ -41,7 +37,7 @@ export default function UserDropDownMenu({
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
           >
-            <Avatar sx={{ width: 25, height: 25 }}>
+            <Avatar sx={{ width: 30, height: 30 }}>
               {user?.username?.toUpperCase()[0]}
             </Avatar>
           </IconButton>
@@ -88,12 +84,6 @@ export default function UserDropDownMenu({
           <Avatar /> Profile
         </MenuItem>
         <Divider />
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          Settings
-        </MenuItem>
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />

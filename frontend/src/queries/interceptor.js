@@ -1,4 +1,7 @@
 import axios from "axios";
+
+import { useAuth } from "../components/AuthContext";
+
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_HOST,
   timeout: 1000,
@@ -22,10 +25,9 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   function (error) {
-    console.log(error);
     if (error.response && error.response.status === 401) {
-      localStorage.clear();
-      window.location.href = "/";
+      // localStorage.clear();
+      // window.location.href = "/";
     }
     return Promise.reject(error);
   }

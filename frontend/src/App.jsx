@@ -1,62 +1,28 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
-import Login from "./components/Login";
-import Register from "./components/Register";
-import AppLayout from "./components/AppLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import useToken from "./useToken";
 import Profile from "./components/Profile";
 import Resources from "./components/Resources";
+import { AuthProvider } from "./components/AuthContext.jsx";
+import AppLayout from "./components/AppLayout.jsx";
 
 function App() {
-  const { token, setToken } = useToken();
-
-  function handleLogout() {
-    setToken(null);
-  }
-  function handleSetToken(token) {
-    setToken(token);
-  }
   const queryClient = new QueryClient();
-  if (!token) {
-    return (
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <Routes>
-            <Route
-              index
-              path="*"
-              element={<Login handleSetToken={handleSetToken} />}
-            ></Route>
-            <Route
-              path="/register"
-              element={<Register handleSetToken={handleSetToken} />}
-            />
-          </Routes>
-        </BrowserRouter>
-      </QueryClientProvider>
-    );
-  }
+
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <AppLayout
-                handleLogout={handleLogout}
-                handleSetToken={handleSetToken}
-              />
-            }
-          >
-            <Route path="profile" element={<Profile />}></Route>
-            <Route path="resources" element={<Resources />}></Route>
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<AppLayout />}>
+              <Route path="profile" element={<Profile />}></Route>
+              <Route path="resources" element={<Resources />}></Route>
+              <Route path="*" exact element={<Navigate to={"/"} />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
-
 export default App;

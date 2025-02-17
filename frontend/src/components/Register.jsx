@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import {
   Button,
   Card,
@@ -10,18 +9,21 @@ import {
   Paper,
 } from "@mui/material";
 import { useRegister } from "../queries/data";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import CircularProgress from "@mui/material/CircularProgress";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import Notification from "./Notification";
+import { useAuth } from "./AuthContext";
 
-export default function Register({ handleSetToken }) {
+export default function Register({ handleSetLocation }) {
+  const { user, login } = useAuth();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     setError,
-    formState: { errors, isDirty },
+    formState: { errors },
   } = useForm({ mode: "onBlur" });
 
   const registerUser = useRegister();
@@ -30,7 +32,7 @@ export default function Register({ handleSetToken }) {
       { data },
       {
         onSuccess: (data) => {
-          window.location.href = "/";
+          handleSetLocation("login");
         },
         onError: (e) => {
           const error = e?.response?.data?.detail;
@@ -140,7 +142,15 @@ export default function Register({ handleSetToken }) {
               Already have an account?
             </Typography>
             <Typography variant="subtitle2">
-              Login <Link to={"/"}>here</Link>!
+              Login{" "}
+              <Link
+                onClick={() => {
+                  handleSetLocation("login");
+                }}
+              >
+                here
+              </Link>
+              !
             </Typography>
           </CardContent>
           <CardContent sx={{ p: 3 }}>
@@ -165,7 +175,10 @@ export default function Register({ handleSetToken }) {
         </Card>
       </Paper>
       {registerUser.isSuccess ? (
-        <Notification message={"Registration completeted successfully"} />
+        <Notification
+          requestStatus={registerUser?.status}
+          message={"Registration completeted successfully"}
+        />
       ) : (
         ""
       )}
