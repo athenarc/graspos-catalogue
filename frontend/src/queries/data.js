@@ -41,7 +41,5 @@ export function useUserInformation() {
     queryFn: () =>
       axiosInstance
         .get(`user`, {})
-        .then(({ data }) => data)
-        .catch((error) => error),
   });
 }
