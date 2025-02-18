@@ -9,25 +9,30 @@ import {
   Typography,
 } from "@mui/material";
 import { useLogin } from "../queries/data";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { useAuth } from "./AuthContext";
 
-export default function Login({ handleSetLocation, handleLogin }) {
-  
+export default function Login() {
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors },
   } = useForm({ mode: "onBlur" });
-  const login = useLogin();
 
+  
+  const { handleLogin } = useAuth();
+  const navigate = useNavigate();
+
+  const login = useLogin();
   const onSubmit = (data) => {
     login.mutate(
       { data },
       {
         onSuccess: (data) => {
           handleLogin(data?.data?.access_token);
+          navigate("/")
         },
         onError: (error) => {
           setError("password", {
@@ -93,15 +98,7 @@ export default function Login({ handleSetLocation, handleLogin }) {
         <CardContent sx={{ m: 1 }}>
           <Typography variant="subtitle2">Don't have an account?</Typography>
           <Typography variant="subtitle2">
-            Register{" "}
-            <Link
-              onClick={() => {
-                handleSetLocation("register");
-              }}
-            >
-              here
-            </Link>
-            !
+            Register <Link to={"/register"}>here</Link>!
           </Typography>
         </CardContent>
         <CardContent sx={{ m: 1 }}>

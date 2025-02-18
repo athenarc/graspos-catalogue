@@ -14,11 +14,8 @@ import { useForm } from "react-hook-form";
 import CircularProgress from "@mui/material/CircularProgress";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import Notification from "./Notification";
-import { useAuth } from "./AuthContext";
 
-export default function Register({ handleSetLocation }) {
-  const { user, login } = useAuth();
-  const navigate = useNavigate();
+export default function Register() {
   const {
     register,
     handleSubmit,
@@ -26,13 +23,15 @@ export default function Register({ handleSetLocation }) {
     formState: { errors },
   } = useForm({ mode: "onBlur" });
 
+  const navigate = useNavigate();
+
   const registerUser = useRegister();
   const onSubmit = (data) => {
     registerUser.mutate(
       { data },
       {
         onSuccess: (data) => {
-          handleSetLocation("login");
+          navigate("/login");
         },
         onError: (e) => {
           const error = e?.response?.data?.detail;
@@ -52,6 +51,7 @@ export default function Register({ handleSetLocation }) {
       }
     );
   };
+
   return (
     <>
       <Paper
@@ -142,15 +142,7 @@ export default function Register({ handleSetLocation }) {
               Already have an account?
             </Typography>
             <Typography variant="subtitle2">
-              Login{" "}
-              <Link
-                onClick={() => {
-                  handleSetLocation("login");
-                }}
-              >
-                here
-              </Link>
-              !
+              Login <Link to={"/login"}>here</Link>!
             </Typography>
           </CardContent>
           <CardContent sx={{ p: 3 }}>

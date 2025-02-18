@@ -6,7 +6,7 @@ import { useEffect } from "react";
 export default function BaseLayout({ height, handleLogout }) {
   const userInformation = useUserInformation();
   useEffect(() => {
-    if (userInformation?.error && userInformation?.error?.status == 401) {
+    if (userInformation?.error && userInformation?.error?.status == 401 || userInformation?.error?.status == 404) {
       handleLogout()
     }
   }, [userInformation]);
