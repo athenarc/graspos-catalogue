@@ -9,19 +9,21 @@ from pydantic import BaseModel, EmailStr
 
 class UserAuth(BaseModel):
     """User login auth."""
-
-    email: EmailStr
+    username: str
+    # email: EmailStr
     password: str
 
 
 class UserAuthRegister(BaseModel):
     """User register auth."""
-
+    
+    username: str
     email: EmailStr
     password: str
-    first_name: str
-    last_name: str
-    username: str
+    first_name: Optional[str] = None 
+    last_name: Optional[str] = None 
+    organization: Optional[str] = None 
+    
 
 
 class UserUpdate(BaseModel):
@@ -33,7 +35,8 @@ class UserUpdate(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
     super_user: bool | None = False
-    username: str
+    username: str | None = False
+    organization: str | None = False
 
 
 class UserOut(UserUpdate):
@@ -49,9 +52,10 @@ class User(Document, UserOut):
     password: str
     email_confirmed_at: datetime | None = None
     super_user: bool | None = False
-    first_name: str
-    last_name: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     username: str
+    organization: str | None = None
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"
@@ -81,6 +85,11 @@ class User(Document, UserOut):
     async def by_email(cls, email: str) -> Optional["User"]:
         """Get a user by email."""
         return await cls.find_one(cls.email == email)
+
+    @classmethod
+    async def by_username(cls, username: str) -> Optional["User"]:
+        """Get a user by username."""
+        return await cls.find_one(cls.username == username)
 
     def update_email(self, new_email: str) -> None:
         """Update email logging and replace."""

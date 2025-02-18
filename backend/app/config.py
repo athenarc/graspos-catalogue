@@ -20,6 +20,8 @@ class Settings(BaseModel):
     # SECURITY SETTINGS
     authjwt_secret_key: str = config("SECRET_KEY")
     salt: bytes = config("SALT").encode()
+    backend_docs_username: str = config("BACKEND_DOCS_USERNAME", default="user")
+    backend_docs_password: str = config("BACKEND_DOCS_PASSWORD", default="password")
     
     # MAIL SETTINGS
     mail_console: bool = config("MAIL_CONSOLE", default=False, cast=bool)

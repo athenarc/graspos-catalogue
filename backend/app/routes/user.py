@@ -7,7 +7,7 @@ from models.user import User, UserOut, UserUpdate
 from jwt import access_security
 from util.current_user import current_user
 
-router = APIRouter(prefix="/user", tags=["User"])
+router = APIRouter(prefix="/api/v1/user", tags=["User"])
 
 
 @router.get("", response_model=UserOut)

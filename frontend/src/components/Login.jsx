@@ -1,118 +1,112 @@
-/* eslint-disable react/prop-types */
 import {
+  Stack,
   Button,
   Card,
   CardContent,
   CardHeader,
+  Paper,
   TextField,
+  Typography,
 } from "@mui/material";
-import { useState } from "react";
 import { useLogin } from "../queries/data";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { useAuth } from "./AuthContext";
 
-export default function Login({ setToken }) {
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+export default function Login() {
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm({ mode: "onBlur" });
+
+  
+  const { handleLogin } = useAuth();
+  const navigate = useNavigate();
+
   const login = useLogin();
-
-  function submitLogin() {
-    if (!email) {
-      setEmailError("Email can not be empty");
-    }
-    if (!password) {
-      setPasswordError("Password can not be empty");
-    }
-    if (!email || !password) {
-      return;
-    } else {
-      login.mutate(
-        { email, password },
-        {
-          onSuccess: (data) => {
-            setToken(data.data.access_token);
-          },
-          onError: (data) => {
-            if (data?.response?.data?.detail[0].msg){
-              setEmailError(data?.response?.data?.detail[0].msg);
-            }else if (data?.response?.data?.detail){
-              setPasswordError(data?.response?.data?.detail);
-            }else{
-              setPasswordError("An error occurred");
-            }
-            
-          },
-        }
-      );
-    }
-  }
-  function handleEmailChange(value) {
-    setEmailError("");
-    setEmail(value);
-  }
-  function handlePasswordChange(value) {
-    setPasswordError("");
-    setPassword(value);
-  }
+  const onSubmit = (data) => {
+    login.mutate(
+      { data },
+      {
+        onSuccess: (data) => {
+          handleLogin(data?.data?.access_token);
+          navigate("/")
+        },
+        onError: (error) => {
+          setError("password", {
+            type: "server",
+            message: error?.response?.data?.detail,
+          });
+        },
+      }
+    );
+  };
   return (
-    <Card
-      sx={{
-        height: "100%",
-        background:
-          "linear-gradient(65deg, #005A83 20%, #036595 20%, #0571A4 40%, #005A83 40%);",
-      }}
+    <Paper
+      component={Stack}
+      direction="column"
+      justifyContent="center"
+      sx={{ height: "100%", background: "inherit" }}
     >
-      <CardContent>
-        <Card
-          p={2}
-          sx={{
-            maxWidth: 400,
-            margin: "auto",
-            mt: "30vh",
-            height: "100%",
-            borderRadius: "10px",
-          }}
+      <Card
+        p={2}
+        component="form"
+        noValidate
+        onSubmit={handleSubmit(onSubmit)}
+        sx={{
+          width: 400,
+          margin: "auto",
+          borderRadius: "10px",
+        }}
+      >
+        <CardHeader
+          title="Login Form"
+          sx={{ backgroundColor: "#338BCB", color: "white" }}
         >
-          <CardHeader
-            title="Login Form"
-            sx={{ backgroundColor: "#338BCB", color: "white" }}
-          >
+          Login
+        </CardHeader>
+        <CardContent sx={{ m: 1, mt: 4 }}>
+          <TextField
+            {...register("username", {
+              required: "Username can not be empty",
+            })}
+            required
+            id="outlined-required"
+            label="Username"
+            error={!!errors?.username}
+            helperText={errors?.username?.message}
+            sx={{ width: "80%" }}
+          />
+        </CardContent>
+        <CardContent sx={{ m: 1 }}>
+          <TextField
+            {...register("password", {
+              required: "Password can not be empty",
+            })}
+            required
+            id="outlined-password-input"
+            label="Password"
+            type="password"
+            error={!!errors?.password}
+            helperText={errors?.password?.message}
+            autoComplete="current-password"
+            sx={{ width: "80%" }}
+          />
+        </CardContent>
+        <CardContent sx={{ m: 1 }}>
+          <Typography variant="subtitle2">Don't have an account?</Typography>
+          <Typography variant="subtitle2">
+            Register <Link to={"/register"}>here</Link>!
+          </Typography>
+        </CardContent>
+        <CardContent sx={{ m: 1 }}>
+          <Button type="submit" variant="contained" disabled={login.isLoading}>
             Login
-          </CardHeader>
-          <CardContent sx={{ m: 2 }}>
-            <TextField
-              required
-              id="outlined-required"
-              label="Email"
-              defaultValue=""
-              error={emailError !== ""}
-              helperText={emailError}
-              value={email}
-              onChange={(e) => handleEmailChange(e.target.value)}
-              sx={{ width: "80%" }}
-            />
-          </CardContent>
-          <CardContent sx={{ m: 2 }}>
-            <TextField
-              required
-              id="outlined-password-input"
-              label="Password"
-              type="password"
-              error={passwordError !== ""}
-              helperText={passwordError}
-              value={password}
-              autoComplete="current-password"
-              onChange={(e) => handlePasswordChange(e.target.value)}
-              sx={{ width: "80%" }}
-            />
-          </CardContent>
-          <CardContent sx={{ m: 2 }}>
-            <Button variant="contained" onClick={(e) => submitLogin(e)}>
-              Submit
-            </Button>
-          </CardContent>
-        </Card>
-      </CardContent>
-    </Card>
+          </Button>
+        </CardContent>
+      </Card>
+    </Paper>
   );
 }

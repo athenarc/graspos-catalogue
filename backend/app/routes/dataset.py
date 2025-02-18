@@ -4,22 +4,22 @@ from fastapi import APIRouter, HTTPException
 from models.dataset import Dataset
 from beanie import PydanticObjectId
 
-dataset_router = APIRouter()
+router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
 
-@dataset_router.get("/", status_code=200)
+@router.get("/", status_code=200)
 async def get_all_datasets() -> list[Dataset]:
     datasets = await Dataset.find_all().to_list()
     return datasets
 
 
-@dataset_router.post("/", status_code=201)
+@router.post("/", status_code=201)
 async def create_dataset(dataset: Dataset):
     await dataset.create()
     return {"message": "dataset has been saved"}
 
 
-@dataset_router.get("/{dataset_id}",
+@router.get("/{dataset_id}",
                     responses={404: {
                         "detail": "Dataset does not exist"
                     }})
@@ -34,7 +34,7 @@ async def get_dataset(dataset_id: PydanticObjectId) -> Dataset:
     return dataset
 
 
-@dataset_router.delete("/{dataset_id}", status_code=204)
+@router.delete("/{dataset_id}", status_code=204)
 async def delete_dataset(dataset_id: PydanticObjectId):
     dataset_to_delete = await Dataset.get(dataset_id)
 
@@ -45,7 +45,7 @@ async def delete_dataset(dataset_id: PydanticObjectId):
     await dataset_to_delete.delete()
     return {"message": "Dataset successfully deleted"}
 
-@dataset_router.put("/{dataset_id}", status_code=200)
+@router.put("/{dataset_id}", status_code=200)
 async def update_dataset(dataset: Dataset, dataset_id: PydanticObjectId) -> Dataset:
     
     dataset_to_update = await Dataset.get(dataset_id)

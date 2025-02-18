@@ -1,7 +1,11 @@
-// import Card from '@mui/material/Card';
+import useWindowDimensions from "./WindowDimensions";
+import { useAuth } from "./AuthContext";
+import BaseLayout from "./BaseLayout";
 
-import MenuBar from "./MenuBar";
+export default function AppLayout() {
+  const { handleLogout } = useAuth();
 
-export default function AppLayout({ handleLogout }) {
-  return <MenuBar handleLogout={handleLogout} />;
+  const { height } = useWindowDimensions();
+
+  return <BaseLayout height={height} handleLogout={handleLogout} />;
 }
