@@ -14,9 +14,9 @@ async def get_all_datasets() -> list[Dataset]:
 
 
 @router.post("/", status_code=201)
-async def create_dataset(dataset: Dataset):
+async def create_dataset(dataset: Dataset) -> Dataset:
     await dataset.create()
-    return {"message": "dataset has been saved"}
+    return dataset
 
 
 @router.get("/{dataset_id}",
