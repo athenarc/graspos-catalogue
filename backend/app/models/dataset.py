@@ -3,23 +3,46 @@
 from beanie import Document
 from datetime import datetime
 from models.user import User
-
-class Dataset(Document):
+from pydantic import BaseModel
+from beanie import PydanticObjectId
+ 
+class Dataset(BaseModel):
     name: str
-    description: str
-    tags: list
-    license: str
-    organization: str
-    visibility: str
-    version: str
-    authors: list
-    api_url: str
-    api_url_instructions: str
-    documentation_url: str
-    contact_person: str
-    contact_person_email: str
-    approved: bool
+    description: str | None = None
+    tags: str | None = None
+    license: str | None = None
+    organization: str | None = None
+    visibility: str | None = None
+    version: str | None = None
+    authors: str | None = None
+    api_url: str | None = None
+    api_url_instructions: str | None = None
+    documentation_url: str | None = None
+    contact_person: str | None = None
+    contact_person_email: str | None = None
+    approved: bool | None = None
+    owner: PydanticObjectId | None = None
 
+class DatasetPatch(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    tags: str | None = None
+    license: str | None = None
+    organization: str | None = None
+    visibility: str | None = None
+    version: str | None = None
+    authors: str | None = None
+    api_url: str | None = None
+    api_url_instructions: str | None = None
+    documentation_url: str | None = None
+    contact_person: str | None = None
+    contact_person_email: str | None = None
+    approved: bool | None = None
+    owner: PydanticObjectId | None = None
+    
+
+
+class Dataset(Document, DatasetPatch):
     class Settings:
         name = "datasets"
 
@@ -28,12 +51,12 @@ class Dataset(Document):
             "example": {
                 "name": "example-name",
                 "description": "example-description",
-                "tags": ["example-tag-1", "example-tag-2"],
+                "tags": "",
                 "license": "",
                 "organization": "",
                 "visibility": "public/private",
                 "version": "",
-                "authors": ["Author-1", "Author-2"],
+                "authors": "",
                 "api_url": "",
                 "api_url_instructions": "",
                 "documentation_url": "",

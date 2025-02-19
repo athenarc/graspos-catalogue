@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Annotated, Any, Optional
 
-from beanie import Document, Indexed
+from beanie import Document, Indexed, PydanticObjectId
 from pydantic import BaseModel, EmailStr
 
 
@@ -41,7 +41,7 @@ class UserUpdate(BaseModel):
 
 class UserOut(UserUpdate):
     """User fields returned to the client."""
-
+    id: PydanticObjectId
     email: Annotated[str, Indexed(EmailStr, unique=True)]
     disabled: bool = False
 
@@ -90,7 +90,12 @@ class User(Document, UserOut):
     async def by_username(cls, username: str) -> Optional["User"]:
         """Get a user by username."""
         return await cls.find_one(cls.username == username)
-
+    
+    @classmethod
+    async def by_id(cls, id: PydanticObjectId) -> Optional["User"]:
+        """Get a user by username."""
+        return await cls.find_one(cls.id == id) 
+    
     def update_email(self, new_email: str) -> None:
         """Update email logging and replace."""
         # Add any pre-checks here

@@ -1,35 +1,296 @@
-import { Card, CardContent, CardHeader } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Button,
+  IconButton,
+  Table,
+  TableRow,
+  TableCell,
+  CircularProgress,
+  TableBody,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import CloseIcon from "@mui/icons-material/Close";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { useCreateDataset } from "../queries/data.js";
 
-export default function Form({title}) {
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialogContent-root": {
+    padding: theme.spacing(2),
+  },
+  "& .MuiDialogActions-root": {
+    padding: theme.spacing(1),
+  },
+}));
+
+export default function Form() {
+  const { user } = useOutletContext();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ mode: "onBlur" });
+
+  const navigate = useNavigate();
+  const createDataset = useCreateDataset();
+
+  const onSubmit = (data) => {
+    createDataset.mutate(
+      { data },
+      {
+        onSuccess: (data) => {
+          navigate("..");
+        },
+      }
+    );
+  };
+  function handleClose() {
+    navigate("..");
+  }
+
   return (
-    <Card
-      p={1}
-      sx={{
-        height: height,
-        background:
-          "linear-gradient(65deg, #005A83 20%, #036595 20%, #0571A4 40%, #005A83 40%);",
-        borderRadius: "0px",
-      }}
-    >
-      <Card
+    <>
+      <Dialog
         component="form"
+        onClose={handleClose}
+        open={open}
         noValidate
         onSubmit={handleSubmit(onSubmit)}
-        p={2}
-        sx={{
-          maxWidth: 600,
-          margin: "auto",
-          mt: "10vh",
-          borderRadius: "10px",
-        }}
       >
-        <CardHeader
-          title={title}
-          sx={{ backgroundColor: "#338BCB", color: "white" }}
+        <DialogTitle
+          sx={{
+            backgroundColor: "#338BCB",
+            color: "white",
+            textAlign: "center",
+          }}
+          id="customized-dialog-title"
         >
-        </CardHeader>
-        
-      </Card>
-    </Card>
+          Create Resource
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={(theme) => ({
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <CloseIcon sx={{ color: "white" }} />
+        </IconButton>
+        <DialogContent dividers sx={{ p: 2 }}>
+          <Table
+            sx={{
+              "& td": {
+                borderBottom: "none !important;",
+              },
+            }}
+          >
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={2}>
+                  <TextField
+                    required
+                    {...register("name", {
+                      required: "Name can not be empty",
+                    })}
+                    label="Name"
+                    error={!!errors?.name}
+                    helperText={errors?.name?.message}
+                    fullWidth
+                  />
+                </TableCell>
+              </TableRow>
+
+              <TableRow>
+                <TableCell>
+                  <TextField
+                    required
+                    {...register("visibility")}
+                    label="Visibility"
+                    error={!!errors?.visibility}
+                    helperText={errors?.visibility?.message}
+                    fullWidth
+                  />
+                </TableCell>
+
+                <TableCell>
+                  <TextField
+                    required
+                    {...register("source")}
+                    label="Source"
+                    error={!!errors?.source}
+                    helperText={errors?.source?.message}
+                    fullWidth
+                  />
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={2}>
+                  <TextField
+                    required
+                    {...register("description")}
+                    label="Description"
+                    error={!!errors?.description}
+                    helperText={errors?.description?.message}
+                    fullWidth
+                  />
+                </TableCell>
+              </TableRow>
+
+              <TableRow>
+                <TableCell>
+                  <TextField
+                    required
+                    {...register("license")}
+                    label="Licence"
+                    error={!!errors?.license}
+                    helperText={errors?.license?.message}
+                    fullWidth
+                  />
+                </TableCell>
+                <TableCell>
+                  <TextField
+                    required
+                    {...register("version")}
+                    label="Version"
+                    error={!!errors?.version}
+                    helperText={errors?.version?.message}
+                    fullWidth
+                  />
+                </TableCell>
+              </TableRow>
+
+              <TableRow>
+                <TableCell>
+                  <TextField
+                    required
+                    {...register("organization")}
+                    label="Organization"
+                    error={!!errors?.organization}
+                    helperText={errors?.organization?.message}
+                    fullWidth
+                  />
+                </TableCell>
+                <TableCell>
+                  <TextField
+                    required
+                    {...register("tags")}
+                    label="Tags"
+                    error={!!errors?.tags}
+                    helperText={errors?.tags?.message}
+                    fullWidth
+                  />
+                </TableCell>
+              </TableRow>
+              <TableRow></TableRow>
+              <TableRow>
+                <TableCell colSpan={2}>
+                  <TextField
+                    required
+                    {...register("authors")}
+                    label="Authors"
+                    error={!!errors?.authors}
+                    helperText={errors?.authors?.message}
+                    fullWidth
+                  />
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <TextField
+                    required
+                    {...register("api_url")}
+                    label="API URL"
+                    error={!!errors?.api_url}
+                    helperText={errors?.api_url?.message}
+                    fullWidth
+                  />
+                </TableCell>
+
+                <TableCell>
+                  <TextField
+                    required
+                    {...register("api_url_instructions")}
+                    label="API URL Instructions"
+                    error={!!errors?.api_url_instructions}
+                    helperText={errors?.api_url_instructions?.message}
+                    fullWidth
+                  />
+                </TableCell>
+              </TableRow>
+
+              <TableRow>
+                <TableCell colSpan={2}>
+                  <TextField
+                    required
+                    {...register("documentation_url")}
+                    label="Documentation URL"
+                    error={!!errors?.documentation_url}
+                    helperText={errors?.documentation_url?.message}
+                    fullWidth
+                  />
+                </TableCell>
+              </TableRow>
+
+              <TableRow>
+                <TableCell>
+                  <TextField
+                    required
+                    {...register("contact_person")}
+                    label="Contact Person"
+                    error={!!errors?.contact_person}
+                    helperText={errors?.contact_person?.message}
+                    fullWidth
+                  />
+                </TableCell>
+                <TableCell>
+                  <TextField
+                    required
+                    {...register("contact_person_email")}
+                    label="Contact person email"
+                    error={!!errors?.contact_person_email}
+                    helperText={errors?.contact_person_email?.message}
+                    fullWidth
+                  />
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={createDataset.isLoading}
+          >
+            {createDataset.isLoading ? (
+              <>
+                Creating Dataset
+                <CircularProgress size="13px" sx={{ ml: 1 }} />
+              </>
+            ) : (
+              <>
+                Create
+                {/* <PlusIcon sx={{ ml: 1 }} /> */}
+              </>
+            )}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {createDataset.isSuccess ? (
+        <Notification
+          requestStatus={createDataset?.status}
+          message={"Dataset created successfully"}
+        />
+      ) : (
+        ""
+      )}
+    </>
   );
 }
