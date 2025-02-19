@@ -38,8 +38,7 @@ export function useRegister() {
 export function useUserInformation() {
   return useQuery({
     queryKey: ["user"],
-    queryFn: () =>
-      axiosInstance
-        .get(`user`, {})
+    retry: false,
+    queryFn: () => axiosInstance.get(`user`, {}),
   });
 }
