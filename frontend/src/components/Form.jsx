@@ -11,6 +11,8 @@ import {
   TableCell,
   CircularProgress,
   TableBody,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
@@ -108,21 +110,29 @@ export default function Form() {
               </TableRow>
 
               <TableRow>
-                <TableCell>
-                  <TextField
-                    required
-                    {...register("visibility")}
-                    label="Visibility"
-                    error={!!errors?.visibility}
-                    helperText={errors?.visibility?.message}
+                <TableCell sx={{width: "30%"}}>
+                  <Select
+                    {...register("visibility", {})}
+                    label="visibility"
+                    defaultValue="public"
                     fullWidth
-                  />
+                  >
+                    <MenuItem value={"private"}>Private</MenuItem>
+                    <MenuItem value={"public"}>Public</MenuItem>
+                  </Select>
                 </TableCell>
 
-                <TableCell>
+                <TableCell sx={{width: "70%"}}>
                   <TextField
                     required
-                    {...register("source")}
+                    {...register("source", {
+                      required: "Source can not be empty",
+                      pattern: {
+                        value:
+                          /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
+                        message: "Not a valid URL",
+                      },
+                    })}
                     label="Source"
                     error={!!errors?.source}
                     helperText={errors?.source?.message}
@@ -133,7 +143,6 @@ export default function Form() {
               <TableRow>
                 <TableCell colSpan={2}>
                   <TextField
-                    required
                     {...register("description")}
                     label="Description"
                     error={!!errors?.description}
@@ -146,7 +155,6 @@ export default function Form() {
               <TableRow>
                 <TableCell>
                   <TextField
-                    required
                     {...register("license")}
                     label="Licence"
                     error={!!errors?.license}
@@ -156,7 +164,6 @@ export default function Form() {
                 </TableCell>
                 <TableCell>
                   <TextField
-                    required
                     {...register("version")}
                     label="Version"
                     error={!!errors?.version}
@@ -165,11 +172,9 @@ export default function Form() {
                   />
                 </TableCell>
               </TableRow>
-
               <TableRow>
                 <TableCell>
                   <TextField
-                    required
                     {...register("organization")}
                     label="Organization"
                     error={!!errors?.organization}
@@ -179,7 +184,6 @@ export default function Form() {
                 </TableCell>
                 <TableCell>
                   <TextField
-                    required
                     {...register("tags")}
                     label="Tags"
                     error={!!errors?.tags}
@@ -192,7 +196,6 @@ export default function Form() {
               <TableRow>
                 <TableCell colSpan={2}>
                   <TextField
-                    required
                     {...register("authors")}
                     label="Authors"
                     error={!!errors?.authors}
@@ -204,7 +207,6 @@ export default function Form() {
               <TableRow>
                 <TableCell>
                   <TextField
-                    required
                     {...register("api_url")}
                     label="API URL"
                     error={!!errors?.api_url}
@@ -215,7 +217,6 @@ export default function Form() {
 
                 <TableCell>
                   <TextField
-                    required
                     {...register("api_url_instructions")}
                     label="API URL Instructions"
                     error={!!errors?.api_url_instructions}
@@ -228,7 +229,6 @@ export default function Form() {
               <TableRow>
                 <TableCell colSpan={2}>
                   <TextField
-                    required
                     {...register("documentation_url")}
                     label="Documentation URL"
                     error={!!errors?.documentation_url}
@@ -241,7 +241,6 @@ export default function Form() {
               <TableRow>
                 <TableCell>
                   <TextField
-                    required
                     {...register("contact_person")}
                     label="Contact Person"
                     error={!!errors?.contact_person}
@@ -251,7 +250,6 @@ export default function Form() {
                 </TableCell>
                 <TableCell>
                   <TextField
-                    required
                     {...register("contact_person_email")}
                     label="Contact person email"
                     error={!!errors?.contact_person_email}
