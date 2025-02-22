@@ -8,6 +8,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
 } from "@mui/material";
@@ -34,43 +35,45 @@ export default function Resources() {
               Resources
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Description</TableCell>
-                    <TableCell>Tags</TableCell>
-                    <TableCell>Licence</TableCell>
-                    <TableCell>Organisation</TableCell>
-                    <TableCell>Visibility</TableCell>
-                    <TableCell>Source</TableCell>
-                    <TableCell>Version</TableCell>
-                    <TableCell>Authors</TableCell>
-                    <TableCell>API URL</TableCell>
-                    <TableCell>API URL instructions</TableCell>
-                    <TableCell>Documentation URL</TableCell>
-                    <TableCell>Contact person</TableCell>
-                    <TableCell>Contact person email</TableCell>
-                    {user?.super_user && (
-                      <>
-                        <TableCell>Approval</TableCell>
-                        <TableCell>Created By</TableCell>
-                      </>
-                    )}
-                    <TableCell></TableCell>
-                  </TableRow>
-                </TableHead>
+              <TableContainer>
+                <Table stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Description</TableCell>
+                      <TableCell>Tags</TableCell>
+                      <TableCell>Licence</TableCell>
+                      <TableCell>Organisation</TableCell>
+                      <TableCell>Visibility</TableCell>
+                      <TableCell>Source</TableCell>
+                      <TableCell>Version</TableCell>
+                      <TableCell>Authors</TableCell>
+                      <TableCell>API URL</TableCell>
+                      <TableCell>API URL instructions</TableCell>
+                      <TableCell>Documentation URL</TableCell>
+                      <TableCell>Contact person</TableCell>
+                      <TableCell>Contact person email</TableCell>
+                      {user?.super_user && (
+                        <>
+                          <TableCell>Approval</TableCell>
+                          <TableCell>Created By</TableCell>
+                        </>
+                      )}
+                      <TableCell></TableCell>
+                    </TableRow>
+                  </TableHead>
 
-                <TableBody>
-                  {datasets?.data?.data?.map((dataset) => (
-                    <Resource
-                      resource={dataset}
-                      key={dataset._id}
-                      user={user}
-                    />
-                  ))}
-                </TableBody>
-              </Table>
+                  <TableBody>
+                    {datasets?.data?.data?.map((dataset) => (
+                      <Resource
+                        resource={dataset}
+                        key={dataset._id}
+                        user={user}
+                      />
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </CardContent>
             <CardActions sx={{ textAlign: "right" }}>
               <Button color="primary" component={Link} to="/resources/add">

@@ -80,11 +80,20 @@ export default function Resource({ resource, user }) {
           <TableCell sx={{ textAlign: "right" }}>
             {resource.approved ?? (
               <>
-                {resource.approved}
-                <IconButton color="primary" onClick={() => handleUpdate(true)}>
+                <IconButton
+                  color="primary"
+                  onClick={() => {
+                    handleUpdate(true);
+                  }}
+                >
                   <Check />
                 </IconButton>
-                <IconButton color="error" onClick={() => handleUpdate(false)}>
+                <IconButton
+                  color="error"
+                  onClick={() => {
+                    handleUpdate(false);
+                  }}
+                >
                   <ClearIcon />
                 </IconButton>
               </>
