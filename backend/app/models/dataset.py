@@ -8,6 +8,7 @@ from beanie import PydanticObjectId
  
 class Dataset(BaseModel):
     name: str
+    source: str | None = None 
     description: str | None = None
     tags: str | None = None
     license: str | None = None
@@ -25,6 +26,7 @@ class Dataset(BaseModel):
 
 class DatasetPatch(BaseModel):
     name: str | None = None
+    source: str | None = None 
     description: str | None = None
     tags: str | None = None
     license: str | None = None
@@ -50,6 +52,7 @@ class Dataset(Document, DatasetPatch):
         json_schema_extra = {
             "example": {
                 "name": "example-name",
+                "soruce": "https://www.example.com/api/2131231",
                 "description": "example-description",
                 "tags": "",
                 "license": "",
