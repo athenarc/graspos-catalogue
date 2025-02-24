@@ -23,7 +23,10 @@ async def get_all_datasets(user: User = Depends(
 
 @router.post("/", status_code=201)
 async def create_dataset(
-    dataset: Dataset, user: User = Depends(current_user)) -> Dataset:
+    # https://zenodo.org/api/records/14582029
+    dataset: Dataset,
+    user: User = Depends(current_user)
+) -> Dataset:
     dataset.owner = user.id
     if user.super_user:
         dataset.approved = True
@@ -64,13 +67,15 @@ async def update_dataset(update: DatasetPatch,
 
     dataset = await Dataset.get(dataset_id)
 
-    if not update:
+    if not dataset:
         return HTTPException(status_code=404, detail="Dataset does not exist")
 
     fields = update.model_dump(exclude_unset=True)
-    print(fields)
-    dataset = Dataset.model_copy(dataset, update=fields)
 
-    await dataset.save()
+    if "approved" in fields and not fields["approved"]:
+        await dataset.delete()
+    else:
+        dataset = Dataset.model_copy(dataset, update=fields)
+        await dataset.save()
 
     return dataset
