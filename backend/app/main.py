@@ -1,9 +1,10 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from routes import user, auth, mail, register, dataset
+from routes import user, auth, mail, register, dataset,  resource
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 from models.dataset import Dataset
+from models.resource import Resource
 from models.user import User
 from db import db
 from config import CONFIG
@@ -13,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 async def lifespan(app: FastAPI):
     """Initialize application services."""
     app.db = AsyncIOMotorClient(CONFIG.mongodb_uri).graspos
-    await init_beanie(app.db, document_models=[Dataset, User])
+    await init_beanie(app.db, document_models=[Dataset, User, Resource])
     print("Startup complete")
     yield
     print("Shutdown complete")
@@ -30,6 +31,7 @@ app = FastAPI(
 )
 
 app.include_router(dataset.router)
+app.include_router(resource.router)
 app.include_router(user.router)
 app.include_router(auth.router)
 app.include_router(mail.router)
