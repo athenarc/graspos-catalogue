@@ -13,11 +13,12 @@ import {
   TableRow,
 } from "@mui/material";
 import { Link, Outlet, useOutletContext } from "react-router-dom";
-import { useDatasets } from "../queries/data";
+import { useDatasets, useResources } from "../queries/data";
 import Resource from "./Resource";
 
 export default function Resources() {
   const datasets = useDatasets();
+  const resources = useResources();
   const { user } = useOutletContext();
 
   return (
@@ -67,8 +68,17 @@ export default function Resources() {
                   <TableBody>
                     {datasets?.data?.data?.map((dataset) => (
                       <Resource
+                        type={"Dataset"}
                         resource={dataset}
                         key={dataset._id}
+                        user={user}
+                      />
+                    ))}
+                    {resources?.data?.data?.map((resource) => (
+                      <Resource
+                        type={"Resource"}
+                        resource={resource}
+                        key={resource._id}
                         user={user}
                       />
                     ))}
@@ -77,7 +87,7 @@ export default function Resources() {
               </TableContainer>
             </CardContent>
             <CardActions sx={{ textAlign: "right" }}>
-              <Button color="primary" component={Link} to="/resources/add">
+              <Button color="primary" component={Link} to="/resources/test">
                 Add
               </Button>
             </CardActions>

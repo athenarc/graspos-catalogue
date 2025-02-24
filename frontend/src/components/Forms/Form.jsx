@@ -3,26 +3,22 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
   Button,
   IconButton,
   Table,
   TableRow,
   TableCell,
   CircularProgress,
-  TableBody,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
-  Divider,
   TableHead,
   TableContainer,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useCreateDataset, useCreateResource } from "../../queries/data.js";
 import ResourceForm from "./ResourceForm.jsx";
@@ -82,7 +78,6 @@ export default function Form() {
             color: "white",
             textAlign: "center",
           }}
-          id="customized-dialog-title"
         >
           Create Resource
         </DialogTitle>
@@ -98,7 +93,7 @@ export default function Form() {
         >
           <CloseIcon sx={{ color: "white" }} />
         </IconButton>
-        <DialogContent dividers sx={{ p: 2 }}>
+        <DialogContent dividers sx={{ p: 1 }}>
           <TableContainer
             sx={{
               maxHeight: 500,
@@ -107,7 +102,6 @@ export default function Form() {
             <Table
               stickyHeader
               sx={{
-                minWidth: 400,
                 "& td, th": {
                   borderBottom: "none !important;",
                 },

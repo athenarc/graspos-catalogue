@@ -3,11 +3,6 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  FormHelperText,
 } from "@mui/material";
 
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
@@ -35,25 +30,7 @@ export default function ResourceForm({ register, errors, control }) {
       </TableRow>
 
       <TableRow>
-        <TableCell>
-          <FormControl fullWidth>
-            <InputLabel>Visibility</InputLabel>
-            <Select
-              {...register("visibility")}
-              defaultValue="public"
-              label="Visibility"
-              error={!!errors?.visibility}
-            >
-              <MenuItem value={"private"}>Private</MenuItem>
-              <MenuItem value={"public"}>Public</MenuItem>
-            </Select>
-            <FormHelperText error>
-              {errors?.visibility ? "Visibility can not be empty" : " "}
-            </FormHelperText>
-          </FormControl>
-        </TableCell>
-
-        <TableCell>
+        <TableCell colSpan={2}>
           <TextField
             required
             {...register("url", {
