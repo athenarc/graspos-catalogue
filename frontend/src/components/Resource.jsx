@@ -4,18 +4,26 @@ import ClearIcon from "@mui/icons-material/Clear";
 import Check from "@mui/icons-material/Check";
 import {
   useDeleteDataset,
+  useDeleteResource,
   useUpdateDataset,
   useUserUsername,
 } from "../queries/data";
 
-export default function Resource({ resource, user }) {
+export default function Resource({ resource, user, type }) {
   const deleteDatasest = useDeleteDataset();
+  const deleteResource = useDeleteResource();
   const updateDataset = useUpdateDataset(resource._id);
   const owenerUsername = useUserUsername(resource?.owner);
+  let query = null;
 
-  function handleDelete(dataset_id) {
-    deleteDatasest.mutate(
-      { dataset_id },
+  function handleDelete(id) {
+    if (type === "Resource") {
+      query = deleteResource;
+    } else {
+      query = deleteDatasest;
+    }
+    query.mutate(
+      { id },
       {
         onSuccess: (data) => {},
         onError: (e) => {},
@@ -37,7 +45,7 @@ export default function Resource({ resource, user }) {
         <Typography>{resource.name}</Typography>
       </TableCell>
       <TableCell>
-        <Typography>Dataset</Typography>
+        <Typography>{type}</Typography>
       </TableCell>
       <TableCell>
         <Typography>{resource.description}</Typography>

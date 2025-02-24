@@ -87,7 +87,7 @@ export default function Resources() {
               </TableContainer>
             </CardContent>
             <CardActions sx={{ textAlign: "right" }}>
-              <Button color="primary" component={Link} to="/resources/test">
+              <Button color="primary" component={Link} to="/resources/add">
                 Add
               </Button>
             </CardActions>
