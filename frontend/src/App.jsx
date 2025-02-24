@@ -11,7 +11,7 @@ import {
 } from "./components/PrivateRoutes.jsx";
 import Login from "./components/Login.jsx";
 import Register from "./components/Register.jsx";
-import Form from "./components/Form.jsx";
+import Form from "./components/Forms/Form.jsx";
 
 function App() {
   const queryClient = new QueryClient();

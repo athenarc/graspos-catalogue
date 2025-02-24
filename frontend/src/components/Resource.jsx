@@ -37,6 +37,9 @@ export default function Resource({ resource, user }) {
         <Typography>{resource.name}</Typography>
       </TableCell>
       <TableCell>
+        <Typography>Dataset</Typography>
+      </TableCell>
+      <TableCell>
         <Typography>{resource.description}</Typography>
       </TableCell>
       <TableCell>
@@ -57,7 +60,7 @@ export default function Resource({ resource, user }) {
       <TableCell>
         <Typography>{resource.version}</Typography>
       </TableCell>
-      <TableCell>
+      {/* <TableCell>
         <Typography>{resource.authors}</Typography>
       </TableCell>
       <TableCell>
@@ -74,7 +77,7 @@ export default function Resource({ resource, user }) {
       </TableCell>
       <TableCell>
         <Typography>{resource.contact_person_email}</Typography>{" "}
-      </TableCell>
+      </TableCell> */}
       {user?.super_user && (
         <>
           <TableCell sx={{ textAlign: "right" }}>

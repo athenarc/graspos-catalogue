@@ -40,6 +40,7 @@ export default function Resources() {
                   <TableHead>
                     <TableRow>
                       <TableCell>Name</TableCell>
+                      <TableCell>Type</TableCell>
                       <TableCell>Description</TableCell>
                       <TableCell>Tags</TableCell>
                       <TableCell>Licence</TableCell>
@@ -47,12 +48,12 @@ export default function Resources() {
                       <TableCell>Visibility</TableCell>
                       <TableCell>Source</TableCell>
                       <TableCell>Version</TableCell>
-                      <TableCell>Authors</TableCell>
+                      {/* <TableCell>Authors</TableCell>
                       <TableCell>API URL</TableCell>
                       <TableCell>API URL instructions</TableCell>
                       <TableCell>Documentation URL</TableCell>
                       <TableCell>Contact person</TableCell>
-                      <TableCell>Contact person email</TableCell>
+                      <TableCell>Contact person email</TableCell> */}
                       {user?.super_user && (
                         <>
                           <TableCell>Approval</TableCell>

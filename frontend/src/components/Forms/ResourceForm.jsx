@@ -1,0 +1,199 @@
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Button,
+  IconButton,
+  Table,
+  TableRow,
+  TableCell,
+  CircularProgress,
+  TableBody,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  FormHelperText,
+} from "@mui/material";
+
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
+import { Controller } from "react-hook-form";
+
+const today = dayjs();
+const yesterday = dayjs().subtract(1, "day");
+const todayStartOfTheDay = today.startOf("day");
+export default function ResourceForm({ register, errors, control }) {
+  return (
+    <TableBody>
+      <TableRow>
+        <TableCell colSpan={2}>
+          <TextField
+            required
+            {...register("name", {
+              required: "Name can not be empty",
+            })}
+            label="Name"
+            error={!!errors?.name}
+            helperText={errors?.name?.message ?? " "}
+            fullWidth
+          />
+        </TableCell>
+      </TableRow>
+
+      <TableRow>
+        <TableCell sx={{ width: "30%" }}>
+          <FormControl fullWidth>
+            <InputLabel>Visibility</InputLabel>
+            <Select
+              {...register("visibility")}
+              defaultValue="public"
+              label="Visibility"
+              error={!!errors?.visibility}
+            >
+              <MenuItem value={"private"}>Private</MenuItem>
+              <MenuItem value={"public"}>Public</MenuItem>
+            </Select>
+            <FormHelperText error>
+              {errors?.visibility ? "Visibility can not be empty" : " "}
+            </FormHelperText>
+          </FormControl>
+        </TableCell>
+
+        <TableCell sx={{ width: "70%" }}>
+          <TextField
+            required
+            {...register("url", {
+              required: "Url can not be empty",
+              pattern: {
+                value:
+                  /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
+                message: "Not a valid URL",
+              },
+            })}
+            label="Url"
+            error={!!errors?.url}
+            helperText={errors?.url?.message ?? " "}
+            fullWidth
+          />
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell colSpan={2}>
+          <TextField
+            {...register("description")}
+            label="Description"
+            error={!!errors?.description}
+            helperText={errors?.description?.message ?? " "}
+            fullWidth
+          />
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell colSpan={2}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DemoContainer components={["DatePicker"]}>
+              <Controller
+                control={control}
+                name="created"
+                defaultValue={null}
+                render={({
+                  field: { ref, onBlur, name, onChange, ...field },
+                  fieldState: { error },
+                }) => (
+                  <DatePicker
+                    {...field}
+                    inputRef={ref}
+                    label="Created"
+                    onChange={onChange}
+                    name={name}
+                    slotProps={{
+                      textField: {
+                        onBlur,
+                        name,
+                        error: !!error,
+                        helperText: error?.message ?? " ",
+                        fullWidth: true,
+                      },
+                    }}
+                  />
+                )}
+              />
+            </DemoContainer>
+          </LocalizationProvider>
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DemoContainer components={["DatePicker"]}>
+              <Controller
+                control={control}
+                name="data_last_updated"
+                defaultValue={null}
+                render={({
+                  field: { ref, onBlur, name, onChange, ...field },
+                  fieldState: { error },
+                }) => (
+                  <DatePicker
+                    {...field}
+                    inputRef={ref}
+                    label="Data Last Updated"
+                    onChange={onChange}
+                    name={name}
+                    slotProps={{
+                      textField: {
+                        onBlur,
+                        name,
+                        error: !!error,
+                        helperText: error?.message ?? " ",
+                        fullWidth: true,
+                      },
+                    }}
+                  />
+                )}
+              />
+            </DemoContainer>
+          </LocalizationProvider>
+        </TableCell>
+        <TableCell>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DemoContainer components={["DatePicker"]}>
+              <Controller
+                control={control}
+                name="metadata_last_updated"
+                defaultValue={null}
+                render={({
+                  field: { ref, onBlur, name, onChange, ...field },
+                  fieldState: { error },
+                }) => (
+                  <DatePicker
+                    {...field}
+                    inputRef={ref}
+                    label="Metadata Last Updated"
+                    onChange={onChange}
+                    name={name}
+                    slotProps={{
+                      textField: {
+                        onBlur,
+                        name,
+                        error: !!error,
+                        helperText: error?.message ?? " ",
+                        fullWidth: true,
+                      },
+                    }}
+                  />
+                )}
+              />
+            </DemoContainer>
+          </LocalizationProvider>
+        </TableCell>
+      </TableRow>
+    </TableBody>
+  );
+}

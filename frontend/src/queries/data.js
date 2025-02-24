@@ -51,6 +51,30 @@ export function useUserUsername(userId) {
   });
 }
 
+
+export function useCreateResource() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ data }) => {
+      return axiosInstance.post(
+        process.env.REACT_APP_BACKEND_HOST + `resource`,
+        data
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["resources"]);
+    },
+  });
+}
+
+export function useResources() {
+  return useQuery({
+    queryKey: ["resources"],
+    retry: false,
+    queryFn: () => axiosInstance.get(`resource`),
+  });
+}
+
 export function useCreateDataset() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -61,7 +85,7 @@ export function useCreateDataset() {
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["user"]);
+      queryClient.invalidateQueries(["datasets"]);
     },
   });
 }

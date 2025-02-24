@@ -6,15 +6,16 @@ from models.user import User
 from pydantic import BaseModel
 from beanie import PydanticObjectId
 from datetime import datetime
+from typing import Optional
 
 
 class Resource(BaseModel):
     name: str
     url: str | None = None
     description: str | None = None
-    created: datetime | None = None
-    data_last_updated: datetime | None = None
-    metadata_last_updated: datetime | None = None
+    created: Optional[datetime] = None
+    data_last_updated: Optional[datetime] = None
+    metadata_last_updated: Optional[datetime] = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None
@@ -25,9 +26,9 @@ class ResourcePatch(BaseModel):
     name: str | None = None
     url: str | None = None
     description: str | None = None
-    created: datetime | None = None
-    data_last_updated: datetime | None = None
-    metadata_last_updated: datetime | None = None
+    created: Optional[datetime] | None = None
+    data_last_updated: Optional[datetime] | None = None
+    metadata_last_updated: Optional[datetime] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None
