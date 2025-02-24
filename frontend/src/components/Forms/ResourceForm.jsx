@@ -1,15 +1,7 @@
 import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   TextField,
-  Button,
-  IconButton,
-  Table,
   TableRow,
   TableCell,
-  CircularProgress,
   TableBody,
   Select,
   MenuItem,
@@ -22,12 +14,8 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import dayjs from "dayjs";
 import { Controller } from "react-hook-form";
 
-const today = dayjs();
-const yesterday = dayjs().subtract(1, "day");
-const todayStartOfTheDay = today.startOf("day");
 export default function ResourceForm({ register, errors, control }) {
   return (
     <TableBody>
@@ -47,7 +35,7 @@ export default function ResourceForm({ register, errors, control }) {
       </TableRow>
 
       <TableRow>
-        <TableCell sx={{ width: "30%" }}>
+        <TableCell>
           <FormControl fullWidth>
             <InputLabel>Visibility</InputLabel>
             <Select
@@ -65,7 +53,7 @@ export default function ResourceForm({ register, errors, control }) {
           </FormControl>
         </TableCell>
 
-        <TableCell sx={{ width: "70%" }}>
+        <TableCell>
           <TextField
             required
             {...register("url", {

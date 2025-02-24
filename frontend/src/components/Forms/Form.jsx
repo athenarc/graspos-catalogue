@@ -108,7 +108,7 @@ export default function Form() {
               stickyHeader
               sx={{
                 minWidth: 400,
-                "& td": {
+                "& td, th": {
                   borderBottom: "none !important;",
                 },
               }}

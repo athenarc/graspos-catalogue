@@ -7,7 +7,6 @@ import {
   FormControl,
   InputLabel,
   FormHelperText,
-  Divider,
   TableBody,
 } from "@mui/material";
 
@@ -30,7 +29,7 @@ export default function DatasetForm({ register, errors }) {
       </TableRow>
 
       <TableRow>
-        <TableCell sx={{ width: "30%" }}>
+        <TableCell>
           <FormControl fullWidth>
             <InputLabel>Visibility</InputLabel>
             <Select
@@ -48,7 +47,7 @@ export default function DatasetForm({ register, errors }) {
           </FormControl>
         </TableCell>
 
-        <TableCell sx={{ width: "70%" }}>
+        <TableCell>
           <TextField
             required
             {...register("source", {
