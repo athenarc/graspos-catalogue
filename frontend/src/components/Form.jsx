@@ -110,10 +110,9 @@ export default function Form() {
               </TableRow>
 
               <TableRow>
-                <TableCell sx={{width: "30%"}}>
+                <TableCell sx={{ width: "30%" }}>
                   <Select
                     {...register("visibility", {})}
-                    label="visibility"
                     defaultValue="public"
                     fullWidth
                   >
@@ -122,7 +121,7 @@ export default function Form() {
                   </Select>
                 </TableCell>
 
-                <TableCell sx={{width: "70%"}}>
+                <TableCell sx={{ width: "70%" }}>
                   <TextField
                     required
                     {...register("source", {

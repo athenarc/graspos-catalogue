@@ -7,6 +7,7 @@ import {
   Paper,
   TextField,
   Typography,
+  Box,
 } from "@mui/material";
 import { useLogin } from "../queries/data";
 import { Link, useNavigate } from "react-router-dom";
@@ -21,7 +22,6 @@ export default function Login() {
     formState: { errors },
   } = useForm({ mode: "onBlur" });
 
-  
   const { handleLogin } = useAuth();
   const navigate = useNavigate();
 
@@ -32,7 +32,7 @@ export default function Login() {
       {
         onSuccess: (data) => {
           handleLogin(data?.data?.access_token);
-          navigate("/")
+          navigate("/");
         },
         onError: (error) => {
           setError("password", {
@@ -44,11 +44,11 @@ export default function Login() {
     );
   };
   return (
-    <Paper
+    <Box
       component={Stack}
       direction="column"
       justifyContent="center"
-      sx={{ height: "100%", background: "inherit" }}
+      sx={{ height: "100%", background: "inherit", paddingTop: "8%" }}
     >
       <Card
         p={2}
@@ -56,18 +56,19 @@ export default function Login() {
         noValidate
         onSubmit={handleSubmit(onSubmit)}
         sx={{
-          width: 400,
+          minWidth: 350,
           margin: "auto",
           borderRadius: "10px",
+          textAlign: "center",
         }}
       >
         <CardHeader
           title="Login Form"
-          sx={{ backgroundColor: "#338BCB", color: "white" }}
+          sx={{ backgroundColor: "#338BCB", color: "white", p: 2 }}
         >
           Login
         </CardHeader>
-        <CardContent sx={{ m: 1, mt: 4 }}>
+        <CardContent sx={{ p: 4 }}>
           <TextField
             {...register("username", {
               required: "Username can not be empty",
@@ -77,10 +78,10 @@ export default function Login() {
             label="Username"
             error={!!errors?.username}
             helperText={errors?.username?.message}
-            sx={{ width: "80%" }}
+            sx={{ width: "100%" }}
           />
         </CardContent>
-        <CardContent sx={{ m: 1 }}>
+        <CardContent sx={{ p: 4, pt: 0 }}>
           <TextField
             {...register("password", {
               required: "Password can not be empty",
@@ -92,21 +93,21 @@ export default function Login() {
             error={!!errors?.password}
             helperText={errors?.password?.message}
             autoComplete="current-password"
-            sx={{ width: "80%" }}
+            sx={{ width: "100%" }}
           />
         </CardContent>
-        <CardContent sx={{ m: 1 }}>
+        <CardContent sx={{ textAlign: "center", p: 4, pt: 0 }}>
           <Typography variant="subtitle2">Don't have an account?</Typography>
           <Typography variant="subtitle2">
             Register <Link to={"/register"}>here</Link>!
           </Typography>
         </CardContent>
-        <CardContent sx={{ m: 1 }}>
+        <CardContent sx={{ p: 4, pt: 0 }}>
           <Button type="submit" variant="contained" disabled={login.isLoading}>
             Login
           </Button>
         </CardContent>
       </Card>
-    </Paper>
+    </Box>
   );
 }

@@ -7,6 +7,7 @@ import {
   TextField,
   Typography,
   Paper,
+  Box,
 } from "@mui/material";
 import { useRegister } from "../queries/data";
 import { Link, useNavigate } from "react-router-dom";
@@ -54,11 +55,11 @@ export default function Register() {
 
   return (
     <>
-      <Paper
+      <Box
         component={Stack}
         direction="column"
         justifyContent="center"
-        sx={{ height: "100%", background: "inherit" }}
+        sx={{ paddingTop: "6%" }}
       >
         <Card
           component="form"
@@ -66,7 +67,7 @@ export default function Register() {
           onSubmit={handleSubmit(onSubmit)}
           p={2}
           sx={{
-            maxWidth: 600,
+            // maxWidth: 600,
             margin: "auto",
             borderRadius: "10px",
           }}
@@ -77,7 +78,12 @@ export default function Register() {
           >
             Login
           </CardHeader>
-          <CardContent sx={{ display: "flex", p: 3, mt: 3 }}>
+          <CardContent
+            component={Stack}
+            direction={"row"}
+            spacing={4}
+            sx={{ p: 4 }}
+          >
             <TextField
               required
               {...register("username", {
@@ -100,7 +106,7 @@ export default function Register() {
               sx={{ width: "100%" }}
             />
           </CardContent>
-          <CardContent sx={{ p: 3 }}>
+          <CardContent sx={{ p: 4, pt: 0 }}>
             <TextField
               required
               {...register("email", {
@@ -117,7 +123,12 @@ export default function Register() {
               sx={{ width: "100%" }}
             />
           </CardContent>
-          <CardContent sx={{ display: "flex", p: 3 }}>
+          <CardContent
+            component={Stack}
+            direction={"row"}
+            spacing={4}
+            sx={{ p: 4, pt: 0 }}
+          >
             <TextField
               {...register("first_name")}
               label="First Name"
@@ -130,14 +141,14 @@ export default function Register() {
             />
           </CardContent>
 
-          <CardContent sx={{ p: 3 }}>
+          <CardContent sx={{ p: 4, pt: 0 }}>
             <TextField
               {...register("organization")}
               label="Organization"
               sx={{ width: "100%" }}
             />
           </CardContent>
-          <CardContent sx={{ p: 3 }}>
+          <CardContent sx={{ p: 4, pt: 0, textAlign: "center" }}>
             <Typography variant="subtitle2">
               Already have an account?
             </Typography>
@@ -145,7 +156,7 @@ export default function Register() {
               Login <Link to={"/login"}>here</Link>!
             </Typography>
           </CardContent>
-          <CardContent sx={{ p: 3 }}>
+          <CardContent sx={{ p: 4, pt: 0, textAlign: "center" }}>
             <Button
               type="submit"
               variant="contained"
@@ -165,7 +176,7 @@ export default function Register() {
             </Button>
           </CardContent>
         </Card>
-      </Paper>
+      </Box>
       {registerUser.isSuccess ? (
         <Notification
           requestStatus={registerUser?.status}

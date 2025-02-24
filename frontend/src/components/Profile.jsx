@@ -59,10 +59,14 @@ export default function Profile() {
         }}
       >
         <CardHeader
-          title={user?.username}
-          sx={{ backgroundColor: "#338BCB", color: "white" }}
+          title={"Profile"}
+          sx={{
+            backgroundColor: "#338BCB",
+            color: "white",
+            textAlign: "center",
+          }}
         ></CardHeader>
-        <CardContent sx={{ display: "flex", p: 3, mt: 3 }}>
+        <CardContent sx={{ display: "flex", p: 4 }}>
           <TextField
             required
             {...register("email", {
@@ -80,7 +84,7 @@ export default function Profile() {
             sx={{ width: "100%" }}
           />
         </CardContent>
-        <CardContent sx={{ display: "flex", p: 3 }}>
+        <CardContent sx={{ display: "flex", p: 4, pt: 0 }}>
           <TextField
             {...register("first_name", {
               value: user?.first_name,
@@ -95,7 +99,7 @@ export default function Profile() {
           />
         </CardContent>
 
-        <CardContent sx={{ p: 3 }}>
+        <CardContent sx={{ p: 4, pt: 0 }}>
           <TextField
             {...register("organization", {
               value: user?.organization,
@@ -104,7 +108,7 @@ export default function Profile() {
             sx={{ width: "100%" }}
           />
         </CardContent>
-        <CardContent>
+        <CardContent sx={{ p: 4, pt: 0, textAlign: "center" }}>
           <Button
             type="submit"
             variant="contained"
