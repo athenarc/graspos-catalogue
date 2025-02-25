@@ -11,6 +11,7 @@ import {
 } from "./components/PrivateRoutes.jsx";
 import Login from "./components/Login.jsx";
 import Register from "./components/Register.jsx";
+import Form from "./components/Forms/Form.jsx";
 
 function App() {
   const queryClient = new QueryClient();
@@ -27,7 +28,9 @@ function App() {
             <Route element={<AuthenticatedRoutes />}>
               <Route path="/" element={<AppLayout />}>
                 <Route path="profile" element={<Profile />}></Route>
-                <Route path="resources" element={<Resources />}></Route>
+                <Route path="resources" element={<Resources />}>
+                  <Route path="add" element={<Form />}></Route>
+                </Route>
                 <Route path="*" exact element={<Navigate to={"/"} />} />
               </Route>
             </Route>

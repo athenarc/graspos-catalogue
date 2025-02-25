@@ -1,11 +1,28 @@
-import useWindowDimensions from "./WindowDimensions";
 import { useAuth } from "./AuthContext";
 import BaseLayout from "./BaseLayout";
+import { useUserInformation } from "../queries/data";
+import { useEffect } from "react";
 
 export default function AppLayout() {
   const { handleLogout } = useAuth();
+  const userInformation = useUserInformation();
 
-  const { height } = useWindowDimensions();
+  useEffect(() => {
+    if (
+      userInformation?.error?.status == 401 ||
+      userInformation?.error?.status == 404 ||
+      userInformation?.error?.status == "ERR_NETWORK"
+    ) {
+      handleLogout();
+    }
+  }, [userInformation]);
 
-  return <BaseLayout height={height} handleLogout={handleLogout} />;
+  return (
+    userInformation?.isFetched && (
+      <BaseLayout
+        user={userInformation?.data?.data}
+        handleLogout={handleLogout}
+      />
+    )
+  );
 }

@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }) => {
     }
     return null;
   };
+
   const [token, setToken] = useState(getToken());
 
   const handleLogin = (data) => {
