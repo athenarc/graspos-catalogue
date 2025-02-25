@@ -12,6 +12,7 @@ import {
 import Login from "./components/Login.jsx";
 import Register from "./components/Register.jsx";
 import Form from "./components/Forms/Form.jsx";
+import ResourcesGrid from "./components/ResourcesGrid.jsx";
 
 function App() {
   const queryClient = new QueryClient();
@@ -31,6 +32,8 @@ function App() {
                 <Route path="resources" element={<Resources />}>
                   <Route path="add" element={<Form />}></Route>
                 </Route>
+                
+                <Route path="resourcesnew" element={<ResourcesGrid />}></Route>
                 <Route path="*" exact element={<Navigate to={"/"} />} />
               </Route>
             </Route>
