@@ -10,7 +10,8 @@ export default function AppLayout() {
   useEffect(() => {
     if (
       userInformation?.error?.status == 401 ||
-      userInformation?.error?.status == 404
+      userInformation?.error?.status == 404 ||
+      userInformation?.error?.status == "ERR_NETWORK"
     ) {
       handleLogout();
     }
