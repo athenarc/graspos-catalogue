@@ -45,7 +45,7 @@ export default function Form() {
     setResourceType(value);
   }
   const onSubmit = (data) => {
-    if (data.type === "dataset") {
+    if (resourceType === "dataset") {
       query = createDataset;
     } else {
       query = createResource;
@@ -93,7 +93,7 @@ export default function Form() {
         >
           <CloseIcon sx={{ color: "white" }} />
         </IconButton>
-        <DialogContent dividers sx={{ p: 1 }}>
+        <DialogContent dividers sx={{ p: 1, minWidth: 300 }}>
           <TableContainer
             sx={{
               maxHeight: 500,

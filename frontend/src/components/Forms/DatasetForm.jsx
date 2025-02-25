@@ -8,6 +8,8 @@ import {
   InputLabel,
   FormHelperText,
   TableBody,
+  Autocomplete,
+  Chip,
 } from "@mui/material";
 
 export default function DatasetForm({ register, errors }) {
@@ -115,6 +117,40 @@ export default function DatasetForm({ register, errors }) {
             helperText={errors?.tags?.message ?? " "}
             fullWidth
           />
+          {/* <Autocomplete
+            {...register("tags")}
+            disablePortal
+            multiple
+            options={[]}
+            getOptionLabel={(option) => option.title}
+            defaultValue={[]}
+            freeSolo
+            isOptionEqualToValue={(option, value) =>
+              option.label === value.label
+            }
+            renderTags={(value, getTagProps) =>
+              value.map((option, index) => {
+                const { key, ...tagProps } = getTagProps({ index });
+                return (
+                  <Chip
+                    variant="outlined"
+                    label={option}
+                    key={key}
+                    {...tagProps}
+                  />
+                );
+              })
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                fullWidth
+                label="Tags"
+                error={!!errors?.tags}
+                helperText={errors?.tags?.message ?? " "}
+              />
+            )}
+          /> */}
         </TableCell>
       </TableRow>
       <TableRow></TableRow>

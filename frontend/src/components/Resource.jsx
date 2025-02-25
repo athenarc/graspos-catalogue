@@ -6,6 +6,7 @@ import {
   useDeleteDataset,
   useDeleteResource,
   useUpdateDataset,
+  useUpdateResource,
   useUserUsername,
 } from "../queries/data";
 
@@ -13,7 +14,8 @@ export default function Resource({ resource, user, type }) {
   const deleteDatasest = useDeleteDataset();
   const deleteResource = useDeleteResource();
   const updateDataset = useUpdateDataset(resource._id);
-  const owenerUsername = useUserUsername(resource?.owner);
+  const updateResource = useUpdateResource(resource._id);
+  const ownerUsername = useUserUsername(resource?.owner);
   let query = null;
 
   function handleDelete(id) {
@@ -31,7 +33,12 @@ export default function Resource({ resource, user, type }) {
     );
   }
   function handleUpdate(approved) {
-    updateDataset.mutate(
+    if (type === "Resource") {
+      query = updateResource;
+    } else {
+      query = updateDataset;
+    }
+    query.mutate(
       { approved },
       {
         onSuccess: (data) => {},
@@ -87,31 +94,31 @@ export default function Resource({ resource, user, type }) {
         <Typography>{resource.contact_person_email}</Typography>{" "}
       </TableCell> */}
       {user?.super_user && (
-        <>
-          <TableCell sx={{ textAlign: "right" }}>
-            {resource.approved ?? (
-              <>
-                <IconButton
-                  color="primary"
-                  onClick={() => {
-                    handleUpdate(true);
-                  }}
-                >
-                  <Check />
-                </IconButton>
-                <IconButton
-                  color="error"
-                  onClick={() => {
-                    handleUpdate(false);
-                  }}
-                >
-                  <ClearIcon />
-                </IconButton>
-              </>
-            )}
-          </TableCell>
-          <TableCell>{owenerUsername?.data?.data?.username}</TableCell>
-        </>
+        <TableCell sx={{ textAlign: "right" }}>
+          {resource.approved ?? (
+            <>
+              <IconButton
+                color="primary"
+                onClick={() => {
+                  handleUpdate(true);
+                }}
+              >
+                <Check />
+              </IconButton>
+              <IconButton
+                color="error"
+                onClick={() => {
+                  handleUpdate(false);
+                }}
+              >
+                <ClearIcon />
+              </IconButton>
+            </>
+          )}
+        </TableCell>
+      )}
+      {user?.super_user && (
+        <TableCell>{ownerUsername?.data?.data?.username}</TableCell>
       )}
       <TableCell sx={{ textAlign: "right" }}>
         <IconButton

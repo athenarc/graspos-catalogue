@@ -88,6 +88,21 @@ export function useDeleteResource() {
   });
 }
 
+export function useUpdateResource(id) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data) => {
+      return axiosInstance.patch(
+        process.env.REACT_APP_BACKEND_HOST + `resource/${id}`,
+        data
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["resources"]);
+    },
+  });
+}
+
 export function useCreateDataset() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -114,9 +129,9 @@ export function useDatasets() {
 export function useDeleteDataset() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (dataset) => {
+    mutationFn: (resource) => {
       return axiosInstance.delete(
-        process.env.REACT_APP_BACKEND_HOST + `dataset/${dataset.id}`
+        process.env.REACT_APP_BACKEND_HOST + `dataset/${resource.id}`
       );
     },
     onSuccess: () => {
@@ -125,12 +140,12 @@ export function useDeleteDataset() {
   });
 }
 
-export function useUpdateDataset(dataset_id) {
+export function useUpdateDataset(id) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data) => {
       return axiosInstance.patch(
-        process.env.REACT_APP_BACKEND_HOST + `dataset/${dataset_id}`,
+        process.env.REACT_APP_BACKEND_HOST + `dataset/${id}`,
         data
       );
     },
