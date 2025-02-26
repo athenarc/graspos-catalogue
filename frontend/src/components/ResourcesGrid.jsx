@@ -6,6 +6,7 @@ import {
   Stack,
   Tooltip,
   IconButton,
+  TextField,
 } from "@mui/material";
 import {
   useDatasets,
@@ -243,27 +244,79 @@ function ResourceGridItem({ resource, type }) {
   );
 }
 
+function ResourcesFilterBar({ resourceFilter, handleResourceFilterChange }) {
+  return (
+    <Stack sx={{ width: "100%", backgroundColor: "beige", p: 1 }}>
+      <Grid size={12} sx={{ margin: "auto", textAlign: "left" }}>
+        <TextField
+          slotProps={{
+            input: {
+              style: {
+                borderRadius: "19px",
+              },
+            },
+          }}
+          placeholder="Search Resource.."
+          size="small"
+          value={resourceFilter}
+          onChange={(e) => handleResourceFilterChange(e.target.value)}
+        />
+      </Grid>
+    </Stack>
+  );
+}
+
 export default function ResourcesGrid() {
   const datasets = useDatasets();
   const resources = useResources();
   const { user } = useOutletContext();
-
+  const [resourceFilter, setResourceFilter] = useState("");
+  const [filteredResources, setFilteredResources] = useState(
+    resources?.data?.data ?? []
+  );
+  const [filteredDatasets, setFilteredDatasets] = useState(
+    datasets?.data?.data ?? []
+  );
+  function handleResourceFilterChange(value) {
+    setResourceFilter(value);
+    if (value === "") {
+      setFilteredResources(resources?.data?.data);
+      setFilteredDatasets(datasets?.data?.data);
+    } else {
+      setFilteredResources(
+        resources?.data?.data?.filter((resource) =>
+          resource.name.toLowerCase().includes(value.toLowerCase())
+        )
+      );
+      setFilteredDatasets(
+        datasets?.data?.data?.filter((dataset) =>
+          dataset.name.toLowerCase().includes(value.toLowerCase())
+        )
+      );
+    }
+  }
   return (
-    <Grid container spacing={3} m={3} alignItems="start">
-      {datasets?.data?.data?.map((dataset) => (
-        <ResourceGridItem
-          key={dataset._id}
-          resource={dataset}
-          type={"Dataset"}
-        />
-      ))}
-      {resources?.data?.data?.map((resource) => (
-        <ResourceGridItem
-          key={resource._id}
-          resource={resource}
-          type={"Resource"}
-        />
-      ))}
-    </Grid>
+    <>
+      <ResourcesFilterBar
+        resourceFilter={resourceFilter}
+        handleResourceFilterChange={handleResourceFilterChange}
+      />
+      <Grid container spacing={3} m={3} alignItems="start">
+        {filteredDatasets?.map((dataset) => (
+          <ResourceGridItem
+            key={dataset._id}
+            resource={dataset}
+            type={"Dataset"}
+          />
+        ))}
+        {filteredResources?.map((resource) => (
+          <ResourceGridItem
+            key={resource._id}
+            resource={resource}
+            type={"Resource"}
+          />
+        ))}
+      </Grid>
+    </>
   );
 }
