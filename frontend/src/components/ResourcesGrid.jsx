@@ -27,10 +27,9 @@ import ClearIcon from "@mui/icons-material/Clear";
 import Check from "@mui/icons-material/Check";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import DescriptionIcon from "@mui/icons-material/Description";
 
-import { useOutletContext } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { RectangularVariants } from "./Skeleton";
 
 function ResourceGridItem({ resource, type }) {
   const ownerUsername = useUserUsername(resource?.owner);
@@ -246,13 +245,14 @@ function ResourceGridItem({ resource, type }) {
 
 function ResourcesFilterBar({ resourceFilter, handleResourceFilterChange }) {
   return (
-    <Stack sx={{ width: "100%", backgroundColor: "beige", p: 1 }}>
+    <Stack sx={{ width: "100%", backgroundColor: "#f0fcfb", p: 1 }}>
       <Grid size={12} sx={{ margin: "auto", textAlign: "left" }}>
         <TextField
           slotProps={{
             input: {
               style: {
                 borderRadius: "19px",
+                backgroundColor: "#fff",
               },
             },
           }}
@@ -269,7 +269,6 @@ function ResourcesFilterBar({ resourceFilter, handleResourceFilterChange }) {
 export default function ResourcesGrid() {
   const datasets = useDatasets();
   const resources = useResources();
-  const { user } = useOutletContext();
   const [resourceFilter, setResourceFilter] = useState("");
   const [filteredResources, setFilteredResources] = useState(
     resources?.data?.data ?? []
@@ -277,6 +276,12 @@ export default function ResourcesGrid() {
   const [filteredDatasets, setFilteredDatasets] = useState(
     datasets?.data?.data ?? []
   );
+
+  useEffect(() => {
+    setFilteredResources(resources?.data?.data);
+    setFilteredDatasets(datasets?.data?.data);
+  }, [datasets?.data?.data, resources?.data?.data]);
+
   function handleResourceFilterChange(value) {
     setResourceFilter(value);
     if (value === "") {
@@ -301,7 +306,11 @@ export default function ResourcesGrid() {
         resourceFilter={resourceFilter}
         handleResourceFilterChange={handleResourceFilterChange}
       />
+
       <Grid container spacing={3} m={3} alignItems="start">
+        {datasets.isLoading && <RectangularVariants count={4} />}
+        {resources.isLoading && <RectangularVariants count={4} />}
+
         {filteredDatasets?.map((dataset) => (
           <ResourceGridItem
             key={dataset._id}
