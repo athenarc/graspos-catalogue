@@ -37,7 +37,7 @@ import { useEffect, useState } from "react";
 import { RectangularVariants } from "./Skeleton";
 import { Link, Outlet, useOutletContext } from "react-router-dom";
 
-function ResourceGridItem({ resource, type }) {
+function ResourceGridItem({ resource, type, user }) {
   const ownerUsername = useUserUsername(resource?.owner);
   const deleteDatasest = useDeleteDataset();
   const deleteResource = useDeleteResource();
@@ -144,23 +144,25 @@ function ResourceGridItem({ resource, type }) {
               </Tooltip>
             </>
           ) : (
-            <>
-              <Tooltip title={"Edit " + String(type)}>
-                <IconButton>
-                  <EditIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title={"Delete " + String(type)}>
-                <IconButton
-                  color="error"
-                  onClick={() => {
-                    handleDelete(resource._id);
-                  }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
-            </>
+            user && (
+              <>
+                <Tooltip title={"Edit " + String(type)}>
+                  <IconButton>
+                    <EditIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={"Delete " + String(type)}>
+                  <IconButton
+                    color="error"
+                    onClick={() => {
+                      handleDelete(resource._id);
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              </>
+            )
           )}
         </CardContent>
       </CardContent>
@@ -302,8 +304,8 @@ function ResourcesFilterBar({ resourceFilter, handleResourceFilterChange }) {
   );
 }
 
-export default function ResourcesGrid() {
-  const { user } = useOutletContext();
+export default function ResourcesGrid({ user }) {
+  // const { user } = useOutletContext();
   const datasets = useDatasets();
   const resources = useResources();
   const [resourceFilter, setResourceFilter] = useState("");
@@ -363,6 +365,7 @@ export default function ResourcesGrid() {
               key={dataset._id}
               resource={dataset}
               type={"Dataset"}
+              user={user}
             />
           ))}
         {selectedResource == 1 &&
@@ -371,23 +374,26 @@ export default function ResourcesGrid() {
               key={resource._id}
               resource={resource}
               type={"Resource"}
+              user={user}
             />
           ))}
       </Grid>
-      <Button
-        color="primary"
-        variant="outlined"
-        component={Link}
-        to="/resources/add"
-        sx={{
-          position: "absolute",
-          right: "24px",
-          bottom: "24px",
-          backgroundColor: "#fff",
-        }}
-      >
-        Add Resource
-      </Button>
+      {user && (
+        <Button
+          color="primary"
+          variant="outlined"
+          component={Link}
+          to="/resources/add"
+          sx={{
+            position: "absolute",
+            right: "24px",
+            bottom: "24px",
+            backgroundColor: "#fff",
+          }}
+        >
+          Add Resource
+        </Button>
+      )}
       <Outlet context={{ user: user }} />
     </>
   );

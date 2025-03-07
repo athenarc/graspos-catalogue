@@ -68,7 +68,7 @@ export default function Form() {
       <Dialog
         component="form"
         onClose={handleClose}
-        open={open}
+        open={true}
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >

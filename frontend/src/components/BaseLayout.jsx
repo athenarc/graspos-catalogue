@@ -1,11 +1,12 @@
 import { Outlet } from "react-router-dom";
 import MenuBar from "./MenuBar";
-
-export default function BaseLayout({ handleLogout, user }) {
+import ResourcesGrid from "./ResourcesGrid";
+export default function BaseLayout({ handleLogout, user, handleLogin }) {
   return (
     <>
       <MenuBar user={user} handleLogout={handleLogout} />
-      <Outlet context={{ user: user }} />
+      <ResourcesGrid user={user} />
+      <Outlet context={{ user: user, handleLogin: handleLogin }} />
     </>
   );
 }

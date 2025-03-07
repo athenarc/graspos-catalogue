@@ -1,19 +1,33 @@
-import { useState, useEffect } from "react";
 import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Button,
-  Card,
-  CardContent,
-  CardHeader,
+  IconButton,
+  Table,
+  TableRow,
+  TableCell,
+  CircularProgress,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  TableHead,
+  TableContainer,
   TextField,
+  Stack,
 } from "@mui/material";
-import { useOutletContext } from "react-router-dom";
+import CloseIcon from "@mui/icons-material/Close";
+import AddIcon from "@mui/icons-material/Add";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useUpdateUser } from "../queries/data";
+import { useUpdateUser } from "../../queries/data";
 import SaveIcon from "@mui/icons-material/Save";
-import CircularProgress from "@mui/material/CircularProgress";
-import Notification from "./Notification";
+import Notification from "../Notification";
 
-export default function Profile() {
+export default function ProfileForm() {
   const { user } = useOutletContext();
 
   const [message, setMessage] = useState("");
@@ -24,6 +38,7 @@ export default function Profile() {
     formState: { errors },
   } = useForm();
 
+  const navigate = useNavigate();
   const updateUser = useUpdateUser();
   const onSubmit = (data) => {
     updateUser.mutate(
@@ -43,30 +58,43 @@ export default function Profile() {
     reset(user);
   }, [user, reset]);
 
+  function handleClose() {
+    navigate("..");
+  }
+
   return (
     <>
-      <Card
+      <Dialog
         component="form"
+        onClose={handleClose}
+        open={true}
         noValidate
-        id="user-update-form"
         onSubmit={handleSubmit(onSubmit)}
-        p={2}
-        sx={{
-          maxWidth: 600,
-          margin: "auto",
-          mt: "10vh",
-          borderRadius: "10px",
-        }}
+        maxWidth="xs"
+        fullWidth
       >
-        <CardHeader
-          title={"Profile"}
+        <DialogTitle
           sx={{
             backgroundColor: "#338BCB",
             color: "white",
             textAlign: "center",
           }}
-        ></CardHeader>
-        <CardContent sx={{ display: "flex", p: 4 }}>
+        >
+          My Profile
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={(theme) => ({
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <CloseIcon sx={{ color: "white" }} />
+        </IconButton>
+        <DialogContent dividers sx={{ p: 2 }}>
           <TextField
             required
             {...register("email", {
@@ -83,23 +111,24 @@ export default function Profile() {
             helperText={errors?.email?.message}
             sx={{ width: "100%" }}
           />
-        </CardContent>
-        <CardContent sx={{ display: "flex", p: 4, pt: 0 }}>
+        </DialogContent>
+        <DialogContent dividers sx={{ p: 2 }}>
           <TextField
             {...register("first_name", {
               value: user?.first_name,
             })}
             label="First Name"
-            sx={{ width: "100%", mr: 3 }}
+            sx={{ width: "100%" }}
           />
+        </DialogContent>
+        <DialogContent dividers sx={{ p: 2 }}>
           <TextField
             {...register("last_name", { value: user?.email })}
             label="Last Name"
             sx={{ width: "100%" }}
           />
-        </CardContent>
-
-        <CardContent sx={{ p: 4, pt: 0 }}>
+        </DialogContent>
+        <DialogContent dividers sx={{ p: 2 }}>
           <TextField
             {...register("organization", {
               value: user?.organization,
@@ -107,8 +136,8 @@ export default function Profile() {
             label="Organization"
             sx={{ width: "100%" }}
           />
-        </CardContent>
-        <CardContent sx={{ p: 4, pt: 0, textAlign: "center" }}>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
           <Button
             type="submit"
             variant="contained"
@@ -126,8 +155,8 @@ export default function Profile() {
               </>
             )}
           </Button>
-        </CardContent>
-      </Card>
+        </DialogActions>
+      </Dialog>
       {updateUser.isSuccess || updateUser.isError ? (
         <Notification requestStatus={updateUser?.status} message={message} />
       ) : (

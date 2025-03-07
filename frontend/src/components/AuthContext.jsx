@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { useUserInformation } from "../queries/data";
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -6,6 +7,8 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
+  const userInformation = useUserInformation();
+
   const getToken = () => {
     const tokenString = localStorage.getItem("token");
     if (tokenString) {
@@ -15,20 +18,44 @@ export const AuthProvider = ({ children }) => {
     return null;
   };
 
+  const getUser = () => {
+    const userString = localStorage.getItem("user");
+    if (typeof userString !== "undefined") {
+      try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        return user;
+      } catch (error) {
+        return null;
+      }
+    }
+    return null;
+  };
+
   const [token, setToken] = useState(getToken());
+  const [user, setUser] = useState(getUser());
+
+  useEffect(() => {
+    if (token && userInformation?.data?.data) {
+      localStorage.setItem("user", JSON.stringify(userInformation?.data?.data));
+      setUser(userInformation?.data?.data);
+    }
+  }, [userInformation, token]);
 
   const handleLogin = (data) => {
     localStorage.setItem("token", JSON.stringify(data));
+    localStorage.setItem("user", JSON.stringify(userInformation?.data?.data));
     setToken(data);
+    setUser(userInformation?.data?.data);
   };
 
   const handleLogout = () => {
+    setUser(null);
     setToken(null);
     localStorage.clear();
   };
 
   return (
-    <AuthContext.Provider value={{ token, handleLogin, handleLogout }}>
+    <AuthContext.Provider value={{ token, user, handleLogin, handleLogout }}>
       {children}
     </AuthContext.Provider>
   );

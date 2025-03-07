@@ -32,16 +32,20 @@ export default function MenuBar({ handleLogout, user }) {
       <Grid size={4} sx={{ margin: "auto" }}></Grid>
       <Grid size={4} sx={{ textAlign: "right", margin: "auto" }}>
         <Stack direction="row" justifyContent="flex-end">
-          <Link to={"resources"}>
-            <Button variant="outlined" sx={{ mr: 1 }}>
-              Resources
-            </Button>
-          </Link>
-          <UserDropDownMenu
-            user={user}
-            handleProfile={handleProfile}
-            handleLogout={handleLogout}
-          />
+          {!user && (
+            <Link to={"login"}>
+              <Button variant="outlined" sx={{ mr: 2 }}>
+                Login
+              </Button>
+            </Link>
+          )}
+          {user && (
+            <UserDropDownMenu
+              user={user}
+              handleProfile={handleProfile}
+              handleLogout={handleLogout}
+            />
+          )}
         </Stack>
       </Grid>
     </Grid>
