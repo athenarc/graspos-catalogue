@@ -7,7 +7,12 @@ import {
   Tooltip,
   IconButton,
   TextField,
+  Button,
+  Box,
+  Tabs,
+  Tab,
 } from "@mui/material";
+
 import {
   useDatasets,
   useDeleteDataset,
@@ -30,6 +35,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 import { useEffect, useState } from "react";
 import { RectangularVariants } from "./Skeleton";
+import { Link, Outlet, useOutletContext } from "react-router-dom";
 
 function ResourceGridItem({ resource, type }) {
   const ownerUsername = useUserUsername(resource?.owner);
@@ -243,9 +249,39 @@ function ResourceGridItem({ resource, type }) {
   );
 }
 
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
+
+function ResourcesTabs({ selectedResource, handleSetSelectedResource }) {
+  return (
+    <Box
+      justifyContent="center"
+      sx={{
+        backgroundColor: "#f0fcfb",
+        borderBottom: 1,
+        borderColor: "divider",
+      }}
+    >
+      <Tabs
+        value={selectedResource}
+        onChange={handleSetSelectedResource}
+        aria-label="basic tabs example"
+        centered
+      >
+        <Tab label="Datasets" {...a11yProps(0)} />
+        <Tab label="Documents" {...a11yProps(1)} />
+        <Tab label="Tools" {...a11yProps(2)} />
+      </Tabs>
+    </Box>
+  );
+}
 function ResourcesFilterBar({ resourceFilter, handleResourceFilterChange }) {
   return (
-    <Stack sx={{ width: "100%", backgroundColor: "#f0fcfb", p: 1 }}>
+    <Stack sx={{ p: 2 }}>
       <Grid size={12} sx={{ margin: "auto", textAlign: "left" }}>
         <TextField
           slotProps={{
@@ -267,9 +303,15 @@ function ResourcesFilterBar({ resourceFilter, handleResourceFilterChange }) {
 }
 
 export default function ResourcesGrid() {
+  const { user } = useOutletContext();
   const datasets = useDatasets();
   const resources = useResources();
   const [resourceFilter, setResourceFilter] = useState("");
+  const [selectedResource, setSelectedResource] = useState(0);
+
+  const handleSetSelectedResource = (event, newValue) => {
+    setSelectedResource(newValue);
+  };
   const [filteredResources, setFilteredResources] = useState(
     resources?.data?.data ?? []
   );
@@ -302,30 +344,51 @@ export default function ResourcesGrid() {
   }
   return (
     <>
+      <ResourcesTabs
+        selectedResource={selectedResource}
+        handleSetSelectedResource={handleSetSelectedResource}
+      />
       <ResourcesFilterBar
         resourceFilter={resourceFilter}
         handleResourceFilterChange={handleResourceFilterChange}
       />
 
-      <Grid container spacing={3} m={3} alignItems="start">
+      <Grid container spacing={3} m={3} mt={1} alignItems="start">
         {datasets.isLoading && <RectangularVariants count={4} />}
         {resources.isLoading && <RectangularVariants count={4} />}
 
-        {filteredDatasets?.map((dataset) => (
-          <ResourceGridItem
-            key={dataset._id}
-            resource={dataset}
-            type={"Dataset"}
-          />
-        ))}
-        {filteredResources?.map((resource) => (
-          <ResourceGridItem
-            key={resource._id}
-            resource={resource}
-            type={"Resource"}
-          />
-        ))}
+        {selectedResource == 0 &&
+          filteredDatasets?.map((dataset) => (
+            <ResourceGridItem
+              key={dataset._id}
+              resource={dataset}
+              type={"Dataset"}
+            />
+          ))}
+        {selectedResource == 1 &&
+          filteredResources?.map((resource) => (
+            <ResourceGridItem
+              key={resource._id}
+              resource={resource}
+              type={"Resource"}
+            />
+          ))}
       </Grid>
+      <Button
+        color="primary"
+        variant="outlined"
+        component={Link}
+        to="/resources/add"
+        sx={{
+          position: "absolute",
+          right: "24px",
+          bottom: "24px",
+          backgroundColor: "#fff",
+        }}
+      >
+        Add Resource
+      </Button>
+      <Outlet context={{ user: user }} />
     </>
   );
 }
