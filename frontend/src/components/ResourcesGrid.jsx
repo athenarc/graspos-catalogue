@@ -144,25 +144,28 @@ function ResourceGridItem({ resource, type, user }) {
               </Tooltip>
             </>
           ) : (
-            user && (
-              <>
-                <Tooltip title={"Edit " + String(type)}>
-                  <IconButton>
+            <>
+              <Tooltip title={"Edit " + String(type)}>
+                <div>
+                  <IconButton disabled={!user}>
                     <EditIcon />
                   </IconButton>
-                </Tooltip>
-                <Tooltip title={"Delete " + String(type)}>
+                </div>
+              </Tooltip>
+              <Tooltip title={"Delete " + String(type)}>
+                <div>
                   <IconButton
                     color="error"
+                    disabled={!user}
                     onClick={() => {
                       handleDelete(resource._id);
                     }}
                   >
                     <DeleteIcon />
                   </IconButton>
-                </Tooltip>
-              </>
-            )
+                </div>
+              </Tooltip>
+            </>
           )}
         </CardContent>
       </CardContent>

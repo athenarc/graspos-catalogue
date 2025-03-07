@@ -35,10 +35,11 @@ export function useRegister() {
   });
 }
 
-export function useUserInformation() {
+export function useUserInformation(token) {
   return useQuery({
     queryKey: ["user"],
     retry: false,
+    enabled: !!token,
     queryFn: () => axiosInstance.get(`user`, {}),
   });
 }

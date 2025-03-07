@@ -7,8 +7,6 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const userInformation = useUserInformation();
-
   const getToken = () => {
     const tokenString = localStorage.getItem("token");
     if (tokenString) {
@@ -33,12 +31,14 @@ export const AuthProvider = ({ children }) => {
 
   const [token, setToken] = useState(getToken());
   const [user, setUser] = useState(getUser());
+  const userInformation = useUserInformation(token);
 
   useEffect(() => {
     if (token && userInformation?.data?.data) {
       localStorage.setItem("user", JSON.stringify(userInformation?.data?.data));
       setUser(userInformation?.data?.data);
     }
+    console.log("useeffect");
   }, [userInformation, token]);
 
   const handleLogin = (data) => {
