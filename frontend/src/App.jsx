@@ -2,7 +2,6 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Profile from "./components/Profile";
-import Resources from "./components/Resources";
 import { AuthProvider } from "./components/AuthContext.jsx";
 import AppLayout from "./components/AppLayout.jsx";
 import {
@@ -12,6 +11,7 @@ import {
 import Login from "./components/Login.jsx";
 import Register from "./components/Register.jsx";
 import Form from "./components/Forms/Form.jsx";
+import ResourcesGrid from "./components/ResourcesGrid.jsx";
 
 function App() {
   const queryClient = new QueryClient();
@@ -28,9 +28,10 @@ function App() {
             <Route element={<AuthenticatedRoutes />}>
               <Route path="/" element={<AppLayout />}>
                 <Route path="profile" element={<Profile />}></Route>
-                <Route path="resources" element={<Resources />}>
+                <Route path="resources" element={<ResourcesGrid />}>
                   <Route path="add" element={<Form />}></Route>
                 </Route>
+
                 <Route path="*" exact element={<Navigate to={"/"} />} />
               </Route>
             </Route>

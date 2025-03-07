@@ -21,6 +21,7 @@ services:
   backend:
     container_name: backend
     build: backend/
+    restart: always
     depends_on:
       mongodb:
         condition: service_started
