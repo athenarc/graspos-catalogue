@@ -11,9 +11,8 @@ router = APIRouter(prefix="/api/v1/resource", tags=["Resource"])
 
 
 @router.get("/", status_code=200, response_model=list[Resource])
-async def get_all_resources(user: User = Depends(
-    current_user)) -> list[Resource]:
-    if user.super_user:
+async def get_all_resources(user: User | None = None) -> list[Resource]:
+    if user and user.super_user:
         resources = await Resource.find_all().to_list()
     else:
         resources = await Resource.find(Resource.approved == True).to_list()
@@ -50,7 +49,8 @@ async def get_resource(resource_id: PydanticObjectId) -> Resource:
 
 
 @router.delete("/{resource_id}", status_code=204)
-async def delete_resource(resource_id: PydanticObjectId):
+async def delete_resource(resource_id: PydanticObjectId,
+                          user: User = Depends(current_user)):
     resource_to_delete = await Resource.get(resource_id)
 
     if not resource_to_delete:
@@ -62,8 +62,11 @@ async def delete_resource(resource_id: PydanticObjectId):
 
 
 @router.patch("/{resource_id}", status_code=200)
-async def update_resource(update: ResourcePatch,
-                         resource_id: PydanticObjectId) -> ResourcePatch:
+async def update_resource(
+    update: ResourcePatch,
+    resource_id: PydanticObjectId,
+    user: User = Depends(current_user)
+) -> ResourcePatch:
 
     resource = await Resource.get(resource_id)
 

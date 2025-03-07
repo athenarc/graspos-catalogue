@@ -11,9 +11,8 @@ router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
 
 @router.get("/", status_code=200, response_model=list[Dataset])
-async def get_all_datasets(user: User = Depends(
-    current_user)) -> list[Dataset]:
-    if user.super_user:
+async def get_all_datasets(user: User | None = None) -> list[Dataset]:
+    if user and user.super_user:
         datasets = await Dataset.find_all().to_list()
     else:
         datasets = await Dataset.find(Dataset.approved == True).to_list()
@@ -50,7 +49,9 @@ async def get_dataset(dataset_id: PydanticObjectId) -> Dataset:
 
 
 @router.delete("/{dataset_id}", status_code=204)
-async def delete_dataset(dataset_id: PydanticObjectId):
+async def delete_dataset(dataset_id: PydanticObjectId,
+                         user: User = Depends(current_user)):
+
     dataset_to_delete = await Dataset.get(dataset_id)
 
     if not dataset_to_delete:
@@ -62,8 +63,11 @@ async def delete_dataset(dataset_id: PydanticObjectId):
 
 
 @router.patch("/{dataset_id}", status_code=200)
-async def update_dataset(update: DatasetPatch,
-                         dataset_id: PydanticObjectId) -> DatasetPatch:
+async def update_dataset(
+    update: DatasetPatch,
+    dataset_id: PydanticObjectId,
+    user: User = Depends(current_user)
+) -> DatasetPatch:
 
     dataset = await Dataset.get(dataset_id)
 
