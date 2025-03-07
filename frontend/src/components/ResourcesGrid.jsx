@@ -38,7 +38,7 @@ import { RectangularVariants } from "./Skeleton";
 import { Link, Outlet, useOutletContext } from "react-router-dom";
 
 function ResourceGridItem({ resource, type, user }) {
-  const ownerUsername = useUserUsername(resource?.owner);
+  const ownerUsername = useUserUsername(resource?.owner, user);
   const deleteDatasest = useDeleteDataset();
   const deleteResource = useDeleteResource();
   const updateDataset = useUpdateDataset(resource._id);

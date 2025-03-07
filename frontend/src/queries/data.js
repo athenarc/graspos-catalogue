@@ -44,10 +44,11 @@ export function useUserInformation(token) {
   });
 }
 
-export function useUserUsername(userId) {
+export function useUserUsername(userId, user) {
   return useQuery({
     queryKey: ["user-username-" + userId],
     retry: false,
+    enabled: !!user,
     queryFn: () => axiosInstance.get(`user/${userId}`),
   });
 }
