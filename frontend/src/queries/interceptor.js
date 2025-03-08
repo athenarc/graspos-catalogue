@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useRefreshToken } from "./data";
 
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_HOST,
@@ -23,9 +22,9 @@ async function refreshTokenFunction() {
       "token",
       JSON.stringify(refreshTokenCall.data.access_token)
     );
-    return Promise.resolve()
-  }else{
-    return Promise.reject()
+    return Promise.resolve();
+  } else {
+    return Promise.reject();
   }
 }
 axiosInstance.interceptors.request.use(
