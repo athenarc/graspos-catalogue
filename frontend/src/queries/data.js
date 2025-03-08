@@ -2,9 +2,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "./interceptor";
 
 export function useLogin() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ data }) => {
       return axiosInstance.post(`auth/login`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["datasets"]);
+      queryClient.invalidateQueries(["resources"]);
     },
   });
 }
