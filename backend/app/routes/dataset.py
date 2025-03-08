@@ -6,14 +6,16 @@ from models.user import User
 from beanie import PydanticObjectId
 from jwt import access_security
 from util.current_user import current_user
+from typing import Annotated
 
 router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
-
 @router.get("/", status_code=200, response_model=list[Dataset])
-async def get_all_datasets(user: User | None = None) -> list[Dataset]:
+async def get_all_datasets(
+        user: Annotated[None, Depends(current_user)]) -> list[Dataset]:
+
     if user and user.super_user:
-        datasets = await Dataset.find_all().to_list()
+        datasets = await Dataset.find().to_list()
     else:
         datasets = await Dataset.find(Dataset.approved == True).to_list()
 
