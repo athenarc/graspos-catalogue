@@ -157,7 +157,7 @@ export default function ProfileForm() {
           </Button>
         </DialogActions>
       </Dialog>
-      {updateUser.isSuccess || updateUser.isError ? (
+      {updateUser?.isSuccess || updateUser?.isError ? (
         <Notification requestStatus={updateUser?.status} message={message} />
       ) : (
         ""

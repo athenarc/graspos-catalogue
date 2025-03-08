@@ -24,9 +24,12 @@ import { useCreateDataset, useCreateResource } from "../../queries/data.js";
 import ResourceForm from "./ResourceForm.jsx";
 import DatasetForm from "./DatasetForm.jsx";
 import { useState } from "react";
+import Notification from "../Notification.jsx";
 
 export default function Form() {
   const [resourceType, setResourceType] = useState();
+  const [message, setMessage] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -38,26 +41,49 @@ export default function Form() {
   const navigate = useNavigate();
   const createDataset = useCreateDataset();
   const createResource = useCreateResource();
-  let query = null;
 
   function handleResourceTypeChange(value) {
     reset();
     setResourceType(value);
   }
+
   const onSubmit = (data) => {
-    if (resourceType === "dataset") {
-      query = createDataset;
+    if (resourceType == "dataset") {
+      createDataset.mutate(
+        { data },
+        {
+          onSuccess: () => {
+            setMessage(resourceType + " has been created successfully!");
+            setTimeout(() => {
+              navigate("..");
+            }, 2000);
+          },
+        }
+      );
     } else {
-      query = createResource;
+      createResource.mutate(
+        { data },
+        {
+          onSuccess: () => {
+            setMessage(resourceType + " has been created successfully!");
+            setTimeout(() => {
+              navigate("..");
+            }, 2000);
+          },
+        }
+      );
     }
-    query.mutate(
-      { data },
-      {
-        onSuccess: (data) => {
-          navigate("..");
-        },
-      }
-    );
+    // query.mutate(
+    //   { data },
+    //   {
+    //     onSuccess: () => {
+    //       setMessage(resourceType + " has been created successfully!");
+    //       setTimeout(() => {
+    //         navigate("..");
+    //       }, 2000);
+    //     },
+    //   }
+    // );
   };
   function handleClose() {
     navigate("..");
@@ -149,9 +175,15 @@ export default function Form() {
           <Button
             type="submit"
             variant="contained"
-            disabled={createDataset.isLoading || !resourceType}
+            disabled={
+              createDataset?.isLoading ||
+              createResource?.isLoading ||
+              createDataset?.isSuccess ||
+              createResource?.isSuccess ||
+              !resourceType
+            }
           >
-            {createDataset.isLoading ? (
+            {createResource?.isLoading || createDataset?.isLoading ? (
               <>
                 Creating Dataset
                 <CircularProgress size="13px" sx={{ ml: 1 }} />
@@ -165,10 +197,15 @@ export default function Form() {
           </Button>
         </DialogActions>
       </Dialog>
-      {createDataset.isSuccess ? (
+      {createDataset?.isSuccess ||
+      createDataset?.isError ||
+      createResource?.isSuccess ||
+      createResource?.isError ? (
         <Notification
-          requestStatus={createDataset?.status}
-          message={"Dataset created successfully"}
+          requestStatus={
+            createDataset?.status ? createResource?.status : "success"
+          }
+          message={message}
         />
       ) : (
         ""
