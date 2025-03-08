@@ -9,7 +9,7 @@ export function useLogin() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["datasets"]);
-      queryClient.invalidateQueries(["resources"]);
+      queryClient.invalidateQueries(["documents"]);
     },
   });
 }
@@ -58,54 +58,54 @@ export function useUserUsername(userId, user) {
   });
 }
 
-export function useCreateResource() {
+export function useCreateDocument() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ data }) => {
       return axiosInstance.post(
-        process.env.REACT_APP_BACKEND_HOST + `resource`,
+        process.env.REACT_APP_BACKEND_HOST + `document`,
         data
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["resources"]);
+      queryClient.invalidateQueries(["documents"]);
     },
   });
 }
 
-export function useResources() {
+export function useDocuments() {
   return useQuery({
-    queryKey: ["resources"],
+    queryKey: ["documents"],
     retry: false,
-    queryFn: () => axiosInstance.get(`resource`),
+    queryFn: () => axiosInstance.get(`document`),
   });
 }
 
-export function useDeleteResource() {
+export function useDeleteDocument() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (resource) => {
+    mutationFn: (document) => {
       return axiosInstance.delete(
-        process.env.REACT_APP_BACKEND_HOST + `resource/${resource.id}`
+        process.env.REACT_APP_BACKEND_HOST + `document/${document.id}`
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["resources"]);
+      queryClient.invalidateQueries(["documents"]);
     },
   });
 }
 
-export function useUpdateResource(id) {
+export function useUpdateDocument(id) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data) => {
       return axiosInstance.patch(
-        process.env.REACT_APP_BACKEND_HOST + `resource/${id}`,
+        process.env.REACT_APP_BACKEND_HOST + `document/${id}`,
         data
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["resources"]);
+      queryClient.invalidateQueries(["documents"]);
     },
   });
 }
@@ -136,9 +136,9 @@ export function useDatasets() {
 export function useDeleteDataset() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (resource) => {
+    mutationFn: (document) => {
       return axiosInstance.delete(
-        process.env.REACT_APP_BACKEND_HOST + `dataset/${resource.id}`
+        process.env.REACT_APP_BACKEND_HOST + `dataset/${document.id}`
       );
     },
     onSuccess: () => {

@@ -20,8 +20,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useCreateDataset, useCreateResource } from "../../queries/data.js";
-import ResourceForm from "./ResourceForm.jsx";
+import { useCreateDataset, useCreateDocument } from "../../queries/data.js";
+import ResourceForm from "./DocumentForm.jsx";
 import DatasetForm from "./DatasetForm.jsx";
 import { useState } from "react";
 import Notification from "../Notification.jsx";
@@ -35,12 +35,13 @@ export default function Form() {
     handleSubmit,
     control,
     reset,
-    formState: { errors },
+    setError,
+    formState: { errors, setErr },
   } = useForm({ mode: "onBlur" });
 
   const navigate = useNavigate();
   const createDataset = useCreateDataset();
-  const createResource = useCreateResource();
+  const createDocument = useCreateDocument();
 
   function handleResourceTypeChange(value) {
     reset();
@@ -58,10 +59,16 @@ export default function Form() {
               navigate("..");
             }, 2000);
           },
+          onError: (error) => {
+            setMessage(error?.response?.data?.detail);
+            setError("source", {
+              "message": error?.response?.data?.detail,
+            });
+          },
         }
       );
     } else {
-      createResource.mutate(
+      createDocument.mutate(
         { data },
         {
           onSuccess: () => {
@@ -69,6 +76,12 @@ export default function Form() {
             setTimeout(() => {
               navigate("..");
             }, 2000);
+          },
+          onError: (error) => {
+            setMessage(error?.response?.data?.detail);
+            setError("source", {
+              "message": error?.response?.data?.detail,
+            });
           },
         }
       );
@@ -136,7 +149,7 @@ export default function Form() {
                         }
                       >
                         <MenuItem value={"dataset"}>Dataset</MenuItem>
-                        <MenuItem value={"resource"}>Resource</MenuItem>
+                        <MenuItem value={"document"}>Document</MenuItem>
                       </Select>
                     </FormControl>
                   </TableCell>
@@ -150,7 +163,7 @@ export default function Form() {
                   control={control}
                 />
               )}
-              {resourceType === "resource" && (
+              {resourceType === "document" && (
                 <ResourceForm
                   register={register}
                   errors={errors}
@@ -166,13 +179,13 @@ export default function Form() {
             variant="contained"
             disabled={
               createDataset?.isLoading ||
-              createResource?.isLoading ||
+              createDocument?.isLoading ||
               createDataset?.isSuccess ||
-              createResource?.isSuccess ||
+              createDocument?.isSuccess ||
               !resourceType
             }
           >
-            {createResource?.isLoading || createDataset?.isLoading ? (
+            {createDocument?.isLoading || createDataset?.isLoading ? (
               <>
                 Creating Dataset
                 <CircularProgress size="13px" sx={{ ml: 1 }} />
@@ -186,18 +199,14 @@ export default function Form() {
           </Button>
         </DialogActions>
       </Dialog>
-      {createDataset?.isSuccess ||
-      createDataset?.isError ||
-      createResource?.isSuccess ||
-      createResource?.isError ? (
+      {(createDataset?.isSuccess ||
+        createDataset?.isError ||
+        createDocument?.isSuccess ||
+        createDocument?.isError) && (
         <Notification
-          requestStatus={
-            createDataset?.status ? createResource?.status : "success"
-          }
+          requestStatus={createDataset?.status ?? createDocument?.status}
           message={message}
         />
-      ) : (
-        ""
       )}
     </>
   );

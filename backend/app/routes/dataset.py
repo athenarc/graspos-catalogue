@@ -24,8 +24,17 @@ async def get_all_datasets(
 
 
 @router.post("/", status_code=201)
-async def create_dataset(
-    dataset: Dataset, user: User = Depends(current_user)) -> Dataset:
+async def create_dataset(dataset: Dataset, user: User = Depends(current_user)):
+
+    url_validation = dataset.get_data(dataset.source)
+
+    if url_validation["status"] is not 200:
+        print(url_validation["status"])
+
+        raise HTTPException(status_code=url_validation["status"],
+                            detail=url_validation["detail"])
+
+    dataset = dataset.update(url_validation["resource"])
     dataset.owner = user.id
     if user.super_user:
         dataset.approved = True

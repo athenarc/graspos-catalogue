@@ -16,10 +16,10 @@ import {
 import {
   useDatasets,
   useDeleteDataset,
-  useDeleteResource,
-  useResources,
+  useDeleteDocument,
+  useDocuments,
   useUpdateDataset,
-  useUpdateResource,
+  useUpdateDocument,
   useUserUsername,
 } from "../queries/data";
 import PersonIcon from "@mui/icons-material/Person";
@@ -40,16 +40,16 @@ import { Link, Outlet } from "react-router-dom";
 function ResourceGridItem({ resource, type, user }) {
   const ownerUsername = useUserUsername(resource?.owner, user);
   const deleteDatasest = useDeleteDataset();
-  const deleteResource = useDeleteResource();
+  const deleteDocument = useDeleteDocument();
   const updateDataset = useUpdateDataset(resource._id);
-  const updateResource = useUpdateResource(resource._id);
+  const updateDocument = useUpdateDocument(resource._id);
   const [showDescription, setShowDescription] = useState(false);
 
   let query = null;
 
   function handleDelete(id) {
-    if (type === "Resource") {
-      query = deleteResource;
+    if (type === "Document") {
+      query = deleteDocument;
     } else {
       query = deleteDatasest;
     }
@@ -62,8 +62,8 @@ function ResourceGridItem({ resource, type, user }) {
     );
   }
   function handleUpdate(approved) {
-    if (type === "Resource") {
-      query = updateResource;
+    if (type === "Document") {
+      query = updateDocument;
     } else {
       query = updateDataset;
     }
@@ -94,7 +94,7 @@ function ResourceGridItem({ resource, type, user }) {
         sx={{ backgroundColor: "white", pb: 0 }}
       >
         <Stack direction={"row"} justifyContent="center" spacing={1}>
-          <Typography variant="h6">{resource?.name}</Typography>
+          <Typography variant="h6">{resource?.title}</Typography>
           {resource?.approved ? (
             <Tooltip title="Resource has been approved by an Admin">
               <CheckCircleIcon color="success" fontSize="small" />
@@ -308,9 +308,8 @@ function ResourcesFilterBar({ resourceFilter, handleResourceFilterChange }) {
 }
 
 export default function ResourcesGrid({ user }) {
-  // const { user } = useOutletContext();
   const datasets = useDatasets();
-  const resources = useResources();
+  const documents = useDocuments();
   const [resourceFilter, setResourceFilter] = useState("");
   const [selectedResource, setSelectedResource] = useState(0);
 
@@ -318,31 +317,31 @@ export default function ResourcesGrid({ user }) {
     setSelectedResource(newValue);
   };
   const [filteredResources, setFilteredResources] = useState(
-    resources?.data?.data ?? []
+    documents?.data?.data ?? []
   );
   const [filteredDatasets, setFilteredDatasets] = useState(
     datasets?.data?.data ?? []
   );
 
   useEffect(() => {
-    setFilteredResources(resources?.data?.data);
+    setFilteredResources(documents?.data?.data);
     setFilteredDatasets(datasets?.data?.data);
-  }, [datasets?.data?.data, resources?.data?.data]);
+  }, [datasets?.data?.data, documents?.data?.data]);
 
   function handleResourceFilterChange(value) {
     setResourceFilter(value);
     if (value === "") {
-      setFilteredResources(resources?.data?.data);
+      setFilteredResources(documents?.data?.data);
       setFilteredDatasets(datasets?.data?.data);
     } else {
       setFilteredResources(
-        resources?.data?.data?.filter((resource) =>
+        documents?.data?.data?.filter((resource) =>
           resource.name.toLowerCase().includes(value.toLowerCase())
         )
       );
       setFilteredDatasets(
         datasets?.data?.data?.filter((dataset) =>
-          dataset.name.toLowerCase().includes(value.toLowerCase())
+          dataset.title.toLowerCase().includes(value.toLowerCase())
         )
       );
     }
@@ -367,7 +366,7 @@ export default function ResourcesGrid({ user }) {
         sx={{ maxHeight: "75vh", overflow: "auto" }}
       >
         {datasets.isLoading && <RectangularVariants count={4} />}
-        {resources.isLoading && <RectangularVariants count={4} />}
+        {documents.isLoading && <RectangularVariants count={4} />}
 
         {selectedResource == 0 &&
           filteredDatasets?.map((dataset) => (
@@ -383,7 +382,7 @@ export default function ResourcesGrid({ user }) {
             <ResourceGridItem
               key={resource._id}
               resource={resource}
-              type={"Resource"}
+              type={"Document"}
               user={user}
             />
           ))}

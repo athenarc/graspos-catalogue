@@ -18,12 +18,12 @@ export default function ResourceForm({ register, errors, control }) {
         <TableCell colSpan={2}>
           <TextField
             required
-            {...register("name", {
-              required: "Name can not be empty",
+            {...register("title", {
+              required: "Title can not be empty",
             })}
-            label="Name"
-            error={!!errors?.name}
-            helperText={errors?.name?.message ?? " "}
+            label="title"
+            error={!!errors?.title}
+            helperText={errors?.title?.message ?? " "}
             fullWidth
           />
         </TableCell>

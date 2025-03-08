@@ -1,4 +1,4 @@
-"""Resource models."""
+"""Document models."""
 
 from beanie import Document
 from datetime import datetime
@@ -9,8 +9,8 @@ from datetime import datetime
 from typing import Optional
 
 
-class Resource(BaseModel):
-    name: str
+class Documents(BaseModel):
+    title: str
     url: str | None = None
     description: str | None = None
     created: Optional[datetime] = None
@@ -22,8 +22,8 @@ class Resource(BaseModel):
     owner: PydanticObjectId | None = None
 
 
-class ResourcePatch(BaseModel):
-    name: str | None = None
+class DocumentsPatch(BaseModel):
+    title: str | None = None
     url: str | None = None
     description: str | None = None
     created: Optional[datetime] | None = None
@@ -35,15 +35,15 @@ class ResourcePatch(BaseModel):
     owner: PydanticObjectId | None = None
 
 
-class Resource(Document, ResourcePatch):
+class Documents(Document, DocumentsPatch):
 
     class Settings:
-        name = "resources"
+        name = "documents"
 
     class Config:
         json_schema_extra = {
             "example": {
-                "name": "example-name",
+                "title": "example-name",
                 "url": "https://www.example.com/api/2131231",
                 "description": "example-description",
                 "approved": "True/False",

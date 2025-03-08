@@ -8,30 +8,28 @@ import {
   InputLabel,
   FormHelperText,
   TableBody,
-  Autocomplete,
-  Chip,
 } from "@mui/material";
 
 export default function DatasetForm({ register, errors }) {
   return (
     <TableBody>
-      <TableRow>
+      {/* <TableRow>
         <TableCell colSpan={2}>
           <TextField
             required
-            {...register("name", {
-              required: "Name can not be empty",
+            {...register("title", {
+              required: "Title can not be empty",
             })}
             label="Name"
-            error={!!errors?.name}
-            helperText={errors?.name?.message ?? " "}
+            error={!!errors?.title}
+            helperText={errors?.title?.message ?? " "}
             fullWidth
           />
         </TableCell>
-      </TableRow>
+      </TableRow> */}
 
       <TableRow>
-        <TableCell>
+        {/* <TableCell>
           <FormControl fullWidth>
             <InputLabel>Visibility</InputLabel>
             <Select
@@ -47,7 +45,7 @@ export default function DatasetForm({ register, errors }) {
               {errors?.visibility ? "Visibility can not be empty" : " "}
             </FormHelperText>
           </FormControl>
-        </TableCell>
+        </TableCell> */}
 
         <TableCell>
           <TextField
@@ -56,7 +54,7 @@ export default function DatasetForm({ register, errors }) {
               required: "Source can not be empty",
               pattern: {
                 value:
-                  /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
+                  /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
                 message: "Not a valid URL",
               },
             })}
@@ -67,7 +65,7 @@ export default function DatasetForm({ register, errors }) {
           />
         </TableCell>
       </TableRow>
-      <TableRow>
+      {/* <TableRow>
         <TableCell colSpan={2}>
           <TextField
             {...register("description")}
@@ -117,40 +115,6 @@ export default function DatasetForm({ register, errors }) {
             helperText={errors?.tags?.message ?? " "}
             fullWidth
           />
-          {/* <Autocomplete
-            {...register("tags")}
-            disablePortal
-            multiple
-            options={[]}
-            getOptionLabel={(option) => option.title}
-            defaultValue={[]}
-            freeSolo
-            isOptionEqualToValue={(option, value) =>
-              option.label === value.label
-            }
-            renderTags={(value, getTagProps) =>
-              value.map((option, index) => {
-                const { key, ...tagProps } = getTagProps({ index });
-                return (
-                  <Chip
-                    variant="outlined"
-                    label={option}
-                    key={key}
-                    {...tagProps}
-                  />
-                );
-              })
-            }
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                fullWidth
-                label="Tags"
-                error={!!errors?.tags}
-                helperText={errors?.tags?.message ?? " "}
-              />
-            )}
-          /> */}
         </TableCell>
       </TableRow>
       <TableRow></TableRow>
@@ -218,7 +182,7 @@ export default function DatasetForm({ register, errors }) {
             fullWidth
           />
         </TableCell>
-      </TableRow>
+      </TableRow> */}
     </TableBody>
   );
 }
