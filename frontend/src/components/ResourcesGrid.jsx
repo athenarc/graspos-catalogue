@@ -32,6 +32,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import Check from "@mui/icons-material/Check";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 import { useEffect, useState } from "react";
 import { RectangularVariants } from "./Skeleton";
@@ -221,7 +222,7 @@ function ResourceGridItem({ resource, type, user }) {
           spacing={1}
           sx={{ p: "0!important" }}
         >
-          <PersonIcon />
+          <CloudUploadIcon />
           <Typography>{ownerUsername?.data?.data?.username}</Typography>
         </CardContent>
         <CardContent
