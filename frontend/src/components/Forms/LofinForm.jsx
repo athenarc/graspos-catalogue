@@ -30,7 +30,7 @@ export default function LoginForm() {
       { data },
       {
         onSuccess: (data) => {
-          handleLogin(data?.data?.access_token);
+          handleLogin(data?.data);
           handleClose();
         },
         onError: (error) => {

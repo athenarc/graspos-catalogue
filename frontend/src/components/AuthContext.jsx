@@ -34,15 +34,20 @@ export const AuthProvider = ({ children }) => {
   const userInformation = useUserInformation(token);
 
   useEffect(() => {
+    if (!token) {
+      localStorage.clear();
+      setUser(null);
+      setToken(null);
+    }
     if (token && userInformation?.data?.data) {
       localStorage.setItem("user", JSON.stringify(userInformation?.data?.data));
       setUser(userInformation?.data?.data);
     }
-    console.log("useeffect");
   }, [userInformation, token]);
 
   const handleLogin = (data) => {
-    localStorage.setItem("token", JSON.stringify(data));
+    localStorage.setItem("token", JSON.stringify(data?.access_token));
+    localStorage.setItem("refresh_token", JSON.stringify(data?.refresh_token));
     localStorage.setItem("user", JSON.stringify(userInformation?.data?.data));
     setToken(data);
     setUser(userInformation?.data?.data);
