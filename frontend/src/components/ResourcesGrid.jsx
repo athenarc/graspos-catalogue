@@ -35,7 +35,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 import { useEffect, useState } from "react";
 import { RectangularVariants } from "./Skeleton";
-import { Link, Outlet, useOutletContext } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 function ResourceGridItem({ resource, type, user }) {
   const ownerUsername = useUserUsername(resource?.owner, user);
@@ -358,7 +358,14 @@ export default function ResourcesGrid({ user }) {
         handleResourceFilterChange={handleResourceFilterChange}
       />
 
-      <Grid container spacing={3} m={3} mt={1} alignItems="start">
+      <Grid
+        container
+        spacing={3}
+        m={3}
+        mt={1}
+        alignItems="start"
+        sx={{ maxHeight: "75vh", overflow: "auto" }}
+      >
         {datasets.isLoading && <RectangularVariants count={4} />}
         {resources.isLoading && <RectangularVariants count={4} />}
 

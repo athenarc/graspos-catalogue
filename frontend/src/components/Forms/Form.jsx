@@ -73,17 +73,6 @@ export default function Form() {
         }
       );
     }
-    // query.mutate(
-    //   { data },
-    //   {
-    //     onSuccess: () => {
-    //       setMessage(resourceType + " has been created successfully!");
-    //       setTimeout(() => {
-    //         navigate("..");
-    //       }, 2000);
-    //     },
-    //   }
-    // );
   };
   function handleClose() {
     navigate("..");

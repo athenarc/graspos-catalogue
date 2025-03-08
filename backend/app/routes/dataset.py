@@ -10,6 +10,7 @@ from typing import Annotated
 
 router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
+
 @router.get("/", status_code=200, response_model=list[Dataset])
 async def get_all_datasets(
         user: Annotated[None, Depends(current_user)]) -> list[Dataset]:
@@ -24,10 +25,7 @@ async def get_all_datasets(
 
 @router.post("/", status_code=201)
 async def create_dataset(
-    # https://zenodo.org/api/records/14582029
-    dataset: Dataset,
-    user: User = Depends(current_user)
-) -> Dataset:
+    dataset: Dataset, user: User = Depends(current_user)) -> Dataset:
     dataset.owner = user.id
     if user.super_user:
         dataset.approved = True
