@@ -24,6 +24,7 @@ import Check from "@mui/icons-material/Check";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import ConfirmationModal from "./Forms/ConfirmationModal";
 
 export default function ResourceGridItem({ resource, type, user }) {
   const ownerUsername = useUserUsername(resource?.owner, user);
@@ -140,19 +141,27 @@ export default function ResourceGridItem({ resource, type, user }) {
                   </IconButton>
                 </div>
               </Tooltip>
-              <Tooltip title={"Delete " + String(type)}>
-                <div>
-                  <IconButton
-                    color="error"
-                    disabled={!user}
-                    onClick={() => {
-                      handleDelete(resource._id);
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </div>
-              </Tooltip>
+              {user && (
+                <Tooltip title={"Delete " + String(type)} placement="top">
+                  <div>
+                    <ConfirmationModal
+                      title={"Delete " + String(type)}
+                      resource={resource}
+                      response={() => handleDelete(resource._id)}
+                    >
+                      {(handleClickOpen) => (
+                        <IconButton
+                          color="error"
+                          disabled={!user}
+                          onClick={handleClickOpen}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      )}
+                    </ConfirmationModal>
+                  </div>
+                </Tooltip>
+              )}
             </>
           )}
         </CardContent>

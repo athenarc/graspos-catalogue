@@ -72,7 +72,7 @@ function ResourcesFilterBar({ resourceFilter, handleResourceFilterChange }) {
 
 export default function ResourcesGrid({ user }) {
   const datasets = useDatasets(user);
-  const documents = useDocuments();
+  const documents = useDocuments(user);
   const [resourceFilter, setResourceFilter] = useState("");
   const [selectedResource, setSelectedResource] = useState(0);
 
@@ -166,6 +166,7 @@ export default function ResourcesGrid({ user }) {
           Add Resource
         </Button>
       )}
+      
       <Outlet context={{ user: user }} />
     </>
   );
