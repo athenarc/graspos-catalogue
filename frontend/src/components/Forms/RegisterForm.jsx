@@ -8,6 +8,7 @@ import {
   CircularProgress,
   TextField,
   Typography,
+  DialogContentText,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
@@ -15,8 +16,10 @@ import Notification from "../Notification";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useRegister } from "../../queries/data";
+import { useState } from "react";
 
 export default function RegisterForm() {
+  const [message, setMessage] = useState("");
   const {
     register,
     handleSubmit,
@@ -32,17 +35,22 @@ export default function RegisterForm() {
       { data },
       {
         onSuccess: (data) => {
-          navigate("/login");
+          setMessage("Registration successfull!");
+          setTimeout(() => {
+            navigate("..");
+          }, 1000);
         },
         onError: (e) => {
           const error = e?.response?.data?.detail;
           if (error.email) {
+            setMessage(error.email);
             setError("email", {
               type: "server",
               message: error.email,
             });
           }
           if (error.username) {
+            setMessage(error.username);
             setError("username", {
               type: "server",
               message: error.username,
@@ -65,7 +73,7 @@ export default function RegisterForm() {
         open={true}
         noValidate
         onSubmit={handleSubmit(onSubmit)}
-        maxWidth="sm"
+        maxWidth="xs"
         fullWidth
       >
         <DialogTitle
@@ -98,7 +106,7 @@ export default function RegisterForm() {
             label="Username"
             error={!!errors?.username}
             helperText={errors?.username?.message}
-            sx={{ width: "100%" }}
+            fullWidth
           />
         </DialogContent>
         <DialogContent sx={{ p: 2 }}>
@@ -111,9 +119,10 @@ export default function RegisterForm() {
             type="password"
             error={!!errors?.password}
             helperText={errors?.password?.message}
-            sx={{ width: "100%" }}
+            fullWidth
           />
         </DialogContent>
+
         <DialogContent sx={{ p: 2 }}>
           <TextField
             required
@@ -128,31 +137,23 @@ export default function RegisterForm() {
             label="Email"
             error={!!errors?.email}
             helperText={errors?.email?.message}
-            sx={{ width: "100%" }}
+            fullWidth
           />
         </DialogContent>
         <DialogContent sx={{ p: 2 }}>
-          <TextField
-            {...register("first_name")}
-            label="First Name"
-            sx={{ width: "100%", mr: 1 }}
-          />
+          <TextField {...register("first_name")} label="First Name" fullWidth />
         </DialogContent>
         <DialogContent sx={{ p: 2 }}>
-          <TextField
-            {...register("last_name")}
-            label="Last Name"
-            sx={{ width: "100%" }}
-          />
+          <TextField {...register("last_name")} label="Last Name" fullWidth />
         </DialogContent>
         <DialogContent sx={{ p: 2 }}>
           <TextField
             {...register("organization")}
             label="Organization"
-            sx={{ width: "100%" }}
+            fullWidth
           />
         </DialogContent>
-        <DialogContent sx={{ p: 1 }}>
+        <DialogContent sx={{ p: 2 }}>
           <Typography align="center" variant="subtitle2">
             Already have an account?
           </Typography>
@@ -181,13 +182,11 @@ export default function RegisterForm() {
           </Button>
         </DialogActions>
       </Dialog>
-      {registerUser.isSuccess ? (
+      {registerUser.isSuccess && (
         <Notification
           requestStatus={registerUser?.status}
           message={"Registration completeted successfully"}
         />
-      ) : (
-        ""
       )}
     </>
   );
