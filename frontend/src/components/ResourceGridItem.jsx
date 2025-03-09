@@ -25,13 +25,16 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ConfirmationModal from "./Forms/ConfirmationModal";
+import { useDeleteTool, useUpdateTool } from "../queries/tool";
 
 export default function ResourceGridItem({ resource, type, user }) {
   const ownerUsername = useUserUsername(resource?.owner, user);
   const deleteDatasest = useDeleteDataset();
   const deleteDocument = useDeleteDocument();
+  const deleteTool = useDeleteTool();
   const updateDataset = useUpdateDataset(resource._id);
   const updateDocument = useUpdateDocument(resource._id);
+  const updateTool = useUpdateTool(resource._id);
   const [showDescription, setShowDescription] = useState(false);
 
   let query = null;
@@ -39,8 +42,10 @@ export default function ResourceGridItem({ resource, type, user }) {
   function handleDelete(id) {
     if (type === "Document") {
       query = deleteDocument;
-    } else {
+    } else if (type === "Dataset") {
       query = deleteDatasest;
+    } else {
+      query = deleteTool;
     }
     query.mutate(
       { id },
@@ -53,8 +58,10 @@ export default function ResourceGridItem({ resource, type, user }) {
   function handleUpdate(approved) {
     if (type === "Document") {
       query = updateDocument;
-    } else {
+    } else if (type === "Dataset") {
       query = updateDataset;
+    } else {
+      query = updateTool;
     }
     query.mutate(
       { approved },
@@ -72,7 +79,13 @@ export default function ResourceGridItem({ resource, type, user }) {
       sx={{
         backgroundColor: "white",
         borderRadius: "10px",
-        backgroundColor: [type == "Dataset" ? "#FFC067" : "#2B3A57"],
+        backgroundColor: [
+          type == "Dataset"
+            ? "#FFC067"
+            : type == "Document"
+            ? "#2B3A57"
+            : "#FF6961",
+        ],
       }}
     >
       <CardContent
