@@ -98,6 +98,17 @@ export default function ProfileForm() {
           <DialogContent dividers sx={{ p: 2 }}>
             <TextField
               required
+              {...register("username", {
+                value: user?.username,
+              })}
+              disabled
+              label="Username"
+              sx={{ width: "100%" }}
+            />
+          </DialogContent>
+          <DialogContent dividers sx={{ p: 2 }}>
+            <TextField
+              required
               {...register("email", {
                 value: user?.email,
                 required: "Email can not be empty",
