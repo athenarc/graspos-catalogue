@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 
 import Logout from "@mui/icons-material/Logout";
+import { CircularVariants } from "./Skeleton";
 
 export default function UserDropDownMenu({
   user,
@@ -38,7 +39,9 @@ export default function UserDropDownMenu({
             aria-expanded={open ? "true" : undefined}
           >
             <Avatar sx={{ width: 30, height: 30 }}>
-              {user?.username?.toUpperCase()[0]}
+              {user?.username?.toUpperCase()[0] ?? (
+                <CircularVariants count={1} />
+              )}
             </Avatar>
           </IconButton>
         </Tooltip>

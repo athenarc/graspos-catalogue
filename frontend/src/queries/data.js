@@ -1,16 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "./interceptor";
+
 export function useLogin() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ data }) => {
       return axiosInstance.post(`auth/login`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["datasets"]);
+      queryClient.invalidateQueries(["documents"]);
     },
   });
 }
 
 export function useUpdateUser() {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: ({ data }) => {
       return axiosInstance.patch(
@@ -35,11 +40,20 @@ export function useRegister() {
   });
 }
 
-export function useUserInformation() {
+export function useUserInformation(token) {
   return useQuery({
     queryKey: ["user"],
-    queryFn: () =>
-      axiosInstance
-        .get(`user`, {})
+    retry: false,
+    enabled: !!token,
+    queryFn: () => axiosInstance.get(`user`, {}),
+  });
+}
+
+export function useUserUsername(userId, user) {
+  return useQuery({
+    queryKey: ["user-username-" + userId],
+    retry: false,
+    enabled: !!user,
+    queryFn: () => axiosInstance.get(`user/${userId}`),
   });
 }

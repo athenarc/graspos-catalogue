@@ -1,77 +1,45 @@
-"""Dataset models."""
+"""Document models."""
 
 from beanie import Document
 from datetime import datetime
 from pydantic import BaseModel
 from beanie import PydanticObjectId
 from datetime import datetime
+from typing import Optional
 import requests
 from typing import Dict
 
 
-class Dataset(BaseModel):
+class Documents(BaseModel):
     title: str
-    version: str | None = None
     source: str | None = None
     description: str | None = None
-    keywords: list | None = None
-    license: Dict | None = None
-    organization: str | None = None
-    visibility: str | None = None
-    version: str | None = None
-    creators: list | None = None
-    api_url: str | None = None
-    api_url_instructions: str | None = None
-    documentation_url: str | None = None
-    contact_person: str | None = None
-    contact_person_email: str | None = None
-    created: datetime | None = None
-    modified: datetime | None = None
-    updated: datetime | None = None
+    created: Optional[datetime] = None
+    data_last_updated: Optional[datetime] = None
+    metadata_last_updated: Optional[datetime] = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None
     owner: PydanticObjectId | None = None
 
 
-class DatasetPatch(BaseModel):
-    source: str | None = None
-    created: datetime | None = None
-    modified: datetime | None = None
-    updated: datetime | None = None
-    approved: bool | None = None
-    owner: PydanticObjectId | None = None
-
-
-class DatasetView(BaseModel):
+class DocumentsPatch(BaseModel):
     title: str | None = None
-    version: str | None = None
     source: str | None = None
     description: str | None = None
-    keywords: list | None = None
-    license: Dict | None = None
-    organization: str | None = None
-    visibility: str | None = None
-    version: str | None = None
-    creators: list | None = None
-    api_url: str | None = None
-    api_url_instructions: str | None = None
-    documentation_url: str | None = None
-    contact_person: str | None = None
-    contact_person_email: str | None = None
+    created: Optional[datetime] | None = None
+    data_last_updated: Optional[datetime] | None = None
+    metadata_last_updated: Optional[datetime] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
-    created: datetime | None = None
-    modified: datetime | None = None
-    updated: datetime | None = None
     approved: bool | None = None
     owner: PydanticObjectId | None = None
 
 
-class Dataset(Document, DatasetView):
+class Documents(Document, DocumentsPatch):
 
     class Settings:
-        name = "datasets"
+        name = "documents"
 
     class Config:
         json_schema_extra = {
@@ -79,17 +47,10 @@ class Dataset(Document, DatasetView):
                 "title": "example-name",
                 "source": "https://www.example.com/api/2131231",
                 "description": "example-description",
-                "tags": "",
-                "license": "",
-                "organization": "",
-                "visibility": "public/private",
-                "version": "",
-                "authors": "",
-                "api_url": "",
-                "api_url_instructions": "",
-                "documentation_url": "",
-                "contact_person": "",
-                "contact_person_email": "",
+                "approved": "True/False",
+                "created": "01/01/2020",
+                "data_last_updated": "01/01/2020",
+                "metadata_last_updated": "01/01/2020",
                 "created_at": "01/01/2020",
                 "updated_at": "01/01/2020",
                 "approved": "True/False",
@@ -97,8 +58,7 @@ class Dataset(Document, DatasetView):
             }
         }
 
-
-    def update_from_zenodo(self, data: Dict) -> Dataset:
+    def update_from_zenodo(self, data: Dict) -> Document:
 
         for k, v in self.model_validate(data).model_dump(
                 exclude="_id").items():
