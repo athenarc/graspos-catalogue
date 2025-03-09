@@ -10,14 +10,15 @@ body {
   min-height: 100vh;
   justify-content: end;
   align-items: center;
-
-  background: linear-gradient(
+  /* background-color: #E5E5E5; */
+  background: linear-gradient(-45deg, #ee7752, #ae538e, #23a6d5, #23d5ab);
+  /* background: linear-gradient(
     65deg,
     #005a83 20%,
     #036595 20%,
     #0571a4 40%,
     #005a83 40%
-  );
+  );*/
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
