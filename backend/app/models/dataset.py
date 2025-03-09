@@ -2,11 +2,10 @@
 
 from beanie import Document
 from datetime import datetime
-from models.user import User
 from pydantic import BaseModel
 from beanie import PydanticObjectId
 from datetime import datetime
-import requests, json
+import requests
 from typing import Dict
 
 
@@ -115,11 +114,9 @@ class Dataset(Document, DatasetView):
         try:
             x = requests.get(source)
         except requests.exceptions.RequestException as e:
-            # catastrophic error. bail.
             return {"status": 404, "detail": "Not a valid Zenodo url."}
 
         if x and x.json():
-            # json_object = json.dumps(x.json(), indent=4)
             resource = x.json()
             resource = resource | resource["metadata"]
             resource["zenodo_id"] = resource["id"]
@@ -130,6 +127,3 @@ class Dataset(Document, DatasetView):
                 "detail": "Parsed resource successfully",
                 "resource": resource
             }
-            # # Writing to sample.json
-            # with open("sample.json", "w") as outfile:
-            #     outfile.write(json_object)

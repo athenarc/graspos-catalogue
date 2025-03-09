@@ -22,10 +22,15 @@ async def get_all_documents(user: User | None = None) -> list[Documents]:
 
 @router.post("/", status_code=201)
 async def create_document(
-    # https://zenodo.org/api/records/14582029
-    document: Documents,
-    user: User = Depends(current_user)
-) -> Documents:
+    document: Documents, user: User = Depends(current_user)) -> Documents:
+
+    url_validation = document.get_data(document.source)
+
+    if url_validation["status"] is not 200:
+        raise HTTPException(status_code=url_validation["status"],
+                            detail=url_validation["detail"])
+
+    document = document.update(url_validation["resource"])
     document.owner = user.id
     if user.super_user:
         document.approved = True
@@ -43,7 +48,8 @@ async def get_document(document_id: PydanticObjectId) -> Documents:
 
     if not document:
 
-        return HTTPException(status_code=404, detail="Documents does not exist")
+        return HTTPException(status_code=404,
+                             detail="Documents does not exist")
 
     return document
 
@@ -55,7 +61,8 @@ async def delete_document(document_id: PydanticObjectId,
 
     if not document_to_delete:
 
-        return HTTPException(status_code=404, detail="Documents does not exist")
+        return HTTPException(status_code=404,
+                             detail="Documents does not exist")
 
     await document_to_delete.delete()
     return {"message": "Documents successfully deleted"}
@@ -71,7 +78,8 @@ async def update_document(
     document = await Documents.get(document_id)
 
     if not document:
-        return HTTPException(status_code=404, detail="Documents does not exist")
+        return HTTPException(status_code=404,
+                             detail="Documents does not exist")
 
     fields = update.model_dump(exclude_unset=True)
 

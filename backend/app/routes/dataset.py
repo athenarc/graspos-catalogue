@@ -29,8 +29,6 @@ async def create_dataset(dataset: Dataset, user: User = Depends(current_user)):
     url_validation = dataset.get_data(dataset.source)
 
     if url_validation["status"] is not 200:
-        print(url_validation["status"])
-
         raise HTTPException(status_code=url_validation["status"],
                             detail=url_validation["detail"])
 

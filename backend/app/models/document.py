@@ -2,16 +2,17 @@
 
 from beanie import Document
 from datetime import datetime
-from models.user import User
 from pydantic import BaseModel
 from beanie import PydanticObjectId
 from datetime import datetime
 from typing import Optional
+import requests
+from typing import Dict
 
 
 class Documents(BaseModel):
     title: str
-    url: str | None = None
+    source: str | None = None
     description: str | None = None
     created: Optional[datetime] = None
     data_last_updated: Optional[datetime] = None
@@ -24,7 +25,7 @@ class Documents(BaseModel):
 
 class DocumentsPatch(BaseModel):
     title: str | None = None
-    url: str | None = None
+    source: str | None = None
     description: str | None = None
     created: Optional[datetime] | None = None
     data_last_updated: Optional[datetime] | None = None
@@ -44,7 +45,7 @@ class Documents(Document, DocumentsPatch):
         json_schema_extra = {
             "example": {
                 "title": "example-name",
-                "url": "https://www.example.com/api/2131231",
+                "source": "https://www.example.com/api/2131231",
                 "description": "example-description",
                 "approved": "True/False",
                 "created": "01/01/2020",
@@ -56,3 +57,34 @@ class Documents(Document, DocumentsPatch):
                 "owner": "user id"
             }
         }
+
+    def update(self, data: Dict) -> Document:
+
+        for k, v in self.model_validate(data).model_dump(
+                exclude="_id").items():
+            print(
+                f"updating value of '{k}' from '{getattr(self, k, None)}' to '{v}'"
+            )
+            setattr(self, k, v)
+
+        return self
+
+    @classmethod
+    def get_data(cls, source):
+        x = None
+        try:
+            x = requests.get(source)
+        except requests.exceptions.RequestException as e:
+            return {"status": 404, "detail": "Not a valid Zenodo url."}
+
+        if x and x.json():
+            resource = x.json()
+            resource = resource | resource["metadata"]
+            resource["zenodo_id"] = resource["id"]
+            del resource["metadata"]
+            del resource["id"]
+            return {
+                "status": 200,
+                "detail": "Parsed resource successfully",
+                "resource": resource
+            }
