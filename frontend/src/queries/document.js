@@ -20,7 +20,7 @@ export function useDocuments(user) {
   return useQuery({
     queryKey: ["documents"],
     retry: false,
-    queryFn: () => axiosInstance.get(user ? `document/admin/` : `document`),
+    queryFn: () => axiosInstance.get(!!user ? `document/admin/` : `document`),
   });
 }
 

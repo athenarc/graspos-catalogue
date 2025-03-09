@@ -20,7 +20,7 @@ export function useDatasets(user) {
   return useQuery({
     queryKey: ["datasets"],
     retry: false,
-    queryFn: () => axiosInstance.get(user ? `dataset/admin/` : `dataset`),
+    queryFn: () => axiosInstance.get(!!user ? `dataset/admin/` : `dataset`),
   });
 }
 

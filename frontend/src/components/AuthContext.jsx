@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { useUserInformation } from "../queries/data";
+import { useQueryClient } from "@tanstack/react-query";
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -32,6 +33,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(getToken());
   const [user, setUser] = useState(getUser());
   const userInformation = useUserInformation(token);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!token) {
@@ -51,12 +53,14 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(userInformation?.data?.data));
     setToken(data);
     setUser(userInformation?.data?.data);
+    queryClient.invalidateQueries(["documents", "datasets"]);
   };
 
   const handleLogout = () => {
     setUser(null);
     setToken(null);
     localStorage.clear();
+    queryClient.invalidateQueries(["documents", "datasets"]);
   };
 
   return (
