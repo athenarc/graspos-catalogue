@@ -25,7 +25,7 @@ async def get_all_datasets_admin(user: User = Depends(
     if user.super_user:
         datasets = await Dataset.find_all().to_list()
     else:
-        search = {"$or": [{"approved": {True}}, {"owner": user.id}]}
+        search = {"$or": [{"approved": True}, {"owner": user.id}]}
         datasets = await Dataset.find(search).to_list()
 
     return datasets

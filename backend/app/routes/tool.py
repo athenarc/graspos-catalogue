@@ -25,7 +25,7 @@ async def get_all_tools_admin(user: User = Depends(
     if user.super_user:
         tools = await Tool.find_all().to_list()
     else:
-        search = {"$or": [{"approved": {True}}, {"owner": user.id}]}
+        search = {"$or": [{"approved": True}, {"owner": user.id}]}
         tools = await Tool.find(search).to_list()
 
     return tools

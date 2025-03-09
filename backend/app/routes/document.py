@@ -25,7 +25,7 @@ async def get_all_documents_admin(user: User = Depends(
     if user.super_user:
         documents = await Documents.find_all().to_list()
     else:
-        search = {"$or": [{"approved": {True}}, {"owner": user.id}]}
+        search = {"$or": [{"approved": True}, {"owner": user.id}]}
         documents = await Documents.find(search).to_list()
 
     return documents
