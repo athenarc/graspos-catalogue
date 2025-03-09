@@ -73,7 +73,7 @@ export default function DatasetForm() {
               textAlign: "center",
             }}
           >
-            Create Resource
+            Create Dataset
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -87,7 +87,7 @@ export default function DatasetForm() {
           >
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
-          <DialogContent sx={{ p: 3, pt: 1.5, minWidth: 300 }}>
+          <DialogContent sx={{ p: 2 }}>
             <TextField
               required
               {...register("source", {
@@ -104,7 +104,7 @@ export default function DatasetForm() {
               fullWidth
             />
           </DialogContent>
-          <DialogActions sx={{ px: 3, pt: 0, pb: 3 }}>
+          <DialogActions sx={{ p: 2, pt: 0 }}>
             <Button
               type="submit"
               variant="contained"

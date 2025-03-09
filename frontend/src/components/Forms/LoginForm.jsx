@@ -92,7 +92,7 @@ export default function LoginForm() {
             sx={{ width: "100%" }}
           />
         </DialogContent>
-        <DialogContent sx={{ p: 2 }}>
+        <DialogContent sx={{ p: 2, pt: 0 }}>
           <TextField
             {...register("password", {
               required: "Password can not be empty",
@@ -107,7 +107,7 @@ export default function LoginForm() {
             sx={{ width: "100%" }}
           />
         </DialogContent>
-        <DialogContent sx={{ p: 1 }}>
+        <DialogContent sx={{ p: 1, pt: 0  }}>
           <Typography align="center" variant="subtitle2">
             Don't have an account?
           </Typography>
@@ -116,7 +116,7 @@ export default function LoginForm() {
           </Typography>
         </DialogContent>
 
-        <DialogActions sx={{ p: 2 }}>
+        <DialogActions sx={{ p: 2, pt: 0  }}>
           <Button type="submit" variant="contained">
             Login
           </Button>

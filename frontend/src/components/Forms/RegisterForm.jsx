@@ -109,7 +109,7 @@ export default function RegisterForm() {
             fullWidth
           />
         </DialogContent>
-        <DialogContent sx={{ p: 2 }}>
+        <DialogContent sx={{ p: 2, pt: 0 }}>
           <TextField
             required
             {...register("password", {
@@ -123,7 +123,7 @@ export default function RegisterForm() {
           />
         </DialogContent>
 
-        <DialogContent sx={{ p: 2 }}>
+        <DialogContent sx={{ p: 2, pt: 0 }}>
           <TextField
             required
             {...register("email", {
@@ -140,20 +140,20 @@ export default function RegisterForm() {
             fullWidth
           />
         </DialogContent>
-        <DialogContent sx={{ p: 2 }}>
+        <DialogContent sx={{ p: 2, pt: 0 }}>
           <TextField {...register("first_name")} label="First Name" fullWidth />
         </DialogContent>
-        <DialogContent sx={{ p: 2 }}>
+        <DialogContent sx={{ p: 2, pt: 0 }}>
           <TextField {...register("last_name")} label="Last Name" fullWidth />
         </DialogContent>
-        <DialogContent sx={{ p: 2 }}>
+        <DialogContent sx={{ p: 2, pt: 0 }}>
           <TextField
             {...register("organization")}
             label="Organization"
             fullWidth
           />
         </DialogContent>
-        <DialogContent sx={{ p: 2 }}>
+        <DialogContent sx={{ p: 2, pt: 0  }}>
           <Typography align="center" variant="subtitle2">
             Already have an account?
           </Typography>
@@ -162,7 +162,7 @@ export default function RegisterForm() {
           </Typography>
         </DialogContent>
 
-        <DialogActions sx={{ p: 2 }}>
+        <DialogActions sx={{ p: 2, pt: 0  }}>
           <Button
             type="submit"
             variant="contained"
