@@ -58,13 +58,10 @@ class Documents(Document, DocumentsPatch):
             }
         }
 
-    def update(self, data: Dict) -> Document:
+    def update_from_zenodo(self, data: Dict) -> Document:
 
         for k, v in self.model_validate(data).model_dump(
                 exclude="_id").items():
-            print(
-                f"updating value of '{k}' from '{getattr(self, k, None)}' to '{v}'"
-            )
             setattr(self, k, v)
 
         return self

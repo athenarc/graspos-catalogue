@@ -39,7 +39,7 @@ async def create_dataset(dataset: Dataset, user: User = Depends(current_user)):
         raise HTTPException(status_code=url_validation["status"],
                             detail=url_validation["detail"])
 
-    dataset = dataset.update(url_validation["resource"])
+    dataset = dataset.update_from_zenodo(url_validation["resource"])
     dataset.owner = user.id
     if user.super_user:
         dataset.approved = True
@@ -89,7 +89,7 @@ async def update_dataset(
         return HTTPException(status_code=404, detail="Dataset does not exist")
 
     fields = update.model_dump(exclude_unset=True)
-
+    print(fields)
     if "approved" in fields and not fields["approved"]:
         await dataset.delete()
     else:

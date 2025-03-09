@@ -97,13 +97,11 @@ class Dataset(Document, DatasetView):
             }
         }
 
-    def update(self, data: Dict) -> Dataset:
+
+    def update_from_zenodo(self, data: Dict) -> Dataset:
 
         for k, v in self.model_validate(data).model_dump(
                 exclude="_id").items():
-            print(
-                f"updating value of '{k}' from '{getattr(self, k, None)}' to '{v}'"
-            )
             setattr(self, k, v)
 
         return self

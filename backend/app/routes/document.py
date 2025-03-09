@@ -40,7 +40,7 @@ async def create_document(
         raise HTTPException(status_code=url_validation["status"],
                             detail=url_validation["detail"])
 
-    document = document.update(url_validation["resource"])
+    document = document.update_from_zenodo(url_validation["resource"])
     document.owner = user.id
     if user.super_user:
         document.approved = True
