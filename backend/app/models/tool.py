@@ -33,7 +33,6 @@ class Tool(BaseModel):
     approved: bool | None = None
     owner: PydanticObjectId | None = None
 
-
 class ToolPatch(BaseModel):
     source: str | None = None
     created: datetime | None = None

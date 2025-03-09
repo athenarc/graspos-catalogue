@@ -25,8 +25,9 @@ async def get_all_tools_admin(user: User = Depends(
     if user.super_user:
         tools = await Tool.find_all().to_list()
     else:
-        tools = await Tool.find(Tool.approved == True).to_list()
-        
+        search = {"$or": [{"approved": {True}}, {"owner": user.id}]}
+        tools = await Tool.find(search).to_list()
+
     return tools
 
 
@@ -47,10 +48,7 @@ async def create_tool(tool: Tool, user: User = Depends(current_user)):
     return tool
 
 
-@router.get("/{tool_id}",
-            responses={404: {
-                "detail": "Tool does not exist"
-            }})
+@router.get("/{tool_id}", responses={404: {"detail": "Tool does not exist"}})
 async def get_tool(tool_id: PydanticObjectId) -> Tool:
 
     tool = await Tool.get(tool_id)
@@ -64,7 +62,7 @@ async def get_tool(tool_id: PydanticObjectId) -> Tool:
 
 @router.delete("/{tool_id}", status_code=204)
 async def delete_tool(tool_id: PydanticObjectId,
-                         user: User = Depends(current_user)):
+                      user: User = Depends(current_user)):
 
     tool_to_delete = await Tool.get(tool_id)
 
@@ -80,8 +78,7 @@ async def delete_tool(tool_id: PydanticObjectId,
 async def update_tool(
     update: ToolPatch,
     tool_id: PydanticObjectId,
-    user: User = Depends(current_user)
-) -> ToolPatch:
+    user: User = Depends(current_user)) -> ToolPatch:
 
     tool = await Tool.get(tool_id)
 
