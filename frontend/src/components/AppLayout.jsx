@@ -1,28 +1,13 @@
 import { useAuth } from "./AuthContext";
 import BaseLayout from "./BaseLayout";
-import { useUserInformation } from "../queries/data";
-import { useEffect } from "react";
 
 export default function AppLayout() {
-  const { handleLogout } = useAuth();
-  const userInformation = useUserInformation();
-
-  useEffect(() => {
-    if (
-      userInformation?.error?.status == 401 ||
-      userInformation?.error?.status == 404 ||
-      userInformation?.error?.status == "ERR_NETWORK"
-    ) {
-      handleLogout();
-    }
-  }, [userInformation]);
-
+  const { handleLogin, handleLogout, user } = useAuth();
   return (
-    userInformation?.isFetched && (
-      <BaseLayout
-        user={userInformation?.data?.data}
-        handleLogout={handleLogout}
-      />
-    )
+    <BaseLayout
+      user={user}
+      handleLogout={handleLogout}
+      handleLogin={handleLogin}
+    />
   );
 }

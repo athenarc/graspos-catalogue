@@ -1,17 +1,18 @@
-"""Resource models."""
+"""Document models."""
 
 from beanie import Document
 from datetime import datetime
-from models.user import User
 from pydantic import BaseModel
 from beanie import PydanticObjectId
 from datetime import datetime
 from typing import Optional
+import requests
+from typing import Dict
 
 
-class Resource(BaseModel):
-    name: str
-    url: str | None = None
+class Documents(BaseModel):
+    title: str
+    source: str | None = None
     description: str | None = None
     created: Optional[datetime] = None
     data_last_updated: Optional[datetime] = None
@@ -22,9 +23,9 @@ class Resource(BaseModel):
     owner: PydanticObjectId | None = None
 
 
-class ResourcePatch(BaseModel):
-    name: str | None = None
-    url: str | None = None
+class DocumentsPatch(BaseModel):
+    title: str | None = None
+    source: str | None = None
     description: str | None = None
     created: Optional[datetime] | None = None
     data_last_updated: Optional[datetime] | None = None
@@ -35,16 +36,16 @@ class ResourcePatch(BaseModel):
     owner: PydanticObjectId | None = None
 
 
-class Resource(Document, ResourcePatch):
+class Documents(Document, DocumentsPatch):
 
     class Settings:
-        name = "resources"
+        name = "documents"
 
     class Config:
         json_schema_extra = {
             "example": {
-                "name": "example-name",
-                "url": "https://www.example.com/api/2131231",
+                "title": "example-name",
+                "source": "https://www.example.com/api/2131231",
                 "description": "example-description",
                 "approved": "True/False",
                 "created": "01/01/2020",
@@ -56,3 +57,31 @@ class Resource(Document, ResourcePatch):
                 "owner": "user id"
             }
         }
+
+    def update_from_zenodo(self, data: Dict) -> Document:
+
+        for k, v in self.model_validate(data).model_dump(
+                exclude="_id").items():
+            setattr(self, k, v)
+
+        return self
+
+    @classmethod
+    def get_data(cls, source):
+        x = None
+        try:
+            x = requests.get(source)
+        except requests.exceptions.RequestException as e:
+            return {"status": 404, "detail": "Not a valid Zenodo url."}
+
+        if x and x.json():
+            resource = x.json()
+            resource = resource | resource["metadata"]
+            resource["zenodo_id"] = resource["id"]
+            del resource["metadata"]
+            del resource["id"]
+            return {
+                "status": 200,
+                "detail": "Parsed resource successfully",
+                "resource": resource
+            }

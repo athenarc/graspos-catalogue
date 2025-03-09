@@ -7,7 +7,6 @@ export default function Notification({ message, requestStatus = "success" }) {
     if (reason === "clickaway") {
       return;
     }
-
     setOpen(false);
   };
   return (

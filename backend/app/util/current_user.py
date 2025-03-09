@@ -7,9 +7,8 @@ from models.user import User
 from jwt import access_security, user_from_credentials
 
 
-async def current_user(
-    auth: JwtAuthorizationCredentials = Security(access_security)
-) -> User:
+async def current_user(auth: JwtAuthorizationCredentials = Security(
+    access_security)) -> User:
     """Return the current authorized user."""
     if not auth:
         raise HTTPException(401, "No authorization credentials found")

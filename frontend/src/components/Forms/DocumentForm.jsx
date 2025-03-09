@@ -12,13 +12,14 @@ import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useCreateDataset } from "../../queries/dataset.js";
+import { useCreateDocument } from "../../queries/document.js";
 import { useState } from "react";
 import Notification from "../Notification.jsx";
 
-export default function DatasetForm() {
+export default function DocumentForm() {
   const [message, setMessage] = useState("");
   const { user } = useOutletContext();
+
   const {
     register,
     handleSubmit,
@@ -29,21 +30,21 @@ export default function DatasetForm() {
   } = useForm({ mode: "onBlur" });
 
   const navigate = useNavigate();
-  const createDataset = useCreateDataset();
+  const createDocument = useCreateDocument();
 
   const onSubmit = (data) => {
-    createDataset.mutate(
+    createDocument.mutate(
       { data },
       {
         onSuccess: () => {
-          setMessage("Dataset has been created successfully!");
+          setMessage("Document has been created successfully!");
           setTimeout(() => {
             navigate("..");
           }, 1000);
         },
         onError: (error) => {
           setMessage(error?.response?.data?.detail);
-          setError("title", {
+          setError("url", {
             message: error?.response?.data?.detail,
           });
         },
@@ -108,9 +109,9 @@ export default function DatasetForm() {
             <Button
               type="submit"
               variant="contained"
-              disabled={createDataset?.isPending || createDataset?.isSuccess}
+              disabled={createDocument?.isPending || createDocument?.isSuccess}
             >
-              {createDataset?.isPending ? (
+              {createDocument?.isPending ? (
                 <>
                   Creating Dataset
                   <CircularProgress size="13px" sx={{ ml: 1 }} />
@@ -124,9 +125,9 @@ export default function DatasetForm() {
             </Button>
           </DialogActions>
         </Dialog>
-        {(createDataset?.isSuccess || createDataset?.isError) && (
+        {(createDocument?.isSuccess || createDocument?.isError) && (
           <Notification
-            requestStatus={createDataset?.status}
+            requestStatus={createDocument?.status}
             message={message}
           />
         )}

@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { useOutletContext } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useUpdateUser, useUserInformation } from "../queries/data";
+import { useUpdateUser } from "../queries/data";
 import SaveIcon from "@mui/icons-material/Save";
 import CircularProgress from "@mui/material/CircularProgress";
 import Notification from "./Notification";

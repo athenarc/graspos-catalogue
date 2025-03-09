@@ -10,4 +10,7 @@ const NonAuthenticatedRoutes = () => {
   const { token } = useAuth();
   return !token ? <Outlet /> : <Navigate to="/" replace />;
 };
-export { AuthenticatedRoutes, NonAuthenticatedRoutes };
+const AnonymousRoutes = () => {
+  return <Outlet />
+}
+export { AuthenticatedRoutes, NonAuthenticatedRoutes, AnonymousRoutes };
