@@ -9,13 +9,14 @@ import {
   Box,
   Tabs,
   Tab,
+  touchRippleClasses,
 } from "@mui/material";
-
-import { useCreateDataset, useDatasets } from "../queries/dataset";
-import { useCreateDocument, useDocuments } from "../queries/document";
 
 import { RectangularVariants } from "./Skeleton";
 import ResourceGridItem from "./ResourceGridItem";
+import { useTools } from "../queries/tool";
+import { useDocuments } from "../queries/document";
+import { useDatasets } from "../queries/dataset";
 
 function a11yProps(index) {
   return {
@@ -73,10 +74,9 @@ function ResourcesFilterBar({ resourceFilter, handleResourceFilterChange }) {
 export default function ResourcesGrid({ user }) {
   const datasets = useDatasets(user);
   const documents = useDocuments(user);
+  const tools = useTools(user);
   const [resourceFilter, setResourceFilter] = useState("");
   const [selectedResource, setSelectedResource] = useState(0);
-  const createDataset = useCreateDataset();
-  const createDocument = useCreateDocument();
 
   const handleSetSelectedResource = (event, newValue) => {
     setSelectedResource(newValue);
@@ -87,17 +87,20 @@ export default function ResourcesGrid({ user }) {
   const [filteredDatasets, setFilteredDatasets] = useState(
     datasets?.data?.data ?? []
   );
+  const [filteredTools, setFilteredTools] = useState(tools?.data?.data ?? []);
 
   useEffect(() => {
     setFilteredResources(documents?.data?.data);
     setFilteredDatasets(datasets?.data?.data);
-  }, [datasets?.data?.data, documents?.data?.data]);
+    setFilteredTools(tools?.data?.data);
+  }, [datasets?.data?.data, documents?.data?.data, tools?.data?.data]);
 
   function handleResourceFilterChange(value) {
     setResourceFilter(value);
     if (value === "") {
       setFilteredResources(documents?.data?.data);
       setFilteredDatasets(datasets?.data?.data);
+      setFilteredTools(tools?.data?.data);
     } else {
       setFilteredResources(
         documents?.data?.data?.filter((resource) =>
@@ -107,6 +110,11 @@ export default function ResourcesGrid({ user }) {
       setFilteredDatasets(
         datasets?.data?.data?.filter((dataset) =>
           dataset.title.toLowerCase().includes(value.toLowerCase())
+        )
+      );
+      setFilteredTools(
+        tools?.data?.data?.filter((tool) =>
+          tool.title.toLowerCase().includes(value.toLowerCase())
         )
       );
     }
@@ -132,6 +140,7 @@ export default function ResourcesGrid({ user }) {
       >
         {datasets.isLoading && <RectangularVariants count={4} />}
         {documents.isLoading && <RectangularVariants count={4} />}
+        {tools.isLoading && <RectangularVariants count={4} />}
 
         {selectedResource == 0 &&
           filteredDatasets?.map((dataset) => (
@@ -148,6 +157,15 @@ export default function ResourcesGrid({ user }) {
               key={resource._id}
               resource={resource}
               type={"Document"}
+              user={user}
+            />
+          ))}
+        {selectedResource == 2 &&
+          filteredTools?.map((resource) => (
+            <ResourceGridItem
+              key={resource._id}
+              resource={resource}
+              type={"Tool"}
               user={user}
             />
           ))}
@@ -184,11 +202,25 @@ export default function ResourcesGrid({ user }) {
           Add Resource
         </Button>
       )}
+      {user && selectedResource == 2 && (
+        <Button
+          color="primary"
+          variant="outlined"
+          component={Link}
+          to="/tool/add"
+          sx={{
+            position: "absolute",
+            right: "24px",
+            bottom: "24px",
+            backgroundColor: "#fff",
+          }}
+        >
+          Add Resource
+        </Button>
+      )}
       <Outlet
         context={{
           user: user,
-          createDataset: createDataset,
-          createDocument: createDocument,
         }}
       />
     </>
