@@ -7,6 +7,8 @@ import Form from "./components/Forms/Form.jsx";
 import LoginForm from "./components/Forms/LoginForm.jsx";
 import ProfileForm from "./components/Forms/ProfileForm.jsx";
 import RegisterForm from "./components/Forms/RegisterForm.jsx";
+import DatasetForm from "./components/Forms/DatasetForm.jsx";
+import DocumentForm from "./components/Forms/DocumentForm.jsx";
 
 function App() {
   const queryClient = new QueryClient();
@@ -20,7 +22,8 @@ function App() {
               <Route path="/login" element={<LoginForm />}></Route>
               <Route path="/register" element={<RegisterForm />}></Route>
               <Route path="/profile" element={<ProfileForm />}></Route>
-              <Route path="/resources/add" element={<Form />}></Route>
+              <Route path="/dataset/add" element={<DatasetForm />}></Route>
+              <Route path="/document/add" element={<DocumentForm />}></Route>
               <Route path="*" exact element={<Navigate to={"/"} />} />
             </Route>
           </Routes>

@@ -11,8 +11,8 @@ import {
   Tab,
 } from "@mui/material";
 
-import { useDatasets } from "../queries/dataset";
-import { useDocuments } from "../queries/document";
+import { useCreateDataset, useDatasets } from "../queries/dataset";
+import { useCreateDocument, useDocuments } from "../queries/document";
 
 import { RectangularVariants } from "./Skeleton";
 import ResourceGridItem from "./ResourceGridItem";
@@ -75,6 +75,8 @@ export default function ResourcesGrid({ user }) {
   const documents = useDocuments(user);
   const [resourceFilter, setResourceFilter] = useState("");
   const [selectedResource, setSelectedResource] = useState(0);
+  const createDataset = useCreateDataset();
+  const createDocument = useCreateDocument();
 
   const handleSetSelectedResource = (event, newValue) => {
     setSelectedResource(newValue);
@@ -150,12 +152,12 @@ export default function ResourcesGrid({ user }) {
             />
           ))}
       </Grid>
-      {user && (
+      {user && selectedResource == 0 && (
         <Button
           color="primary"
           variant="outlined"
           component={Link}
-          to="/resources/add"
+          to="/dataset/add"
           sx={{
             position: "absolute",
             right: "24px",
@@ -166,8 +168,29 @@ export default function ResourcesGrid({ user }) {
           Add Resource
         </Button>
       )}
-      
-      <Outlet context={{ user: user }} />
+      {user && selectedResource == 1 && (
+        <Button
+          color="primary"
+          variant="outlined"
+          component={Link}
+          to="/document/add"
+          sx={{
+            position: "absolute",
+            right: "24px",
+            bottom: "24px",
+            backgroundColor: "#fff",
+          }}
+        >
+          Add Resource
+        </Button>
+      )}
+      <Outlet
+        context={{
+          user: user,
+          createDataset: createDataset,
+          createDocument: createDocument,
+        }}
+      />
     </>
   );
 }
