@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./components/AuthContext.jsx";
 import AppLayout from "./components/AppLayout.jsx";
 import Form from "./components/Forms/Form.jsx";
-import LoginForm from "./components/Forms/LofinForm.jsx";
+import LoginForm from "./components/Forms/LoginForm.jsx";
 import ProfileForm from "./components/Forms/ProfileForm.jsx";
 import RegisterForm from "./components/Forms/RegisterForm.jsx";
 
