@@ -66,13 +66,13 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
     user &&
     (user.id == resource.owner || user.super_user) && (
       <>
-        <Tooltip title={"Edit " + String(type)}>
+        {/* <Tooltip title={"Edit " + String(type)}>
           <div>
-            <IconButton disabled={!user}>
+            <IconButton disabled={!user} sx={{ p: 0 }}>
               <EditIcon />
             </IconButton>
           </div>
-        </Tooltip>
+        </Tooltip> */}
         <Tooltip title={"Delete " + String(type)} placement="top">
           <div>
             <ConfirmationModal
@@ -85,6 +85,7 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
                   color="error"
                   disabled={!user}
                   onClick={handleClickOpen}
+                  sx={{ p: 0 }}
                 >
                   <DeleteIcon />
                 </IconButton>
@@ -137,11 +138,11 @@ function ResourceItemHeader({
       <Stack direction={"row"} justifyContent="center" spacing={1}>
         <Typography variant="h6">{resource?.title}</Typography>
         {resource?.approved ? (
-          <Tooltip title="Resource has been approved by an Admin">
+          <Tooltip title="Resource approved">
             <CheckCircleIcon color="success" fontSize="small" />
           </Tooltip>
         ) : (
-          <Tooltip title="Resource is pending approval by an Admin">
+          <Tooltip title="Resource pending approval">
             <PendingActionsIcon color="warning" fontSize="small" />
           </Tooltip>
         )}
@@ -237,7 +238,7 @@ export default function ResourceGridItem({ resource, type, user }) {
         direction={"row"}
         justifyContent="space-between"
         alignItems="center"
-        sx={{ backgroundColor: "white", pb: 0 }}
+        sx={{ backgroundColor: "white", pb: 2 }}
       >
         <ResourceItemHeader
           handleUpdate={handleUpdate}
