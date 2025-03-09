@@ -20,6 +20,7 @@ class Tool(BaseModel):
     visibility: str | None = None
     version: str | None = None
     creators: list | None = None
+    communities: list | None = None
     api_url: str | None = None
     api_url_instructions: str | None = None
     documentation_url: str | None = None
@@ -32,6 +33,7 @@ class Tool(BaseModel):
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None
     owner: PydanticObjectId | None = None
+
 
 class ToolPatch(BaseModel):
     source: str | None = None
@@ -53,6 +55,7 @@ class ToolView(BaseModel):
     visibility: str | None = None
     version: str | None = None
     creators: list | None = None
+    communities: list | None = None
     api_url: str | None = None
     api_url_instructions: str | None = None
     documentation_url: str | None = None
@@ -95,7 +98,6 @@ class Tool(Document, ToolView):
                 "owner": "user id"
             }
         }
-
 
     def update_from_zenodo(self, data: Dict) -> Tool:
 

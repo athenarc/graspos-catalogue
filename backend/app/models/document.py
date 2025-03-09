@@ -14,6 +14,7 @@ class Documents(BaseModel):
     title: str
     source: str | None = None
     description: str | None = None
+    communities: list | None = None
     created: Optional[datetime] = None
     data_last_updated: Optional[datetime] = None
     metadata_last_updated: Optional[datetime] = None

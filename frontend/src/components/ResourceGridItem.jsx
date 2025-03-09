@@ -16,7 +16,6 @@ import { useDeleteDocument, useUpdateDocument } from "../queries/document";
 
 import EditIcon from "@mui/icons-material/Edit";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -26,6 +25,10 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ConfirmationModal from "./Forms/ConfirmationModal";
 import { useDeleteTool, useUpdateTool } from "../queries/tool";
+
+import euLogo from "../assets/eu-logo.jpg";
+import openaireGraphLogo from "../assets/openaire-graph-logo.png";
+import openaireLogo from "../assets/openaire-logo.png";
 
 function AdminFunctionalities({ resource, type, handleUpdate }) {
   return (
@@ -91,6 +94,34 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
         </Tooltip>
       </>
     )
+  );
+}
+
+function ResourceItemsCommunities({ resource }) {
+  return (
+    <Stack direction={"row"} justifyContent="center" spacing={1}>
+      {resource?.communities?.map((community) => (
+        <Tooltip
+          key={community.id}
+          title={"Part of " + community.id.replaceAll("-", " ")}
+        >
+          {community.id == "eu" && (
+            <img src={euLogo} alt="Logo" width={"30"} height={"20"} />
+          )}
+          {community.id == "openaire-research-graph" && (
+            <img
+              src={openaireGraphLogo}
+              alt="Logo"
+              width={"60"}
+              height={"20"}
+            />
+          )}
+          {community.id == "openaire" && (
+            <img src={openaireLogo} alt="Logo" width={"25"} height={"20"} />
+          )}
+        </Tooltip>
+      ))}
+    </Stack>
   );
 }
 
@@ -216,7 +247,6 @@ export default function ResourceGridItem({ resource, type, user }) {
           type={type}
         />
       </CardContent>
-
       <CardContent
         component={Stack}
         direction={"row"}
@@ -268,7 +298,9 @@ export default function ResourceGridItem({ resource, type, user }) {
           spacing={1}
           sx={{ p: "0!important" }}
         >
-          <CloudUploadIcon />
+          <Tooltip title={"User that uploaded the resource"}>
+            <CloudUploadIcon />
+          </Tooltip>
           <Typography>
             {user ? ownerUsername?.data?.data?.username : "N/A"}
           </Typography>
@@ -279,10 +311,7 @@ export default function ResourceGridItem({ resource, type, user }) {
           spacing={1}
           sx={{ p: "0!important" }}
         >
-          <CorporateFareIcon />
-          <Typography>
-            {resource?.organization ? resource?.organization : "N/A"}
-          </Typography>
+          <ResourceItemsCommunities resource={resource} />
         </CardContent>
       </CardContent>
       <CardContent

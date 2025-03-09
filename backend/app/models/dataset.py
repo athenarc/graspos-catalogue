@@ -20,6 +20,7 @@ class Dataset(BaseModel):
     visibility: str | None = None
     version: str | None = None
     creators: list | None = None
+    communities: list | None = None
     api_url: str | None = None
     api_url_instructions: str | None = None
     documentation_url: str | None = None
@@ -54,6 +55,7 @@ class DatasetView(BaseModel):
     visibility: str | None = None
     version: str | None = None
     creators: list | None = None
+    communities: list | None = None
     api_url: str | None = None
     api_url_instructions: str | None = None
     documentation_url: str | None = None
@@ -96,7 +98,6 @@ class Dataset(Document, DatasetView):
                 "owner": "user id"
             }
         }
-
 
     def update_from_zenodo(self, data: Dict) -> Dataset:
 
