@@ -1,0 +1,54 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axiosInstance from "./interceptor";
+
+export function useCreateDataset() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ data }) => {
+      return axiosInstance.post(
+        process.env.REACT_APP_BACKEND_HOST + `dataset`,
+        data
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["datasets"]);
+    },
+  });
+}
+
+export function useDatasets(user) {
+  return useQuery({
+    queryKey: ["datasets"],
+    retry: false,
+    queryFn: () => axiosInstance.get(user ? `dataset/admin/` : `dataset`),
+  });
+}
+
+export function useDeleteDataset() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (document) => {
+      return axiosInstance.delete(
+        process.env.REACT_APP_BACKEND_HOST + `dataset/${document.id}`
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["datasets"]);
+    },
+  });
+}
+
+export function useUpdateDataset(id) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data) => {
+      return axiosInstance.patch(
+        process.env.REACT_APP_BACKEND_HOST + `dataset/${id}`,
+        data
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["datasets"]);
+    },
+  });
+}

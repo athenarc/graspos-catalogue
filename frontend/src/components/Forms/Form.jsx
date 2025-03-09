@@ -5,22 +5,18 @@ import {
   DialogTitle,
   Button,
   IconButton,
-  Table,
-  TableRow,
-  TableCell,
   CircularProgress,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
-  TableHead,
-  TableContainer,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useCreateDataset, useCreateDocument } from "../../queries/data.js";
+import { useCreateDataset } from "../../queries/dataset";
+import { useCreateDocument } from "../../queries/document";
 import ResourceForm from "./DocumentForm.jsx";
 import DatasetForm from "./DatasetForm.jsx";
 import { useState } from "react";
@@ -42,7 +38,7 @@ export default function Form() {
   const navigate = useNavigate();
   const createDataset = useCreateDataset();
   const createDocument = useCreateDocument();
-
+  let query = null;
   function handleResourceTypeChange(value) {
     reset();
     setResourceType(value);
@@ -62,7 +58,7 @@ export default function Form() {
           onError: (error) => {
             setMessage(error?.response?.data?.detail);
             setError("source", {
-              "message": error?.response?.data?.detail,
+              message: error?.response?.data?.detail,
             });
           },
         }
@@ -80,7 +76,7 @@ export default function Form() {
           onError: (error) => {
             setMessage(error?.response?.data?.detail);
             setError("source", {
-              "message": error?.response?.data?.detail,
+              message: error?.response?.data?.detail,
             });
           },
         }
@@ -99,6 +95,8 @@ export default function Form() {
         open={true}
         noValidate
         onSubmit={handleSubmit(onSubmit)}
+        maxWidth="xs"
+        fullWidth
       >
         <DialogTitle
           sx={{
@@ -121,71 +119,52 @@ export default function Form() {
         >
           <CloseIcon sx={{ color: "white" }} />
         </IconButton>
-        <DialogContent dividers sx={{ p: 1, minWidth: 300 }}>
-          <TableContainer
-            sx={{
-              maxHeight: 500,
-            }}
-          >
-            <Table
-              stickyHeader
-              sx={{
-                "& td, th": {
-                  borderBottom: "none !important;",
-                },
-              }}
+        <DialogContent sx={{ p: 3, minWidth: 300 }}>
+          <FormControl fullWidth>
+            <InputLabel>Type</InputLabel>
+            <Select
+              defaultValue={""}
+              label="Type"
+              fullWidth
+              onChange={(event) =>
+                handleResourceTypeChange(event?.target?.value)
+              }
             >
-              <TableHead>
-                <TableRow>
-                  <TableCell colSpan={2}>
-                    <FormControl fullWidth>
-                      <InputLabel>Type</InputLabel>
-                      <Select
-                        defaultValue={""}
-                        label="Type"
-                        fullWidth
-                        onChange={(event) =>
-                          handleResourceTypeChange(event?.target?.value)
-                        }
-                      >
-                        <MenuItem value={"dataset"}>Dataset</MenuItem>
-                        <MenuItem value={"document"}>Document</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-
-              {resourceType === "dataset" && (
-                <DatasetForm
-                  register={register}
-                  errors={errors}
-                  control={control}
-                />
-              )}
-              {resourceType === "document" && (
-                <ResourceForm
-                  register={register}
-                  errors={errors}
-                  control={control}
-                />
-              )}
-            </Table>
-          </TableContainer>
+              <MenuItem value={"dataset"}>Dataset</MenuItem>
+              <MenuItem value={"document"}>Document</MenuItem>
+            </Select>
+          </FormControl>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
+        <DialogContent sx={{ p: 3, pt: 1.5, minWidth: 300 }}>
+          {resourceType === "dataset" && (
+            <DatasetForm
+              query={query}
+              register={register}
+              errors={errors}
+              control={control}
+            />
+          )}
+          {resourceType === "document" && (
+            <ResourceForm
+              register={register}
+              errors={errors}
+              control={control}
+            />
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pt: 0, pb: 3 }}>
           <Button
             type="submit"
             variant="contained"
             disabled={
-              createDataset?.isLoading ||
-              createDocument?.isLoading ||
+              createDataset?.isPending ||
+              createDocument?.isPending ||
               createDataset?.isSuccess ||
               createDocument?.isSuccess ||
               !resourceType
             }
           >
-            {createDocument?.isLoading || createDataset?.isLoading ? (
+            {createDocument?.isPending || createDataset?.isPending ? (
               <>
                 Creating Dataset
                 <CircularProgress size="13px" sx={{ ml: 1 }} />

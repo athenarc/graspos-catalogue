@@ -12,14 +12,21 @@ router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
 
 @router.get("/", status_code=200, response_model=list[Dataset])
-async def get_all_datasets(
-        user: Annotated[None, Depends(current_user)]) -> list[Dataset]:
+async def get_all_datasets() -> list[Dataset]:
 
-    if user and user.super_user:
-        datasets = await Dataset.find().to_list()
+    datasets = await Dataset.find(Dataset.approved == True).to_list()
+    return datasets
+
+
+@router.get("/admin", status_code=200, response_model=list[Dataset])
+async def get_all_datasets_admin(user: User = Depends(
+    current_user)) -> list[Dataset]:
+
+    if user.super_user:
+        datasets = await Dataset.find_all().to_list()
     else:
         datasets = await Dataset.find(Dataset.approved == True).to_list()
-
+        
     return datasets
 
 

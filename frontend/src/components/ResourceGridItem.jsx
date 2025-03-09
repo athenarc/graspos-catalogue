@@ -10,13 +10,10 @@ import {
   IconButton,
 } from "@mui/material";
 
-import {
-  useDeleteDataset,
-  useDeleteDocument,
-  useUpdateDataset,
-  useUpdateDocument,
-  useUserUsername,
-} from "../queries/data";
+import { useUserUsername } from "../queries/data";
+import { useDeleteDataset, useUpdateDataset } from "../queries/dataset";
+import { useDeleteDocument, useUpdateDocument } from "../queries/document";
+
 import EditIcon from "@mui/icons-material/Edit";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";

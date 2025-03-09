@@ -11,12 +11,22 @@ router = APIRouter(prefix="/api/v1/document", tags=["Documents"])
 
 
 @router.get("/", status_code=200, response_model=list[Documents])
-async def get_all_documents(user: User | None = None) -> list[Documents]:
-    if user and user.super_user:
+async def get_all_documents() -> list[Documents]:
+
+    documents = await Documents.find(Documents.approved == True).to_list()
+
+    return documents
+
+
+@router.get("/admin/", status_code=200, response_model=list[Documents])
+async def get_all_documents_admin(user: User = Depends(
+    current_user)) -> list[Documents]:
+
+    if user.super_user:
         documents = await Documents.find_all().to_list()
     else:
         documents = await Documents.find(Documents.approved == True).to_list()
-
+        
     return documents
 
 

@@ -11,7 +11,8 @@ import {
   Tab,
 } from "@mui/material";
 
-import { useDatasets, useDocuments } from "../queries/data";
+import { useDatasets } from "../queries/dataset";
+import { useDocuments } from "../queries/document";
 
 import { RectangularVariants } from "./Skeleton";
 import ResourceGridItem from "./ResourceGridItem";
@@ -70,7 +71,7 @@ function ResourcesFilterBar({ resourceFilter, handleResourceFilterChange }) {
 }
 
 export default function ResourcesGrid({ user }) {
-  const datasets = useDatasets();
+  const datasets = useDatasets(user);
   const documents = useDocuments();
   const [resourceFilter, setResourceFilter] = useState("");
   const [selectedResource, setSelectedResource] = useState(0);
