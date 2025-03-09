@@ -219,7 +219,9 @@ export default function ResourceGridItem({ resource, type, user }) {
           sx={{ p: "0!important" }}
         >
           <CloudUploadIcon />
-          <Typography>{ownerUsername?.data?.data?.username}</Typography>
+          <Typography>
+            {user ? ownerUsername?.data?.data?.username : "N/A"}
+          </Typography>
         </CardContent>
         <CardContent
           component={Stack}
