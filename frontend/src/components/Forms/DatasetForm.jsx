@@ -22,6 +22,7 @@ export default function DatasetForm() {
   const {
     register,
     handleSubmit,
+    reset,
     setError,
     formState: { errors, setErr },
   } = useForm({ mode: "onBlur" });
@@ -41,9 +42,10 @@ export default function DatasetForm() {
         },
         onError: (error) => {
           setMessage(error?.response?.data?.detail);
-          setError("title", {
+          setError("source", {
             message: error?.response?.data?.detail,
           });
+          // reset()
         },
       }
     );

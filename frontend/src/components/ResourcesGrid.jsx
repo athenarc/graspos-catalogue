@@ -75,22 +75,23 @@ export default function ResourcesGrid({ user }) {
   const datasets = useDatasets(user);
   const documents = useDocuments(user);
   const tools = useTools(user);
+
   const [resourceFilter, setResourceFilter] = useState("");
   const [selectedResource, setSelectedResource] = useState(0);
 
   const handleSetSelectedResource = (event, newValue) => {
     setSelectedResource(newValue);
   };
-  const [filteredResources, setFilteredResources] = useState(
+  const [filteredTools, setFilteredTools] = useState(tools?.data?.data ?? []);
+  const [filteredDocuments, setFilteredDocuments] = useState(
     documents?.data?.data ?? []
   );
   const [filteredDatasets, setFilteredDatasets] = useState(
     datasets?.data?.data ?? []
   );
-  const [filteredTools, setFilteredTools] = useState(tools?.data?.data ?? []);
 
   useEffect(() => {
-    setFilteredResources(documents?.data?.data);
+    setFilteredDocuments(documents?.data?.data);
     setFilteredDatasets(datasets?.data?.data);
     setFilteredTools(tools?.data?.data);
   }, [datasets?.data?.data, documents?.data?.data, tools?.data?.data]);
@@ -98,23 +99,27 @@ export default function ResourcesGrid({ user }) {
   function handleResourceFilterChange(value) {
     setResourceFilter(value);
     if (value === "") {
-      setFilteredResources(documents?.data?.data);
+      setFilteredDocuments(documents?.data?.data);
       setFilteredDatasets(datasets?.data?.data);
       setFilteredTools(tools?.data?.data);
     } else {
-      setFilteredResources(
+      setFilteredDocuments(
         documents?.data?.data?.filter((resource) =>
-          resource.name.toLowerCase().includes(value.toLowerCase())
+          resource.zenodo_metadata?.title
+            .toLowerCase()
+            .includes(value.toLowerCase())
         )
       );
       setFilteredDatasets(
         datasets?.data?.data?.filter((dataset) =>
-          dataset.title.toLowerCase().includes(value.toLowerCase())
+          dataset.zenodo_metadata?.title
+            .toLowerCase()
+            .includes(value.toLowerCase())
         )
       );
       setFilteredTools(
         tools?.data?.data?.filter((tool) =>
-          tool.title.toLowerCase().includes(value.toLowerCase())
+          tool.zenodo_metadata?.title.toLowerCase().includes(value.toLowerCase())
         )
       );
     }
@@ -138,11 +143,18 @@ export default function ResourcesGrid({ user }) {
         alignItems="start"
         sx={{ maxHeight: "75vh", overflow: "auto" }}
       >
-        {datasets.isLoading && <RectangularVariants count={4} />}
-        {documents.isLoading && <RectangularVariants count={4} />}
-        {tools.isLoading && <RectangularVariants count={4} />}
+        {selectedResource == 0 && datasets.isLoading && (
+          <RectangularVariants count={4} />
+        )}
+        {selectedResource == 1 && documents.isLoading && (
+          <RectangularVariants count={4} />
+        )}
+        {selectedResource == 2 && tools.isLoading && (
+          <RectangularVariants count={4} />
+        )}
 
         {selectedResource == 0 &&
+          datasets?.isFetched &&
           filteredDatasets?.map((dataset) => (
             <ResourceGridItem
               key={dataset._id}
@@ -152,7 +164,7 @@ export default function ResourcesGrid({ user }) {
             />
           ))}
         {selectedResource == 1 &&
-          filteredResources?.map((resource) => (
+          filteredDocuments?.map((resource) => (
             <ResourceGridItem
               key={resource._id}
               resource={resource}

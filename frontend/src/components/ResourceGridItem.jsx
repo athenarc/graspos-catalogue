@@ -67,13 +67,13 @@ function AdminFunctionalities({ type, handleUpdate }) {
 function OwnerFunctionalities({ resource, user, type, handleDelete }) {
   return (
     user &&
-    (user.id == resource.owner || user.super_user) && (
+    (user?.id == resource?.owner || user?.super_user) && (
       <Tooltip title={"Delete " + String(type)} placement="top">
         <div>
           <ConfirmationModal
             title={"Delete " + String(type)}
             resource={resource}
-            response={() => handleDelete(resource._id)}
+            response={() => handleDelete(resource?._id)}
           >
             {(handleClickOpen) => (
               <IconButton
@@ -95,7 +95,7 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
 function ResourceItemsCommunities({ resource }) {
   return (
     <Stack direction={"row"} justifyContent="center" spacing={1}>
-      {resource?.communities?.map((community) => (
+      {resource?.zenodo_metadata?.metadata?.communities?.map((community) => (
         <Tooltip
           key={community.id}
           title={"Part of " + community.id.replaceAll("-", " ")}
@@ -132,7 +132,7 @@ function ResourceItemHeader({
   return (
     <>
       <Stack direction={"row"} justifyContent="center" spacing={1}>
-        <Tooltip title={resource?.title}>
+        <Tooltip title={resource?.zenodo_metadata?.title}>
           <Typography
             variant="h6"
             sx={{
@@ -142,7 +142,7 @@ function ResourceItemHeader({
               maxWidth: 300,
             }}
           >
-            {resource?.title}
+            {resource?.zenodo_metadata?.title}
           </Typography>
         </Tooltip>
         {resource?.approved ? (
@@ -161,7 +161,7 @@ function ResourceItemHeader({
         spacing={0}
         sx={{ p: "0!important" }}
       >
-        {!resource.approved && user?.super_user ? (
+        {!resource?.approved && user?.super_user ? (
           <AdminFunctionalities handleUpdate={handleUpdate} type={type} />
         ) : (
           <OwnerFunctionalities
@@ -181,9 +181,9 @@ export default function ResourceGridItem({ resource, type, user }) {
   const deleteDatasest = useDeleteDataset();
   const deleteDocument = useDeleteDocument();
   const deleteTool = useDeleteTool();
-  const updateDataset = useUpdateDataset(resource._id);
-  const updateDocument = useUpdateDocument(resource._id);
-  const updateTool = useUpdateTool(resource._id);
+  const updateDataset = useUpdateDataset(resource?._id);
+  const updateDocument = useUpdateDocument(resource?._id);
+  const updateTool = useUpdateTool(resource?._id);
   const [showDescription, setShowDescription] = useState(false);
 
   let query = null;
@@ -287,7 +287,7 @@ export default function ResourceGridItem({ resource, type, user }) {
             overflow: "auto",
           }}
         >
-          {resource?.description}
+          {resource?.zenodo_metadata?.metadata?.description}
         </CardContent>
       )}
       <CardContent
@@ -305,9 +305,9 @@ export default function ResourceGridItem({ resource, type, user }) {
         <Tooltip title="Zenodo published date">
           <CalendarMonthIcon />
         </Tooltip>
-        {resource?.publication_date && (
+        {resource?.zenodo_metadata?.metadata?.publication_date && (
           <Typography>
-            {new Date(resource?.publication_date).toLocaleDateString([], {
+            {new Date(resource?.zenodo_metadata?.metadata?.publication_date).toLocaleDateString([], {
               year: "numeric",
               month: "numeric",
               day: "numeric",
