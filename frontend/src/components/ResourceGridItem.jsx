@@ -14,7 +14,6 @@ import { useUserUsername } from "../queries/data";
 import { useDeleteDataset, useUpdateDataset } from "../queries/dataset";
 import { useDeleteDocument, useUpdateDocument } from "../queries/document";
 
-import EditIcon from "@mui/icons-material/Edit";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -23,6 +22,7 @@ import Check from "@mui/icons-material/Check";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ConfirmationModal from "./Forms/ConfirmationModal";
 import { useDeleteTool, useUpdateTool } from "../queries/tool";
 
@@ -30,7 +30,7 @@ import euLogo from "../assets/eu-logo.jpg";
 import openaireGraphLogo from "../assets/openaire-graph-logo.png";
 import openaireLogo from "../assets/openaire-logo.png";
 
-function AdminFunctionalities({ resource, type, handleUpdate }) {
+function AdminFunctionalities({ type, handleUpdate }) {
   return (
     <>
       <Tooltip title={"Approve " + String(type)}>
@@ -39,6 +39,7 @@ function AdminFunctionalities({ resource, type, handleUpdate }) {
           onClick={() => {
             handleUpdate(true);
           }}
+          sx={{ p: 0.5 }}
         >
           <Check fontSize="" />
         </IconButton>
@@ -47,6 +48,8 @@ function AdminFunctionalities({ resource, type, handleUpdate }) {
         title={
           "Reject " + String(type) + ". " + String(type) + " will be deleted"
         }
+        
+        sx={{ p: 0.5 }}
       >
         <IconButton
           color="error"
@@ -65,34 +68,26 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
   return (
     user &&
     (user.id == resource.owner || user.super_user) && (
-      <>
-        <Tooltip title={"Edit " + String(type)}>
-          <div>
-            <IconButton disabled={!user}>
-              <EditIcon />
-            </IconButton>
-          </div>
-        </Tooltip>
-        <Tooltip title={"Delete " + String(type)} placement="top">
-          <div>
-            <ConfirmationModal
-              title={"Delete " + String(type)}
-              resource={resource}
-              response={() => handleDelete(resource._id)}
-            >
-              {(handleClickOpen) => (
-                <IconButton
-                  color="error"
-                  disabled={!user}
-                  onClick={handleClickOpen}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              )}
-            </ConfirmationModal>
-          </div>
-        </Tooltip>
-      </>
+      <Tooltip title={"Delete " + String(type)} placement="top">
+        <div>
+          <ConfirmationModal
+            title={"Delete " + String(type)}
+            resource={resource}
+            response={() => handleDelete(resource._id)}
+          >
+            {(handleClickOpen) => (
+              <IconButton
+                color="error"
+                disabled={!user}
+                onClick={handleClickOpen}
+                sx={{ p: 0.5 }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            )}
+          </ConfirmationModal>
+        </div>
+      </Tooltip>
     )
   );
 }
@@ -105,20 +100,22 @@ function ResourceItemsCommunities({ resource }) {
           key={community.id}
           title={"Part of " + community.id.replaceAll("-", " ")}
         >
-          {community.id == "eu" && (
-            <img src={euLogo} alt="Logo" width={"30"} height={"20"} />
-          )}
-          {community.id == "openaire-research-graph" && (
-            <img
-              src={openaireGraphLogo}
-              alt="Logo"
-              width={"60"}
-              height={"20"}
-            />
-          )}
-          {community.id == "openaire" && (
-            <img src={openaireLogo} alt="Logo" width={"25"} height={"20"} />
-          )}
+          <div id={community.id}>
+            {community.id == "eu" && (
+              <img src={euLogo} alt="Logo" width={"30"} height={"20"} />
+            )}
+            {community.id == "openaire-research-graph" && (
+              <img
+                src={openaireGraphLogo}
+                alt="Logo"
+                width={"60"}
+                height={"20"}
+              />
+            )}
+            {community.id == "openaire" && (
+              <img src={openaireLogo} alt="Logo" width={"25"} height={"20"} />
+            )}
+          </div>
         </Tooltip>
       ))}
     </Stack>
@@ -135,13 +132,25 @@ function ResourceItemHeader({
   return (
     <>
       <Stack direction={"row"} justifyContent="center" spacing={1}>
-        <Typography variant="h6">{resource?.title}</Typography>
+        <Tooltip title={resource?.title}>
+          <Typography
+            variant="h6"
+            sx={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: 300,
+            }}
+          >
+            {resource?.title}
+          </Typography>
+        </Tooltip>
         {resource?.approved ? (
-          <Tooltip title="Resource has been approved by an Admin">
+          <Tooltip title="Resource approved">
             <CheckCircleIcon color="success" fontSize="small" />
           </Tooltip>
         ) : (
-          <Tooltip title="Resource is pending approval by an Admin">
+          <Tooltip title="Resource pending approval">
             <PendingActionsIcon color="warning" fontSize="small" />
           </Tooltip>
         )}
@@ -153,11 +162,7 @@ function ResourceItemHeader({
         sx={{ p: "0!important" }}
       >
         {!resource.approved && user?.super_user ? (
-          <AdminFunctionalities
-            handleUpdate={handleUpdate}
-            resource={resource}
-            type={type}
-          />
+          <AdminFunctionalities handleUpdate={handleUpdate} type={type} />
         ) : (
           <OwnerFunctionalities
             handleDelete={handleDelete}
@@ -237,7 +242,7 @@ export default function ResourceGridItem({ resource, type, user }) {
         direction={"row"}
         justifyContent="space-between"
         alignItems="center"
-        sx={{ backgroundColor: "white", pb: 0 }}
+        sx={{ backgroundColor: "white", pb: 2 }}
       >
         <ResourceItemHeader
           handleUpdate={handleUpdate}
@@ -247,6 +252,7 @@ export default function ResourceGridItem({ resource, type, user }) {
           type={type}
         />
       </CardContent>
+
       <CardContent
         component={Stack}
         direction={"row"}
@@ -287,10 +293,35 @@ export default function ResourceGridItem({ resource, type, user }) {
       <CardContent
         component={Stack}
         direction={"row"}
+        justifyContent="start"
+        alignItems="center"
+        spacing={1}
+        sx={{
+          backgroundColor: "white",
+          pb: 0,
+          pt: 3,
+        }}
+      >
+        <Tooltip title="Zenodo published date">
+          <CalendarMonthIcon />
+        </Tooltip>
+        {resource?.publication_date && (
+          <Typography>
+            {new Date(resource?.publication_date).toLocaleDateString([], {
+              year: "numeric",
+              month: "numeric",
+              day: "numeric",
+            })}
+          </Typography>
+        )}
+      </CardContent>
+      <CardContent
+        component={Stack}
+        direction={"row"}
         spacing={1}
         justifyContent="space-between"
         alignItems="center"
-        sx={{ backgroundColor: "white", pt: 3 }}
+        sx={{ backgroundColor: "white", pt: 2 }}
       >
         <CardContent
           component={Stack}

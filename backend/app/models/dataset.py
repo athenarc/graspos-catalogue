@@ -17,6 +17,7 @@ class Dataset(BaseModel):
     keywords: list | None = None
     license: Dict | None = None
     organization: str | None = None
+    publication_date: datetime | None = None
     visibility: str | None = None
     version: str | None = None
     creators: list | None = None
@@ -52,6 +53,7 @@ class DatasetView(BaseModel):
     keywords: list | None = None
     license: Dict | None = None
     organization: str | None = None
+    publication_date: datetime | None = None
     visibility: str | None = None
     version: str | None = None
     creators: list | None = None
@@ -109,6 +111,8 @@ class Dataset(Document, DatasetView):
 
     @classmethod
     def get_data(cls, source):
+        if "https://zenodo.org/records/" in source:
+            source = source.replace("/records/", "/api/records/")
         x = None
         try:
             x = requests.get(source)
@@ -119,6 +123,7 @@ class Dataset(Document, DatasetView):
             resource = x.json()
             resource = resource | resource["metadata"]
             resource["zenodo_id"] = resource["id"]
+            resource["source"] = source
             del resource["metadata"]
             del resource["id"]
             return {
