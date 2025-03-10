@@ -22,8 +22,6 @@ export default function DatasetForm() {
   const {
     register,
     handleSubmit,
-    control,
-    reset,
     setError,
     formState: { errors, setErr },
   } = useForm({ mode: "onBlur" });
@@ -93,9 +91,8 @@ export default function DatasetForm() {
               {...register("source", {
                 required: "Source can not be empty",
                 pattern: {
-                  value:
-                    /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
-                  message: "Not a valid URL",
+                  value: /^https:\/\/zenodo\.org\/records\/.*/,
+                  message: "Not a valid Zenodo URL",
                 },
               })}
               label="Zenodo source"

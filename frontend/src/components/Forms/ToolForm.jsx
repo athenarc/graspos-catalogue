@@ -22,8 +22,6 @@ export default function ToolForm() {
   const {
     register,
     handleSubmit,
-    control,
-    reset,
     setError,
     formState: { errors, setErr },
   } = useForm({ mode: "onBlur" });
@@ -93,8 +91,7 @@ export default function ToolForm() {
               {...register("source", {
                 required: "Source can not be empty",
                 pattern: {
-                  value:
-                    /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
+                  value: /^https:\/\/zenodo\.org\/records\/.*/,
                   message: "Not a valid URL",
                 },
               })}
@@ -125,10 +122,7 @@ export default function ToolForm() {
           </DialogActions>
         </Dialog>
         {(createTool?.isSuccess || createTool?.isError) && (
-          <Notification
-            requestStatus={createTool?.status}
-            message={message}
-          />
+          <Notification requestStatus={createTool?.status} message={message} />
         )}
       </>
     )

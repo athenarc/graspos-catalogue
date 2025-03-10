@@ -14,7 +14,6 @@ import { useUserUsername } from "../queries/data";
 import { useDeleteDataset, useUpdateDataset } from "../queries/dataset";
 import { useDeleteDocument, useUpdateDocument } from "../queries/document";
 
-import EditIcon from "@mui/icons-material/Edit";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -30,7 +29,7 @@ import euLogo from "../assets/eu-logo.jpg";
 import openaireGraphLogo from "../assets/openaire-graph-logo.png";
 import openaireLogo from "../assets/openaire-logo.png";
 
-function AdminFunctionalities({ resource, type, handleUpdate }) {
+function AdminFunctionalities({ type, handleUpdate }) {
   return (
     <>
       <Tooltip title={"Approve " + String(type)}>
@@ -65,35 +64,26 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
   return (
     user &&
     (user.id == resource.owner || user.super_user) && (
-      <>
-        {/* <Tooltip title={"Edit " + String(type)}>
-          <div>
-            <IconButton disabled={!user} sx={{ p: 0 }}>
-              <EditIcon />
-            </IconButton>
-          </div>
-        </Tooltip> */}
-        <Tooltip title={"Delete " + String(type)} placement="top">
-          <div>
-            <ConfirmationModal
-              title={"Delete " + String(type)}
-              resource={resource}
-              response={() => handleDelete(resource._id)}
-            >
-              {(handleClickOpen) => (
-                <IconButton
-                  color="error"
-                  disabled={!user}
-                  onClick={handleClickOpen}
-                  sx={{ p: 0 }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              )}
-            </ConfirmationModal>
-          </div>
-        </Tooltip>
-      </>
+      <Tooltip title={"Delete " + String(type)} placement="top">
+        <div>
+          <ConfirmationModal
+            title={"Delete " + String(type)}
+            resource={resource}
+            response={() => handleDelete(resource._id)}
+          >
+            {(handleClickOpen) => (
+              <IconButton
+                color="error"
+                disabled={!user}
+                onClick={handleClickOpen}
+                sx={{ p: 0 }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            )}
+          </ConfirmationModal>
+        </div>
+      </Tooltip>
     )
   );
 }
@@ -106,20 +96,22 @@ function ResourceItemsCommunities({ resource }) {
           key={community.id}
           title={"Part of " + community.id.replaceAll("-", " ")}
         >
-          {community.id == "eu" && (
-            <img src={euLogo} alt="Logo" width={"30"} height={"20"} />
-          )}
-          {community.id == "openaire-research-graph" && (
-            <img
-              src={openaireGraphLogo}
-              alt="Logo"
-              width={"60"}
-              height={"20"}
-            />
-          )}
-          {community.id == "openaire" && (
-            <img src={openaireLogo} alt="Logo" width={"25"} height={"20"} />
-          )}
+          <div id={community.id}>
+            {community.id == "eu" && (
+              <img src={euLogo} alt="Logo" width={"30"} height={"20"} />
+            )}
+            {community.id == "openaire-research-graph" && (
+              <img
+                src={openaireGraphLogo}
+                alt="Logo"
+                width={"60"}
+                height={"20"}
+              />
+            )}
+            {community.id == "openaire" && (
+              <img src={openaireLogo} alt="Logo" width={"25"} height={"20"} />
+            )}
+          </div>
         </Tooltip>
       ))}
     </Stack>
@@ -136,7 +128,19 @@ function ResourceItemHeader({
   return (
     <>
       <Stack direction={"row"} justifyContent="center" spacing={1}>
-        <Typography variant="h6">{resource?.title}</Typography>
+        <Tooltip title={resource?.title}>
+          <Typography
+            variant="h6"
+            sx={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: 300,
+            }}
+          >
+            {resource?.title}
+          </Typography>
+        </Tooltip>
         {resource?.approved ? (
           <Tooltip title="Resource approved">
             <CheckCircleIcon color="success" fontSize="small" />
@@ -154,11 +158,7 @@ function ResourceItemHeader({
         sx={{ p: "0!important" }}
       >
         {!resource.approved && user?.super_user ? (
-          <AdminFunctionalities
-            handleUpdate={handleUpdate}
-            resource={resource}
-            type={type}
-          />
+          <AdminFunctionalities handleUpdate={handleUpdate} type={type} />
         ) : (
           <OwnerFunctionalities
             handleDelete={handleDelete}
