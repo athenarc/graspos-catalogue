@@ -17,6 +17,7 @@ class Tool(BaseModel):
     keywords: list | None = None
     license: Dict | None = None
     organization: str | None = None
+    publication_date: datetime | None = None
     visibility: str | None = None
     version: str | None = None
     creators: list | None = None
@@ -52,6 +53,7 @@ class ToolView(BaseModel):
     keywords: list | None = None
     license: Dict | None = None
     organization: str | None = None
+    publication_date: datetime | None = None
     visibility: str | None = None
     version: str | None = None
     creators: list | None = None

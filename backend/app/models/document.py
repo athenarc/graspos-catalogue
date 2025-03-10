@@ -14,6 +14,7 @@ class Documents(BaseModel):
     title: str
     source: str | None = None
     description: str | None = None
+    publication_date: datetime | None = None
     communities: list | None = None
     created: Optional[datetime] = None
     data_last_updated: Optional[datetime] = None
@@ -27,6 +28,7 @@ class Documents(BaseModel):
 class DocumentsPatch(BaseModel):
     title: str | None = None
     source: str | None = None
+    publication_date: datetime | None = None
     description: str | None = None
     created: Optional[datetime] | None = None
     data_last_updated: Optional[datetime] | None = None
