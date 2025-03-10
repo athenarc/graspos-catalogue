@@ -4,7 +4,7 @@ from beanie import Document
 from datetime import datetime
 from pydantic import BaseModel
 from datetime import datetime
-import requests
+from util.requests import get_zenodo_data
 
 
 class ZenodoMetadata(BaseModel):
@@ -52,6 +52,15 @@ class Zenodo(BaseModel):
 
 class Zenodo(Document, Zenodo):
 
+    def __init__(self, **data):
+        super().__init__(**data)
+        zenodo_request = get_zenodo_data(data["source"])
+        if zenodo_request["zenodo_object"]:
+            zenodo_request["zenodo_object"]["source"] = data["source"]
+            super().__init__(**zenodo_request["zenodo_object"])
+        else:
+            raise ValueError(zenodo_request["detail"])
+
     class Settings:
         name = "zenodo"
 
@@ -71,19 +80,3 @@ class Zenodo(Document, Zenodo):
                 "owner": "user id"
             }
         }
-
-    @classmethod
-    def get_data(cls, source):
-        if "https://zenodo.org/records/" in source:
-            source = source.replace("/records/", "/api/records/")
-        x = None
-        try:
-            x = requests.get(source)
-        except requests.exceptions.RequestException as e:
-            return {"status": 404, "detail": "Not a valid Zenodo url."}
-
-        if x and x.json():
-            resource = x.json()
-            resource["zenodo_id"] = resource["id"]
-            del resource["id"]
-            return resource

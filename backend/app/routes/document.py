@@ -3,6 +3,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from models.document import Documents, DocumentsPatch
 from models.user import User
+from models.zenodo import Zenodo
 from beanie import PydanticObjectId
 from jwt import access_security
 from util.current_user import current_user
@@ -35,13 +36,13 @@ async def get_all_documents_admin(user: User = Depends(
 async def create_document(
     document: Documents, user: User = Depends(current_user)) -> Documents:
 
-    url_validation = document.get_data(document.source)
-
-    if url_validation["status"] is not 200:
-        raise HTTPException(status_code=url_validation["status"],
-                            detail=url_validation["detail"])
-
-    document = document.update_from_zenodo(url_validation["resource"])
+    try:
+       zenodo = Zenodo(source=document.source)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) 
+    await zenodo.create()
+    
+    document.zenodo_metadata = zenodo
     document.owner = user.id
     if user.super_user:
         document.approved = True

@@ -6,7 +6,7 @@ from models.user import User
 from beanie import PydanticObjectId
 from jwt import access_security
 from util.current_user import current_user
-from typing import Annotated
+from util.requests import get_zenodo_data
 
 router = APIRouter(prefix="/api/v1/zenodo", tags=["Zenodo"])
 
@@ -21,8 +21,10 @@ async def get_all_zenodo_records() -> list[Zenodo]:
 @router.get("/search", status_code=200, response_model=Zenodo)
 async def get_all_zenodo_records(source: str):
 
-    resource = Zenodo.get_data(source)
-    zenodo = Zenodo(source=source)
-    zenodo = zenodo.model_copy(update=resource)
+    try:
+       zenodo = Zenodo(source=source)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) 
+        
     await zenodo.create()
     return zenodo

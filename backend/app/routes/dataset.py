@@ -3,10 +3,10 @@
 from fastapi import APIRouter, HTTPException, Depends
 from models.dataset import Dataset, DatasetPatch
 from models.user import User
+from models.zenodo import Zenodo
 from beanie import PydanticObjectId
 from jwt import access_security
 from util.current_user import current_user
-from typing import Annotated
 
 router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
@@ -27,20 +27,19 @@ async def get_all_datasets_admin(user: User = Depends(
     else:
         search = {"$or": [{"approved": True}, {"owner": user.id}]}
         datasets = await Dataset.find(search).to_list()
-
     return datasets
 
 
 @router.post("/", status_code=201)
 async def create_dataset(dataset: Dataset, user: User = Depends(current_user)):
 
-    url_validation = dataset.get_data(dataset.source)
+    try:
+        zenodo = Zenodo(source=dataset.source)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error))
+    await zenodo.create()
 
-    if url_validation["status"] is not 200:
-        raise HTTPException(status_code=url_validation["status"],
-                            detail=url_validation["detail"])
-
-    dataset = dataset.update_from_zenodo(url_validation["resource"])
+    dataset.zenodo_metadata = zenodo
     dataset.owner = user.id
     if user.super_user:
         dataset.approved = True

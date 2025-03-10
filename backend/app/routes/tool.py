@@ -3,6 +3,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from models.tool import Tool, ToolPatch
 from models.user import User
+from models.zenodo import Zenodo
 from beanie import PydanticObjectId
 from jwt import access_security
 from util.current_user import current_user
@@ -34,13 +35,13 @@ async def get_all_tools_admin(user: User = Depends(
 @router.post("/", status_code=201)
 async def create_tool(tool: Tool, user: User = Depends(current_user)):
 
-    url_validation = tool.get_data(tool.source)
-
-    if url_validation["status"] is not 200:
-        raise HTTPException(status_code=url_validation["status"],
-                            detail=url_validation["detail"])
-
-    tool = tool.update_from_zenodo(url_validation["resource"])
+    try:
+       zenodo = Zenodo(source=tool.source)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) 
+    await zenodo.create()
+    
+    tool.zenodo_metadata = zenodo
     tool.owner = user.id
     if user.super_user:
         tool.approved = True
