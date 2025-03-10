@@ -69,6 +69,8 @@ class Documents(Document, DocumentsPatch):
 
     @classmethod
     def get_data(cls, source):
+        if "https://zenodo.org/records/" in source:
+            source = source.replace("/records/", "/api/records/")
         x = None
         try:
             x = requests.get(source)
@@ -79,6 +81,7 @@ class Documents(Document, DocumentsPatch):
             resource = x.json()
             resource = resource | resource["metadata"]
             resource["zenodo_id"] = resource["id"]
+            resource["source"] = source
             del resource["metadata"]
             del resource["id"]
             return {
