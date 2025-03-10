@@ -30,7 +30,7 @@ class Zenodo(BaseModel):
     source: str
     created: datetime | None = None,  #"2024-12-14T07:58:16.324225+00:00",
     modified: datetime | None = None,  #"2024-12-14T07:58:16.696455+00:00",
-    zenodo_id: str | None = None,  #14444109,
+    zenodo_id: int | None = None,  #14444109,
     conceptrecid: str | None = None,  #"4386934",
     doi: str | None = None,  #"10.5281/zenodo.14444109",
     conceptdoi: str | None = None,  #"10.5281/zenodo.4386934",
@@ -40,7 +40,7 @@ class Zenodo(BaseModel):
     links: object | None = None,  #{…},
     updated: datetime | None = None,  #"2024-12-14T07:58:16.696455+00:00",
     recid: str | None = None,  #"14444109",
-    revision: str | None = None,  #4,
+    revision: int | None = None,  #4,
     files: list | None = None,  #[…],
     swh: object | None = None,  #{},
     owners: list | None = None,  #[…],
