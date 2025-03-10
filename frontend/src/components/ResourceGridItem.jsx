@@ -22,6 +22,7 @@ import Check from "@mui/icons-material/Check";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ConfirmationModal from "./Forms/ConfirmationModal";
 import { useDeleteTool, useUpdateTool } from "../queries/tool";
 
@@ -38,6 +39,7 @@ function AdminFunctionalities({ type, handleUpdate }) {
           onClick={() => {
             handleUpdate(true);
           }}
+          sx={{ p: 0.5 }}
         >
           <Check fontSize="" />
         </IconButton>
@@ -46,6 +48,8 @@ function AdminFunctionalities({ type, handleUpdate }) {
         title={
           "Reject " + String(type) + ". " + String(type) + " will be deleted"
         }
+        
+        sx={{ p: 0.5 }}
       >
         <IconButton
           color="error"
@@ -76,7 +80,7 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
                 color="error"
                 disabled={!user}
                 onClick={handleClickOpen}
-                sx={{ p: 0 }}
+                sx={{ p: 0.5 }}
               >
                 <DeleteIcon />
               </IconButton>
@@ -248,6 +252,7 @@ export default function ResourceGridItem({ resource, type, user }) {
           type={type}
         />
       </CardContent>
+
       <CardContent
         component={Stack}
         direction={"row"}
@@ -288,10 +293,35 @@ export default function ResourceGridItem({ resource, type, user }) {
       <CardContent
         component={Stack}
         direction={"row"}
+        justifyContent="start"
+        alignItems="center"
+        spacing={1}
+        sx={{
+          backgroundColor: "white",
+          pb: 0,
+          pt: 3,
+        }}
+      >
+        <Tooltip title="Zenodo published date">
+          <CalendarMonthIcon />
+        </Tooltip>
+        {resource?.publication_date && (
+          <Typography>
+            {new Date(resource?.publication_date).toLocaleDateString([], {
+              year: "numeric",
+              month: "numeric",
+              day: "numeric",
+            })}
+          </Typography>
+        )}
+      </CardContent>
+      <CardContent
+        component={Stack}
+        direction={"row"}
         spacing={1}
         justifyContent="space-between"
         alignItems="center"
-        sx={{ backgroundColor: "white", pt: 3 }}
+        sx={{ backgroundColor: "white", pt: 2 }}
       >
         <CardContent
           component={Stack}

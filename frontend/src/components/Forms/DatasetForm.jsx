@@ -85,7 +85,7 @@ export default function DatasetForm() {
           >
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
-          <DialogContent sx={{ p: 2 }}>
+          <DialogContent sx={{ p: 2, pb: 0 }}>
             <TextField
               required
               {...register("source", {
@@ -101,6 +101,7 @@ export default function DatasetForm() {
               fullWidth
             />
           </DialogContent>
+          
           <DialogActions sx={{ p: 2, pt: 0 }}>
             <Button
               type="submit"
