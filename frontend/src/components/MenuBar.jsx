@@ -1,8 +1,7 @@
-import { Box, Button, Grid2 as Grid, Paper, Stack } from "@mui/material";
+import { Box, Button, Grid2 as Grid, Typography, Stack } from "@mui/material";
 import logo from "../assets/graspos-logo.png";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import UserDropDownMenu from "./UserDropDownMenu";
-import zIndex from "@mui/material/styles/zIndex";
 
 export default function MenuBar({ handleLogout, user }) {
   const navigate = useNavigate();
@@ -25,11 +24,11 @@ export default function MenuBar({ handleLogout, user }) {
       }}
     >
       <Grid size={4} sx={{ margin: "auto", textAlign: "left" }}>
-        <Button href="https://graspos.eu/" target="_blank">
+        <Button href="https://graspos.eu/" target="_blank" sx={{ p: 0 }}>
           <img src={logo} alt="GraspOS-Logo" width={110} height={60} />
         </Button>
       </Grid>
-      <Grid size={4} sx={{ margin: "auto" }}></Grid>
+      <Grid size={4} sx={{ margin: "auto", textAlign: "center" }}></Grid>
       <Grid size={4} sx={{ textAlign: "right", margin: "auto" }}>
         <Stack direction="row" justifyContent="flex-end">
           {!user && (

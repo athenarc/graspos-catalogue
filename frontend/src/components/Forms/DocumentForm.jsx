@@ -42,7 +42,7 @@ export default function DocumentForm() {
         },
         onError: (error) => {
           setMessage(error?.response?.data?.detail);
-          setError("url", {
+          setError("source", {
             message: error?.response?.data?.detail,
           });
         },

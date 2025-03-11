@@ -102,6 +102,22 @@ function Datasets({ user, filter }) {
             user={user}
           />
         ))}
+      {user && (
+        <Button
+          color="primary"
+          variant="outlined"
+          component={Link}
+          to="/dataset/add"
+          sx={{
+            position: "absolute",
+            right: "24px",
+            bottom: "24px",
+            backgroundColor: "#fff",
+          }}
+        >
+          Add Dataset
+        </Button>
+      )}
     </>
   );
 }
@@ -137,6 +153,22 @@ function Documents({ user, filter }) {
             user={user}
           />
         ))}
+      {user && (
+        <Button
+          color="primary"
+          variant="outlined"
+          component={Link}
+          to="/document/add"
+          sx={{
+            position: "absolute",
+            right: "24px",
+            bottom: "24px",
+            backgroundColor: "#fff",
+          }}
+        >
+          Add Document
+        </Button>
+      )}
     </>
   );
 }
@@ -170,6 +202,22 @@ function Tools({ user, filter }) {
             user={user}
           />
         ))}
+      {user && (
+        <Button
+          color="primary"
+          variant="outlined"
+          component={Link}
+          to="/tool/add"
+          sx={{
+            position: "absolute",
+            right: "24px",
+            bottom: "24px",
+            backgroundColor: "#fff",
+          }}
+        >
+          Add Tool
+        </Button>
+      )}
     </>
   );
 }
@@ -201,7 +249,6 @@ export default function ResourcesGrid({ user }) {
         spacing={3}
         m={3}
         mt={1}
-        alignItems="start"
         sx={{ maxHeight: "75vh", overflow: "auto" }}
       >
         {selectedResource == 0 && (
@@ -214,54 +261,7 @@ export default function ResourcesGrid({ user }) {
 
         {selectedResource == 2 && <Tools user={user} filter={resourceFilter} />}
       </Grid>
-      {user && selectedResource == 0 && (
-        <Button
-          color="primary"
-          variant="outlined"
-          component={Link}
-          to="/dataset/add"
-          sx={{
-            position: "absolute",
-            right: "24px",
-            bottom: "24px",
-            backgroundColor: "#fff",
-          }}
-        >
-          Add Resource
-        </Button>
-      )}
-      {user && selectedResource == 1 && (
-        <Button
-          color="primary"
-          variant="outlined"
-          component={Link}
-          to="/document/add"
-          sx={{
-            position: "absolute",
-            right: "24px",
-            bottom: "24px",
-            backgroundColor: "#fff",
-          }}
-        >
-          Add Resource
-        </Button>
-      )}
-      {user && selectedResource == 2 && (
-        <Button
-          color="primary"
-          variant="outlined"
-          component={Link}
-          to="/tool/add"
-          sx={{
-            position: "absolute",
-            right: "24px",
-            bottom: "24px",
-            backgroundColor: "#fff",
-          }}
-        >
-          Add Resource
-        </Button>
-      )}
+
       <Outlet
         context={{
           user: user,

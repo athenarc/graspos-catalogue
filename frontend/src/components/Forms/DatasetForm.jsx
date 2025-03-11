@@ -22,7 +22,6 @@ export default function DatasetForm() {
   const {
     register,
     handleSubmit,
-    reset,
     setError,
     formState: { errors, setErr },
   } = useForm({ mode: "onBlur" });
@@ -45,7 +44,6 @@ export default function DatasetForm() {
           setError("source", {
             message: error?.response?.data?.detail,
           });
-          // reset()
         },
       }
     );
@@ -103,7 +101,7 @@ export default function DatasetForm() {
               fullWidth
             />
           </DialogContent>
-          
+
           <DialogActions sx={{ p: 2, pt: 0 }}>
             <Button
               type="submit"

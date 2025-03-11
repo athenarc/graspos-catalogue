@@ -4,6 +4,7 @@ import {
   Grid2 as Grid,
   Card,
   CardContent,
+  CircularProgress,
   Typography,
   Stack,
   Tooltip,
@@ -30,36 +31,74 @@ import euLogo from "../assets/eu-logo.jpg";
 import openaireGraphLogo from "../assets/openaire-graph-logo.png";
 import openaireLogo from "../assets/openaire-logo.png";
 
-function AdminFunctionalities({ type, handleUpdate }) {
+function AdminFunctionalities({ type, resource }) {
+  const updateDataset = useUpdateDataset(resource?._id);
+  const updateDocument = useUpdateDocument(resource?._id);
+  const updateTool = useUpdateTool(resource?._id);
+  const [queryState, setQueryState] = useState(false);
+  let query = null;
+  function handleUpdate(approved) {
+    setQueryState(true);
+    if (type === "Document") {
+      query = updateDocument;
+    } else if (type === "Dataset") {
+      query = updateDataset;
+    } else {
+      query = updateTool;
+    }
+    query.mutate(
+      { approved },
+      {
+        onSuccess: (data) => {
+          setQueryState(false);
+        },
+        onError: (e) => {
+          setQueryState(false);
+        },
+      }
+    );
+  }
   return (
     <>
-      <Tooltip title={"Approve " + String(type)}>
-        <IconButton
-          color="success"
-          onClick={() => {
-            handleUpdate(true);
-          }}
-          sx={{ p: 0.5 }}
-        >
-          <Check fontSize="" />
-        </IconButton>
-      </Tooltip>
-      <Tooltip
-        title={
-          "Reject " + String(type) + ". " + String(type) + " will be deleted"
-        }
-        
-        sx={{ p: 0.5 }}
-      >
-        <IconButton
-          color="error"
-          onClick={() => {
-            handleUpdate(false);
-          }}
-        >
-          <ClearIcon />
-        </IconButton>
-      </Tooltip>
+      {queryState && (
+        <Tooltip title={"Updating resource"}>
+          <CircularProgress size="13px" sx={{ p: 1 }} />
+        </Tooltip>
+      )}
+      {!queryState && (
+        <>
+          <Tooltip title={"Approve " + String(type)}>
+            <IconButton
+              color="success"
+              onClick={() => {
+                handleUpdate(true);
+              }}
+              sx={{ p: 0.5 }}
+            >
+              <Check fontSize="" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip
+            title={
+              "Reject " +
+              String(type) +
+              ". " +
+              String(type) +
+              " will be deleted"
+            }
+            sx={{ p: 0.5 }}
+          >
+            <IconButton
+              color="error"
+              onClick={() => {
+                handleUpdate(false);
+              }}
+            >
+              <ClearIcon />
+            </IconButton>
+          </Tooltip>
+        </>
+      )}
     </>
   );
 }
@@ -122,13 +161,7 @@ function ResourceItemsCommunities({ resource }) {
   );
 }
 
-function ResourceItemHeader({
-  resource,
-  user,
-  type,
-  handleUpdate,
-  handleDelete,
-}) {
+function ResourceItemHeader({ resource, user, type, handleDelete }) {
   return (
     <>
       <Stack direction={"row"} justifyContent="center" spacing={1}>
@@ -162,7 +195,7 @@ function ResourceItemHeader({
         sx={{ p: "0!important" }}
       >
         {!resource?.approved && user?.super_user ? (
-          <AdminFunctionalities handleUpdate={handleUpdate} type={type} />
+          <AdminFunctionalities resource={resource} type={type} />
         ) : (
           <OwnerFunctionalities
             handleDelete={handleDelete}
@@ -181,9 +214,6 @@ export default function ResourceGridItem({ resource, type, user }) {
   const deleteDatasest = useDeleteDataset();
   const deleteDocument = useDeleteDocument();
   const deleteTool = useDeleteTool();
-  const updateDataset = useUpdateDataset(resource?._id);
-  const updateDocument = useUpdateDocument(resource?._id);
-  const updateTool = useUpdateTool(resource?._id);
   const [showDescription, setShowDescription] = useState(false);
 
   let query = null;
@@ -204,22 +234,7 @@ export default function ResourceGridItem({ resource, type, user }) {
       }
     );
   }
-  function handleUpdate(approved) {
-    if (type === "Document") {
-      query = updateDocument;
-    } else if (type === "Dataset") {
-      query = updateDataset;
-    } else {
-      query = updateTool;
-    }
-    query.mutate(
-      { approved },
-      {
-        onSuccess: (data) => {},
-        onError: (e) => {},
-      }
-    );
-  }
+
   return (
     <Grid
       key={resource?._id}
@@ -245,7 +260,6 @@ export default function ResourceGridItem({ resource, type, user }) {
         sx={{ backgroundColor: "white", pb: 2 }}
       >
         <ResourceItemHeader
-          handleUpdate={handleUpdate}
           handleDelete={handleDelete}
           resource={resource}
           user={user}
@@ -307,7 +321,9 @@ export default function ResourceGridItem({ resource, type, user }) {
         </Tooltip>
         {resource?.zenodo_metadata?.metadata?.publication_date && (
           <Typography>
-            {new Date(resource?.zenodo_metadata?.metadata?.publication_date).toLocaleDateString([], {
+            {new Date(
+              resource?.zenodo_metadata?.metadata?.publication_date
+            ).toLocaleDateString([], {
               year: "numeric",
               month: "numeric",
               day: "numeric",

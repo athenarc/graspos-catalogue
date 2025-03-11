@@ -41,7 +41,7 @@ export default function ToolForm() {
         },
         onError: (error) => {
           setMessage(error?.response?.data?.detail);
-          setError("title", {
+          setError("source", {
             message: error?.response?.data?.detail,
           });
         },
