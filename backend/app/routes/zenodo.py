@@ -3,6 +3,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from models.zenodo import Zenodo
 from models.user import User
+from models.dataset import Dataset
 from beanie import PydanticObjectId
 from jwt import access_security
 from util.current_user import current_user
@@ -18,11 +19,11 @@ async def get_all_zenodo_records() -> list[Zenodo]:
     return records
 
 
-@router.get("/search", status_code=200, response_model=Zenodo)
-async def get_all_zenodo_records(source: str):
+@router.post("/search", status_code=200)
+async def post_zenodo_records(dataset: Dataset):
 
     try:
-       zenodo = Zenodo(source=source)
+       zenodo = Zenodo(source=dataset.source)
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) 
         
