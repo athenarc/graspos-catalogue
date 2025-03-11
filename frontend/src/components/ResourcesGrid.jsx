@@ -41,9 +41,9 @@ function ResourcesTabs({ selectedResource, handleSetSelectedResource }) {
         aria-label="basic tabs example"
         centered
       >
-        <Tab label="Datasets" {...a11yProps(0)} />
-        <Tab label="Documents" {...a11yProps(1)} />
-        <Tab label="Tools" {...a11yProps(2)} />
+        <Tab label="Datasets" />
+        <Tab label="Documents" />
+        <Tab label="Tools" />
       </Tabs>
     </Box>
   );
@@ -71,58 +71,119 @@ function ResourcesFilterBar({ resourceFilter, handleResourceFilterChange }) {
   );
 }
 
-export default function ResourcesGrid({ user }) {
+function Datasets({ user, filter }) {
   const datasets = useDatasets(user);
-  const documents = useDocuments(user);
-  const tools = useTools(user);
+  const [filteredDatasets, setFilteredDatasets] = useState(
+    datasets?.data?.data ?? []
+  );
+  useEffect(() => {
+    if (filter !== "") {
+      setFilteredDatasets(
+        datasets?.data?.data?.filter((dataset) =>
+          dataset?.zenodo_metadata?.title
+            ?.toLowerCase()
+            .includes(filter.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredDatasets(datasets?.data?.data);
+    }
+  }, [datasets?.data?.data, filter]);
 
+  return (
+    <>
+      {datasets?.isLoading && <RectangularVariants count={4} />}
+      {datasets?.isSuccess &&
+        filteredDatasets?.map((dataset) => (
+          <ResourceGridItem
+            key={dataset?._id}
+            resource={dataset}
+            type={"Dataset"}
+            user={user}
+          />
+        ))}
+    </>
+  );
+}
+
+function Documents({ user, filter }) {
+  const documents = useDocuments(user);
+  const [filteredDocuments, setFilteredDocuments] = useState(
+    documents?.data?.data ?? []
+  );
+  useEffect(() => {
+    if (filter !== "") {
+      setFilteredDocuments(
+        documents?.data?.data?.filter((document) =>
+          document?.zenodo_metadata?.title
+            ?.toLowerCase()
+            .includes(filter.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredDocuments(documents?.data?.data);
+    }
+  }, [documents?.data?.data, filter]);
+
+  return (
+    <>
+      {documents?.isLoading && <RectangularVariants count={4} />}
+      {documents?.isFetched &&
+        filteredDocuments?.map((document) => (
+          <ResourceGridItem
+            key={document._id}
+            resource={document}
+            type={"Document"}
+            user={user}
+          />
+        ))}
+    </>
+  );
+}
+
+function Tools({ user, filter }) {
+  const tools = useTools(user);
+  const [filteredTools, setFilteredTools] = useState(tools?.data?.data ?? []);
+  useEffect(() => {
+    if (filter !== "") {
+      setFilteredTools(
+        tools?.data?.data?.filter((tool) =>
+          tool?.zenodo_metadata?.title
+            ?.toLowerCase()
+            .includes(filter.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredTools(tools?.data?.data);
+    }
+  }, [tools?.data?.data, filter]);
+
+  return (
+    <>
+      {tools?.isLoading && <RectangularVariants count={4} />}
+      {tools?.isFetched &&
+        filteredTools?.map((tool) => (
+          <ResourceGridItem
+            key={tool._id}
+            resource={tool}
+            type={"Tool"}
+            user={user}
+          />
+        ))}
+    </>
+  );
+}
+
+export default function ResourcesGrid({ user }) {
   const [resourceFilter, setResourceFilter] = useState("");
   const [selectedResource, setSelectedResource] = useState(0);
 
   const handleSetSelectedResource = (event, newValue) => {
     setSelectedResource(newValue);
   };
-  const [filteredTools, setFilteredTools] = useState(tools?.data?.data ?? []);
-  const [filteredDocuments, setFilteredDocuments] = useState(
-    documents?.data?.data ?? []
-  );
-  const [filteredDatasets, setFilteredDatasets] = useState(
-    datasets?.data?.data ?? []
-  );
-
-  useEffect(() => {
-    setFilteredDocuments(documents?.data?.data);
-    setFilteredDatasets(datasets?.data?.data);
-    setFilteredTools(tools?.data?.data);
-  }, [datasets?.data?.data, documents?.data?.data, tools?.data?.data]);
 
   function handleResourceFilterChange(value) {
     setResourceFilter(value);
-    if (value === "") {
-      setFilteredDocuments(documents?.data?.data);
-      setFilteredDatasets(datasets?.data?.data);
-      setFilteredTools(tools?.data?.data);
-    } else {
-      setFilteredDocuments(
-        documents?.data?.data?.filter((resource) =>
-          resource.zenodo_metadata?.title
-            .toLowerCase()
-            .includes(value.toLowerCase())
-        )
-      );
-      setFilteredDatasets(
-        datasets?.data?.data?.filter((dataset) =>
-          dataset.zenodo_metadata?.title
-            .toLowerCase()
-            .includes(value.toLowerCase())
-        )
-      );
-      setFilteredTools(
-        tools?.data?.data?.filter((tool) =>
-          tool.zenodo_metadata?.title.toLowerCase().includes(value.toLowerCase())
-        )
-      );
-    }
   }
   return (
     <>
@@ -143,44 +204,15 @@ export default function ResourcesGrid({ user }) {
         alignItems="start"
         sx={{ maxHeight: "75vh", overflow: "auto" }}
       >
-        {selectedResource == 0 && datasets.isLoading && (
-          <RectangularVariants count={4} />
-        )}
-        {selectedResource == 1 && documents.isLoading && (
-          <RectangularVariants count={4} />
-        )}
-        {selectedResource == 2 && tools.isLoading && (
-          <RectangularVariants count={4} />
+        {selectedResource == 0 && (
+          <Datasets user={user} filter={resourceFilter} />
         )}
 
-        {selectedResource == 0 &&
-          datasets?.isFetched &&
-          filteredDatasets?.map((dataset) => (
-            <ResourceGridItem
-              key={dataset._id}
-              resource={dataset}
-              type={"Dataset"}
-              user={user}
-            />
-          ))}
-        {selectedResource == 1 &&
-          filteredDocuments?.map((resource) => (
-            <ResourceGridItem
-              key={resource._id}
-              resource={resource}
-              type={"Document"}
-              user={user}
-            />
-          ))}
-        {selectedResource == 2 &&
-          filteredTools?.map((resource) => (
-            <ResourceGridItem
-              key={resource._id}
-              resource={resource}
-              type={"Tool"}
-              user={user}
-            />
-          ))}
+        {selectedResource == 1 && (
+          <Documents user={user} filter={resourceFilter} />
+        )}
+
+        {selectedResource == 2 && <Tools user={user} filter={resourceFilter} />}
       </Grid>
       {user && selectedResource == 0 && (
         <Button
