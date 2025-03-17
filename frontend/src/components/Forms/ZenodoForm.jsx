@@ -12,6 +12,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate, useOutletContext, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
@@ -151,7 +152,7 @@ export default function ZenodoForm() {
 
           <DialogActions sx={{ p: 2, pt: 0 }}>
             <Button
-              variant="contained"
+              variant="outlined"
               onClick={handleReset}
               endIcon={<RestartAltIcon />}
             >
@@ -161,11 +162,23 @@ export default function ZenodoForm() {
               type="submit"
               variant="contained"
               loading={zenodo?.isPending}
-              endIcon={<AddIcon />}
+              endIcon={<SearchIcon />}
               loadingPosition="end"
             >
               Search
             </Button>
+            {/* {zenodo?.isSuccess && zenodoData && (
+              <Button
+                type="submit"
+                color="success"
+                variant="contained"
+                loading={zenodo?.isPending}
+                endIcon={<AddIcon />}
+                loadingPosition="end"
+              >
+                Add
+              </Button>
+            )} */}
           </DialogActions>
         </Dialog>
         {(zenodo?.isSuccess || zenodo?.isError) && (
