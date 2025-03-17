@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import { useNavigate, useOutletContext, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
@@ -25,6 +26,7 @@ export default function ZenodoForm() {
     register,
     handleSubmit,
     setError,
+    reset,
     formState: { errors, setErr },
   } = useForm({ mode: "onBlur" });
 
@@ -37,6 +39,7 @@ export default function ZenodoForm() {
       {
         onSuccess: (data) => {
           setZenodoData(data?.data);
+          setMessage("Zendodo data received!");
         },
         onError: (error) => {
           setMessage(error?.response?.data?.detail);
@@ -49,6 +52,10 @@ export default function ZenodoForm() {
   };
   function handleClose() {
     navigate("..");
+  }
+  function handleReset() {
+    reset();
+    setZenodoData();
   }
 
   return (
@@ -101,7 +108,11 @@ export default function ZenodoForm() {
             />
           </DialogContent>
           {zenodoData && (
-            <DialogContent component={Stack} direction={"row"} sx={{ p: 2, textAlign: "center" }}>
+            <DialogContent
+              component={Stack}
+              direction={"row"}
+              sx={{ p: 2, textAlign: "center" }}
+            >
               <TextField
                 value={zenodoData?.doi}
                 disabled
@@ -140,21 +151,20 @@ export default function ZenodoForm() {
 
           <DialogActions sx={{ p: 2, pt: 0 }}>
             <Button
+              variant="contained"
+              onClick={handleReset}
+              endIcon={<RestartAltIcon />}
+            >
+              Reset
+            </Button>
+            <Button
               type="submit"
               variant="contained"
-              disabled={zenodo?.isPending}
+              loading={zenodo?.isPending}
+              endIcon={<AddIcon />}
+              loadingPosition="end"
             >
-              {zenodo?.isPending ? (
-                <>
-                  Searching Dataset
-                  <CircularProgress size="13px" sx={{ ml: 1 }} />
-                </>
-              ) : (
-                <>
-                  Search
-                  <AddIcon sx={{ ml: 1 }} />
-                </>
-              )}
+              Search
             </Button>
           </DialogActions>
         </Dialog>
