@@ -4,6 +4,14 @@ import {
   DialogTitle,
   Button,
   IconButton,
+  DialogContent,
+  TextField,
+  Stack,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormControl,
+  TextareaAutosize,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
@@ -89,6 +97,65 @@ export default function DatasetForm() {
           >
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
+          <DialogContent sx={{ p: 2, pb: 0 }}>
+            <Stack direction="row" useFlexGap spacing={2}>
+              <TextField
+                {...register("organization")}
+                label="Organization"
+                error={!!errors?.organization}
+                helperText={errors?.organization?.message ?? " "}
+              />
+              <FormControl fullWidth>
+                <InputLabel>Visibility</InputLabel>
+                <Select {...register("visibility")} label="Visiblity" fullWidth>
+                  <MenuItem value={"private"}>Private</MenuItem>
+                  <MenuItem value={"public"}>Public</MenuItem>
+                </Select>
+              </FormControl>
+            </Stack>
+            <Stack direction="row" useFlexGap spacing={2}>
+              <TextField
+                {...register("contact_person")}
+                label="Contact Person"
+                error={!!errors?.contact_person}
+                helperText={errors?.contact_person?.message ?? " "}
+                fullWidth
+              />
+              <TextField
+                {...register("contact_person_email")}
+                label="Contact Person Email"
+                error={!!errors?.contact_person_email}
+                helperText={errors?.contact_person_email?.message ?? " "}
+                fullWidth
+              />
+            </Stack>
+            <Stack direction="row" useFlexGap spacing={2}>
+              <TextField
+                {...register("documentation_url")}
+                label="Documentation Url"
+                error={!!errors?.documentation_url}
+                helperText={errors?.documentation_url?.message ?? " "}
+                fullWidth
+              />
+              <TextField
+                {...register("api_url")}
+                label="Api Url"
+                error={!!errors?.api_url}
+                helperText={errors?.api_url?.message ?? " "}
+                fullWidth
+              />
+            </Stack>
+            <Stack direction="row" useFlexGap spacing={2}>
+            <TextareaAutosize
+                {...register("api_url_instructions")}
+                label="Api Url Instructions"
+                error={!!errors?.api_url_instructions}
+                helperText={errors?.api_url_instructions?.message ?? " "}
+                fullWidth
+              />
+            </Stack>
+            
+          </DialogContent>
           <ZenodoForm
             zenodoData={zenodoData}
             setZenodoData={setZenodoData}
