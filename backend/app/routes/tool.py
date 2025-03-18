@@ -87,7 +87,7 @@ async def update_tool(
         return HTTPException(status_code=404, detail="Tool does not exist")
 
     fields = update.model_dump(exclude_unset=True)
-    print(fields)
+
     if "approved" in fields and not fields["approved"]:
         await tool.delete()
     else:

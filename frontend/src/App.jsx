@@ -22,9 +22,9 @@ function App() {
               <Route path="/login" element={<LoginForm />}></Route>
               <Route path="/register" element={<RegisterForm />}></Route>
               <Route path="/profile" element={<ProfileForm />}></Route>
-              <Route path="/dataset/add" element={<DatasetForm />}></Route>
-              <Route path="/document/add" element={<DocumentForm />}></Route>
-              <Route path="/tool/add" element={<ToolForm />}></Route>
+              <Route path="/dataset/add" element={<ZenodoForm />}></Route>
+              <Route path="/document/add" element={<ZenodoForm />}></Route>
+              <Route path="/tool/add" element={<ZenodoForm />}></Route>
               <Route path="/zenodo/add" element={<ZenodoForm />}></Route>
               <Route path="*" exact element={<Navigate to={"/"} />} />
             </Route>

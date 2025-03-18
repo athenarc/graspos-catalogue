@@ -1,7 +1,7 @@
 """Zenodo router."""
 
 from fastapi import APIRouter, HTTPException, Depends
-from models.zenodo import Zenodo
+from models.zenodo import Zenodo, ZenodoView
 from models.user import User
 from models.dataset import Dataset
 from beanie import PydanticObjectId
@@ -12,20 +12,58 @@ from util.requests import get_zenodo_data
 router = APIRouter(prefix="/api/v1/zenodo", tags=["Zenodo"])
 
 
-@router.get("/", status_code=200, response_model=list[Zenodo])
-async def get_all_zenodo_records() -> list[Zenodo]:
+@router.get("/", status_code=200)
+async def get_all_zenodo_records():
 
-    records = await Zenodo.find_all().to_list()
+    records = await Zenodo.find().to_list()
     return records
 
 
 @router.post("/search", status_code=200)
-async def post_zenodo_records(dataset: Dataset):
+async def post_zenodo_records(dataset: Dataset) -> Zenodo:
+
+    zenodo = await Zenodo.find_one(Zenodo.source == dataset.source)
+
+    if zenodo:
+        raise HTTPException(status_code=409,
+                            detail=str("Resource already exists"))
 
     try:
-       zenodo = Zenodo(source=dataset.source)
+
+        data = get_zenodo_data(dataset.source)
+        zenodo = Zenodo(**data["zenodo_object"])
+
     except ValueError as error:
-        raise HTTPException(status_code=400, detail=str(error)) 
-        
-    await zenodo.create()
+        raise HTTPException(status_code=400, detail=str(error))
+
     return zenodo
+
+
+@router.get("/{zenodo_id}",
+            responses={404: {
+                "detail": "Dataset does not exist"
+            }})
+async def get_zenodo(zenodo_id: PydanticObjectId) -> Zenodo:
+
+    zenodo = await Zenodo.get(zenodo_id)
+
+    if not zenodo:
+
+        return HTTPException(status_code=404,
+                             detail="Zenodo data does not exist")
+
+    return zenodo
+
+
+@router.delete("/{zenodo_id}", status_code=200)
+async def delete_zenodo(zenodo_id: str):
+
+    zenodo = await Zenodo.find_one(Zenodo.id == PydanticObjectId(zenodo_id))
+
+    if not zenodo:
+
+        return HTTPException(status_code=404,
+                             detail="Zenodo data does not exist")
+
+    await Zenodo.find_one(Zenodo.id == PydanticObjectId(zenodo_id)).delete()
+    return {"message": "Zenodo deleted successfully"}

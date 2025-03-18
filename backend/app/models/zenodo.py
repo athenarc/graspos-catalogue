@@ -2,12 +2,14 @@
 
 from beanie import Document
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from util.requests import get_zenodo_data
+from beanie import PydanticObjectId
 
 
 class ZenodoMetadata(BaseModel):
+
     title: str | None = None  #	"BIP! DB: A Dataset of Impact Measures for Research Products"
     doi: str | None = None  #	"10.5281/zenodo.14444109"
     publication_date: datetime | None = None  #	"2024-12-13"
@@ -26,9 +28,8 @@ class ZenodoMetadata(BaseModel):
 
 
 class Zenodo(BaseModel):
-
     source: str
-    created: datetime | None = None,  #"2024-12-14T07:58:16.324225+00:00",
+    created: datetime | None = None  #"2024-12-14T07:58:16.324225+00:00",
     modified: datetime | None = None,  #"2024-12-14T07:58:16.696455+00:00",
     zenodo_id: int | None = None,  #14444109,
     conceptrecid: str | None = None,  #"4386934",
@@ -50,16 +51,12 @@ class Zenodo(BaseModel):
     submitted: bool | None = None  #true,
 
 
-class Zenodo(Document, Zenodo):
+class ZenodoView(BaseModel):
 
-    def __init__(self, **data):
-        super().__init__(**data)
-        zenodo_request = get_zenodo_data(data["source"])
-        if zenodo_request["zenodo_object"]:
-            zenodo_request["zenodo_object"]["source"] = data["source"]
-            super().__init__(**zenodo_request["zenodo_object"])
-        else:
-            raise ValueError(zenodo_request["detail"])
+    source: str | None = None
+
+
+class Zenodo(Document, Zenodo, ZenodoView):
 
     class Settings:
         name = "zenodo"

@@ -3,13 +3,13 @@
 from beanie import Document
 from datetime import datetime
 from pydantic import BaseModel
-from beanie import PydanticObjectId
+from beanie import PydanticObjectId, Link
 from datetime import datetime
 from models.zenodo import Zenodo
 
 
 class Dataset(BaseModel):
-    source: str
+    source: str | None = None
     organization: str | None = None
     visibility: str | None = None
     api_url: str | None = None
@@ -17,7 +17,8 @@ class Dataset(BaseModel):
     documentation_url: str | None = None
     contact_person: str | None = None
     contact_person_email: str | None = None
-    zenodo_metadata: Zenodo | None = None 
+    # zenodo_id: PydanticObjectId | None = None
+    zenodo: Link[Zenodo] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None
@@ -34,7 +35,7 @@ class DatasetPatch(BaseModel):
 
 
 class DatasetView(BaseModel):
-    source: str
+    source: str | None = None
     organization: str | None = None
     visibility: str | None = None
     api_url: str | None = None
@@ -42,7 +43,8 @@ class DatasetView(BaseModel):
     documentation_url: str | None = None
     contact_person: str | None = None
     contact_person_email: str | None = None
-    zenodo_metadata: Zenodo | None = None 
+    # zenodo_id: PydanticObjectId | None = None
+    zenodo: Link[Zenodo] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None

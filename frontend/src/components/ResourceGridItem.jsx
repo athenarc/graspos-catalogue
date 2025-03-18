@@ -134,7 +134,7 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
 function ResourceItemsCommunities({ resource }) {
   return (
     <Stack direction={"row"} justifyContent="center" spacing={1}>
-      {resource?.zenodo_metadata?.metadata?.communities?.map((community) => (
+      {resource?.zenodo?.metadata?.communities?.map((community) => (
         <Tooltip
           key={community.id}
           title={"Part of " + community.id.replaceAll("-", " ")}
@@ -165,7 +165,7 @@ function ResourceItemHeader({ resource, user, type, handleDelete }) {
   return (
     <>
       <Stack direction={"row"} justifyContent="center" spacing={1}>
-        <Tooltip title={resource?.zenodo_metadata?.title}>
+        <Tooltip title={resource?.zenodo?.title}>
           <Typography
             variant="h6"
             sx={{
@@ -175,7 +175,7 @@ function ResourceItemHeader({ resource, user, type, handleDelete }) {
               maxWidth: 300,
             }}
           >
-            {resource?.zenodo_metadata?.title}
+            {resource?.zenodo?.title}
           </Typography>
         </Tooltip>
         {resource?.approved ? (
@@ -301,7 +301,7 @@ export default function ResourceGridItem({ resource, type, user }) {
             overflow: "auto",
           }}
         >
-          {resource?.zenodo_metadata?.metadata?.description}
+          {resource?.zenodo?.metadata?.description}
         </CardContent>
       )}
       <CardContent
@@ -319,10 +319,10 @@ export default function ResourceGridItem({ resource, type, user }) {
         <Tooltip title="Zenodo published date">
           <CalendarMonthIcon />
         </Tooltip>
-        {resource?.zenodo_metadata?.metadata?.publication_date && (
+        {resource?.zenodo?.metadata?.publication_date && (
           <Typography>
             {new Date(
-              resource?.zenodo_metadata?.metadata?.publication_date
+              resource?.zenodo?.metadata?.publication_date
             ).toLocaleDateString([], {
               year: "numeric",
               month: "numeric",
