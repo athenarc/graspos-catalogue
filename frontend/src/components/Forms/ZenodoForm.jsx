@@ -1,26 +1,19 @@
 import {
-  Dialog,
-  DialogActions,
   DialogContent,
-  DialogTitle,
   Button,
-  IconButton,
-  CircularProgress,
   TextField,
   Stack,
+  TextareaAutosize,
+  Typography,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import AddIcon from "@mui/icons-material/Add";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import { useNavigate, useOutletContext, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
-import Notification from "../Notification.jsx";
+import { useState } from "react";
 import { useZenodo } from "../../queries/zenodo.js";
-import { useCreateDataset } from "../../queries/dataset.js";
 
 function ZenodoData({ zenodoData }) {
   const [displayAuthors, setDisplayAuthors] = useState(false);
@@ -29,7 +22,14 @@ function ZenodoData({ zenodoData }) {
     setDisplayAuthors(!displayAuthors);
   }
   return (
-    <DialogContent sx={{ p: 4, textAlign: "center", backgroundColor: "beige" }}>
+    <DialogContent
+      sx={{
+        p: 2,
+        pb: 0,
+        textAlign: "center",
+        mt: "0 !important;",
+      }}
+    >
       <Stack direction={"column"} spacing={2} useFlexGap>
         <TextField
           value={zenodoData?.title}
@@ -48,7 +48,9 @@ function ZenodoData({ zenodoData }) {
           sx={{ mb: 2 }}
         />
         <TextField
-          value={new Date(zenodoData?.publication_date).toLocaleDateString()}
+          value={new Date(
+            zenodoData?.metadata?.publication_date
+          ).toLocaleDateString()}
           disabled
           label="Publication Date"
           fullWidth
@@ -72,15 +74,7 @@ function ZenodoData({ zenodoData }) {
           sx={{ mb: 2 }}
         />
       </Stack>
-      <Stack direction={"column"} useFlexGap>
-        <TextField
-          value={zenodoData?.metadata?.description}
-          disabled
-          label="Description"
-          fullWidth
-          sx={{ mb: 2 }}
-        />
-
+      <Stack direction="column" useFlexGap spacing={2} alignItems="end">
         <Button
           onClick={handleDisplayAuthors}
           endIcon={displayAuthors ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
@@ -88,19 +82,29 @@ function ZenodoData({ zenodoData }) {
         >
           Authors
         </Button>
+      </Stack>
+      <Stack direction="column" useFlexGap spacing={2}>
         {displayAuthors &&
           zenodoData?.metadata?.creators?.map((creator) => (
             <TextField
               value={creator?.name}
               disabled
               label="Author"
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, width: "100%" }}
+              fullWidth
             />
           ))}
       </Stack>
-      <Link target="_blank" to={zenodoData?.doi_url}>
-        View on Zenodo
-      </Link>
+      <Stack direction={"column"} useFlexGap>
+        <TextareaAutosize
+          value={zenodoData?.metadata?.description}
+          disabled
+          label="Description"
+          maxRows="4"
+          minRows="4"
+          sx={{ borderRadius: "20px !important" }}
+        />
+      </Stack>
     </DialogContent>
   );
 }
@@ -140,7 +144,7 @@ export default function ZenodoForm({ zenodoData, setZenodoData, setMessage }) {
 
   return (
     <>
-      <DialogContent sx={{ p: 2 }}>
+      <DialogContent sx={{ p: 2, mt: "0 !important;" }}>
         <TextField
           required
           {...register("source", {

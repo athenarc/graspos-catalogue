@@ -75,6 +75,7 @@ export default function DatasetForm() {
           noValidate
           onSubmit={handleSubmit(onSubmit)}
           fullWidth
+          maxWidth="md"
         >
           <DialogTitle
             sx={{
@@ -97,72 +98,81 @@ export default function DatasetForm() {
           >
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
-          <DialogContent sx={{ p: 2, pb: 0 }}>
-            <Stack direction="row" useFlexGap spacing={2}>
-              <TextField
-                {...register("organization")}
-                label="Organization"
-                error={!!errors?.organization}
-                helperText={errors?.organization?.message ?? " "}
-              />
-              <FormControl fullWidth>
-                <InputLabel>Visibility</InputLabel>
-                <Select {...register("visibility")} label="Visiblity" fullWidth>
-                  <MenuItem value={"private"}>Private</MenuItem>
-                  <MenuItem value={"public"}>Public</MenuItem>
-                </Select>
-              </FormControl>
-            </Stack>
-            <Stack direction="row" useFlexGap spacing={2}>
-              <TextField
-                {...register("contact_person")}
-                label="Contact Person"
-                error={!!errors?.contact_person}
-                helperText={errors?.contact_person?.message ?? " "}
-                fullWidth
-              />
-              <TextField
-                {...register("contact_person_email")}
-                label="Contact Person Email"
-                error={!!errors?.contact_person_email}
-                helperText={errors?.contact_person_email?.message ?? " "}
-                fullWidth
-              />
-            </Stack>
-            <Stack direction="row" useFlexGap spacing={2}>
-              <TextField
-                {...register("documentation_url")}
-                label="Documentation Url"
-                error={!!errors?.documentation_url}
-                helperText={errors?.documentation_url?.message ?? " "}
-                fullWidth
-              />
-              <TextField
-                {...register("api_url")}
-                label="Api Url"
-                error={!!errors?.api_url}
-                helperText={errors?.api_url?.message ?? " "}
-                fullWidth
-              />
-            </Stack>
-            <Stack direction="row" useFlexGap spacing={2}>
-            <TextareaAutosize
-                {...register("api_url_instructions")}
-                label="Api Url Instructions"
-                error={!!errors?.api_url_instructions}
-                helperText={errors?.api_url_instructions?.message ?? " "}
-                fullWidth
-              />
-            </Stack>
-            
-          </DialogContent>
-          <ZenodoForm
-            zenodoData={zenodoData}
-            setZenodoData={setZenodoData}
-            setMessage={setMessage}
-          />
-
-          <DialogActions sx={{ p: 2 }}>
+          <Stack direction="column" spacing={2}>
+            <ZenodoForm
+              zenodoData={zenodoData}
+              setZenodoData={setZenodoData}
+              setMessage={setMessage}
+            />
+            {zenodoData && (
+              <DialogContent sx={{ p: 2, mt: "0 !important;" }}>
+                <Stack direction="row" useFlexGap spacing={1}>
+                  <TextField
+                    {...register("organization")}
+                    label="Organization"
+                    error={!!errors?.organization}
+                    helperText={errors?.organization?.message ?? " "}
+                  />
+                  <FormControl fullWidth>
+                    <InputLabel>Visibility</InputLabel>
+                    <Select
+                      {...register("visibility")}
+                      label="Visiblity"
+                      fullWidth
+                      value="public"
+                    >
+                      <MenuItem value={"private"}>Private</MenuItem>
+                      <MenuItem value={"public"}>Public</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Stack>
+                <Stack direction="row" useFlexGap spacing={2}>
+                  <TextField
+                    {...register("contact_person")}
+                    label="Contact Person"
+                    error={!!errors?.contact_person}
+                    helperText={errors?.contact_person?.message ?? " "}
+                    fullWidth
+                  />
+                  <TextField
+                    {...register("contact_person_email")}
+                    label="Contact Person Email"
+                    error={!!errors?.contact_person_email}
+                    helperText={errors?.contact_person_email?.message ?? " "}
+                    fullWidth
+                  />
+                </Stack>
+                <Stack direction="row" useFlexGap spacing={2}>
+                  <TextField
+                    {...register("documentation_url")}
+                    label="Documentation Url"
+                    error={!!errors?.documentation_url}
+                    helperText={errors?.documentation_url?.message ?? " "}
+                    fullWidth
+                  />
+                  <TextField
+                    {...register("api_url")}
+                    label="Api Url"
+                    error={!!errors?.api_url}
+                    helperText={errors?.api_url?.message ?? " "}
+                    fullWidth
+                  />
+                </Stack>
+                <Stack direction="row" useFlexGap spacing={2}>
+                  <FormControl fullWidth>
+                    <TextareaAutosize
+                      {...register("api_url_instructions")}
+                      label="Api Url Instructions"
+                      maxRows="6"
+                      minRows="6"
+                      placeholder="Api Url Instructions"
+                    />
+                  </FormControl>
+                </Stack>
+              </DialogContent>
+            )}
+          </Stack>
+          <DialogActions sx={{ p: 2, pt: 0 }}>
             <Button
               type="submit"
               variant="contained"
