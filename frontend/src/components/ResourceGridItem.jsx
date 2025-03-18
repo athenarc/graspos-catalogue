@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useState } from "react";
 
 import {
@@ -175,7 +176,9 @@ function ResourceItemHeader({ resource, user, type, handleDelete }) {
               maxWidth: 300,
             }}
           >
-            {resource?.zenodo?.title}
+            <Link target="_blank" to={resource?.zenodo?.doi_url}>
+              {resource?.zenodo?.title}
+            </Link>
           </Typography>
         </Tooltip>
         {resource?.approved ? (
@@ -329,6 +332,9 @@ export default function ResourceGridItem({ resource, type, user }) {
               day: "numeric",
             })}
           </Typography>
+        )}
+        {resource?.zenodo?.metadata?.version && (
+          <Typography>(v.{resource?.zenodo?.metadata?.version})</Typography>
         )}
       </CardContent>
       <CardContent
