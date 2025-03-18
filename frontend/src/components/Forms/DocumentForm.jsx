@@ -110,7 +110,7 @@ export default function DocumentForm() {
                     {...register("format")}
                     label="Format"
                     fullWidth
-                    value="csv"
+                    defaultValue="csv"
                   >
                     <MenuItem value={"csv"}>CSV</MenuItem>
                     <MenuItem value={"pdf"}>PDF</MenuItem>

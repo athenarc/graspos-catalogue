@@ -173,7 +173,7 @@ function ResourceItemHeader({ resource, user, type, handleDelete }) {
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
-              maxWidth: 300,
+              maxWidth: "25vw"
             }}
           >
             <Link target="_blank" to={resource?.zenodo?.doi_url}>
@@ -242,7 +242,7 @@ export default function ResourceGridItem({ resource, type, user }) {
     <Grid
       key={resource?._id}
       component={Card}
-      size={{ xs: 12, md: 3 }}
+      size={{ xs: 12, md: 4 }}
       sx={{
         backgroundColor: "white",
         borderRadius: "10px",

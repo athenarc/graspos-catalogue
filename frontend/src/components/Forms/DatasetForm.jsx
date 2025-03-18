@@ -119,7 +119,7 @@ export default function DatasetForm() {
                       {...register("visibility")}
                       label="Visiblity"
                       fullWidth
-                      value="public"
+                      defaultValue="public"
                     >
                       <MenuItem value={"private"}>Private</MenuItem>
                       <MenuItem value={"public"}>Public</MenuItem>
