@@ -17,7 +17,6 @@ class Dataset(BaseModel):
     documentation_url: str | None = None
     contact_person: str | None = None
     contact_person_email: str | None = None
-    # zenodo_id: PydanticObjectId | None = None
     zenodo: Link[Zenodo] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
@@ -43,7 +42,6 @@ class DatasetView(BaseModel):
     documentation_url: str | None = None
     contact_person: str | None = None
     contact_person_email: str | None = None
-    # zenodo_id: PydanticObjectId | None = None
     zenodo: Link[Zenodo] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()

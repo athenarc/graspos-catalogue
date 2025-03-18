@@ -3,7 +3,7 @@
 from beanie import Document
 from datetime import datetime
 from pydantic import BaseModel
-from beanie import PydanticObjectId
+from beanie import PydanticObjectId, Link
 from datetime import datetime
 from models.zenodo import Zenodo
 
@@ -11,7 +11,7 @@ from models.zenodo import Zenodo
 class Tool(BaseModel):
     doi: str | None = None
     source: str | None = None
-    zenodo_metadata: Zenodo | None = None
+    zenodo: Link[Zenodo] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None
@@ -26,7 +26,7 @@ class ToolPatch(BaseModel):
 class ToolView(BaseModel):
     doi: str | None = None
     source: str | None = None
-    zenodo_metadata: Zenodo | None = None
+    zenodo: Link[Zenodo] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None

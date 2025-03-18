@@ -3,7 +3,7 @@
 from beanie import Document
 from datetime import datetime
 from pydantic import BaseModel
-from beanie import PydanticObjectId
+from beanie import PydanticObjectId, Link
 from datetime import datetime
 from typing import Optional
 from models.zenodo import Zenodo
@@ -15,6 +15,7 @@ class Documents(BaseModel):
     format: str | None = None
     url: str | None = None
     created: Optional[datetime] = None
+    zenodo: Link[Zenodo] | None = None
     date_last_updated: Optional[datetime] = None
     metadata_last_updated: Optional[datetime] = None
     created_at: datetime | None = datetime.now()
@@ -27,6 +28,7 @@ class DocumentsPatch(BaseModel):
     source: str | None = None
     zenodo_metadata: Zenodo | None = None 
     created: Optional[datetime] | None = None
+    zenodo: Link[Zenodo] | None = None
     date_last_updated: Optional[datetime] | None = None
     metadata_last_updated: Optional[datetime] | None = None
     created_at: datetime | None = datetime.now()

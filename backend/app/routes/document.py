@@ -4,9 +4,10 @@ from fastapi import APIRouter, HTTPException, Depends
 from models.document import Documents, DocumentsPatch
 from models.user import User
 from models.zenodo import Zenodo
-from beanie import PydanticObjectId
+from beanie import PydanticObjectId, DeleteRules
 from jwt import access_security
 from util.current_user import current_user
+from util.requests import get_zenodo_data
 
 router = APIRouter(prefix="/api/v1/document", tags=["Documents"])
 
@@ -14,7 +15,8 @@ router = APIRouter(prefix="/api/v1/document", tags=["Documents"])
 @router.get("/", status_code=200, response_model=list[Documents])
 async def get_all_documents() -> list[Documents]:
 
-    documents = await Documents.find(Documents.approved == True).to_list()
+    documents = await Documents.find(Documents.approved == True,
+                                     fetch_links=True).to_list()
 
     return documents
 
@@ -24,10 +26,10 @@ async def get_all_documents_admin(user: User = Depends(
     current_user)) -> list[Documents]:
 
     if user.super_user:
-        documents = await Documents.find_all().to_list()
+        documents = await Documents.find_all(fetch_links=True).to_list()
     else:
         search = {"$or": [{"approved": True}, {"owner": user.id}]}
-        documents = await Documents.find(search).to_list()
+        documents = await Documents.find(search, fetch_links=True).to_list()
 
     return documents
 
@@ -35,14 +37,17 @@ async def get_all_documents_admin(user: User = Depends(
 @router.post("/", status_code=201)
 async def create_document(
     document: Documents, user: User = Depends(current_user)) -> Documents:
+    zenodo = None
 
     try:
-       zenodo = Zenodo(source=document.source)
+        zenodo = Zenodo(source=document.source)
     except ValueError as error:
-        raise HTTPException(status_code=400, detail=str(error)) 
+        raise HTTPException(status_code=400, detail=str(error))
+
+    data = get_zenodo_data(document.source)
+    zenodo = Zenodo(**data["zenodo_object"])
     await zenodo.create()
-    
-    document.zenodo_metadata = zenodo
+    document.zenodo = zenodo
     document.owner = user.id
     if user.super_user:
         document.approved = True
@@ -69,15 +74,15 @@ async def get_document(document_id: PydanticObjectId) -> Documents:
 @router.delete("/{document_id}", status_code=204)
 async def delete_document(document_id: PydanticObjectId,
                           user: User = Depends(current_user)):
-    document_to_delete = await Documents.get(document_id)
+    document_to_delete = await Documents.get(document_id, fetch_links=True)
 
     if not document_to_delete:
 
         return HTTPException(status_code=404,
                              detail="Documents does not exist")
 
-    await document_to_delete.delete()
-    return {"message": "Documents successfully deleted"}
+    await document_to_delete.delete(link_rule=DeleteRules.DELETE_LINKS)
+    return {"message": "Document successfully deleted"}
 
 
 @router.patch("/{document_id}", status_code=200)
