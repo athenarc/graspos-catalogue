@@ -172,18 +172,20 @@ export default function DatasetForm() {
               </DialogContent>
             )}
           </Stack>
-          <DialogActions sx={{ p: 2, pt: 0 }}>
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={!zenodoData}
-              loading={createDataset?.isPending}
-              endIcon={<AddIcon />}
-              loadingPosition="end"
-            >
-              Create
-            </Button>
-          </DialogActions>
+          {zenodoData && (
+            <DialogActions sx={{ p: 2, pt: 0 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={!zenodoData}
+                loading={createDataset?.isPending}
+                endIcon={<AddIcon />}
+                loadingPosition="end"
+              >
+                Create
+              </Button>
+            </DialogActions>
+          )}
         </Dialog>
         {(createDataset?.isSuccess || createDataset?.isError) && (
           <Notification
