@@ -76,7 +76,7 @@ export default function ProfileForm() {
         >
           <DialogTitle
             sx={{
-              backgroundColor: "#338BCB",
+              backgroundColor: "#20477B",
               color: "white",
               textAlign: "center",
             }}
@@ -154,6 +154,7 @@ export default function ProfileForm() {
               type="submit"
               variant="contained"
               disabled={updateUser.isLoading}
+              sx={{ backgroundColor: "#20477B" }}
             >
               {updateUser.isLoading ? (
                 <>

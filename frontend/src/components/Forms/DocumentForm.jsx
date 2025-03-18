@@ -77,7 +77,7 @@ export default function DocumentForm() {
         >
           <DialogTitle
             sx={{
-              backgroundColor: "#338BCB",
+              backgroundColor: "#20477B",
               color: "white",
               textAlign: "center",
             }}
