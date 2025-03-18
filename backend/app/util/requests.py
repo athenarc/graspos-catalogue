@@ -4,7 +4,7 @@ import requests, ast
 def get_zenodo_data(source):
 
     if "https://zenodo.org/records/" in source:
-        source = source.replace("/records/", "/api/records/")
+        source = source.replace("/records/", "/api/records/") + ("/versions/latest")
     request = None
     try:
         request = requests.get(source)
