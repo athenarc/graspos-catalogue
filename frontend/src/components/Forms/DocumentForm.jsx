@@ -4,6 +4,12 @@ import {
   DialogTitle,
   Button,
   IconButton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Stack,
+  DialogContent,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
@@ -67,6 +73,7 @@ export default function DocumentForm() {
           noValidate
           onSubmit={handleSubmit(onSubmit)}
           fullWidth
+          maxWidth="md"
         >
           <DialogTitle
             sx={{
@@ -94,20 +101,42 @@ export default function DocumentForm() {
             setZenodoData={setZenodoData}
             setMessage={setMessage}
           />
-
-          <DialogActions sx={{ p: 2 }}>
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={!zenodoData}
-              loading={createDocument?.isPending}
-              endIcon={<AddIcon />}
-              loadingPosition="end"
-            >
-              Create
-            </Button>
-          </DialogActions>
+          {zenodoData && (
+            <DialogContent sx={{ p: 2, mt: "0 !important;" }}>
+              <Stack direction="row" useFlexGap spacing={1}>
+                <FormControl fullWidth>
+                  <InputLabel>Format</InputLabel>
+                  <Select
+                    {...register("format")}
+                    label="Format"
+                    fullWidth
+                    value="csv"
+                  >
+                    <MenuItem value={"csv"}>CSV</MenuItem>
+                    <MenuItem value={"pdf"}>PDF</MenuItem>
+                    <MenuItem value={"xls"}>XLS</MenuItem>
+                    <MenuItem value={"json"}>JSON</MenuItem>
+                  </Select>
+                </FormControl>
+              </Stack>
+            </DialogContent>
+          )}
+          {zenodoData && (
+            <DialogActions sx={{ p: 2 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={!zenodoData}
+                loading={createDocument?.isPending}
+                endIcon={<AddIcon />}
+                loadingPosition="end"
+              >
+                Create
+              </Button>
+            </DialogActions>
+          )}
         </Dialog>
+
         {(createDocument?.isSuccess || createDocument?.isError) && (
           <Notification
             requestStatus={createDocument?.status}

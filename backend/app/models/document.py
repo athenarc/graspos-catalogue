@@ -11,7 +11,6 @@ from models.zenodo import Zenodo
 
 class Documents(BaseModel):
     source: str
-    zenodo_metadata: Zenodo | None = None 
     format: str | None = None
     url: str | None = None
     created: Optional[datetime] = None
@@ -26,7 +25,8 @@ class Documents(BaseModel):
 
 class DocumentsPatch(BaseModel):
     source: str | None = None
-    zenodo_metadata: Zenodo | None = None 
+    format: str | None = None
+    url: str | None = None
     created: Optional[datetime] | None = None
     zenodo: Link[Zenodo] | None = None
     date_last_updated: Optional[datetime] | None = None
