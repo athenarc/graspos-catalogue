@@ -351,50 +351,54 @@ export default function ResourceGridItem({ resource, type, user }) {
   }
 
   return (
-    <Grid
-      key={resource?._id}
-      component={Card}
-      size={{ xs: 12, md: 4 }}
-      sx={{
-        borderRadius: "10px",
-      }}
-    >
-      <CardContent
-        component={Typography}
-        variant={"subtitle2"}
+    <Grid key={resource?._id} size={{ xs: 10, md: 4 }}>
+      <Card
         sx={{
-          p: 0.5,
-          paddingBottom: "4px !important;",
-          color: "#fff",
-          textAlign: "center",
-          m: "auto",
-          height: "22px",
-          backgroundColor: [
-            type == "Dataset"
-              ? "#FFC067"
-              : type == "Document"
-              ? "#2B3A57"
-              : "#FF6961",
-          ],
+          height: "100%",
+          flexDirection: "column",
+          display: "flex",
+          justifyContent: "space-between",
+          borderRadius: "10px",
         }}
       >
-        {type.toUpperCase()}
-      </CardContent>
-      <CardContent
-        sx={{
-          backgroundColor: "white",
-          paddingBottom: "16px !important;",
-        }}
-      >
-        <ResourceItemHeader
-          handleDelete={handleDelete}
-          resource={resource}
-          user={user}
-          type={type}
-        />
-        <ResourceItemContent resource={resource} />
-        <ResourceItemFooter resource={resource} user={user} />
-      </CardContent>
+        <CardContent>
+          <Typography
+            variant={"subtitle2"}
+            sx={{
+              p: 1,
+              mb: 2,
+              color: "#fff",
+              textAlign: "center",
+              borderRadius: "1px",
+              height: "22px",
+              backgroundColor: [
+                type == "Dataset"
+                  ? "#FFC067"
+                  : type == "Document"
+                  ? "#2B3A57"
+                  : "#FF6961",
+              ],
+            }}
+          >
+            {type.toUpperCase()}
+          </Typography>
+          <ResourceItemHeader
+            handleDelete={handleDelete}
+            resource={resource}
+            user={user}
+            type={type}
+          />
+          <ResourceItemContent resource={resource} />
+        </CardContent>
+        <CardContent
+          sx={{
+            backgroundColor: "white",
+            paddingBottom: "16px !important;",
+          }}
+        >
+          <ResourceItemFooter resource={resource} user={user} />
+        </CardContent>
+      </Card>
     </Grid>
   );
 }
