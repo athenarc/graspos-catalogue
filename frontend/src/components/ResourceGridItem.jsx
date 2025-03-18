@@ -10,6 +10,7 @@ import {
   Stack,
   Tooltip,
   IconButton,
+  CardActions,
 } from "@mui/material";
 
 import { useUserUsername } from "../queries/data";
@@ -47,6 +48,7 @@ const imgs = {
   "graspos-tools": grasposTools,
   pathos: pathos,
 };
+
 function AdminFunctionalities({ type, resource }) {
   const updateDataset = useUpdateDataset(resource?._id);
   const updateDocument = useUpdateDocument(resource?._id);
@@ -148,8 +150,6 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
 }
 
 function ResourceItemsCommunities({ resource }) {
-  console.log(resource?.zenodo?.metadata?.title);
-  console.log(resource?.zenodo?.metadata?.communities);
   return (
     <Stack direction={"row"} justifyContent="center" spacing={1}>
       {resource?.zenodo?.metadata?.communities?.map((community) => (
@@ -171,153 +171,11 @@ function ResourceItemsCommunities({ resource }) {
   );
 }
 
-function ResourceItemHeader({ resource, user, type, handleDelete }) {
+function ResourceItemFooter({ resource, user }) {
+  const ownerUsername = useUserUsername(resource?.owner, user);
   return (
     <>
-      <Stack direction={"row"} justifyContent="center" spacing={1}>
-        <Tooltip title={resource?.zenodo?.title}>
-          <Typography
-            variant="h6"
-            sx={{
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              maxWidth: "25vw",
-            }}
-          >
-            <Link target="_blank" to={resource?.zenodo?.doi_url}>
-              {resource?.zenodo?.title}
-            </Link>
-          </Typography>
-        </Tooltip>
-        {resource?.approved ? (
-          <Tooltip title="Resource approved">
-            <CheckCircleIcon color="success" fontSize="small" />
-          </Tooltip>
-        ) : (
-          <Tooltip title="Resource pending approval">
-            <PendingActionsIcon color="warning" fontSize="small" />
-          </Tooltip>
-        )}
-      </Stack>
       <Stack
-        component={Stack}
-        direction={"row"}
-        spacing={0}
-        sx={{ p: "0!important" }}
-      >
-        {!resource?.approved && user?.super_user ? (
-          <AdminFunctionalities resource={resource} type={type} />
-        ) : (
-          <OwnerFunctionalities
-            handleDelete={handleDelete}
-            resource={resource}
-            user={user}
-            type={type}
-          />
-        )}
-      </Stack>
-    </>
-  );
-}
-
-export default function ResourceGridItem({ resource, type, user }) {
-  const ownerUsername = useUserUsername(resource?.owner, user);
-  const deleteDatasest = useDeleteDataset();
-  const deleteDocument = useDeleteDocument();
-  const deleteTool = useDeleteTool();
-  const [showDescription, setShowDescription] = useState(false);
-
-  let query = null;
-
-  function handleDelete(id) {
-    if (type === "Document") {
-      query = deleteDocument;
-    } else if (type === "Dataset") {
-      query = deleteDatasest;
-    } else {
-      query = deleteTool;
-    }
-    query.mutate(
-      { id },
-      {
-        onSuccess: (data) => {},
-        onError: (e) => {},
-      }
-    );
-  }
-
-  return (
-    <Grid
-      key={resource?._id}
-      component={Card}
-      size={{ xs: 12, md: 4 }}
-      sx={{
-        backgroundColor: "white",
-        borderRadius: "10px",
-        backgroundColor: [
-          type == "Dataset"
-            ? "#FFC067"
-            : type == "Document"
-            ? "#2B3A57"
-            : "#FF6961",
-        ],
-      }}
-    >
-      <CardContent
-        component={Stack}
-        direction={"row"}
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ backgroundColor: "white", pb: 2 }}
-      >
-        <ResourceItemHeader
-          handleDelete={handleDelete}
-          resource={resource}
-          user={user}
-          type={type}
-        />
-      </CardContent>
-
-      <CardContent
-        component={Stack}
-        direction={"row"}
-        justifyContent="space-between"
-        alignItems="center"
-        spacing={1}
-        sx={{
-          py: 1,
-          pb: 0,
-          backgroundColor: "white",
-          borderBottom: "1px solid grey",
-        }}
-      >
-        <Typography variant="subtitle1" sx={{ fontStyle: "italic" }}>
-          More Information
-        </Typography>
-        <IconButton
-          onClick={() => {
-            setShowDescription(!showDescription);
-          }}
-        >
-          {showDescription && <KeyboardArrowUpIcon />}
-          {!showDescription && <KeyboardArrowDownIcon />}
-        </IconButton>
-      </CardContent>
-      {showDescription && (
-        <CardContent
-          sx={{
-            backgroundColor: "beige",
-            p: 2,
-            height: "50px",
-            overflow: "auto",
-          }}
-        >
-          {resource?.zenodo?.metadata?.description}
-        </CardContent>
-      )}
-      <CardContent
-        component={Stack}
         direction={"row"}
         justifyContent="start"
         alignItems="center"
@@ -345,50 +203,197 @@ export default function ResourceGridItem({ resource, type, user }) {
         {resource?.zenodo?.metadata?.version && (
           <Typography>(v.{resource?.zenodo?.metadata?.version})</Typography>
         )}
-      </CardContent>
-      <CardContent
-        component={Stack}
+      </Stack>
+      <Stack
         direction={"row"}
         spacing={1}
         justifyContent="space-between"
         alignItems="center"
         sx={{ backgroundColor: "white", pt: 2 }}
       >
-        <CardContent
-          component={Stack}
-          direction={"row"}
-          spacing={1}
-          sx={{ p: "0!important" }}
-        >
+        <Stack direction={"row"} spacing={1} sx={{ p: "0!important" }}>
           <Tooltip title={"User that uploaded the resource"}>
             <CloudUploadIcon />
           </Tooltip>
           <Typography>
             {user ? ownerUsername?.data?.data?.username : "N/A"}
           </Typography>
-        </CardContent>
-        <CardContent
-          component={Stack}
-          direction={"row"}
-          spacing={1}
-          sx={{ p: "0!important" }}
-        >
+        </Stack>
+        <Stack direction={"row"} spacing={1} sx={{ p: "0!important" }}>
           <ResourceItemsCommunities resource={resource} />
-        </CardContent>
-      </CardContent>
+        </Stack>
+      </Stack>
+    </>
+  );
+}
+function ResourceItemContent({ resource }) {
+  const [showDescription, setShowDescription] = useState(false);
+  return (
+    <>
+      <Stack
+        direction={"row"}
+        justifyContent="space-between"
+        alignItems="center"
+        spacing={1}
+        sx={{
+          py: 1,
+          pb: 0,
+          backgroundColor: "white",
+          borderBottom: "1px solid grey",
+        }}
+      >
+        <Typography variant="subtitle1" sx={{ fontStyle: "italic" }}>
+          More Information
+        </Typography>
+        <IconButton
+          onClick={() => {
+            setShowDescription(!showDescription);
+          }}
+        >
+          {showDescription && <KeyboardArrowUpIcon />}
+          {!showDescription && <KeyboardArrowDownIcon />}
+        </IconButton>
+      </Stack>
+      {showDescription && (
+        <Stack
+          direction="row"
+          sx={{
+            backgroundColor: "beige",
+            p: 2,
+            height: "50px",
+            overflow: "auto",
+          }}
+        >
+          {resource?.zenodo?.metadata?.description}
+        </Stack>
+      )}
+      <Stack direction="row">
+        {resource?.zenodo?.metadata?.creators?.map(
+          (author) => author?.name + "; "
+        )}
+      </Stack>
+    </>
+  );
+}
+
+function ResourceItemHeader({ resource, user, type, handleDelete }) {
+  return (
+    <Stack
+      direction={"row"}
+      justifyContent="space-between"
+      alignItems="center"
+      pb={2}
+    >
+      <Stack direction={"row"} justifyContent="center" spacing={1}>
+        <Tooltip title={resource?.zenodo?.title}>
+          <Typography
+            variant="h6"
+            sx={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: "25vw",
+            }}
+          >
+            <Link target="_blank" to={resource?.zenodo?.doi_url}>
+              {resource?.zenodo?.title}
+            </Link>
+          </Typography>
+        </Tooltip>
+        {resource?.approved ? (
+          <Tooltip title="Resource approved">
+            <CheckCircleIcon color="success" fontSize="small" />
+          </Tooltip>
+        ) : (
+          <Tooltip title="Resource pending approval">
+            <PendingActionsIcon color="warning" fontSize="small" />
+          </Tooltip>
+        )}
+      </Stack>
+      <Stack direction={"row"} spacing={0} sx={{ p: "0!important" }}>
+        {!resource?.approved && user?.super_user ? (
+          <AdminFunctionalities resource={resource} type={type} />
+        ) : (
+          <OwnerFunctionalities
+            handleDelete={handleDelete}
+            resource={resource}
+            user={user}
+            type={type}
+          />
+        )}
+      </Stack>
+    </Stack>
+  );
+}
+
+export default function ResourceGridItem({ resource, type, user }) {
+  const deleteDatasest = useDeleteDataset();
+  const deleteDocument = useDeleteDocument();
+  const deleteTool = useDeleteTool();
+
+  let query = null;
+
+  function handleDelete(id) {
+    if (type === "Document") {
+      query = deleteDocument;
+    } else if (type === "Dataset") {
+      query = deleteDatasest;
+    } else {
+      query = deleteTool;
+    }
+    query.mutate(
+      { id },
+      {
+        onSuccess: (data) => {},
+        onError: (e) => {},
+      }
+    );
+  }
+
+  return (
+    <Grid
+      key={resource?._id}
+      component={Card}
+      size={{ xs: 12, md: 4 }}
+      sx={{
+        borderRadius: "10px",
+      }}
+    >
       <CardContent
         component={Typography}
         variant={"subtitle2"}
         sx={{
           p: 0.5,
           paddingBottom: "4px !important;",
-          color: "white",
+          color: "#fff",
           textAlign: "center",
           m: "auto",
           height: "22px",
+          backgroundColor: [
+            type == "Dataset"
+              ? "#FFC067"
+              : type == "Document"
+              ? "#2B3A57"
+              : "#FF6961",
+          ],
         }}
       >
         {type.toUpperCase()}
+      </CardContent>
+      <CardContent
+        sx={{
+          backgroundColor: "white",
+          paddingBottom: "16px !important;",
+        }}
+      >
+        <ResourceItemHeader
+          handleDelete={handleDelete}
+          resource={resource}
+          user={user}
+          type={type}
+        />
+        <ResourceItemContent resource={resource} />
+        <ResourceItemFooter resource={resource} user={user} />
       </CardContent>
     </Grid>
   );
