@@ -3,10 +3,12 @@
 from fastapi import APIRouter, HTTPException, Depends
 from models.tool import Tool, ToolPatch
 from models.user import User
-from beanie import PydanticObjectId
+from models.zenodo import Zenodo
+from beanie import PydanticObjectId, DeleteRules
 from jwt import access_security
 from util.current_user import current_user
 from typing import Annotated
+from util.requests import get_zenodo_data
 
 router = APIRouter(prefix="/api/v1/tool", tags=["Tool"])
 
@@ -14,7 +16,7 @@ router = APIRouter(prefix="/api/v1/tool", tags=["Tool"])
 @router.get("/", status_code=200, response_model=list[Tool])
 async def get_all_tools() -> list[Tool]:
 
-    tools = await Tool.find(Tool.approved == True).to_list()
+    tools = await Tool.find(Tool.approved == True, fetch_links=True).to_list()
     return tools
 
 
@@ -23,24 +25,28 @@ async def get_all_tools_admin(user: User = Depends(
     current_user)) -> list[Tool]:
 
     if user.super_user:
-        tools = await Tool.find_all().to_list()
+        tools = await Tool.find_all(fetch_links=True).to_list()
     else:
         search = {"$or": [{"approved": True}, {"owner": user.id}]}
-        tools = await Tool.find(search).to_list()
+        tools = await Tool.find(search, fetch_links=True).to_list()
 
     return tools
 
 
 @router.post("/", status_code=201)
 async def create_tool(tool: Tool, user: User = Depends(current_user)):
+    zenodo = None
+    try:
+        zenodo = Zenodo(source=tool.source)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error))
 
-    url_validation = tool.get_data(tool.source)
-
-    if url_validation["status"] is not 200:
-        raise HTTPException(status_code=url_validation["status"],
-                            detail=url_validation["detail"])
-
-    tool = tool.update_from_zenodo(url_validation["resource"])
+    data = get_zenodo_data(tool.source)
+    if data["status"] is not 200:
+        raise HTTPException(status_code=data["status"], detail=data["detail"])
+    zenodo = Zenodo(**data["zenodo_object"])
+    await zenodo.create()
+    tool.zenodo = zenodo
     tool.owner = user.id
     if user.super_user:
         tool.approved = True
@@ -64,13 +70,13 @@ async def get_tool(tool_id: PydanticObjectId) -> Tool:
 async def delete_tool(tool_id: PydanticObjectId,
                       user: User = Depends(current_user)):
 
-    tool_to_delete = await Tool.get(tool_id)
+    tool_to_delete = await Tool.get(tool_id, fetch_links=True)
 
     if not tool_to_delete:
 
         return HTTPException(status_code=404, detail="Tool does not exist")
 
-    await tool_to_delete.delete()
+    await tool_to_delete.delete(link_rule=DeleteRules.DELETE_LINKS)
     return {"message": "Tool successfully deleted"}
 
 
@@ -86,7 +92,7 @@ async def update_tool(
         return HTTPException(status_code=404, detail="Tool does not exist")
 
     fields = update.model_dump(exclude_unset=True)
-    print(fields)
+
     if "approved" in fields and not fields["approved"]:
         await tool.delete()
     else:

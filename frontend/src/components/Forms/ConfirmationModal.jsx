@@ -63,7 +63,7 @@ export default function ConfirmationModal(props) {
           </IconButton>
           <DialogContent sx={{ p: 2 }}>
             <DialogContentText>
-              Are you sure you want to delete <b>{props?.resource?.title}</b>?
+              Are you sure you want to delete <b>{props?.resource?.zenodo_metadata?.title}</b>?
             </DialogContentText>
           </DialogContent>
           <DialogActions sx={{ p: 2 }}>

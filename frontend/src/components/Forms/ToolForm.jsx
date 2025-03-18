@@ -1,33 +1,37 @@
 import {
   Dialog,
   DialogActions,
-  DialogContent,
   DialogTitle,
   Button,
   IconButton,
-  CircularProgress,
-  TextField,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useCreateTool } from "../../queries/tool.js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Notification from "../Notification.jsx";
+import ZenodoForm from "./ZenodoForm.jsx";
+import { useCreateTool } from "../../queries/tool.js";
 
 export default function ToolForm() {
   const [message, setMessage] = useState("");
+  const [zenodoData, setZenodoData] = useState();
   const { user } = useOutletContext();
   const {
     register,
     handleSubmit,
     setError,
+    setValue,
+    reset,
     formState: { errors, setErr },
   } = useForm({ mode: "onBlur" });
-
   const navigate = useNavigate();
   const createTool = useCreateTool();
+
+  useEffect(() => {
+    setValue("source", zenodoData?.source);
+  }, [zenodoData]);
 
   const onSubmit = (data) => {
     createTool.mutate(
@@ -40,9 +44,10 @@ export default function ToolForm() {
           }, 1000);
         },
         onError: (error) => {
-          setMessage(error?.response?.data?.detail);
-          setError("title", {
-            message: error?.response?.data?.detail,
+          reset();
+          setMessage(error?.response?.detail);
+          setError("source", {
+            message: error?.response?.detail,
           });
         },
       }
@@ -61,7 +66,6 @@ export default function ToolForm() {
           open={true}
           noValidate
           onSubmit={handleSubmit(onSubmit)}
-          maxWidth="xs"
           fullWidth
         >
           <DialogTitle
@@ -71,7 +75,7 @@ export default function ToolForm() {
               textAlign: "center",
             }}
           >
-            Create Tool
+            Create Resource
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -85,39 +89,22 @@ export default function ToolForm() {
           >
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
-          <DialogContent sx={{ p: 2 }}>
-            <TextField
-              required
-              {...register("source", {
-                required: "Source can not be empty",
-                pattern: {
-                  value: /^https:\/\/zenodo\.org\/records\/.*/,
-                  message: "Not a valid URL",
-                },
-              })}
-              label="Zenodo source"
-              error={!!errors?.source}
-              helperText={errors?.source?.message ?? " "}
-              fullWidth
-            />
-          </DialogContent>
-          <DialogActions sx={{ p: 2, pt: 0 }}>
+          <ZenodoForm
+            zenodoData={zenodoData}
+            setZenodoData={setZenodoData}
+            setMessage={setMessage}
+          />
+
+          <DialogActions sx={{ p: 2 }}>
             <Button
               type="submit"
               variant="contained"
-              disabled={createTool?.isPending || createTool?.isSuccess}
+              disabled={!zenodoData}
+              loading={createTool?.isPending}
+              endIcon={<AddIcon />}
+              loadingPosition="end"
             >
-              {createTool?.isPending ? (
-                <>
-                  Creating Tool
-                  <CircularProgress size="13px" sx={{ ml: 1 }} />
-                </>
-              ) : (
-                <>
-                  Create
-                  <AddIcon sx={{ ml: 1 }} />
-                </>
-              )}
+              Create
             </Button>
           </DialogActions>
         </Dialog>
