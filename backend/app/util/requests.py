@@ -1,4 +1,4 @@
-import requests, ast
+import requests, ast, re
 
 
 def get_zenodo_data(source):
@@ -18,9 +18,13 @@ def get_zenodo_data(source):
     if request.status_code == 200:
 
         if request and request.json():
+            CLEANR = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
             resource = request.json()
             resource["zenodo_id"] = resource["id"]
             resource["source"] = source
+            if "metadata" in resource:
+                if "description" in resource["metadata"]:
+                    resource["metadata"]["description"] = re.sub(CLEANR, '', resource["metadata"]["description"])
             del resource["id"]
 
             return {"status": 200, "zenodo_object": resource}
