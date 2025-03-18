@@ -1,33 +1,37 @@
 import {
   Dialog,
   DialogActions,
-  DialogContent,
   DialogTitle,
   Button,
   IconButton,
-  CircularProgress,
-  TextField,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useCreateDataset } from "../../queries/dataset.js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Notification from "../Notification.jsx";
+import { useCreateDataset } from "../../queries/dataset.js";
+import ZenodoForm from "./ZenodoForm.jsx";
 
 export default function DatasetForm() {
   const [message, setMessage] = useState("");
+  const [zenodoData, setZenodoData] = useState();
   const { user } = useOutletContext();
   const {
     register,
     handleSubmit,
     setError,
+    setValue,
+    reset,
     formState: { errors, setErr },
   } = useForm({ mode: "onBlur" });
-
   const navigate = useNavigate();
   const createDataset = useCreateDataset();
+
+  useEffect(() => {
+    setValue("source", zenodoData?.source);
+  }, [zenodoData]);
 
   const onSubmit = (data) => {
     createDataset.mutate(
@@ -40,9 +44,10 @@ export default function DatasetForm() {
           }, 1000);
         },
         onError: (error) => {
-          setMessage(error?.response?.data?.detail);
+          reset();
+          setMessage(error?.response?.detail);
           setError("source", {
-            message: error?.response?.data?.detail,
+            message: error?.response?.detail,
           });
         },
       }
@@ -61,7 +66,6 @@ export default function DatasetForm() {
           open={true}
           noValidate
           onSubmit={handleSubmit(onSubmit)}
-          maxWidth="xs"
           fullWidth
         >
           <DialogTitle
@@ -71,7 +75,7 @@ export default function DatasetForm() {
               textAlign: "center",
             }}
           >
-            Create Dataset
+            Create Resource
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -85,40 +89,22 @@ export default function DatasetForm() {
           >
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
-          <DialogContent sx={{ p: 2, pb: 0 }}>
-            <TextField
-              required
-              {...register("source", {
-                required: "Source can not be empty",
-                pattern: {
-                  value: /^https:\/\/zenodo\.org\/records\/.*/,
-                  message: "Not a valid Zenodo URL",
-                },
-              })}
-              label="Zenodo source"
-              error={!!errors?.source}
-              helperText={errors?.source?.message ?? " "}
-              fullWidth
-            />
-          </DialogContent>
+          <ZenodoForm
+            zenodoData={zenodoData}
+            setZenodoData={setZenodoData}
+            setMessage={setMessage}
+          />
 
-          <DialogActions sx={{ p: 2, pt: 0 }}>
+          <DialogActions sx={{ p: 2 }}>
             <Button
               type="submit"
               variant="contained"
-              disabled={createDataset?.isPending || createDataset?.isSuccess}
+              disabled={!zenodoData}
+              loading={createDataset?.isPending}
+              endIcon={<AddIcon />}
+              loadingPosition="end"
             >
-              {createDataset?.isPending ? (
-                <>
-                  Creating Dataset
-                  <CircularProgress size="13px" sx={{ ml: 1 }} />
-                </>
-              ) : (
-                <>
-                  Create
-                  <AddIcon sx={{ ml: 1 }} />
-                </>
-              )}
+              Create
             </Button>
           </DialogActions>
         </Dialog>
