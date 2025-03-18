@@ -34,6 +34,8 @@ import openaireLogo from "../assets/openaire-logo.png";
 import scilakeLogo from "../assets/scilake_project.png";
 import openScienceRra from "../assets/open_science_rra.png";
 import caa2024 from "../assets/caa2024.png";
+import grasposTools from "../assets/graspos_tools.png";
+import pathos from "../assets/pathos.png";
 
 const imgs = {
   eu: euLogo,
@@ -42,6 +44,8 @@ const imgs = {
   scilake_project: scilakeLogo,
   open_science_rra: openScienceRra,
   caa2024: caa2024,
+  "graspos-tools": grasposTools,
+  pathos: pathos,
 };
 function AdminFunctionalities({ type, resource }) {
   const updateDataset = useUpdateDataset(resource?._id);
