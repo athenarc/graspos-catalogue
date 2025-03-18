@@ -31,7 +31,18 @@ import { useDeleteTool, useUpdateTool } from "../queries/tool";
 import euLogo from "../assets/eu-logo.jpg";
 import openaireGraphLogo from "../assets/openaire-graph-logo.png";
 import openaireLogo from "../assets/openaire-logo.png";
+import scilakeLogo from "../assets/scilake_project.png";
+import openScienceRra from "../assets/open_science_rra.png";
+import caa2024 from "../assets/caa2024.png";
 
+const imgs = {
+  eu: euLogo,
+  "openaire-research-graph": openaireGraphLogo,
+  openaire: openaireLogo,
+  scilake_project: scilakeLogo,
+  open_science_rra: openScienceRra,
+  caa2024: caa2024,
+};
 function AdminFunctionalities({ type, resource }) {
   const updateDataset = useUpdateDataset(resource?._id);
   const updateDocument = useUpdateDocument(resource?._id);
@@ -133,6 +144,8 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
 }
 
 function ResourceItemsCommunities({ resource }) {
+  console.log(resource?.zenodo?.metadata?.title);
+  console.log(resource?.zenodo?.metadata?.communities);
   return (
     <Stack direction={"row"} justifyContent="center" spacing={1}>
       {resource?.zenodo?.metadata?.communities?.map((community) => (
@@ -141,20 +154,12 @@ function ResourceItemsCommunities({ resource }) {
           title={"Part of " + community.id.replaceAll("-", " ")}
         >
           <div id={community.id}>
-            {community.id == "eu" && (
-              <img src={euLogo} alt="Logo" width={"30"} height={"20"} />
-            )}
-            {community.id == "openaire-research-graph" && (
-              <img
-                src={openaireGraphLogo}
-                alt="Logo"
-                width={"60"}
-                height={"20"}
-              />
-            )}
-            {community.id == "openaire" && (
-              <img src={openaireLogo} alt="Logo" width={"25"} height={"20"} />
-            )}
+            <img
+              src={imgs[community?.id]}
+              alt={community.id}
+              width={"30"}
+              height={"20"}
+            />
           </div>
         </Tooltip>
       ))}
@@ -173,7 +178,7 @@ function ResourceItemHeader({ resource, user, type, handleDelete }) {
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
-              maxWidth: "25vw"
+              maxWidth: "25vw",
             }}
           >
             <Link target="_blank" to={resource?.zenodo?.doi_url}>
