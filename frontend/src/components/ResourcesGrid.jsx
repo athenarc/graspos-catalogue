@@ -80,7 +80,7 @@ function Datasets({ user, filter }) {
     if (filter !== "") {
       setFilteredDatasets(
         datasets?.data?.data?.filter((dataset) =>
-          dataset?.zenodo_metadata?.title
+          dataset?.zenodo?.metadata?.title
             ?.toLowerCase()
             .includes(filter.toLowerCase())
         )
@@ -131,7 +131,7 @@ function Documents({ user, filter }) {
     if (filter !== "") {
       setFilteredDocuments(
         documents?.data?.data?.filter((document) =>
-          document?.zenodo_metadata?.title
+          document?.zenodo?.metadata?.title
             ?.toLowerCase()
             .includes(filter.toLowerCase())
         )
@@ -180,7 +180,7 @@ function Tools({ user, filter }) {
     if (filter !== "") {
       setFilteredTools(
         tools?.data?.data?.filter((tool) =>
-          tool?.zenodo_metadata?.title
+          tool?.zenodo?.metadata?.title
             ?.toLowerCase()
             .includes(filter.toLowerCase())
         )
