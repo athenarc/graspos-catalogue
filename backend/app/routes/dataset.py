@@ -43,6 +43,9 @@ async def create_dataset(dataset: Dataset, user: User = Depends(current_user)):
         raise HTTPException(status_code=400, detail=str(error))
 
     data = get_zenodo_data(dataset.source)
+    if data["status"] is not 200:
+        raise HTTPException(status_code=data["status"], detail=data["detail"])
+
     zenodo = Zenodo(**data["zenodo_object"])
     await zenodo.create()
     dataset.zenodo = zenodo

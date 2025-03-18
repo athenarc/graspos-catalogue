@@ -25,6 +25,12 @@ def get_zenodo_data(source):
 
             return {"status": 200, "zenodo_object": resource}
     else:
+        if str(request.status_code).startswith('5'):
+            return {
+                "status": request.status_code,
+                "detail": "Zenodo server error. Please try again later",
+                "zenodo_object": {}
+            }
         error = ast.literal_eval(request.text)
         return {
             "status": error["status"],

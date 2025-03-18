@@ -42,6 +42,8 @@ async def create_tool(tool: Tool, user: User = Depends(current_user)):
         raise HTTPException(status_code=400, detail=str(error))
 
     data = get_zenodo_data(tool.source)
+    if data["status"] is not 200:
+        raise HTTPException(status_code=data["status"], detail=data["detail"])
     zenodo = Zenodo(**data["zenodo_object"])
     await zenodo.create()
     tool.zenodo = zenodo
