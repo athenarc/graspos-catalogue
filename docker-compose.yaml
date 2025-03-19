@@ -1,7 +1,7 @@
 services:
-  frontend:
+  graspos-frontend:
     depends_on:
-      backend:
+      graspos-backend:
         condition: service_started
     build:
       context: ./frontend
@@ -9,7 +9,7 @@ services:
     container_name: frontend
 
     ports:
-      - "80:80"
+      - "80:82"
     env_file:
       - .env
     restart: always
@@ -18,8 +18,8 @@ services:
     networks:
       - api_bridge
 
-  backend:
-    container_name: backend
+  graspos-backend:
+    container_name: graspos-backend
     build: backend/
     restart: always
     depends_on:
