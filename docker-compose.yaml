@@ -9,7 +9,7 @@ services:
     container_name: graspos-frontend
 
     ports:
-      - "80:82"
+      - "82:82"
     env_file:
       - .env
     restart: always
