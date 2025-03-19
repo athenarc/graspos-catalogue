@@ -6,7 +6,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
-    container_name: frontend
+    container_name: graspos-frontend
 
     ports:
       - "80:82"
