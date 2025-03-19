@@ -18,6 +18,14 @@ async def get_user(
     return user
 
 
+@router.get("/users", response_model=list[UserOut])
+async def get_all_users(
+        user: User = Depends(current_user)):  # type: ignore[no-untyped-def]
+    """Return the current user."""
+    users = await User.find_all().to_list()
+    return users
+
+
 @router.get("/{user_id}")
 async def get_user(
     user_id: PydanticObjectId,
@@ -35,11 +43,6 @@ async def update_user(
     user: User = Depends(current_user)):  # type: ignore[no-untyped-def]
     """Update allowed user fields."""
     fields = update.model_dump(exclude_unset=True)
-    if new_email := fields.pop("email", None):
-        if new_email != user.email:
-            if await User.by_email(new_email) is not None:
-                raise HTTPException(400, "Email already exists")
-            user.update_email(new_email)
     user = user.model_copy(update=fields)
     await user.save()
     return user

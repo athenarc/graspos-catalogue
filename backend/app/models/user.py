@@ -30,7 +30,7 @@ class UserUpdate(BaseModel):
     """Updatable user fields."""
 
     email: EmailStr | None = None
-
+    id: PydanticObjectId
     # User information
     first_name: str | None = None
     last_name: str | None = None

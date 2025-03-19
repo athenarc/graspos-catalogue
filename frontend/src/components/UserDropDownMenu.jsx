@@ -17,6 +17,7 @@ export default function UserDropDownMenu({
   user,
   handleLogout,
   handleProfile,
+  handleUsers
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -86,6 +87,11 @@ export default function UserDropDownMenu({
         <MenuItem onClick={handleProfile}>
           <Avatar /> Profile
         </MenuItem>
+        {user?.super_user && (
+          <MenuItem onClick={handleUsers}>
+            <Avatar /> Users
+          </MenuItem>
+        )}
         <Divider />
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>

@@ -57,3 +57,11 @@ export function useUserUsername(userId, user) {
     queryFn: () => axiosInstance.get(`user/${userId}`),
   });
 }
+
+export function useUsers() {
+  return useQuery({
+    queryKey: ["users"],
+    retry: false,
+    queryFn: () => axiosInstance.get(`user/users`, {}),
+  });
+}
