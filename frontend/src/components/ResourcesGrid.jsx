@@ -246,9 +246,9 @@ export default function ResourcesGrid({ user }) {
 
       <Grid
         container
-        spacing={3}
-        m={3}
-        mt={1}
+        spacing={2}
+        m={2}
+        mt={0}
         sx={{ maxHeight: "75vh", overflow: "auto" }}
       >
         {selectedResource == 0 && (

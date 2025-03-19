@@ -79,7 +79,7 @@ export default function DatasetForm() {
         >
           <DialogTitle
             sx={{
-              backgroundColor: "#338BCB",
+              backgroundColor: "#20477B",
               color: "white",
               textAlign: "center",
             }}
@@ -119,7 +119,7 @@ export default function DatasetForm() {
                       {...register("visibility")}
                       label="Visiblity"
                       fullWidth
-                      value="public"
+                      defaultValue="public"
                     >
                       <MenuItem value={"private"}>Private</MenuItem>
                       <MenuItem value={"public"}>Public</MenuItem>

@@ -77,7 +77,7 @@ export default function DocumentForm() {
         >
           <DialogTitle
             sx={{
-              backgroundColor: "#338BCB",
+              backgroundColor: "#20477B",
               color: "white",
               textAlign: "center",
             }}
@@ -110,7 +110,7 @@ export default function DocumentForm() {
                     {...register("format")}
                     label="Format"
                     fullWidth
-                    value="csv"
+                    defaultValue="csv"
                   >
                     <MenuItem value={"csv"}>CSV</MenuItem>
                     <MenuItem value={"pdf"}>PDF</MenuItem>
