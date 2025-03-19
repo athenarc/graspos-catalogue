@@ -1,13 +1,13 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_BACKEND_HOST,
+  baseURL: "http://localhost:8000/api/v1/",
   headers: { "Content-Type": "application/json" },
 });
 async function refreshTokenFunction() {
   const token = JSON.parse(localStorage.getItem("refresh_token"));
   const refreshToken = axios.create({
-    baseURL: process.env.REACT_APP_BACKEND_HOST + "auth/refresh",
+    baseURL: "http://localhost:8000/api/v1/" + "auth/refresh",
     timeout: 1000,
     headers: {
       "Content-Type": "application/json",
@@ -28,7 +28,11 @@ async function refreshTokenFunction() {
 }
 axiosInstance.interceptors.request.use(
   function (config) {
-    const token = JSON.parse(localStorage.getItem("token"));
+    var token = null;
+    try{
+      JSON.parse(JSON.parse(localStorage.getItem("token")));
+    }catch(err){
+    }
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
