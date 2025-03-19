@@ -76,7 +76,7 @@ export default function ProfileForm() {
         >
           <DialogTitle
             sx={{
-              backgroundColor: "#338BCB",
+              backgroundColor: "#20477B",
               color: "white",
               textAlign: "center",
             }}
@@ -95,6 +95,17 @@ export default function ProfileForm() {
           >
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
+          <DialogContent dividers sx={{ p: 2 }}>
+            <TextField
+              required
+              {...register("username", {
+                value: user?.username,
+              })}
+              disabled
+              label="Username"
+              sx={{ width: "100%" }}
+            />
+          </DialogContent>
           <DialogContent dividers sx={{ p: 2 }}>
             <TextField
               required
@@ -143,6 +154,7 @@ export default function ProfileForm() {
               type="submit"
               variant="contained"
               disabled={updateUser.isLoading}
+              sx={{ backgroundColor: "#20477B" }}
             >
               {updateUser.isLoading ? (
                 <>

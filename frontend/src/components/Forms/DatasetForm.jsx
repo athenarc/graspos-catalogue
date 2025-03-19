@@ -1,35 +1,45 @@
 import {
   Dialog,
   DialogActions,
-  DialogContent,
   DialogTitle,
   Button,
   IconButton,
-  CircularProgress,
+  DialogContent,
   TextField,
+  Stack,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormControl,
+  TextareaAutosize,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useCreateDataset } from "../../queries/dataset.js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Notification from "../Notification.jsx";
+import { useCreateDataset } from "../../queries/dataset.js";
+import ZenodoForm from "./ZenodoForm.jsx";
 
 export default function DatasetForm() {
   const [message, setMessage] = useState("");
+  const [zenodoData, setZenodoData] = useState();
   const { user } = useOutletContext();
   const {
     register,
     handleSubmit,
-    control,
-    reset,
     setError,
+    setValue,
+    reset,
     formState: { errors, setErr },
   } = useForm({ mode: "onBlur" });
-
   const navigate = useNavigate();
   const createDataset = useCreateDataset();
+
+  useEffect(() => {
+    setValue("source", zenodoData?.source);
+  }, [zenodoData]);
 
   const onSubmit = (data) => {
     createDataset.mutate(
@@ -42,9 +52,10 @@ export default function DatasetForm() {
           }, 1000);
         },
         onError: (error) => {
-          setMessage(error?.response?.data?.detail);
-          setError("title", {
-            message: error?.response?.data?.detail,
+          reset();
+          setMessage(error?.response?.detail);
+          setError("source", {
+            message: error?.response?.detail,
           });
         },
       }
@@ -63,17 +74,17 @@ export default function DatasetForm() {
           open={true}
           noValidate
           onSubmit={handleSubmit(onSubmit)}
-          maxWidth="xs"
           fullWidth
+          maxWidth="md"
         >
           <DialogTitle
             sx={{
-              backgroundColor: "#338BCB",
+              backgroundColor: "#20477B",
               color: "white",
               textAlign: "center",
             }}
           >
-            Create Dataset
+            Create Resource
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -87,42 +98,94 @@ export default function DatasetForm() {
           >
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
-          <DialogContent sx={{ p: 2 }}>
-            <TextField
-              required
-              {...register("source", {
-                required: "Source can not be empty",
-                pattern: {
-                  value:
-                    /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
-                  message: "Not a valid URL",
-                },
-              })}
-              label="Zenodo source"
-              error={!!errors?.source}
-              helperText={errors?.source?.message ?? " "}
-              fullWidth
+          <Stack direction="column" spacing={2}>
+            <ZenodoForm
+              zenodoData={zenodoData}
+              setZenodoData={setZenodoData}
+              setMessage={setMessage}
             />
-          </DialogContent>
-          <DialogActions sx={{ p: 2, pt: 0 }}>
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={createDataset?.isPending || createDataset?.isSuccess}
-            >
-              {createDataset?.isPending ? (
-                <>
-                  Creating Dataset
-                  <CircularProgress size="13px" sx={{ ml: 1 }} />
-                </>
-              ) : (
-                <>
-                  Create
-                  <AddIcon sx={{ ml: 1 }} />
-                </>
-              )}
-            </Button>
-          </DialogActions>
+            {zenodoData && (
+              <DialogContent sx={{ p: 2, mt: "0 !important;" }}>
+                <Stack direction="row" useFlexGap spacing={1}>
+                  <TextField
+                    {...register("organization")}
+                    label="Organization"
+                    error={!!errors?.organization}
+                    helperText={errors?.organization?.message ?? " "}
+                  />
+                  <FormControl fullWidth>
+                    <InputLabel>Visibility</InputLabel>
+                    <Select
+                      {...register("visibility")}
+                      label="Visiblity"
+                      fullWidth
+                      defaultValue="public"
+                    >
+                      <MenuItem value={"private"}>Private</MenuItem>
+                      <MenuItem value={"public"}>Public</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Stack>
+                <Stack direction="row" useFlexGap spacing={2}>
+                  <TextField
+                    {...register("contact_person")}
+                    label="Contact Person"
+                    error={!!errors?.contact_person}
+                    helperText={errors?.contact_person?.message ?? " "}
+                    fullWidth
+                  />
+                  <TextField
+                    {...register("contact_person_email")}
+                    label="Contact Person Email"
+                    error={!!errors?.contact_person_email}
+                    helperText={errors?.contact_person_email?.message ?? " "}
+                    fullWidth
+                  />
+                </Stack>
+                <Stack direction="row" useFlexGap spacing={2}>
+                  <TextField
+                    {...register("documentation_url")}
+                    label="Documentation Url"
+                    error={!!errors?.documentation_url}
+                    helperText={errors?.documentation_url?.message ?? " "}
+                    fullWidth
+                  />
+                  <TextField
+                    {...register("api_url")}
+                    label="Api Url"
+                    error={!!errors?.api_url}
+                    helperText={errors?.api_url?.message ?? " "}
+                    fullWidth
+                  />
+                </Stack>
+                <Stack direction="row" useFlexGap spacing={2}>
+                  <FormControl fullWidth>
+                    <TextareaAutosize
+                      {...register("api_url_instructions")}
+                      label="Api Url Instructions"
+                      maxRows="6"
+                      minRows="6"
+                      placeholder="Api Url Instructions"
+                    />
+                  </FormControl>
+                </Stack>
+              </DialogContent>
+            )}
+          </Stack>
+          {zenodoData && (
+            <DialogActions sx={{ p: 2, pt: 0 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={!zenodoData}
+                loading={createDataset?.isPending}
+                endIcon={<AddIcon />}
+                loadingPosition="end"
+              >
+                Create
+              </Button>
+            </DialogActions>
+          )}
         </Dialog>
         {(createDataset?.isSuccess || createDataset?.isError) && (
           <Notification

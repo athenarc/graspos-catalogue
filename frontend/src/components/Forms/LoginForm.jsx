@@ -19,6 +19,7 @@ export default function LoginForm() {
     handleSubmit,
     control,
     reset,
+    setError,
     formState: { errors },
   } = useForm({ mode: "onBlur" });
 
@@ -60,7 +61,7 @@ export default function LoginForm() {
       >
         <DialogTitle
           sx={{
-            backgroundColor: "#338BCB",
+            backgroundColor: "#20477B",
             color: "white",
             textAlign: "center",
           }}
@@ -79,7 +80,7 @@ export default function LoginForm() {
         >
           <CloseIcon sx={{ color: "white" }} />
         </IconButton>
-        <DialogContent sx={{ p: 2 }}>
+        <DialogContent sx={{ p: 2, pb: 0 }}>
           <TextField
             {...register("username", {
               required: "Username can not be empty",
@@ -89,10 +90,10 @@ export default function LoginForm() {
             label="Username"
             error={!!errors?.username}
             helperText={errors?.username?.message}
-            sx={{ width: "100%" }}
+            fullWidth
           />
         </DialogContent>
-        <DialogContent sx={{ p: 2, pt: 0 }}>
+        <DialogContent sx={{ p: 2, pb: 0 }}>
           <TextField
             {...register("password", {
               required: "Password can not be empty",
@@ -104,10 +105,10 @@ export default function LoginForm() {
             error={!!errors?.password}
             helperText={errors?.password?.message}
             autoComplete="current-password"
-            sx={{ width: "100%" }}
+            fullWidth
           />
         </DialogContent>
-        <DialogContent sx={{ p: 1, pt: 0  }}>
+        <DialogContent sx={{ p: 2, pb: 0 }}>
           <Typography align="center" variant="subtitle2">
             Don't have an account?
           </Typography>
@@ -116,7 +117,7 @@ export default function LoginForm() {
           </Typography>
         </DialogContent>
 
-        <DialogActions sx={{ p: 2, pt: 0  }}>
+        <DialogActions sx={{ p: 2, pt: 1 }}>
           <Button type="submit" variant="contained">
             Login
           </Button>

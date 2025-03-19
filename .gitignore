@@ -177,3 +177,6 @@ mongodb/db/*
 !mongodb/db/.gitkeep
 
 backend/test/*
+
+docker-compose-dev.yaml
+/frontend/Dockerfile.dev

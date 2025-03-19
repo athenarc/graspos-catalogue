@@ -54,7 +54,9 @@ export const AuthProvider = ({ children }) => {
     setToken(data);
     setUser(userInformation?.data?.data);
     setTimeout(() => {
-      queryClient.invalidateQueries(["documents", "datasets"]);
+      queryClient.invalidateQueries(["datasets"]);
+      queryClient.invalidateQueries(["documents"]);
+      queryClient.invalidateQueries(["tools"]);
     }, 100);
   };
 
@@ -63,7 +65,9 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.clear();
     setTimeout(() => {
-      queryClient.invalidateQueries(["documents", "datasets"]);
+      queryClient.invalidateQueries(["datasets"]);
+      queryClient.invalidateQueries(["documents"]);
+      queryClient.invalidateQueries(["tools"]);
     }, 100);
   };
 

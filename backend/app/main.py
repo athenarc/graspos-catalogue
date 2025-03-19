@@ -1,20 +1,23 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from routes import user, auth, mail, register, dataset, document
+from routes import user, auth, mail, register, dataset, document, tool, zenodo
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 from models.dataset import Dataset
+from models.tool import Tool
 from models.document import Documents
 from models.user import User
+from models.zenodo import Zenodo
 from db import db
 from config import CONFIG
 from fastapi.middleware.cors import CORSMiddleware
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Initialize application services."""
     app.db = AsyncIOMotorClient(CONFIG.mongodb_uri).graspos
-    await init_beanie(app.db, document_models=[Dataset, User, Documents])
+    await init_beanie(app.db, document_models=[Dataset, User, Documents, Tool, Zenodo])
     print("Startup complete")
     yield
     print("Shutdown complete")
@@ -30,6 +33,8 @@ app = FastAPI(
     openapi_url=None,
 )
 
+app.include_router(zenodo.router)
+app.include_router(tool.router)
 app.include_router(dataset.router)
 app.include_router(document.router)
 app.include_router(user.router)
@@ -45,7 +50,6 @@ app.add_middleware(
     allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
-    
 )
 
 import secrets
@@ -60,8 +64,10 @@ security = HTTPBasic()
 
 def get_current_username(
         credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = secrets.compare_digest(credentials.username, CONFIG.backend_docs_username)
-    correct_password = secrets.compare_digest(credentials.password, CONFIG.backend_docs_password)
+    correct_username = secrets.compare_digest(credentials.username,
+                                              CONFIG.backend_docs_username)
+    correct_password = secrets.compare_digest(credentials.password,
+                                              CONFIG.backend_docs_password)
     if not (correct_username and correct_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
