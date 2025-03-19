@@ -5,15 +5,21 @@ const axiosInstance = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 async function refreshTokenFunction() {
-  const token = JSON.parse(localStorage.getItem("refresh_token"));
-  const refreshToken = axios.create({
-    baseURL: "http://localhost:8000/api/v1/" + "auth/refresh",
-    timeout: 1000,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  var token = null;
+  try {
+    token = JSON.parse(localStorage.getItem("refresh_token"));
+  } catch (err) {}
+  if (token) {
+    const refreshToken = axios.create({
+      baseURL: "http://localhost:8000/api/v1/" + "auth/refresh",
+      timeout: 1000,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
   const refreshTokenCall = await refreshToken.post();
   if (refreshTokenCall?.data?.access_token) {
     localStorage.removeItem("token");
@@ -29,10 +35,9 @@ async function refreshTokenFunction() {
 axiosInstance.interceptors.request.use(
   function (config) {
     var token = null;
-    try{
-      JSON.parse(JSON.parse(localStorage.getItem("token")));
-    }catch(err){
-    }
+    try {
+      token = JSON.parse(localStorage.getItem("token"));
+    } catch (err) {}
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

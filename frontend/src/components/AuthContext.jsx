@@ -11,8 +11,12 @@ export const AuthProvider = ({ children }) => {
   const getToken = () => {
     const tokenString = localStorage.getItem("token");
     if (tokenString) {
-      const token = JSON.parse(localStorage.getItem("token"));
-      return token;
+      try {
+        const token = JSON.parse(localStorage.getItem("token"));
+        return token;
+      } catch (error) {
+        return null;
+      }
     }
     return null;
   };
