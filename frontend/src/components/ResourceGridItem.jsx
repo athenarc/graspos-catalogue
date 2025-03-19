@@ -37,6 +37,7 @@ import openScienceRra from "../assets/open_science_rra.png";
 import caa2024 from "../assets/caa2024.png";
 import grasposTools from "../assets/graspos_tools.png";
 import pathos from "../assets/pathos.png";
+import robertkochinstitut from "../assets/robertkochinstitut.png"
 
 const imgs = {
   eu: euLogo,
@@ -47,6 +48,7 @@ const imgs = {
   caa2024: caa2024,
   "graspos-tools": grasposTools,
   pathos: pathos,
+  robertkochinstitut: robertkochinstitut
 };
 
 function AdminFunctionalities({ type, resource }) {
