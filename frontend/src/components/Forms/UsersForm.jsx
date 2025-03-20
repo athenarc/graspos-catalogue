@@ -11,6 +11,9 @@ import {
   Stack,
   Checkbox,
   FormControlLabel,
+  FormControl,
+  InputLabel,
+  FormGroup,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate, useOutletContext } from "react-router-dom";
@@ -22,7 +25,6 @@ import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import Notification from "../Notification";
 
 function UserForm({ user }) {
-  
   const [message, setMessage] = useState("");
   const {
     register,
@@ -50,7 +52,6 @@ function UserForm({ user }) {
   }
   return (
     <Stack
-      key={user?.id}
       direction={"row"}
       justifyContent="center"
       spacing={2}
@@ -89,27 +90,17 @@ function UserForm({ user }) {
         })}
         label="Id"
       />
-      {/* <FormControlLabel
-        control={
-          <Checkbox
-            checked={user?.super_user}
-            {...register("super_user", {
-              value: user?.super_user,
-            })}
-          />
-        }
-        label="Super User"
-      /> */}
-      {/* <FormControlLabel
-        label="Super User"
+      <FormControlLabel
+        label="Admin"
         control={
           <input
-            {...register("super_user")}
-            value={user?.super_user}
+            {...register("super_user", {
+              value: user?.super_user ? true : false,
+            })}
             type="checkbox"
           />
         }
-      /> */}
+      />
       <Button
         variant="outlined"
         onClick={handleReset}
@@ -179,7 +170,7 @@ export default function UsersPanelForm() {
         <DialogContent dividers sx={{ p: 2 }}>
           <Stack direction={"column"} justifyContent="center" spacing={2}>
             {users?.data?.data?.map((user) => (
-              <UserForm user={user} />
+              <UserForm key={user?.id} user={user} />
             ))}
           </Stack>
         </DialogContent>
