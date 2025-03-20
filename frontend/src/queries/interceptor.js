@@ -8,18 +8,18 @@ async function refreshTokenFunction() {
   var token = null;
   try {
     token = JSON.parse(localStorage.getItem("refresh_token"));
-  } catch (err) {}
-  if (token) {
-    const refreshToken = axios.create({
-      baseURL: "http://localhost:8000/api/v1/" + "auth/refresh",
-      timeout: 1000,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    
+  } catch (err) {
+    return err
   }
-
+  const refreshToken = axios.create({
+    baseURL: "http://localhost:8000/api/v1/" + "auth/refresh",
+    timeout: 1000,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
   const refreshTokenCall = await refreshToken.post();
   if (refreshTokenCall?.data?.access_token) {
     localStorage.removeItem("token");
