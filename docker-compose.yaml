@@ -28,7 +28,7 @@ services:
     env_file:
       - .env
     ports:
-      - "${BACKEND_HOST_PORT}:8080"
+      - "8001:8080"
     volumes:
       - ./backend/app:/code/app
     networks:
