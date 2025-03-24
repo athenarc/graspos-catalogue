@@ -12,6 +12,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useLogin } from "../../queries/data.js";
+import LoginIcon from '@mui/icons-material/Login';
 
 export default function LoginForm() {
   const {
@@ -118,7 +119,15 @@ export default function LoginForm() {
         </DialogContent>
 
         <DialogActions sx={{ p: 2, pt: 1 }}>
-          <Button type="submit" variant="contained">
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={login.isLoading}
+            loading={login.isLoading}
+            endIcon={<LoginIcon />}
+            loadingPosition="end"
+            sx={{ backgroundColor: "#20477B" }}
+          >
             Login
           </Button>
         </DialogActions>

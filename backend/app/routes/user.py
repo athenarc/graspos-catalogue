@@ -46,8 +46,9 @@ async def update_user(
     fields = update.model_dump(exclude_unset=True)
     user = await User.get(fields["id"])
     user = User.model_copy(user, update=fields)
-    if hash_password(update.password) != user.password:
-        user.password = hash_password(update.password)
+    if update.password:
+        if hash_password(update.password) != user.password:
+            user.password = hash_password(update.password)
     await user.save()
     return user
 
