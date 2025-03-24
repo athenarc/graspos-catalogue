@@ -32,7 +32,7 @@ async def get_all_datasets_admin(user: User = Depends(
     return datasets
 
 
-@router.post("/", status_code=201)
+@router.post("/create", status_code=201)
 async def create_dataset(dataset: Dataset, user: User = Depends(current_user)):
     zenodo = None
 

@@ -6,7 +6,7 @@ export function useCreateDocument() {
   return useMutation({
     mutationFn: ({ data }) => {
       return axiosInstance.post(
-        process.env.REACT_APP_BACKEND_HOST + `document`,
+        process.env.REACT_APP_BACKEND_HOST + `document/create`,
         data
       );
     },
@@ -20,7 +20,7 @@ export function useDocuments(user) {
   return useQuery({
     queryKey: ["documents"],
     retry: false,
-    queryFn: () => axiosInstance.get(!!user ? `document/admin/` : `document`),
+    queryFn: () => axiosInstance.get(!!user ? `document/admin` : `document`),
   });
 }
 

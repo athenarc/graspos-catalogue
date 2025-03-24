@@ -6,7 +6,7 @@ export function useCreateDataset() {
   return useMutation({
     mutationFn: ({ data }) => {
       return axiosInstance.post(
-        process.env.REACT_APP_BACKEND_HOST + `dataset`,
+        process.env.REACT_APP_BACKEND_HOST + `dataset/create`,
         data
       );
     },
@@ -20,7 +20,7 @@ export function useDatasets(user) {
   return useQuery({
     queryKey: ["datasets"],
     retry: false,
-    queryFn: () => axiosInstance.get(!!user ? `dataset/admin/` : `dataset`),
+    queryFn: () => axiosInstance.get(!!user ? `dataset/admin` : `dataset`),
   });
 }
 

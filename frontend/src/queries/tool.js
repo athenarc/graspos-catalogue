@@ -6,7 +6,7 @@ export function useCreateTool() {
   return useMutation({
     mutationFn: ({ data }) => {
       return axiosInstance.post(
-        process.env.REACT_APP_BACKEND_HOST + `tool`,
+        process.env.REACT_APP_BACKEND_HOST + `tool/create`,
         data
       );
     },
@@ -20,7 +20,7 @@ export function useTools(user) {
   return useQuery({
     queryKey: ["tools"],
     retry: false,
-    queryFn: () => axiosInstance.get(!!user ? `tool/admin/` : `tool`),
+    queryFn: () => axiosInstance.get(!!user ? `tool/admin` : `tool`),
   });
 }
 

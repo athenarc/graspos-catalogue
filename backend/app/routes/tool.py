@@ -33,7 +33,7 @@ async def get_all_tools_admin(user: User = Depends(
     return tools
 
 
-@router.post("/", status_code=201)
+@router.post("/create", status_code=201)
 async def create_tool(tool: Tool, user: User = Depends(current_user)):
     zenodo = None
     try:
