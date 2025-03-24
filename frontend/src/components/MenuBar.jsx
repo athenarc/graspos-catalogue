@@ -8,6 +8,9 @@ export default function MenuBar({ handleLogout, user }) {
   function handleProfile() {
     navigate("/profile");
   }
+  function handleUsers() {
+    navigate("/users");
+  }
   return (
     <Grid
       component={Box}
@@ -44,6 +47,7 @@ export default function MenuBar({ handleLogout, user }) {
             <UserDropDownMenu
               user={user}
               handleProfile={handleProfile}
+              handleUsers={handleUsers}
               handleLogout={handleLogout}
             />
           )}

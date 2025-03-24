@@ -17,7 +17,8 @@ from fastapi.middleware.cors import CORSMiddleware
 async def lifespan(app: FastAPI):
     """Initialize application services."""
     app.db = AsyncIOMotorClient(CONFIG.mongodb_uri).graspos
-    await init_beanie(app.db, document_models=[Dataset, User, Documents, Tool, Zenodo])
+    await init_beanie(app.db,
+                      document_models=[Dataset, User, Documents, Tool, Zenodo])
     print("Startup complete")
     yield
     print("Shutdown complete")
@@ -43,6 +44,7 @@ app.include_router(mail.router)
 app.include_router(register.router)
 
 origins = [
+    "http://localhost",
     "http://localhost:5173",
 ]
 app.add_middleware(

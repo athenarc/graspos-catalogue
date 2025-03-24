@@ -10,6 +10,7 @@ import ZenodoForm from "./components/Forms/ZenodoForm.jsx";
 import DatasetForm from "./components/Forms/DatasetForm.jsx";
 import DocumentForm from "./components/Forms/DocumentForm.jsx";
 import ToolForm from "./components/Forms/ToolForm.jsx";
+import UsersPanelForm from "./components/Forms/UsersForm.jsx";
 
 function App() {
   const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ function App() {
               <Route path="/login" element={<LoginForm />}></Route>
               <Route path="/register" element={<RegisterForm />}></Route>
               <Route path="/profile" element={<ProfileForm />}></Route>
+              <Route path="/users" element={<UsersPanelForm />}></Route>
               <Route path="/dataset/add" element={<DatasetForm />}></Route>
               <Route path="/document/add" element={<DocumentForm />}></Route>
               <Route path="/tool/add" element={<ToolForm />}></Route>

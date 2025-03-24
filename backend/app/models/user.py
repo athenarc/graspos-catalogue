@@ -30,14 +30,17 @@ class UserUpdate(BaseModel):
     """Updatable user fields."""
 
     email: EmailStr | None = None
-
+    id: PydanticObjectId
     # User information
     first_name: str | None = None
     last_name: str | None = None
     super_user: bool | None = False
     username: str | None = False
     organization: str | None = False
-
+    disabled: bool | None = False
+    
+class UserPasswordUpdate(UserUpdate):
+    password: str | None = None
 
 class UserOut(UserUpdate):
     """User fields returned to the client."""

@@ -1,6 +1,6 @@
 """Registration router."""
 
-from fastapi import APIRouter, Body, HTTPException, Response
+from fastapi import APIRouter, Body, HTTPException, Response, Depends
 from pydantic import EmailStr
 
 from models.user import User, UserAuthRegister, UserOut
@@ -8,6 +8,7 @@ from jwt import access_security, user_from_token
 from util.mail import send_password_reset_email
 from util.password import hash_password
 from datetime import datetime
+from util.current_user import current_user
 
 router = APIRouter(prefix="/api/v1/register", tags=["Register"])
 
@@ -54,18 +55,22 @@ async def forgot_password(email: EmailStr = embed) -> Response:
     return Response(status_code=200)
 
 
-@router.post("/reset-password/{token}", response_model=UserOut)
-async def reset_password(token: str,
-                         password: str = embed
-                         ):  # type: ignore[no-untyped-def]
+@router.post("/reset-password", response_model=UserOut)
+async def reset_password(
+    password: str = Body(embed=True),
+    email: str = Body(embed=True),
+    user: User = Depends(current_user)):  # type: ignore[no-untyped-def]
     """Reset user password from token value."""
-    user = await user_from_token(token)
     if user is None:
         raise HTTPException(404, "No user found with that email")
     if user.email_confirmed_at is None:
         raise HTTPException(400, "Email is not yet verified")
     if user.disabled:
         raise HTTPException(400, "Your account is disabled")
+    if user.email != email:
+        if not user.super_user:
+            raise HTTPException(401, "Unauthorized action") 
+        user = await User.by_email(email)
     user.password = hash_password(password)
     await user.save()
     return user
