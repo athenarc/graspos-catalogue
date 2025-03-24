@@ -5,21 +5,19 @@ import {
   DialogTitle,
   Button,
   IconButton,
-  CircularProgress,
   TextField,
-  Typography,
   Stack,
-  Checkbox,
   FormControlLabel,
-  FormControl,
-  InputLabel,
-  FormGroup,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useUpdateUser, useUsers } from "../../queries/data";
+import {
+  useUpdateUser,
+  useUserResetPassword,
+  useUsers,
+} from "../../queries/data";
 import SaveIcon from "@mui/icons-material/Save";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import Notification from "../Notification";
@@ -32,6 +30,20 @@ function UserForm({ user }) {
     reset,
     formState: { errors },
   } = useForm();
+  const passwordReset = useUserResetPassword();
+  function handlePasswordReset(data) {
+    passwordReset.mutate(
+      { data },
+      {
+        onSuccess: () => {
+          setMessage("User password reset successfully!");
+        },
+        onError: (error) => {
+          setMessage(error?.response?.data?.detail);
+        },
+      }
+    );
+  }
   const updateUser = useUpdateUser();
   const onSubmit = (data) => {
     updateUser.mutate(
@@ -112,31 +124,42 @@ function UserForm({ user }) {
           />
         }
       />
-      <Button
-        variant="outlined"
-        onClick={handleReset}
-        endIcon={<RestartAltIcon />}
-      >
-        Reset
-      </Button>
-      <Button
-        type="submit"
-        variant="contained"
-        disabled={updateUser.isLoading}
-        sx={{ backgroundColor: "#20477B" }}
-      >
-        {updateUser.isLoading ? (
-          <>
-            Saving
-            <CircularProgress size="13px" sx={{ ml: 1 }} />
-          </>
-        ) : (
-          <>
+      <DialogActions sx={{ p: 2 }}>
+        <Stack direction="row" spacing={2}>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              handlePasswordReset({
+                email: user?.email,
+                password: "12345",
+              });
+            }}
+            endIcon={<RestartAltIcon />}
+          >
+            Reset Password
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={handleReset}
+            endIcon={<RestartAltIcon />}
+          >
+            Reset
+          </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={updateUser.isLoading}
+            loading={updateUser.isLoading}
+            endIcon={<SaveIcon />}
+            loadingPosition="end"
+            sx={{ backgroundColor: "#20477B" }}
+          >
             Save
-            <SaveIcon sx={{ ml: 1 }} />
-          </>
-        )}
-      </Button>
+          </Button>
+        </Stack>
+      </DialogActions>
+
       {(updateUser?.isSuccess || updateUser?.isError) && (
         <Notification requestStatus={updateUser?.status} message={message} />
       )}
@@ -156,7 +179,7 @@ export default function UsersPanelForm() {
 
   return (
     user && (
-      <Dialog onClose={handleClose} open={true} maxWidth="lg" fullWidth>
+      <Dialog onClose={handleClose} open={true} maxWidth="xl" fullWidth>
         <DialogTitle
           sx={{
             backgroundColor: "#20477B",

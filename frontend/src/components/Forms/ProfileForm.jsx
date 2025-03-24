@@ -5,36 +5,78 @@ import {
   DialogTitle,
   Button,
   IconButton,
-  Table,
-  TableRow,
-  TableCell,
-  CircularProgress,
-  Select,
-  MenuItem,
+  TextField,
   FormControl,
   InputLabel,
-  TableHead,
-  TableContainer,
-  TextField,
-  Stack,
+  OutlinedInput,
+  InputAdornment,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import AddIcon from "@mui/icons-material/Add";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useUpdateUser } from "../../queries/data";
 import SaveIcon from "@mui/icons-material/Save";
 import Notification from "../Notification";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+
+function ResetPassword({ register, errors }) {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
+  const handleMouseUpPassword = (event) => {
+    event.preventDefault();
+  };
+  return (
+    <DialogContent sx={{ p: 2 }}>
+      <FormControl fullWidth variant="outlined">
+        <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+        <OutlinedInput
+          {...register("password", { value: "" })}
+          id="outlined-adornment-password"
+          type={showPassword ? "text" : "password"}
+          endAdornment={
+            <InputAdornment position="end">
+              <IconButton
+                aria-label={
+                  showPassword ? "hide the password" : "display the password"
+                }
+                onClick={handleClickShowPassword}
+                onMouseDown={handleMouseDownPassword}
+                onMouseUp={handleMouseUpPassword}
+                edge="end"
+              >
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          }
+          label="Password"
+        />
+      </FormControl>
+    </DialogContent>
+  );
+}
 
 export default function ProfileForm() {
   const { user } = useOutletContext();
+  const [showPassowrd, setShowPassword] = useState(false);
 
+  function handleSetShowPassword() {
+    setShowPassword(!showPassowrd);
+  }
   const [message, setMessage] = useState("");
   const {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm();
 
@@ -45,6 +87,7 @@ export default function ProfileForm() {
       { data },
       {
         onSuccess: () => {
+          reset();
           setMessage("User information updated successfully!");
         },
         onError: (error) => {
@@ -95,7 +138,7 @@ export default function ProfileForm() {
           >
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
-          <DialogContent dividers sx={{ p: 2 }}>
+          <DialogContent sx={{ p: 2 }}>
             <TextField
               required
               {...register("username", {
@@ -106,7 +149,22 @@ export default function ProfileForm() {
               sx={{ width: "100%" }}
             />
           </DialogContent>
-          <DialogContent dividers sx={{ p: 2 }}>
+          <Button
+            onClick={handleSetShowPassword}
+            endIcon={showPassowrd ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+            sx={{ p: 0, mt: [showPassowrd ? 2 : 0] }}
+          >
+            Change Password
+          </Button>
+          {showPassowrd && (
+            <ResetPassword
+              register={register}
+              user={user}
+              setError={setError}
+              errors={errors}
+            />
+          )}
+          <DialogContent sx={{ p: 2 }}>
             <TextField
               required
               {...register("email", {
@@ -124,7 +182,7 @@ export default function ProfileForm() {
               sx={{ width: "100%" }}
             />
           </DialogContent>
-          <DialogContent dividers sx={{ p: 2 }}>
+          <DialogContent sx={{ p: 2 }}>
             <TextField
               {...register("first_name", {
                 value: user?.first_name,
@@ -133,14 +191,14 @@ export default function ProfileForm() {
               sx={{ width: "100%" }}
             />
           </DialogContent>
-          <DialogContent dividers sx={{ p: 2 }}>
+          <DialogContent sx={{ p: 2 }}>
             <TextField
               {...register("last_name", { value: user?.email })}
               label="Last Name"
               sx={{ width: "100%" }}
             />
           </DialogContent>
-          <DialogContent dividers sx={{ p: 2 }}>
+          <DialogContent sx={{ p: 2 }}>
             <TextField
               {...register("organization", {
                 value: user?.organization,
@@ -154,19 +212,12 @@ export default function ProfileForm() {
               type="submit"
               variant="contained"
               disabled={updateUser.isLoading}
+              loading={updateUser.isLoading}
+              endIcon={<SaveIcon />}
+              loadingPosition="end"
               sx={{ backgroundColor: "#20477B" }}
             >
-              {updateUser.isLoading ? (
-                <>
-                  Saving
-                  <CircularProgress size="13px" sx={{ ml: 1 }} />
-                </>
-              ) : (
-                <>
-                  Save
-                  <SaveIcon sx={{ ml: 1 }} />
-                </>
-              )}
+              Save
             </Button>
           </DialogActions>
         </Dialog>

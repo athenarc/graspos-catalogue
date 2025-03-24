@@ -38,7 +38,9 @@ class UserUpdate(BaseModel):
     username: str | None = False
     organization: str | None = False
     disabled: bool | None = False
-
+    
+class UserPasswordUpdate(UserUpdate):
+    password: str | None = None
 
 class UserOut(UserUpdate):
     """User fields returned to the client."""
