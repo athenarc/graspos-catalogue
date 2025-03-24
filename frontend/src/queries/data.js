@@ -40,6 +40,17 @@ export function useRegister() {
   });
 }
 
+export function useUserResetPassword() {
+  return useMutation({
+    mutationFn: ({ data }) => {
+      return axiosInstance.post(
+        process.env.REACT_APP_BACKEND_HOST + `register/reset-password`,
+        data
+      );
+    },
+  });
+}
+
 export function useUserInformation(token) {
   return useQuery({
     queryKey: ["user"],
@@ -55,5 +66,13 @@ export function useUserUsername(userId, user) {
     retry: false,
     enabled: !!user,
     queryFn: () => axiosInstance.get(`user/${userId}`),
+  });
+}
+
+export function useUsers() {
+  return useQuery({
+    queryKey: ["users"],
+    retry: false,
+    queryFn: () => axiosInstance.get(`user/users`, {}),
   });
 }

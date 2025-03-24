@@ -12,11 +12,13 @@ import {
 
 import Logout from "@mui/icons-material/Logout";
 import { CircularVariants } from "./Skeleton";
+import GroupIcon from "@mui/icons-material/Group";
 
 export default function UserDropDownMenu({
   user,
   handleLogout,
   handleProfile,
+  handleUsers,
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -86,6 +88,14 @@ export default function UserDropDownMenu({
         <MenuItem onClick={handleProfile}>
           <Avatar /> Profile
         </MenuItem>
+        {user?.super_user && (
+          <MenuItem onClick={handleUsers}>
+            <Avatar>
+              <GroupIcon />
+            </Avatar>
+            Users
+          </MenuItem>
+        )}
         <Divider />
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>
