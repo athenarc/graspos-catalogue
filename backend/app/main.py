@@ -46,6 +46,7 @@ app.include_router(register.router)
 origins = [
     "http://localhost",
     "http://localhost:5173",
+    "https://graspos-infra.athenarc.gr/catalogue/"
 ]
 app.add_middleware(
     CORSMiddleware,
