@@ -9,7 +9,7 @@ services:
     container_name: graspos-frontend
 
     ports:
-      - "82:82"
+      - "5173:80"
     env_file:
       - .env
     restart: always
@@ -36,7 +36,7 @@ services:
 
   mongodb:
     container_name: mongodb
-    image: mongo:4.4.6
+    image: mongo
     restart: always
     ports:
       - "${MONGO_CONTAINER_PORT}:27017"
