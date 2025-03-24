@@ -37,6 +37,7 @@ class UserUpdate(BaseModel):
     super_user: bool | None = False
     username: str | None = False
     organization: str | None = False
+    disabled: bool | None = False
 
 
 class UserOut(UserUpdate):

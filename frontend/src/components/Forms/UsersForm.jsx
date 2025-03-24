@@ -101,6 +101,17 @@ function UserForm({ user }) {
           />
         }
       />
+      <FormControlLabel
+        label="Disabled"
+        control={
+          <input
+            {...register("disabled", {
+              value: user?.disabled ? true : false,
+            })}
+            type="checkbox"
+          />
+        }
+      />
       <Button
         variant="outlined"
         onClick={handleReset}
