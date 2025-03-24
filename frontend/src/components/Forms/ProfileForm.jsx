@@ -152,7 +152,7 @@ export default function ProfileForm() {
           <Button
             onClick={handleSetShowPassword}
             endIcon={showPassowrd ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
-            sx={{ p: 0, mt: [showPassowrd ? 2 : 0] }}
+            sx={{ p: 0 }}
           >
             Change Password
           </Button>
