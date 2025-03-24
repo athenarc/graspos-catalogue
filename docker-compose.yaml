@@ -44,6 +44,7 @@ services:
       - .env
     volumes:
       - ./mongodb/db:/data/db:rw
+      - ./mongodb/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
     networks:
       - api_bridge
 
