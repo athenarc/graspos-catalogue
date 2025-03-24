@@ -153,7 +153,7 @@ export default function RegisterForm() {
             fullWidth
           />
         </DialogContent>
-        <DialogContent sx={{ p: 2, pt: 0  }}>
+        <DialogContent sx={{ p: 2, pt: 0 }}>
           <Typography align="center" variant="subtitle2">
             Already have an account?
           </Typography>
@@ -162,23 +162,17 @@ export default function RegisterForm() {
           </Typography>
         </DialogContent>
 
-        <DialogActions sx={{ p: 2, pt: 0  }}>
+        <DialogActions sx={{ p: 2, pt: 0 }}>
           <Button
             type="submit"
             variant="contained"
             disabled={registerUser.isLoading}
+            loading={registerUser.isLoading}
+            endIcon={<HowToRegIcon />}
+            loadingPosition="end"
+            sx={{ backgroundColor: "#20477B" }}
           >
-            {registerUser.isLoading ? (
-              <>
-                Creating user
-                <CircularProgress size="13px" sx={{ ml: 1 }} />
-              </>
-            ) : (
-              <>
-                Register
-                <HowToRegIcon sx={{ ml: 1 }} />
-              </>
-            )}
+            Register
           </Button>
         </DialogActions>
       </Dialog>
