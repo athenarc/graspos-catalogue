@@ -43,7 +43,8 @@ async def update_user(
     user: User = Depends(current_user)):  # type: ignore[no-untyped-def]
     """Update allowed user fields."""
     fields = update.model_dump(exclude_unset=True)
-    user = user.model_copy(update=fields)
+    user = await User.get(fields["id"])
+    user = User.model_copy(user, update=fields)
     await user.save()
     return user
 
