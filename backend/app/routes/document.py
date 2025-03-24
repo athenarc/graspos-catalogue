@@ -12,7 +12,7 @@ from util.requests import get_zenodo_data
 router = APIRouter(prefix="/api/v1/document", tags=["Documents"])
 
 
-@router.get("/", status_code=200, response_model=list[Documents])
+@router.get("/all", status_code=200, response_model=list[Documents])
 async def get_all_documents() -> list[Documents]:
 
     documents = await Documents.find(Documents.approved == True,

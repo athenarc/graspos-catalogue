@@ -13,7 +13,7 @@ from util.requests import get_zenodo_data
 router = APIRouter(prefix="/api/v1/tool", tags=["Tool"])
 
 
-@router.get("/", status_code=200, response_model=list[Tool])
+@router.get("/all", status_code=200, response_model=list[Tool])
 async def get_all_tools() -> list[Tool]:
 
     tools = await Tool.find(Tool.approved == True, fetch_links=True).to_list()

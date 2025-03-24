@@ -20,7 +20,7 @@ export function useTools(user) {
   return useQuery({
     queryKey: ["tools"],
     retry: false,
-    queryFn: () => axiosInstance.get(!!user ? `tool/admin` : `tool`),
+    queryFn: () => axiosInstance.get(!!user ? `tool/admin` : `tool/all`),
   });
 }
 

@@ -12,7 +12,7 @@ from util.requests import get_zenodo_data
 router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
 
-@router.get("/", status_code=200, response_model=list[Dataset])
+@router.get("/all", status_code=200, response_model=list[Dataset])
 async def get_all_datasets() -> list[Dataset]:
 
     datasets = await Dataset.find(Dataset.approved == True,
