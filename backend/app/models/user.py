@@ -16,14 +16,14 @@ class UserAuth(BaseModel):
 
 class UserAuthRegister(BaseModel):
     """User register auth."""
-    
+
     username: str
     email: EmailStr
     password: str
-    first_name: Optional[str] = None 
-    last_name: Optional[str] = None 
-    organization: Optional[str] = None 
-    
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    organization: Optional[str] = None
+    orcid: Optional[str] = None
 
 
 class UserUpdate(BaseModel):
@@ -37,10 +37,13 @@ class UserUpdate(BaseModel):
     super_user: bool | None = False
     username: str | None = False
     organization: str | None = False
+    orcid: str | None = False
     disabled: bool | None = False
-    
+
+
 class UserPasswordUpdate(UserUpdate):
     password: str | None = None
+
 
 class UserOut(UserUpdate):
     """User fields returned to the client."""
@@ -59,6 +62,7 @@ class User(Document, UserOut):
     last_name: Optional[str] = None
     username: str
     organization: str | None = None
+    orcid: str | None = False
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"
@@ -93,12 +97,12 @@ class User(Document, UserOut):
     async def by_username(cls, username: str) -> Optional["User"]:
         """Get a user by username."""
         return await cls.find_one(cls.username == username)
-    
+
     @classmethod
     async def by_id(cls, id: PydanticObjectId) -> Optional["User"]:
         """Get a user by username."""
-        return await cls.find_one(cls.id == id) 
-    
+        return await cls.find_one(cls.id == id)
+
     def update_email(self, new_email: str) -> None:
         """Update email logging and replace."""
         # Add any pre-checks here

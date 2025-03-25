@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
-import { useNavigate, useOutletContext, Link } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import Notification from "../Notification.jsx";
@@ -96,14 +96,15 @@ export default function DocumentForm() {
           >
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
-          <ZenodoForm
-            zenodoData={zenodoData}
-            setZenodoData={setZenodoData}
-            setMessage={setMessage}
-          />
-          {zenodoData && (
-            <DialogContent sx={{ p: 2, mt: "0 !important;" }}>
-              <Stack direction="row" useFlexGap spacing={1}>
+
+          <DialogContent sx={{ p: 2 }}>
+            <ZenodoForm
+              zenodoData={zenodoData}
+              setZenodoData={setZenodoData}
+              setMessage={setMessage}
+            />
+            {zenodoData && (
+              <Stack direction="row" useFlexGap spacing={2} sx={{ mt: 2 }}>
                 <FormControl fullWidth>
                   <InputLabel>Format</InputLabel>
                   <Select
@@ -119,10 +120,11 @@ export default function DocumentForm() {
                   </Select>
                 </FormControl>
               </Stack>
-            </DialogContent>
-          )}
+            )}
+          </DialogContent>
+
           {zenodoData && (
-            <DialogActions sx={{ p: 2 }}>
+            <DialogActions sx={{ p: 2, pt: 0 }}>
               <Button
                 type="submit"
                 variant="contained"
@@ -130,6 +132,7 @@ export default function DocumentForm() {
                 loading={createDocument?.isPending}
                 endIcon={<AddIcon />}
                 loadingPosition="end"
+                sx={{ backgroundColor: "#20477B" }}
               >
                 Create
               </Button>

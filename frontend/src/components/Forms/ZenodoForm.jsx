@@ -1,16 +1,14 @@
 import {
-  DialogContent,
   Button,
   TextField,
   Stack,
   TextareaAutosize,
-  Typography,
+  Grid2,
 } from "@mui/material";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useZenodo } from "../../queries/zenodo.js";
@@ -22,30 +20,22 @@ function ZenodoData({ zenodoData }) {
     setDisplayAuthors(!displayAuthors);
   }
   return (
-    <DialogContent
-      sx={{
-        p: 2,
-        pb: 0,
-        textAlign: "center",
-        mt: "0 !important;",
-      }}
-    >
-      <Stack direction={"column"} spacing={2} useFlexGap>
-        <TextField
-          value={zenodoData?.title}
-          disabled
-          label="Title"
-          fullWidth
-          sx={{ mb: 2 }}
-        />
-      </Stack>
+    <Stack direction={"column"} spacing={2} useFlexGap>
+      <TextField value={zenodoData?.title} disabled label="Title" fullWidth />
+      <TextareaAutosize
+        value={zenodoData?.metadata?.description}
+        disabled
+        label="Description"
+        maxRows="4"
+        minRows="4"
+        sx={{ borderRadius: "20px !important" }}
+      />
       <Stack direction={"row"} spacing={2} useFlexGap>
         <TextField
           value={zenodoData?.doi}
           disabled
           label="Zenodo DOI"
           fullWidth
-          sx={{ mb: 2 }}
         />
         <TextField
           value={new Date(
@@ -54,7 +44,6 @@ function ZenodoData({ zenodoData }) {
           disabled
           label="Publication Date"
           fullWidth
-          sx={{ mb: 2 }}
         />
       </Stack>
 
@@ -64,48 +53,37 @@ function ZenodoData({ zenodoData }) {
           disabled
           label="License"
           fullWidth
-          sx={{ mb: 2 }}
         />
         <TextField
           value={zenodoData?.metadata?.resource_type?.title}
           disabled
           label="Type"
           fullWidth
-          sx={{ mb: 2 }}
         />
       </Stack>
-      <Stack direction="column" useFlexGap spacing={2} alignItems="end">
-        <Button
-          onClick={handleDisplayAuthors}
-          endIcon={displayAuthors ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
-          sx={{ mb: 2 }}
-        >
-          Authors
-        </Button>
-      </Stack>
-      <Stack direction="column" useFlexGap spacing={2}>
-        {displayAuthors &&
-          zenodoData?.metadata?.creators?.map((creator) => (
-            <TextField
-              value={creator?.name}
-              disabled
-              label="Author"
-              sx={{ mb: 2, width: "100%" }}
-              fullWidth
-            />
+
+      <Button
+        onClick={handleDisplayAuthors}
+        endIcon={displayAuthors ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+      >
+        Authors
+      </Button>
+
+      {displayAuthors && (
+        <Grid2 container spacing={2}>
+          {zenodoData?.metadata?.creators?.map((creator) => (
+            <Grid2 size={4}>
+              <TextField
+                value={creator?.name}
+                disabled
+                label="Author"
+                title={creator?.name}
+              />
+            </Grid2>
           ))}
-      </Stack>
-      <Stack direction={"column"} useFlexGap>
-        <TextareaAutosize
-          value={zenodoData?.metadata?.description}
-          disabled
-          label="Description"
-          maxRows="4"
-          minRows="4"
-          sx={{ borderRadius: "20px !important" }}
-        />
-      </Stack>
-    </DialogContent>
+        </Grid2>
+      )}
+    </Stack>
   );
 }
 
@@ -143,43 +121,46 @@ export default function ZenodoForm({ zenodoData, setZenodoData, setMessage }) {
   }
 
   return (
-    <>
-      <DialogContent sx={{ p: 2, mt: "0 !important;" }}>
-        <TextField
-          required
-          {...register("source", {
-            required: "Source can not be empty",
-            pattern: {
-              value: /^https:\/\/zenodo\.org\/records\/.*/,
-              message: "Not a valid Zenodo URL",
-            },
-          })}
-          label="Zenodo source"
-          error={!!errors?.source}
-          helperText={errors?.source?.message ?? " "}
-          fullWidth
-        />
-        <Stack direction={"row"} spacing={2} justifyContent={"end"}>
-          <Button
-            variant="outlined"
-            onClick={handleReset}
-            endIcon={<RestartAltIcon />}
-          >
-            Reset
-          </Button>
-          <Button
-            type="submit"
-            onClick={handleSubmit(onSubmit)}
-            variant="contained"
-            loading={zenodo?.isPending}
-            endIcon={<SearchIcon />}
-            loadingPosition="end"
-          >
-            Search
-          </Button>
-        </Stack>
-      </DialogContent>
+    <Stack direction="column" spacing={2}>
+      <TextField
+        required
+        {...register("source", {
+          required: "Source can not be empty",
+          pattern: {
+            value: /^https:\/\/zenodo\.org\/records\/.*/,
+            message: "Not a valid Zenodo URL",
+          },
+        })}
+        label="Zenodo source"
+        error={!!errors?.source}
+        helperText={errors?.source?.message ?? " "}
+        fullWidth
+      />
+      <Stack
+        direction={"row"}
+        spacing={2}
+        justifyContent={"end"}
+        sx={{ mt: "0 !important" }}
+      >
+        <Button
+          variant="outlined"
+          onClick={handleReset}
+          endIcon={<RestartAltIcon />}
+        >
+          Reset
+        </Button>
+        <Button
+          type="submit"
+          onClick={handleSubmit(onSubmit)}
+          variant="contained"
+          loading={zenodo?.isPending}
+          endIcon={<SearchIcon />}
+          loadingPosition="end"
+        >
+          Search
+        </Button>
+      </Stack>
       {zenodoData && <ZenodoData zenodoData={zenodoData} />}
-    </>
+    </Stack>
   );
 }
