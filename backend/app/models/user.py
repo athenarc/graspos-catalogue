@@ -37,6 +37,7 @@ class UserUpdate(BaseModel):
     super_user: bool | None = False
     username: str | None = False
     organization: str | None = False
+    orcid: str | None = False
     disabled: bool | None = False
     
 class UserPasswordUpdate(UserUpdate):
@@ -59,6 +60,7 @@ class User(Document, UserOut):
     last_name: Optional[str] = None
     username: str
     organization: str | None = None
+    orcid: str | None = False
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"

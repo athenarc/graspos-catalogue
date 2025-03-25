@@ -148,6 +148,20 @@ export default function RegisterForm() {
         </DialogContent>
         <DialogContent sx={{ p: 2, pt: 0 }}>
           <TextField
+            {...register("orcid", {
+              pattern: {
+                value: /^(\d{4}-){3}\d{3}(\d|X)$/,
+                message: "Orcid not in correct format",
+              },
+            })}
+            label="Orcid"
+            fullWidth
+            error={!!errors?.orcid}
+            helperText={errors?.orcid?.message}
+          />
+        </DialogContent>
+        <DialogContent sx={{ p: 2, pt: 0 }}>
+          <TextField
             {...register("organization")}
             label="Organization"
             fullWidth
