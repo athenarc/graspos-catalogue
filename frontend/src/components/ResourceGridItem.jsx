@@ -11,6 +11,7 @@ import {
   Tooltip,
   IconButton,
   CardActions,
+  Grid2,
 } from "@mui/material";
 
 import { useUserUsername } from "../queries/data";
@@ -37,7 +38,7 @@ import openScienceRra from "../assets/open_science_rra.png";
 import caa2024 from "../assets/caa2024.png";
 import grasposTools from "../assets/graspos_tools.png";
 import pathos from "../assets/pathos.png";
-import robertkochinstitut from "../assets/robertkochinstitut.png"
+import robertkochinstitut from "../assets/robertkochinstitut.png";
 
 const imgs = {
   eu: euLogo,
@@ -48,7 +49,7 @@ const imgs = {
   caa2024: caa2024,
   "graspos-tools": grasposTools,
   pathos: pathos,
-  robertkochinstitut: robertkochinstitut
+  robertkochinstitut: robertkochinstitut,
 };
 
 function AdminFunctionalities({ type, resource }) {
@@ -151,6 +152,27 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
   );
 }
 
+function ResourceItemsKeywords({ resource }) {
+  return (
+    <Stack direction="column" justifyContent="center">
+      <Grid2 container spacing={1}>
+        {resource?.zenodo?.metadata?.keywords?.map((keyword) => (
+          <Grid2
+            sx={{
+              borderRadius: "10px",
+              border: "2px solid #a2bffe",
+              p: 0.5,
+              color: "black",
+            }}
+          >
+            <Typography fontSize={12}>{keyword}</Typography>
+          </Grid2>
+        ))}
+      </Grid2>
+    </Stack>
+  );
+}
+
 function ResourceItemsCommunities({ resource }) {
   return (
     <Stack direction={"row"} justifyContent="center" spacing={1}>
@@ -232,6 +254,9 @@ function ResourceItemContent({ resource }) {
   const [showDescription, setShowDescription] = useState(false);
   return (
     <>
+      <Stack direction={"row"} spacing={2} sx={{pb: 2}}>
+        <ResourceItemsKeywords resource={resource} />
+      </Stack>
       <Stack
         direction={"row"}
         justifyContent="space-between"
@@ -256,6 +281,7 @@ function ResourceItemContent({ resource }) {
           {!showDescription && <KeyboardArrowDownIcon />}
         </IconButton>
       </Stack>
+
       {showDescription && (
         <Stack
           direction="row"
@@ -284,7 +310,7 @@ function ResourceItemHeader({ resource, user, type, handleDelete }) {
       direction={"row"}
       justifyContent="space-between"
       alignItems="center"
-      pb={2}
+      mb={2}
     >
       <Stack direction={"row"} justifyContent="center" spacing={1}>
         <Tooltip title={resource?.zenodo?.title}>
