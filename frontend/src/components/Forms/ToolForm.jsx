@@ -4,10 +4,11 @@ import {
   DialogTitle,
   Button,
   IconButton,
+  DialogContent,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
-import { useNavigate, useOutletContext, Link } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import Notification from "../Notification.jsx";
@@ -89,24 +90,28 @@ export default function ToolForm() {
           >
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
-          <ZenodoForm
-            zenodoData={zenodoData}
-            setZenodoData={setZenodoData}
-            setMessage={setMessage}
-          />
-
-          <DialogActions sx={{ p: 2 }}>
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={!zenodoData}
-              loading={createTool?.isPending}
-              endIcon={<AddIcon />}
-              loadingPosition="end"
-            >
-              Create
-            </Button>
-          </DialogActions>
+          <DialogContent sx={{ p: 2 }}>
+            <ZenodoForm
+              zenodoData={zenodoData}
+              setZenodoData={setZenodoData}
+              setMessage={setMessage}
+            />
+          </DialogContent>
+          {zenodoData && (
+            <DialogActions sx={{ p: 2 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={!zenodoData}
+                loading={createTool?.isPending}
+                endIcon={<AddIcon />}
+                loadingPosition="end"
+                sx={{ backgroundColor: "#20477B" }}
+              >
+                Create
+              </Button>
+            </DialogActions>
+          )}
         </Dialog>
         {(createTool?.isSuccess || createTool?.isError) && (
           <Notification requestStatus={createTool?.status} message={message} />
