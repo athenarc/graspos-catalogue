@@ -1,19 +1,18 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8000/api/v1/",
+  baseURL: process.env.REACT_APP_BACKEND_HOST,
   headers: { "Content-Type": "application/json" },
 });
 async function refreshTokenFunction() {
   var token = null;
   try {
     token = JSON.parse(localStorage.getItem("refresh_token"));
-    
   } catch (err) {
-    return err
+    return err;
   }
   const refreshToken = axios.create({
-    baseURL: "http://localhost:8000/api/v1/" + "auth/refresh",
+    baseURL: process.env.REACT_APP_BACKEND_HOST + "auth/refresh",
     timeout: 1000,
     headers: {
       "Content-Type": "application/json",

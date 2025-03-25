@@ -122,8 +122,8 @@ export default function LoginForm() {
           <Button
             type="submit"
             variant="contained"
-            disabled={login.isLoading}
-            loading={login.isLoading}
+            disabled={login.isPending}
+            loading={login.isPending}
             endIcon={<LoginIcon />}
             loadingPosition="end"
             sx={{ backgroundColor: "#20477B" }}

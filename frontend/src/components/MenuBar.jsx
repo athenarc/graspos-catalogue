@@ -29,7 +29,7 @@ export default function MenuBar({ handleLogout, user }) {
       }}
     >
       <Grid size={4} sx={{ margin: "auto", textAlign: "left" }}>
-        <Link to="https://graspos.eu/" target="_blank">
+        <Link to="https://graspos-infra.athenarc.gr/" target="_blank">
           <img src={logo} alt="GraspOS-Logo" width={150} height={40} />
         </Link>
       </Grid>

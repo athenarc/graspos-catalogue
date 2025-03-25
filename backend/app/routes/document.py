@@ -12,7 +12,7 @@ from util.requests import get_zenodo_data
 router = APIRouter(prefix="/api/v1/document", tags=["Documents"])
 
 
-@router.get("/", status_code=200, response_model=list[Documents])
+@router.get("/all", status_code=200, response_model=list[Documents])
 async def get_all_documents() -> list[Documents]:
 
     documents = await Documents.find(Documents.approved == True,
@@ -21,7 +21,7 @@ async def get_all_documents() -> list[Documents]:
     return documents
 
 
-@router.get("/admin/", status_code=200, response_model=list[Documents])
+@router.get("/admin", status_code=200, response_model=list[Documents])
 async def get_all_documents_admin(user: User = Depends(
     current_user)) -> list[Documents]:
 
@@ -34,7 +34,7 @@ async def get_all_documents_admin(user: User = Depends(
     return documents
 
 
-@router.post("/", status_code=201)
+@router.post("/create", status_code=201)
 async def create_document(
     document: Documents, user: User = Depends(current_user)) -> Documents:
     zenodo = None
