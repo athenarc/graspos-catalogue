@@ -202,7 +202,7 @@ export default function UsersPanelForm() {
 
   return (
     user && (
-      <Dialog onClose={handleClose} open={true} maxWidth="sm" fullWidth>
+      <Dialog onClose={handleClose} open={true} maxWidth="md" fullWidth>
         <DialogTitle
           sx={{
             backgroundColor: "#20477B",
