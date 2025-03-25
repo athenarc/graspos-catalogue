@@ -37,11 +37,18 @@ export default function MenuBar({ handleLogout, user }) {
       <Grid size={4} sx={{ textAlign: "right", margin: "auto" }}>
         <Stack direction="row" justifyContent="flex-end">
           {!user && (
-            <Link to={"login"}>
-              <Button variant="outlined" sx={{ mr: 2 }}>
-                Login
-              </Button>
-            </Link>
+            <Stack direction="row" spacing={1} dividers>
+              <Link to={"register"}>
+                <Button variant="outlined" sx={{ color: "#fff", border: "none" }}>
+                  Register
+                </Button>
+              </Link>
+              <Link to={"login"}>
+                <Button variant="outlined" sx={{ color: "#fff", border: "none" }}>
+                  Login
+                </Button>
+              </Link>
+            </Stack>
           )}
           {user && (
             <UserDropDownMenu

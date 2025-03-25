@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
-import { useNavigate, useOutletContext, Link } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import Notification from "../Notification.jsx";
@@ -98,15 +98,16 @@ export default function DatasetForm() {
           >
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
-          <Stack direction="column" spacing={2}>
+          <DialogContent sx={{ p: 2 }}>
             <ZenodoForm
               zenodoData={zenodoData}
               setZenodoData={setZenodoData}
               setMessage={setMessage}
             />
+
             {zenodoData && (
-              <DialogContent sx={{ p: 2, mt: "0 !important;" }}>
-                <Stack direction="row" useFlexGap spacing={1}>
+              <Stack direction="column" sx={{ mt: 2 }}>
+                <Stack direction="row" useFlexGap spacing={2} sx={{ mt: 0 }}>
                   <TextField
                     {...register("organization")}
                     label="Organization"
@@ -126,7 +127,7 @@ export default function DatasetForm() {
                     </Select>
                   </FormControl>
                 </Stack>
-                <Stack direction="row" useFlexGap spacing={2}>
+                <Stack direction="row" spacing={2} sx={{ mt: 0 }}>
                   <TextField
                     {...register("contact_person")}
                     label="Contact Person"
@@ -142,7 +143,7 @@ export default function DatasetForm() {
                     fullWidth
                   />
                 </Stack>
-                <Stack direction="row" useFlexGap spacing={2}>
+                <Stack direction="row" spacing={2}>
                   <TextField
                     {...register("documentation_url")}
                     label="Documentation Url"
@@ -158,7 +159,7 @@ export default function DatasetForm() {
                     fullWidth
                   />
                 </Stack>
-                <Stack direction="row" useFlexGap spacing={2}>
+                <Stack direction="row" spacing={2}>
                   <FormControl fullWidth>
                     <TextareaAutosize
                       {...register("api_url_instructions")}
@@ -169,9 +170,9 @@ export default function DatasetForm() {
                     />
                   </FormControl>
                 </Stack>
-              </DialogContent>
+              </Stack>
             )}
-          </Stack>
+          </DialogContent>
           {zenodoData && (
             <DialogActions sx={{ p: 2, pt: 0 }}>
               <Button
@@ -181,6 +182,7 @@ export default function DatasetForm() {
                 loading={createDataset?.isPending}
                 endIcon={<AddIcon />}
                 loadingPosition="end"
+                sx={{ backgroundColor: "#20477B" }}
               >
                 Create
               </Button>
