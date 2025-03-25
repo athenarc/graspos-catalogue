@@ -36,7 +36,8 @@ services:
 
   mongodb:
     container_name: mongodb
-    image: mongo:${MONGO_VERSION}
+    image: ${MONGO_IMAGE}
+    platform: ${MONGO_PLATFORM}
     restart: always
     ports:
       - "${MONGO_CONTAINER_PORT}:27017"
