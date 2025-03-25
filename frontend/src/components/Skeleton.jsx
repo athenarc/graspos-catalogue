@@ -2,7 +2,7 @@ import * as React from "react";
 import Skeleton from "@mui/material/Skeleton";
 import { Grid2 as Grid } from "@mui/material";
 
-export function RectangularVariants({ count, width = 480, height = 200 }) {
+export function RectangularVariants({ count, width = 480, height = 300 }) {
   return [...Array(count)].map((e, i) => (
     <Grid key={i}>
       <Skeleton
