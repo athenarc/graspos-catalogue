@@ -9,6 +9,7 @@ import {
   TextField,
   Typography,
   DialogContentText,
+  Stack,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
@@ -98,82 +99,79 @@ export default function RegisterForm() {
           <CloseIcon sx={{ color: "white" }} />
         </IconButton>
         <DialogContent sx={{ p: 2 }}>
-          <TextField
-            required
-            {...register("username", {
-              required: "Username can not be empty",
-            })}
-            label="Username"
-            error={!!errors?.username}
-            helperText={errors?.username?.message}
-            fullWidth
-          />
-        </DialogContent>
-        <DialogContent sx={{ p: 2, pt: 0 }}>
-          <TextField
-            required
-            {...register("password", {
-              required: "Password can not be empty",
-            })}
-            label="Password"
-            type="password"
-            error={!!errors?.password}
-            helperText={errors?.password?.message}
-            fullWidth
-          />
-        </DialogContent>
+          <Stack direction="column" spacing={2}>
+            <TextField
+              required
+              {...register("username", {
+                required: "Username can not be empty",
+              })}
+              label="Username"
+              error={!!errors?.username}
+              helperText={errors?.username?.message}
+              fullWidth
+            />
+            <TextField
+              required
+              {...register("password", {
+                required: "Password can not be empty",
+              })}
+              label="Password"
+              type="password"
+              error={!!errors?.password}
+              helperText={errors?.password?.message}
+              fullWidth
+            />
+            <TextField
+              required
+              {...register("email", {
+                required: "Email can not be empty",
+                pattern: {
+                  value:
+                    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                  message: "Invalid email address",
+                },
+              })}
+              label="Email"
+              error={!!errors?.email}
+              helperText={errors?.email?.message}
+              fullWidth
+            />
+            <TextField
+              {...register("first_name")}
+              label="First Name"
+              fullWidth
+            />
 
-        <DialogContent sx={{ p: 2, pt: 0 }}>
-          <TextField
-            required
-            {...register("email", {
-              required: "Email can not be empty",
-              pattern: {
-                value:
-                  /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                message: "Invalid email address",
-              },
-            })}
-            label="Email"
-            error={!!errors?.email}
-            helperText={errors?.email?.message}
-            fullWidth
-          />
-        </DialogContent>
-        <DialogContent sx={{ p: 2, pt: 0 }}>
-          <TextField {...register("first_name")} label="First Name" fullWidth />
-        </DialogContent>
-        <DialogContent sx={{ p: 2, pt: 0 }}>
-          <TextField {...register("last_name")} label="Last Name" fullWidth />
-        </DialogContent>
-        <DialogContent sx={{ p: 2, pt: 0 }}>
-          <TextField
-            {...register("orcid", {
-              pattern: {
-                value: /^(\d{4}-){3}\d{3}(\d|X)$/,
-                message: "Orcid not in correct format",
-              },
-            })}
-            label="Orcid"
-            fullWidth
-            error={!!errors?.orcid}
-            helperText={errors?.orcid?.message}
-          />
-        </DialogContent>
-        <DialogContent sx={{ p: 2, pt: 0 }}>
-          <TextField
-            {...register("organization")}
-            label="Organization"
-            fullWidth
-          />
-        </DialogContent>
-        <DialogContent sx={{ p: 2, pt: 0 }}>
-          <Typography align="center" variant="subtitle2">
-            Already have an account?
-          </Typography>
-          <Typography align="center" variant="subtitle2">
-            Login <Link to={"/login"}>here</Link>!
-          </Typography>
+            <TextField {...register("last_name")} label="Last Name" fullWidth />
+
+            <TextField
+              {...register("orcid", {
+                pattern: {
+                  value: /^(\d{4}-){3}\d{3}(\d|X)$/,
+                  message: "Orcid not in correct format",
+                },
+              })}
+              label="Orcid"
+              fullWidth
+              error={!!errors?.orcid}
+              helperText={errors?.orcid?.message}
+            />
+            <TextField
+              {...register("organization")}
+              label="Organization"
+              fullWidth
+            />
+            <Typography align="center" variant="subtitle2">
+              Already have an account?
+            </Typography>
+            <Typography
+              align="center"
+              variant="subtitle2"
+              sx={{ mt: "0 !important;" }}
+            >
+              Login <Link to={"/login"}>here</Link>!
+            </Typography>
+          </Stack>
         </DialogContent>
 
         <DialogActions sx={{ p: 2, pt: 0 }}>

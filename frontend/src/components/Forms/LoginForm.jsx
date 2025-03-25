@@ -7,12 +7,13 @@ import {
   IconButton,
   TextField,
   Typography,
+  Stack,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useLogin } from "../../queries/data.js";
-import LoginIcon from '@mui/icons-material/Login';
+import LoginIcon from "@mui/icons-material/Login";
 
 export default function LoginForm() {
   const {
@@ -82,40 +83,42 @@ export default function LoginForm() {
           <CloseIcon sx={{ color: "white" }} />
         </IconButton>
         <DialogContent sx={{ p: 2, pb: 0 }}>
-          <TextField
-            {...register("username", {
-              required: "Username can not be empty",
-            })}
-            required
-            id="outlined-required"
-            label="Username"
-            error={!!errors?.username}
-            helperText={errors?.username?.message}
-            fullWidth
-          />
-        </DialogContent>
-        <DialogContent sx={{ p: 2, pb: 0 }}>
-          <TextField
-            {...register("password", {
-              required: "Password can not be empty",
-            })}
-            required
-            id="outlined-password-input"
-            label="Password"
-            type="password"
-            error={!!errors?.password}
-            helperText={errors?.password?.message}
-            autoComplete="current-password"
-            fullWidth
-          />
-        </DialogContent>
-        <DialogContent sx={{ p: 2, pb: 0 }}>
-          <Typography align="center" variant="subtitle2">
-            Don't have an account?
-          </Typography>
-          <Typography align="center" variant="subtitle2">
-            Register <Link to={"/register"}>here</Link>!
-          </Typography>
+          <Stack direction="column" spacing={2}>
+            <TextField
+              {...register("username", {
+                required: "Username can not be empty",
+              })}
+              required
+              id="outlined-required"
+              label="Username"
+              error={!!errors?.username}
+              helperText={errors?.username?.message}
+              fullWidth
+            />
+            <TextField
+              {...register("password", {
+                required: "Password can not be empty",
+              })}
+              required
+              id="outlined-password-input"
+              label="Password"
+              type="password"
+              error={!!errors?.password}
+              helperText={errors?.password?.message}
+              autoComplete="current-password"
+              fullWidth
+            />
+            <Typography align="center" variant="subtitle2">
+              Don't have an account?
+            </Typography>
+            <Typography
+              align="center"
+              variant="subtitle2"
+              sx={{ mt: "0 !important;" }}
+            >
+              Register <Link to={"/register"}>here</Link>!
+            </Typography>
+          </Stack>
         </DialogContent>
 
         <DialogActions sx={{ p: 2, pt: 1 }}>
