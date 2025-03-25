@@ -35,7 +35,8 @@ async def user_registration(user_auth: UserAuthRegister):
                 username=user_auth.username,
                 first_name=user_auth.first_name,
                 last_name=user_auth.last_name,
-                organization=user_auth.organization)
+                organization=user_auth.organization,
+                orcid=user_auth.orcid)
     await user.create()
     return user
 
