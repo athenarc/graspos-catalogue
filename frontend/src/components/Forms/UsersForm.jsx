@@ -8,6 +8,10 @@ import {
   TextField,
   Stack,
   FormControlLabel,
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate, useOutletContext } from "react-router-dom";
@@ -63,68 +67,91 @@ function UserForm({ user }) {
     reset(user);
   }
   return (
-    <Stack
-      direction={"row"}
-      justifyContent="center"
-      spacing={2}
-      component="form"
-      noValidate
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <TextField
-        {...register("username", {
-          value: user?.username,
-        })}
-        label="Username"
-      />
-      <TextField
-        {...register("email", {
-          value: user?.email,
-        })}
-        label="Email"
-      />
-      <TextField
-        {...register("first_name", {
-          value: user?.first_name,
-        })}
-        label="First Name"
-      />
-      <TextField
-        {...register("last_name", {
-          value: user?.last_name,
-        })}
-        label="Last Name"
-      />
-      <input
-        hidden={true}
-        {...register("id", {
-          value: user?.id,
-        })}
-        label="Id"
-      />
-      <FormControlLabel
-        label="Admin"
-        control={
-          <input
-            {...register("super_user", {
-              value: user?.super_user ? true : false,
+    <Card component="form" noValidate onSubmit={handleSubmit(onSubmit)}>
+      <CardContent
+        component={Stack}
+        direction="column"
+        spacing={2}
+        sx={{ pb: 2 }}
+      >
+        <Stack direction="row" justifyContent="space-between" sx={{ pb: 2 }}>
+          <Typography variant="h5">{user?.username}</Typography>
+
+          <Stack direction="row" justifyContent="end" spacing={2}>
+            <FormControlLabel
+              label="Admin"
+              control={
+                <input
+                  {...register("super_user", {
+                    value: user?.super_user ? true : false,
+                  })}
+                  type="checkbox"
+                />
+              }
+            />
+            <FormControlLabel
+              label="Disabled"
+              control={
+                <input
+                  {...register("disabled", {
+                    value: user?.disabled ? true : false,
+                  })}
+                  type="checkbox"
+                />
+              }
+            />
+            <input
+              hidden={true}
+              {...register("id", {
+                value: user?.id,
+              })}
+              label="Id"
+            />
+
+            {(updateUser?.isSuccess || updateUser?.isError) && (
+              <Notification
+                requestStatus={updateUser?.status}
+                message={message}
+              />
+            )}
+          </Stack>
+        </Stack>
+
+        <Stack direction={"row"} justifyContent="start" spacing={2}>
+          <TextField
+            {...register("username", {
+              value: user?.username,
             })}
-            type="checkbox"
+            label="Username"
+            disabled
+            fullWidth
           />
-        }
-      />
-      <FormControlLabel
-        label="Disabled"
-        control={
-          <input
-            {...register("disabled", {
-              value: user?.disabled ? true : false,
+          <TextField
+            {...register("email", {
+              value: user?.email,
             })}
-            type="checkbox"
+            label="Email"
+            fullWidth
           />
-        }
-      />
-      <DialogActions sx={{ p: 2 }}>
+        </Stack>
+        <Stack direction="row" justifyContent="start" spacing={2}>
+          <TextField
+            {...register("first_name", {
+              value: user?.first_name,
+            })}
+            label="First Name"
+            fullWidth
+          />
+          <TextField
+            {...register("last_name", {
+              value: user?.last_name,
+            })}
+            label="Last Name"
+            fullWidth
+          />
+        </Stack>
+      </CardContent>
+      <CardActions sx={{ p: 2, justifyContent: "end" }}>
         <Stack direction="row" spacing={2}>
           <Button
             variant="contained"
@@ -158,12 +185,8 @@ function UserForm({ user }) {
             Save
           </Button>
         </Stack>
-      </DialogActions>
-
-      {(updateUser?.isSuccess || updateUser?.isError) && (
-        <Notification requestStatus={updateUser?.status} message={message} />
-      )}
-    </Stack>
+      </CardActions>
+    </Card>
   );
 }
 
@@ -179,7 +202,7 @@ export default function UsersPanelForm() {
 
   return (
     user && (
-      <Dialog onClose={handleClose} open={true} maxWidth="xl" fullWidth>
+      <Dialog onClose={handleClose} open={true} maxWidth="sm" fullWidth>
         <DialogTitle
           sx={{
             backgroundColor: "#20477B",
