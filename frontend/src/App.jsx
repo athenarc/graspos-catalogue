@@ -17,7 +17,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BrowserRouter>
+        <BrowserRouter basename="catalogue">
           <Routes>
             <Route path="/" element={<AppLayout />}>
               <Route path="/login" element={<LoginForm />}></Route>

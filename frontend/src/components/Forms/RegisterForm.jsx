@@ -166,8 +166,8 @@ export default function RegisterForm() {
           <Button
             type="submit"
             variant="contained"
-            disabled={registerUser.isLoading}
-            loading={registerUser.isLoading}
+            disabled={registerUser.isPending}
+            loading={registerUser.isPending}
             endIcon={<HowToRegIcon />}
             loadingPosition="end"
             sx={{ backgroundColor: "#20477B" }}

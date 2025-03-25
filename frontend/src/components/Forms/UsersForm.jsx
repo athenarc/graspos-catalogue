@@ -149,8 +149,8 @@ function UserForm({ user }) {
           <Button
             type="submit"
             variant="contained"
-            disabled={updateUser.isLoading}
-            loading={updateUser.isLoading}
+            disabled={updateUser.isPending}
+            loading={updateUser.isPending}
             endIcon={<SaveIcon />}
             loadingPosition="end"
             sx={{ backgroundColor: "#20477B" }}
