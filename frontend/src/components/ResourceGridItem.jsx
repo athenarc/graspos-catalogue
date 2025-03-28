@@ -30,27 +30,12 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ConfirmationModal from "./Forms/ConfirmationModal";
 import { useDeleteTool, useUpdateTool } from "../queries/tool";
 
-import euLogo from "../assets/eu-logo.jpg";
-import openaireGraphLogo from "../assets/openaire-graph-logo.png";
-import openaireLogo from "../assets/openaire-logo.png";
-import scilakeLogo from "../assets/scilake_project.png";
-import openScienceRra from "../assets/open_science_rra.png";
-import caa2024 from "../assets/caa2024.png";
 import grasposTools from "../assets/graspos_tools.png";
-import pathos from "../assets/pathos.png";
-import robertkochinstitut from "../assets/robertkochinstitut.png";
+
 import { useUpdateZenodo } from "../queries/zenodo";
 
 const imgs = {
-  eu: euLogo,
-  "openaire-research-graph": openaireGraphLogo,
-  openaire: openaireLogo,
-  scilake_project: scilakeLogo,
-  open_science_rra: openScienceRra,
-  caa2024: caa2024,
   "graspos-tools": grasposTools,
-  pathos: pathos,
-  robertkochinstitut: robertkochinstitut,
 };
 
 function AdminFunctionalities({ type, resource }) {
@@ -213,21 +198,24 @@ function ResourceItemsKeywords({ resource }) {
 function ResourceItemsCommunities({ resource }) {
   return (
     <Stack direction={"row"} justifyContent="center" spacing={1}>
-      {resource?.zenodo?.metadata?.communities?.map((community) => (
-        <Tooltip
-          key={community.id}
-          title={"Part of " + community.id.replaceAll("-", " ")}
-        >
-          <div id={community.id}>
-            <img
-              src={imgs[community?.id]}
-              alt={community.id}
-              width={"30"}
-              height={"20"}
-            />
-          </div>
-        </Tooltip>
-      ))}
+      {resource?.zenodo?.metadata?.communities?.map(
+        (community) =>
+          community.id == "graspos-tools" && (
+            <Tooltip
+              key={community.id}
+              title={"Part of " + community.id.replaceAll("-", " ")}
+            >
+              <div id={community.id}>
+                <img
+                  src={imgs[community?.id]}
+                  alt={community.id}
+                  width={"30"}
+                  height={"20"}
+                />
+              </div>
+            </Tooltip>
+          )
+      )}
     </Stack>
   );
 }
