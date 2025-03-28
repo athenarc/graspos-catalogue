@@ -38,7 +38,7 @@ const imgs = {
   "graspos-tools": grasposTools,
 };
 
-function AdminFunctionalities({ type, resource }) {
+function ResourceAdminFunctionalities({ type, resource }) {
   const updateDataset = useUpdateDataset(resource?._id);
   const updateDocument = useUpdateDocument(resource?._id);
   const updateTool = useUpdateTool(resource?._id);
@@ -110,7 +110,7 @@ function AdminFunctionalities({ type, resource }) {
   );
 }
 
-function OwnerFunctionalities({ resource, user, type, handleDelete }) {
+function ResourceOwnerFunctionalities({ resource, user, type, handleDelete }) {
   const updateZenodo = useUpdateZenodo();
 
   function handleUpdateZenodo(data) {
@@ -173,7 +173,7 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
   );
 }
 
-function ResourceItemsKeywords({ resource }) {
+function ResourceItemKeywords({ resource }) {
   return (
     <Stack direction="column" justifyContent="center">
       <Grid2 container spacing={1}>
@@ -195,7 +195,7 @@ function ResourceItemsKeywords({ resource }) {
   );
 }
 
-function ResourceItemsCommunities({ resource }) {
+function ResourceItemCommunities({ resource }) {
   return (
     <Stack direction={"row"} justifyContent="center" spacing={1}>
       {resource?.zenodo?.metadata?.communities?.map(
@@ -260,13 +260,13 @@ function ResourceItemFooter({ handleDelete, resource, user, type }) {
         sx={{ backgroundColor: "white", pt: 2 }}
       >
         <Stack direction={"row"} spacing={1} sx={{ p: "0!important" }}>
-          <ResourceItemsCommunities resource={resource} />
+          <ResourceItemCommunities resource={resource} />
         </Stack>
         <Stack direction={"row"} spacing={0} sx={{ p: "0!important" }}>
           {!resource?.approved && user?.super_user ? (
-            <AdminFunctionalities resource={resource} type={type} />
+            <ResourceAdminFunctionalities resource={resource} type={type} />
           ) : (
-            <OwnerFunctionalities
+            <ResourceOwnerFunctionalities
               handleDelete={handleDelete}
               resource={resource}
               user={user}
@@ -283,7 +283,7 @@ function ResourceItemContent({ resource }) {
   return (
     <>
       <Stack direction={"row"} spacing={2} sx={{ pb: 2 }}>
-        <ResourceItemsKeywords resource={resource} />
+        <ResourceItemKeywords resource={resource} />
       </Stack>
       <Stack
         direction={"row"}
