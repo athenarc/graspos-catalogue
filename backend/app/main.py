@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from routes import user, auth, mail, register, dataset, document, tool, zenodo
+from routes import user, auth, mail, register, dataset, document, tool, zenodo, update
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 from models.dataset import Dataset
@@ -36,6 +36,7 @@ app = FastAPI(
 )
 
 app.include_router(zenodo.router)
+app.include_router(update.router)
 app.include_router(tool.router)
 app.include_router(dataset.router)
 app.include_router(document.router)

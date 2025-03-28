@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from models.tool import Tool, ToolPatch
 from models.user import User
 from models.zenodo import Zenodo
+from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
 from jwt import access_security
 from util.current_user import current_user
@@ -77,6 +78,7 @@ async def delete_tool(tool_id: PydanticObjectId,
         return HTTPException(status_code=404, detail="Tool does not exist")
 
     await tool_to_delete.delete(link_rule=DeleteRules.DELETE_LINKS)
+    await Update.find(zenodo_id = tool_to_delete.zenodo.id).delete()
     return {"message": "Tool successfully deleted"}
 
 

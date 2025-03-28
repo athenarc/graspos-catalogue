@@ -10,7 +10,6 @@ import {
   Stack,
   Tooltip,
   IconButton,
-  CardActions,
   Grid2,
 } from "@mui/material";
 
@@ -155,12 +154,15 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
               })
             }
             sx={{ p: 0.5 }}
-            loading={updateZenodo.isLoading}
-            loadingIndicator={<CircularProgress size={15} thickness={5} />}
+            loading={updateZenodo.isPending}
+            loadingIndicator={
+              <CircularProgress size={15} thickness={5} sx={{ mr: 2.5 }} />
+            }
           >
-            {!updateZenodo.isLoading && <RefreshIcon />}
+            {!updateZenodo.isPending && <RefreshIcon />}
           </IconButton>
         </Tooltip>
+
         <Tooltip title={"Delete " + String(type)} placement="top">
           <div>
             <ConfirmationModal
@@ -171,7 +173,7 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
               {(handleClickOpen) => (
                 <IconButton
                   color="error"
-                  disabled={!user}
+                  disabled={!user || updateZenodo.isPending}
                   onClick={handleClickOpen}
                   sx={{ p: 0.5 }}
                 >
@@ -422,6 +424,7 @@ export default function ResourceGridItem({ resource, type, user }) {
           display: "flex",
           justifyContent: "space-between",
           borderRadius: "10px",
+          opacity: [!resource?.approved ? "0.75" : "1"],
         }}
       >
         <CardContent>

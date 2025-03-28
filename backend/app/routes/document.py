@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from models.document import Documents, DocumentsPatch
 from models.user import User
 from models.zenodo import Zenodo
+from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
 from jwt import access_security
 from util.current_user import current_user
@@ -85,6 +86,7 @@ async def delete_document(document_id: PydanticObjectId,
                              detail="Documents does not exist")
 
     await document_to_delete.delete(link_rule=DeleteRules.DELETE_LINKS)
+    await Update.find(zenodo_id = document_to_delete.zenodo.id).delete()
     return {"message": "Document successfully deleted"}
 
 

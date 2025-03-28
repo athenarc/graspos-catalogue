@@ -11,6 +11,7 @@ import DatasetForm from "./components/Forms/DatasetForm.jsx";
 import DocumentForm from "./components/Forms/DocumentForm.jsx";
 import ToolForm from "./components/Forms/ToolForm.jsx";
 import UsersPanelForm from "./components/Forms/UsersForm.jsx";
+import ResourcesView from "./components/ZenodoUpdatesModal.jsx";
 
 function App() {
   const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ function App() {
               <Route path="/document/add" element={<DocumentForm />}></Route>
               <Route path="/tool/add" element={<ToolForm />}></Route>
               <Route path="/zenodo/add" element={<ZenodoForm />}></Route>
+              <Route path="/zenodo/updates" element={<ResourcesView />}></Route>
               <Route path="*" exact element={<Navigate to={"/"} />} />
             </Route>
           </Routes>

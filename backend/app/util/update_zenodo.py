@@ -8,8 +8,14 @@ from .requests import get_zenodo_data
 async def update_records(user_id=None, zenodo_id=None):
 
     records = []
-    records.append(await Zenodo.get(zenodo_id) if zenodo_id else await Zenodo.
-                   find().to_list())
+    if zenodo_id:
+        records.append(await Zenodo.get(zenodo_id))
+    else:
+        records = await Zenodo.find().to_list()
+
+    if len(records) == 0:
+        raise HTTPException(status_code=404,
+                                     detail="No resources found!")
     updated = []
     for record in records:
         record.source += "/versions/latest" if not "/versions/latest" in record.source else ""
@@ -25,7 +31,7 @@ async def update_records(user_id=None, zenodo_id=None):
             zenodo_record = await Zenodo.get(record.id)
 
             if not zenodo_record:
-                return HTTPException(status_code=404,
+                raise HTTPException(status_code=404,
                                      detail="Zenodo record does not exist")
 
             zenodo = Zenodo(**data["zenodo_object"])
@@ -38,6 +44,8 @@ async def update_records(user_id=None, zenodo_id=None):
                             old_version=record.zenodo_id,
                             new_version=data["zenodo_object"]["zenodo_id"])
             await update.save()
+            print("Saving update for: " + str(record.id) + " with: " +
+                  str(data["zenodo_object"]["zenodo_id"]))
             updated.append(update)
 
     detail = "Zenodo records updated successfully" if not zenodo_id else "Zenodo record " + str(

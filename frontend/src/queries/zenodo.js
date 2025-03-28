@@ -25,7 +25,7 @@ export function useUpdateZenodo() {
         data
       );
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries(["datasets"]);
       queryClient.invalidateQueries(["documents"]);
       queryClient.invalidateQueries(["tools"]);

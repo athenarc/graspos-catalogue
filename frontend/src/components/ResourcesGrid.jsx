@@ -9,7 +9,6 @@ import {
   Box,
   Tabs,
   Tab,
-  touchRippleClasses,
 } from "@mui/material";
 
 import { RectangularVariants } from "./Skeleton";

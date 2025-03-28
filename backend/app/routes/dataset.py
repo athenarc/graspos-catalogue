@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from models.dataset import Dataset, DatasetPatch
 from models.user import User
 from models.zenodo import Zenodo
+from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
 from jwt import access_security
 from util.current_user import current_user
@@ -82,6 +83,7 @@ async def delete_dataset(dataset_id: PydanticObjectId):
         return HTTPException(status_code=404, detail="Dataset does not exist")
 
     await dataset_to_delete.delete(link_rule=DeleteRules.DELETE_LINKS)
+    await Update.find(zenodo_id = dataset_to_delete.zenodo.id).delete()
     return {"message": "Dataset deleted successfully"}
 
 
