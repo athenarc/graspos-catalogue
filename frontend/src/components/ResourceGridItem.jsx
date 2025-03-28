@@ -63,47 +63,36 @@ function ResourceAdminFunctionalities({ type, resource }) {
     );
   }
   return (
-    <>
-      {queryState && (
-        <Tooltip title={"Updating resource"}>
-          <CircularProgress size="13px" sx={{ p: 1 }} />
-        </Tooltip>
-      )}
-      {!queryState && (
-        <>
-          <Tooltip title={"Approve " + String(type)}>
-            <IconButton
-              color="success"
-              onClick={() => {
-                handleUpdate(true);
-              }}
-              sx={{ p: 0.5 }}
-            >
-              <Check fontSize="" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip
-            title={
-              "Reject " +
-              String(type) +
-              ". " +
-              String(type) +
-              " will be deleted"
-            }
-            sx={{ p: 0.5 }}
-          >
-            <IconButton
-              color="error"
-              onClick={() => {
-                handleUpdate(false);
-              }}
-            >
-              <ClearIcon />
-            </IconButton>
-          </Tooltip>
-        </>
-      )}
-    </>
+    <Stack direction="row">
+      <Tooltip title={"Approve " + String(type)}>
+        <IconButton
+          disabled={queryState}
+          color="success"
+          onClick={() => {
+            handleUpdate(true);
+          }}
+          sx={{ p: 0.5 }}
+        >
+          <Check fontSize="" />
+        </IconButton>
+      </Tooltip>
+      <Tooltip
+        title={
+          "Reject " + String(type) + ". " + String(type) + " will be deleted"
+        }
+        sx={{ p: 0.5 }}
+      >
+        <IconButton
+          disabled={queryState}
+          color="error"
+          onClick={() => {
+            handleUpdate(false);
+          }}
+        >
+          <ClearIcon />
+        </IconButton>
+      </Tooltip>
+    </Stack>
   );
 }
 
@@ -120,53 +109,58 @@ function ResourceOwnerFunctionalities({ resource, user, type, handleDelete }) {
     );
   }
   return (
-    user &&
-    (user?.id == resource?.owner || user?.super_user) && (
-      <>
-        <Tooltip
-          title={"Update " + String(type) + " from Zenodo"}
-          placement="top"
+    <>
+      <Tooltip
+        title={"Update " + String(type) + " from Zenodo"}
+        placement="top"
+      >
+        <IconButton
+          disabled={
+            !user ||
+            updateZenodo.isPending ||
+            (!user?.super_user && resource?.owner != user?.id)
+          }
+          onClick={() =>
+            handleUpdateZenodo({
+              id: resource?.zenodo?.id,
+              source: resource?.zenodo?.source,
+            })
+          }
+          sx={{ p: 0.5 }}
+          loading={updateZenodo.isPending}
+          loadingIndicator={
+            <CircularProgress size={15} thickness={5} sx={{ mr: 2.5 }} />
+          }
         >
-          <IconButton
-            disabled={!user}
-            onClick={() =>
-              handleUpdateZenodo({
-                id: resource?.zenodo?.id,
-                source: resource?.zenodo?.source,
-              })
-            }
-            sx={{ p: 0.5 }}
-            loading={updateZenodo.isPending}
-            loadingIndicator={
-              <CircularProgress size={15} thickness={5} sx={{ mr: 2.5 }} />
-            }
-          >
-            {!updateZenodo.isPending && <RefreshIcon />}
-          </IconButton>
-        </Tooltip>
+          {!updateZenodo.isPending && <RefreshIcon />}
+        </IconButton>
+      </Tooltip>
 
-        <Tooltip title={"Delete " + String(type)} placement="top">
-          <div>
-            <ConfirmationModal
-              title={"Delete " + String(type)}
-              resource={resource}
-              response={() => handleDelete(resource?._id)}
-            >
-              {(handleClickOpen) => (
-                <IconButton
-                  color="error"
-                  disabled={!user || updateZenodo.isPending}
-                  onClick={handleClickOpen}
-                  sx={{ p: 0.5 }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              )}
-            </ConfirmationModal>
-          </div>
-        </Tooltip>
-      </>
-    )
+      <Tooltip title={"Delete " + String(type)} placement="top">
+        <div>
+          <ConfirmationModal
+            title={"Delete " + String(type)}
+            resource={resource}
+            response={() => handleDelete(resource?._id)}
+          >
+            {(handleClickOpen) => (
+              <IconButton
+                color="error"
+                disabled={
+                  !user ||
+                  updateZenodo.isPending ||
+                  (!user?.super_user && resource?.owner != user?.id)
+                }
+                onClick={handleClickOpen}
+                sx={{ p: 0.5 }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            )}
+          </ConfirmationModal>
+        </div>
+      </Tooltip>
+    </>
   );
 }
 
@@ -219,17 +213,12 @@ function ResourceItemCommunities({ resource }) {
 
 function ResourceItemFooter({ handleDelete, resource, user, type }) {
   return (
-    <Stack direction="column">
+    <Stack direction="column" justifyContent="end">
       <Stack
         direction={"row"}
         justifyContent="start"
         alignItems="center"
         spacing={1}
-        sx={{
-          backgroundColor: "white",
-          pb: 0,
-          pt: 3,
-        }}
       >
         <Tooltip title="Zenodo published date">
           <CalendarMonthIcon />
@@ -254,7 +243,7 @@ function ResourceItemFooter({ handleDelete, resource, user, type }) {
         spacing={1}
         justifyContent="space-between"
         alignItems="center"
-        sx={{ backgroundColor: "white", pt: 2 }}
+        sx={{ pt: 1 }}
       >
         <Stack direction={"row"} spacing={1} sx={{ p: "0!important" }}>
           <ResourceItemCommunities resource={resource} />
@@ -285,7 +274,6 @@ const NoMaxWidthTooltip = styled(({ className, ...props }) => (
 });
 
 function ResourceItemContent({ resource }) {
-  const [showDescription, setShowDescription] = useState(false);
   return (
     <>
       <Stack direction={"row"} spacing={2} sx={{ pb: 2 }}>
@@ -299,7 +287,7 @@ function ResourceItemContent({ resource }) {
               overflow: "hidden",
               textOverflow: "ellipsis",
               display: "-webkit-box",
-              WebkitLineClamp: "2",
+              WebkitLineClamp: "3",
               WebkitBoxOrient: "vertical",
               [`& .tooltip`]: {
                 maxWidth: 1000,
@@ -376,7 +364,7 @@ export default function ResourceGridItem({ resource, type, user }) {
   }
 
   return (
-    <Grid key={resource?._id} size={{ xs: 10, md: 4 }}>
+    <Grid key={resource?._id} size={{ xs: 10, sm: 4 }}>
       <Card
         elevation={1}
         sx={{
