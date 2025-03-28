@@ -24,7 +24,7 @@ function UpdatesTable({ updates }) {
     <Table sx={{ backgroundColor: "#FFF" }}>
       <TableHead>
         <TableRow>
-          <TableCell variant="head">Resource Title</TableCell>
+          <TableCell>Resource Title</TableCell>
           <TableCell>Type</TableCell>
           <TableCell>User</TableCell>
           <TableCell>Previous Zenodo ID</TableCell>
@@ -34,19 +34,19 @@ function UpdatesTable({ updates }) {
       </TableHead>
       <TableBody>
         {updates?.data?.data?.length == 0 && (
-          <TableRow>
+          <TableRow key={"no-data"}>
             <TableCell colSpan={6} sx={{ textAlign: "center" }}>
               No updates found!
             </TableCell>
           </TableRow>
         )}
         {updates?.data?.data?.map((update) => (
-          <TableRow key={update?.id}>
+          <TableRow key={update?._id}>
             <TableCell>{update?.zenodo_id?.title}</TableCell>
             <TableCell>
               {update?.zenodo_id?.metadata?.resource_type?.title}
             </TableCell>
-            <TableCell>{update?.user_id?.username}</TableCell>
+            <TableCell>{update?.user_id?.username ?? "System"}</TableCell>
             <TableCell>{update?.old_version}</TableCell>
             <TableCell>{update?.new_version}</TableCell>
             <TableCell>

@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-from config import CONFIG
 from models.zenodo import Zenodo
 from models.update import Update
 from .requests import get_zenodo_data
@@ -44,8 +43,6 @@ async def update_records(user_id=None, zenodo_id=None):
                             old_version=record.zenodo_id,
                             new_version=data["zenodo_object"]["zenodo_id"])
             await update.save()
-            print("Saving update for: " + str(record.id) + " with: " +
-                  str(data["zenodo_object"]["zenodo_id"]))
             updated.append(update)
 
     detail = "Zenodo records updated successfully" if not zenodo_id else "Zenodo record " + str(
