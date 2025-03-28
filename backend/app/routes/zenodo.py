@@ -1,6 +1,6 @@
 """Zenodo router."""
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from typing import Optional
 from models.zenodo import Zenodo, ZenodoView, ZenodoUpdate
 from models.user import User
@@ -10,6 +10,7 @@ from jwt import access_security
 from util.current_user import current_user
 from util.requests import get_zenodo_data
 from util.update_zenodo import update_records
+
 router = APIRouter(prefix="/api/v1/zenodo", tags=["Zenodo"])
 
 
@@ -21,13 +22,14 @@ async def get_all_zenodo_records():
 
 
 @router.post("/update", status_code=200)
-async def update_all_zenodo_records(id: ZenodoUpdate | None = None, user: User = Depends(current_user)):
-    print(id)
-    print(user.id)
-    if id:
-       return await Zenodo.get(id) 
-    
-    return await update_records(user_id=user.id, zenodo_id=id)
+async def update_all_zenodo_records(zenodo: Zenodo | None = None,
+                                    user: User = Depends(current_user)):
+
+    if zenodo:
+        return await update_records(user_id=user.id, zenodo_id=zenodo.id)
+
+    return await update_records(user_id=user.id, zenodo_id=None)
+
 
 @router.post("/search", status_code=200)
 async def post_zenodo_records(dataset: Dataset) -> Zenodo:
@@ -56,7 +58,8 @@ async def post_zenodo_records(dataset: Dataset) -> Zenodo:
             responses={404: {
                 "detail": "Dataset does not exist"
             }})
-async def get_zenodo(zenodo_id: PydanticObjectId, user: User = Depends(current_user)) -> Zenodo:
+async def get_zenodo(
+    zenodo_id: PydanticObjectId, user: User = Depends(current_user)) -> Zenodo:
 
     zenodo = await Zenodo.get(zenodo_id)
 

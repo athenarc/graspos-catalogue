@@ -129,9 +129,10 @@ function AdminFunctionalities({ type, resource }) {
 function OwnerFunctionalities({ resource, user, type, handleDelete }) {
   const updateZenodo = useUpdateZenodo();
 
-  function handleUpdateZenodo(id) {
+  function handleUpdateZenodo(data) {
+    console.log(data)
     updateZenodo.mutate(
-      { id },
+      { data },
       {
         onSuccess: (data) => {
           console.log(data);
@@ -152,10 +153,12 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
         >
           <IconButton
             disabled={!user}
-            onClick={() => handleUpdateZenodo(resource?.zenodo?.id)}
+            onClick={() => handleUpdateZenodo({id: resource?.zenodo?.id, source: resource?.zenodo?.source})}
             sx={{ p: 0.5 }}
+            loading={updateZenodo.isLoading}
+            loadingIndicator={<CircularProgress size={15} thickness={5} />}
           >
-            <RefreshIcon />
+            {!updateZenodo.isLoading && <RefreshIcon />}
           </IconButton>
         </Tooltip>
         <Tooltip title={"Delete " + String(type)} placement="top">
