@@ -17,7 +17,7 @@ import { useDeleteDataset, useUpdateDataset } from "../queries/dataset";
 import { useDeleteDocument, useUpdateDocument } from "../queries/document";
 
 import { styled } from "@mui/material/styles";
-import { tooltipClasses } from '@mui/material/Tooltip';
+import { tooltipClasses } from "@mui/material/Tooltip";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -219,7 +219,7 @@ function ResourceItemCommunities({ resource }) {
 
 function ResourceItemFooter({ handleDelete, resource, user, type }) {
   return (
-    <>
+    <Stack direction="column">
       <Stack
         direction={"row"}
         justifyContent="start"
@@ -272,7 +272,7 @@ function ResourceItemFooter({ handleDelete, resource, user, type }) {
           )}
         </Stack>
       </Stack>
-    </>
+    </Stack>
   );
 }
 
@@ -319,7 +319,7 @@ function ResourceItemContent({ resource }) {
   );
 }
 
-function ResourceItemHeader({ resource, user, type, handleDelete }) {
+function ResourceItemHeader({ resource }) {
   return (
     <Stack
       direction={"row"}
@@ -388,17 +388,11 @@ export default function ResourceGridItem({ resource, type, user }) {
         }}
       >
         <CardContent>
-          <ResourceItemHeader
-            handleDelete={handleDelete}
-            resource={resource}
-            user={user}
-            type={type}
-          />
+          <ResourceItemHeader resource={resource} />
           <ResourceItemContent resource={resource} />
         </CardContent>
         <CardContent
           sx={{
-            backgroundColor: "white",
             paddingBottom: "16px !important;",
           }}
         >
