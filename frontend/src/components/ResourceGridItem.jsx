@@ -13,19 +13,16 @@ import {
   Grid2,
 } from "@mui/material";
 
-import { useUserUsername } from "../queries/data";
 import { useDeleteDataset, useUpdateDataset } from "../queries/dataset";
 import { useDeleteDocument, useUpdateDocument } from "../queries/document";
 
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { styled } from "@mui/material/styles";
+import { tooltipClasses } from '@mui/material/Tooltip';
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ClearIcon from "@mui/icons-material/Clear";
 import Check from "@mui/icons-material/Check";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ConfirmationModal from "./Forms/ConfirmationModal";
 import { useDeleteTool, useUpdateTool } from "../queries/tool";
@@ -278,6 +275,15 @@ function ResourceItemFooter({ handleDelete, resource, user, type }) {
     </>
   );
 }
+
+const NoMaxWidthTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))({
+  [`& .${tooltipClasses.tooltip}`]: {
+    maxWidth: 1000,
+  },
+});
+
 function ResourceItemContent({ resource }) {
   const [showDescription, setShowDescription] = useState(false);
   return (
@@ -285,44 +291,25 @@ function ResourceItemContent({ resource }) {
       <Stack direction={"row"} spacing={2} sx={{ pb: 2 }}>
         <ResourceItemKeywords resource={resource} />
       </Stack>
-      <Stack
-        direction={"row"}
-        justifyContent="space-between"
-        alignItems="center"
-        spacing={1}
-        sx={{
-          py: 1,
-          pb: 0,
-          backgroundColor: "white",
-          borderBottom: "1px solid grey",
-        }}
-      >
-        <Typography variant="subtitle1" sx={{ fontStyle: "italic" }}>
-          More Information
-        </Typography>
-        <IconButton
-          onClick={() => {
-            setShowDescription(!showDescription);
-          }}
-        >
-          {showDescription && <KeyboardArrowUpIcon />}
-          {!showDescription && <KeyboardArrowDownIcon />}
-        </IconButton>
+      <Stack direction={"row"} spacing={2} sx={{ pb: 2 }}>
+        <NoMaxWidthTooltip title={resource?.zenodo?.metadata?.description}>
+          <Typography
+            variant="subtitle"
+            sx={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "-webkit-box",
+              WebkitLineClamp: "2",
+              WebkitBoxOrient: "vertical",
+              [`& .tooltip`]: {
+                maxWidth: 1000,
+              },
+            }}
+          >
+            {resource?.zenodo?.metadata?.description}
+          </Typography>
+        </NoMaxWidthTooltip>
       </Stack>
-
-      {showDescription && (
-        <Stack
-          direction="row"
-          sx={{
-            backgroundColor: "beige",
-            p: 2,
-            height: "50px",
-            overflow: "auto",
-          }}
-        >
-          {resource?.zenodo?.metadata?.description}
-        </Stack>
-      )}
       <Stack direction="row">
         {resource?.zenodo?.metadata?.creators?.map(
           (author) => author?.name + "; "
