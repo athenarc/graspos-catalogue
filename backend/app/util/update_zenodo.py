@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-from config import CONFIG
 from models.zenodo import Zenodo
 from models.update import Update
 from .requests import get_zenodo_data

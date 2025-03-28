@@ -24,7 +24,7 @@ function UpdatesTable({ updates }) {
     <Table sx={{ backgroundColor: "#FFF" }}>
       <TableHead>
         <TableRow>
-          <TableCell variant="head">Resource Title</TableCell>
+          <TableCell>Resource Title</TableCell>
           <TableCell>Type</TableCell>
           <TableCell>User</TableCell>
           <TableCell>Previous Zenodo ID</TableCell>
@@ -46,7 +46,7 @@ function UpdatesTable({ updates }) {
             <TableCell>
               {update?.zenodo_id?.metadata?.resource_type?.title}
             </TableCell>
-            <TableCell>{update?.user_id?.username}</TableCell>
+            <TableCell>{update?.user_id?.username ?? "System"}</TableCell>
             <TableCell>{update?.old_version}</TableCell>
             <TableCell>{update?.new_version}</TableCell>
             <TableCell>
