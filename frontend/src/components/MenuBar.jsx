@@ -11,6 +11,9 @@ export default function MenuBar({ handleLogout, user }) {
   function handleUsers() {
     navigate("/users");
   }
+  function handleZenodoUpdates() {
+    navigate("/zenodo/updates");
+  }
   return (
     <Grid
       component={Box}
@@ -56,6 +59,7 @@ export default function MenuBar({ handleLogout, user }) {
               handleProfile={handleProfile}
               handleUsers={handleUsers}
               handleLogout={handleLogout}
+              handleZenodoUpdates={handleZenodoUpdates}
             />
           )}
         </Stack>
