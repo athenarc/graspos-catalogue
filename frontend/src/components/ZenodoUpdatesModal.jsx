@@ -28,15 +28,22 @@ function UpdatesTable({ updates }) {
     <Table sx={{ backgroundColor: "#FFF" }}>
       <TableHead>
         <TableRow>
-          <TableCell>Resource Title</TableCell>
-          <TableCell>Resource Type</TableCell>
+          <TableCell variant="head">Resource Title</TableCell>
+          <TableCell>Type</TableCell>
           <TableCell>User</TableCell>
           <TableCell>Previous Zenodo ID</TableCell>
           <TableCell>Current Zenodo ID</TableCell>
-          <TableCell>Update On</TableCell>
+          <TableCell>Updated On</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
+        {updates?.data?.data?.length == 0 && (
+          <TableRow>
+            <TableCell colSpan={6} sx={{ textAlign: "center" }}>
+              No updates found!
+            </TableCell>
+          </TableRow>
+        )}
         {updates?.data?.data?.map((update) => (
           <TableRow key={update?.id}>
             <TableCell>{update?.zenodo_id?.title}</TableCell>
@@ -74,14 +81,14 @@ export default function UpdatesModal() {
           setMessage(data?.data?.detail);
         },
         onError: (error) => {
-          setMessage(error?.response?.detail);
+          setMessage(error?.response?.data?.detail);
         },
       }
     );
   }
   return (
     user && (
-      <Dialog onClose={handleClose} open={true} fullWidth maxWidth="md">
+      <Dialog onClose={handleClose} open={true} fullWidth maxWidth="lg">
         <DialogTitle
           sx={{
             backgroundColor: "#20477B",
@@ -89,7 +96,7 @@ export default function UpdatesModal() {
             textAlign: "center",
           }}
         >
-          Zenodo Updates
+          Resource Updates From Zenodo
         </DialogTitle>
         <IconButton
           aria-label="close"
