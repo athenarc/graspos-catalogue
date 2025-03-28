@@ -209,7 +209,7 @@ function ResourceItemsCommunities({ resource }) {
                 <img
                   src={imgs[community?.id]}
                   alt={community.id}
-                  width={"30"}
+                  width={"70"}
                   height={"20"}
                 />
               </div>
@@ -220,8 +220,7 @@ function ResourceItemsCommunities({ resource }) {
   );
 }
 
-function ResourceItemFooter({ resource, user }) {
-  const ownerUsername = useUserUsername(resource?.owner, user);
+function ResourceItemFooter({ handleDelete, resource, user, type }) {
   return (
     <>
       <Stack
@@ -261,15 +260,19 @@ function ResourceItemFooter({ resource, user }) {
         sx={{ backgroundColor: "white", pt: 2 }}
       >
         <Stack direction={"row"} spacing={1} sx={{ p: "0!important" }}>
-          <Tooltip title={"User that uploaded the resource"}>
-            <CloudUploadIcon />
-          </Tooltip>
-          <Typography>
-            {user ? ownerUsername?.data?.data?.username : "N/A"}
-          </Typography>
-        </Stack>
-        <Stack direction={"row"} spacing={1} sx={{ p: "0!important" }}>
           <ResourceItemsCommunities resource={resource} />
+        </Stack>
+        <Stack direction={"row"} spacing={0} sx={{ p: "0!important" }}>
+          {!resource?.approved && user?.super_user ? (
+            <AdminFunctionalities resource={resource} type={type} />
+          ) : (
+            <OwnerFunctionalities
+              handleDelete={handleDelete}
+              resource={resource}
+              user={user}
+              type={type}
+            />
+          )}
         </Stack>
       </Stack>
     </>
@@ -337,44 +340,26 @@ function ResourceItemHeader({ resource, user, type, handleDelete }) {
       alignItems="center"
       mb={2}
     >
-      <Stack direction={"row"} justifyContent="center" spacing={1}>
-        <Tooltip title={resource?.zenodo?.title}>
-          <Typography
-            variant="h6"
-            sx={{
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              maxWidth: "25vw",
-            }}
-          >
-            <Link target="_blank" to={resource?.zenodo?.doi_url}>
-              {resource?.zenodo?.title}
-            </Link>
-          </Typography>
+      <Tooltip title={resource?.zenodo?.title}>
+        <Typography
+          variant="h6"
+          sx={{
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: "25vw",
+          }}
+        >
+          <Link target="_blank" to={resource?.zenodo?.doi_url}>
+            {resource?.zenodo?.title}
+          </Link>
+        </Typography>
+      </Tooltip>
+      {!resource?.approved && (
+        <Tooltip title="Resource pending approval">
+          <PendingActionsIcon color="warning" fontSize="small" />
         </Tooltip>
-        {resource?.approved ? (
-          <Tooltip title="Resource approved">
-            <CheckCircleIcon color="success" fontSize="small" />
-          </Tooltip>
-        ) : (
-          <Tooltip title="Resource pending approval">
-            <PendingActionsIcon color="warning" fontSize="small" />
-          </Tooltip>
-        )}
-      </Stack>
-      <Stack direction={"row"} spacing={0} sx={{ p: "0!important" }}>
-        {!resource?.approved && user?.super_user ? (
-          <AdminFunctionalities resource={resource} type={type} />
-        ) : (
-          <OwnerFunctionalities
-            handleDelete={handleDelete}
-            resource={resource}
-            user={user}
-            type={type}
-          />
-        )}
-      </Stack>
+      )}
     </Stack>
   );
 }
@@ -406,36 +391,16 @@ export default function ResourceGridItem({ resource, type, user }) {
   return (
     <Grid key={resource?._id} size={{ xs: 10, md: 4 }}>
       <Card
+        elevation={1}
         sx={{
           height: "100%",
           flexDirection: "column",
           display: "flex",
           justifyContent: "space-between",
           borderRadius: "10px",
-          opacity: [!resource?.approved ? "0.75" : "1"],
         }}
       >
         <CardContent>
-          <Typography
-            variant={"subtitle2"}
-            sx={{
-              p: 1,
-              mb: 2,
-              color: "#fff",
-              textAlign: "center",
-              borderRadius: "1px",
-              height: "22px",
-              backgroundColor: [
-                type == "Dataset"
-                  ? "#FFC067"
-                  : type == "Document"
-                  ? "#2B3A57"
-                  : "#FF6961",
-              ],
-            }}
-          >
-            {type.toUpperCase()}
-          </Typography>
           <ResourceItemHeader
             handleDelete={handleDelete}
             resource={resource}
@@ -450,7 +415,12 @@ export default function ResourceGridItem({ resource, type, user }) {
             paddingBottom: "16px !important;",
           }}
         >
-          <ResourceItemFooter resource={resource} user={user} />
+          <ResourceItemFooter
+            handleDelete={handleDelete}
+            resource={resource}
+            user={user}
+            type={type}
+          />
         </CardContent>
       </Card>
     </Grid>
