@@ -156,11 +156,14 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
             }
             sx={{ p: 0.5 }}
             loading={updateZenodo.isPending}
-            loadingIndicator={<CircularProgress size={15} thickness={5} sx={{mr: 2.5}}/>}
+            loadingIndicator={
+              <CircularProgress size={15} thickness={5} sx={{ mr: 2.5 }} />
+            }
           >
             {!updateZenodo.isPending && <RefreshIcon />}
           </IconButton>
         </Tooltip>
+
         <Tooltip title={"Delete " + String(type)} placement="top">
           <div>
             <ConfirmationModal
@@ -171,7 +174,7 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
               {(handleClickOpen) => (
                 <IconButton
                   color="error"
-                  disabled={!user}
+                  disabled={!user || updateZenodo.isPending}
                   onClick={handleClickOpen}
                   sx={{ p: 0.5 }}
                 >
