@@ -155,10 +155,10 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
               })
             }
             sx={{ p: 0.5 }}
-            loading={updateZenodo.isLoading}
-            loadingIndicator={<CircularProgress size={15} thickness={5} />}
+            loading={updateZenodo.isPending}
+            loadingIndicator={<CircularProgress size={15} thickness={5} sx={{mr: 2.5}}/>}
           >
-            {!updateZenodo.isLoading && <RefreshIcon />}
+            {!updateZenodo.isPending && <RefreshIcon />}
           </IconButton>
         </Tooltip>
         <Tooltip title={"Delete " + String(type)} placement="top">
