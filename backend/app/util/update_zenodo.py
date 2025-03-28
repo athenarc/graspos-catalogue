@@ -8,8 +8,12 @@ from .requests import get_zenodo_data
 async def update_records(user_id=None, zenodo_id=None):
 
     records = []
-    records.append(await Zenodo.get(zenodo_id) if zenodo_id else await Zenodo.
-                   find().to_list())
+    if zenodo_id:
+        records.append(await Zenodo.get(zenodo_id))
+    else:
+        records = await Zenodo.find().to_list()
+    
+    print(records)
     updated = []
     for record in records:
         record.source += "/versions/latest" if not "/versions/latest" in record.source else ""
