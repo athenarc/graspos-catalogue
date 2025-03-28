@@ -8,6 +8,7 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  Typography,
 } from "@mui/material";
 
 export default function ConfirmationModal(props) {
@@ -60,10 +61,10 @@ export default function ConfirmationModal(props) {
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
           <DialogContent sx={{ p: 2 }}>
-            <DialogContentText>
+            <Typography>
               Are you sure you want to delete{" "}
-              <b>{props?.resource?.zenodo_metadata?.title}</b>?
-            </DialogContentText>
+              <b>{props?.resource?.zenodo?.metadata?.title}</b>?
+            </Typography>
           </DialogContent>
           <DialogActions sx={{ p: 2 }}>
             <Button onClick={handleClose}>Cancel</Button>

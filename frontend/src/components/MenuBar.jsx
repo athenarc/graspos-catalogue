@@ -40,7 +40,7 @@ export default function MenuBar({ handleLogout, user }) {
       <Grid size={4} sx={{ textAlign: "right", margin: "auto" }}>
         <Stack direction="row" justifyContent="flex-end">
           {!user && (
-            <Stack direction="row" spacing={1} dividers>
+            <Stack direction="row" spacing={1}>
               <Link to={"register"}>
                 <Button variant="outlined" sx={{ color: "#fff", border: "none" }}>
                   Register
