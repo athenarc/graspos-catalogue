@@ -21,3 +21,16 @@ export function useZenodo() {
     },
   });
 }
+
+export function useUpdateZenodo() {
+  return useMutation({
+    queryKey: ["zenodo-update"],
+    retry: false,
+    mutationFn: (data) => {
+      return axiosInstance.post(
+        process.env.REACT_APP_BACKEND_HOST + `zenodo/update`,
+        data
+      );
+    },
+  });
+}

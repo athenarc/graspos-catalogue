@@ -1,14 +1,15 @@
 """Zenodo router."""
 
 from fastapi import APIRouter, HTTPException, Depends
-from models.zenodo import Zenodo, ZenodoView
+from typing import Optional
+from models.zenodo import Zenodo, ZenodoView, ZenodoUpdate
 from models.user import User
 from models.dataset import Dataset
 from beanie import PydanticObjectId
 from jwt import access_security
 from util.current_user import current_user
 from util.requests import get_zenodo_data
-
+from util.update_zenodo import update_records
 router = APIRouter(prefix="/api/v1/zenodo", tags=["Zenodo"])
 
 
@@ -18,6 +19,15 @@ async def get_all_zenodo_records():
     records = await Zenodo.find().to_list()
     return records
 
+
+@router.post("/update", status_code=200)
+async def update_all_zenodo_records(id: ZenodoUpdate | None = None, user: User = Depends(current_user)):
+    print(id)
+    print(user.id)
+    if id:
+       return await Zenodo.get(id) 
+    
+    return await update_records(user_id=user.id, zenodo_id=id)
 
 @router.post("/search", status_code=200)
 async def post_zenodo_records(dataset: Dataset) -> Zenodo:
@@ -46,7 +56,7 @@ async def post_zenodo_records(dataset: Dataset) -> Zenodo:
             responses={404: {
                 "detail": "Dataset does not exist"
             }})
-async def get_zenodo(zenodo_id: PydanticObjectId) -> Zenodo:
+async def get_zenodo(zenodo_id: PydanticObjectId, user: User = Depends(current_user)) -> Zenodo:
 
     zenodo = await Zenodo.get(zenodo_id)
 
@@ -59,7 +69,7 @@ async def get_zenodo(zenodo_id: PydanticObjectId) -> Zenodo:
 
 
 @router.delete("/{zenodo_id}", status_code=200)
-async def delete_zenodo(zenodo_id: str):
+async def delete_zenodo(zenodo_id: str, user: User = Depends(current_user)):
 
     zenodo = await Zenodo.find_one(Zenodo.id == PydanticObjectId(zenodo_id))
 
