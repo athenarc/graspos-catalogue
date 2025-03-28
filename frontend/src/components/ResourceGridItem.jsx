@@ -130,16 +130,11 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
   const updateZenodo = useUpdateZenodo();
 
   function handleUpdateZenodo(data) {
-    console.log(data)
     updateZenodo.mutate(
       { data },
       {
-        onSuccess: (data) => {
-          console.log(data);
-        },
-        onError: (e) => {
-          console.log(e);
-        },
+        onSuccess: (data) => {},
+        onError: (e) => {},
       }
     );
   }
@@ -153,7 +148,12 @@ function OwnerFunctionalities({ resource, user, type, handleDelete }) {
         >
           <IconButton
             disabled={!user}
-            onClick={() => handleUpdateZenodo({id: resource?.zenodo?.id, source: resource?.zenodo?.source})}
+            onClick={() =>
+              handleUpdateZenodo({
+                id: resource?.zenodo?.id,
+                source: resource?.zenodo?.source,
+              })
+            }
             sx={{ p: 0.5 }}
             loading={updateZenodo.isLoading}
             loadingIndicator={<CircularProgress size={15} thickness={5} />}

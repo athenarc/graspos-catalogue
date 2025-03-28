@@ -12,7 +12,6 @@ async def update_records(user_id=None, zenodo_id=None):
                    find().to_list())
     updated = []
     for record in records:
-        print(record)
         record.source += "/versions/latest" if not "/versions/latest" in record.source else ""
         data = get_zenodo_data(record.source)
 
