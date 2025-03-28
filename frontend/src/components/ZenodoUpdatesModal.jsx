@@ -34,14 +34,14 @@ function UpdatesTable({ updates }) {
       </TableHead>
       <TableBody>
         {updates?.data?.data?.length == 0 && (
-          <TableRow>
+          <TableRow key={"no-data"}>
             <TableCell colSpan={6} sx={{ textAlign: "center" }}>
               No updates found!
             </TableCell>
           </TableRow>
         )}
         {updates?.data?.data?.map((update) => (
-          <TableRow key={update?.id}>
+          <TableRow key={update?._id}>
             <TableCell>{update?.zenodo_id?.title}</TableCell>
             <TableCell>
               {update?.zenodo_id?.metadata?.resource_type?.title}
