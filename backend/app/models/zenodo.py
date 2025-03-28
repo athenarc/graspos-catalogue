@@ -55,6 +55,8 @@ class ZenodoView(BaseModel):
 
     source: str | None = None
 
+class ZenodoUpdate(BaseModel):
+    id: PydanticObjectId | None = None
 
 class Zenodo(Document, Zenodo, ZenodoView):
 

@@ -25,6 +25,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import Check from "@mui/icons-material/Check";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ConfirmationModal from "./Forms/ConfirmationModal";
@@ -39,6 +40,7 @@ import caa2024 from "../assets/caa2024.png";
 import grasposTools from "../assets/graspos_tools.png";
 import pathos from "../assets/pathos.png";
 import robertkochinstitut from "../assets/robertkochinstitut.png";
+import { useUpdateZenodo } from "../queries/zenodo";
 
 const imgs = {
   eu: euLogo,
@@ -125,29 +127,61 @@ function AdminFunctionalities({ type, resource }) {
 }
 
 function OwnerFunctionalities({ resource, user, type, handleDelete }) {
+  const updateZenodo = useUpdateZenodo();
+
+  function handleUpdateZenodo(data) {
+    updateZenodo.mutate(
+      { data },
+      {
+        onSuccess: (data) => {},
+        onError: (e) => {},
+      }
+    );
+  }
   return (
     user &&
     (user?.id == resource?.owner || user?.super_user) && (
-      <Tooltip title={"Delete " + String(type)} placement="top">
-        <div>
-          <ConfirmationModal
-            title={"Delete " + String(type)}
-            resource={resource}
-            response={() => handleDelete(resource?._id)}
+      <>
+        <Tooltip
+          title={"Update " + String(type) + " from Zenodo"}
+          placement="top"
+        >
+          <IconButton
+            disabled={!user}
+            onClick={() =>
+              handleUpdateZenodo({
+                id: resource?.zenodo?.id,
+                source: resource?.zenodo?.source,
+              })
+            }
+            sx={{ p: 0.5 }}
+            loading={updateZenodo.isLoading}
+            loadingIndicator={<CircularProgress size={15} thickness={5} />}
           >
-            {(handleClickOpen) => (
-              <IconButton
-                color="error"
-                disabled={!user}
-                onClick={handleClickOpen}
-                sx={{ p: 0.5 }}
-              >
-                <DeleteIcon />
-              </IconButton>
-            )}
-          </ConfirmationModal>
-        </div>
-      </Tooltip>
+            {!updateZenodo.isLoading && <RefreshIcon />}
+          </IconButton>
+        </Tooltip>
+        <Tooltip title={"Delete " + String(type)} placement="top">
+          <div>
+            <ConfirmationModal
+              title={"Delete " + String(type)}
+              resource={resource}
+              response={() => handleDelete(resource?._id)}
+            >
+              {(handleClickOpen) => (
+                <IconButton
+                  color="error"
+                  disabled={!user}
+                  onClick={handleClickOpen}
+                  sx={{ p: 0.5 }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              )}
+            </ConfirmationModal>
+          </div>
+        </Tooltip>
+      </>
     )
   );
 }
@@ -158,6 +192,7 @@ function ResourceItemsKeywords({ resource }) {
       <Grid2 container spacing={1}>
         {resource?.zenodo?.metadata?.keywords?.map((keyword) => (
           <Grid2
+            key={keyword}
             sx={{
               borderRadius: "10px",
               border: "2px solid #a2bffe",
@@ -254,7 +289,7 @@ function ResourceItemContent({ resource }) {
   const [showDescription, setShowDescription] = useState(false);
   return (
     <>
-      <Stack direction={"row"} spacing={2} sx={{pb: 2}}>
+      <Stack direction={"row"} spacing={2} sx={{ pb: 2 }}>
         <ResourceItemsKeywords resource={resource} />
       </Stack>
       <Stack
