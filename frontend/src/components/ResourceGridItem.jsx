@@ -425,6 +425,7 @@ export default function ResourceGridItem({ resource, type, user }) {
           display: "flex",
           justifyContent: "space-between",
           borderRadius: "10px",
+          opacity: [!resource?.approved ? "0.75" : "1"],
         }}
       >
         <CardContent>
