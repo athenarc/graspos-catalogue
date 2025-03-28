@@ -1,8 +1,5 @@
 import {
   Button,
-  Card,
-  CardActions,
-  CardContent,
   Dialog,
   DialogActions,
   DialogContent,
@@ -13,7 +10,6 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Typography,
 } from "@mui/material";
 import { useUpdates } from "../queries/update";
 import { useUpdateZenodo } from "../queries/zenodo";

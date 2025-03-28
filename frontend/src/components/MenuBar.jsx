@@ -1,4 +1,4 @@
-import { Box, Button, Grid2 as Grid, Typography, Stack } from "@mui/material";
+import { Box, Button, Grid2 as Grid, Stack } from "@mui/material";
 import logo from "../assets/graspos_menu_logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import UserDropDownMenu from "./UserDropDownMenu";
@@ -42,12 +42,18 @@ export default function MenuBar({ handleLogout, user }) {
           {!user && (
             <Stack direction="row" spacing={1}>
               <Link to={"register"}>
-                <Button variant="outlined" sx={{ color: "#fff", border: "none" }}>
+                <Button
+                  variant="outlined"
+                  sx={{ color: "#fff", border: "none" }}
+                >
                   Register
                 </Button>
               </Link>
               <Link to={"login"}>
-                <Button variant="outlined" sx={{ color: "#fff", border: "none" }}>
+                <Button
+                  variant="outlined"
+                  sx={{ color: "#fff", border: "none" }}
+                >
                   Login
                 </Button>
               </Link>

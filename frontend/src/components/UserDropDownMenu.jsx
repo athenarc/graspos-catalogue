@@ -20,7 +20,7 @@ export default function UserDropDownMenu({
   handleLogout,
   handleProfile,
   handleUsers,
-  handleZenodoUpdates
+  handleZenodoUpdates,
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -92,17 +92,18 @@ export default function UserDropDownMenu({
         </MenuItem>
         {user?.super_user && (
           <>
-          <MenuItem onClick={handleUsers}>
-            <Avatar>
-              <GroupIcon />
-            </Avatar>
-            Users
-          </MenuItem><MenuItem onClick={handleZenodoUpdates}>
-            <Avatar>
-              <SystemUpdateAltIcon />
-            </Avatar>
-            Zenodo Updates
-          </MenuItem>
+            <MenuItem onClick={handleUsers}>
+              <Avatar>
+                <GroupIcon />
+              </Avatar>
+              Users
+            </MenuItem>
+            <MenuItem onClick={handleZenodoUpdates}>
+              <Avatar>
+                <SystemUpdateAltIcon />
+              </Avatar>
+              Zenodo Updates
+            </MenuItem>
           </>
         )}
         <Divider />
