@@ -16,7 +16,6 @@ async def current_user(
         return None
 
     try:
-        user_email = auth.subject["username"]  # Directly access the subject (user's email)
         user = await user_from_credentials(auth)  # Fetch user from the database
 
         if not user:
