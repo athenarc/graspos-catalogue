@@ -14,24 +14,17 @@ router = APIRouter(prefix="/api/v1/document", tags=["Documents"])
 
 
 @router.get("/all", status_code=200, response_model=list[Documents])
-async def get_all_documents() -> list[Documents]:
+async def get_all_documents(user: User
+                            | None = Depends(current_user)) -> list[Documents]:
 
-    documents = await Documents.find(Documents.approved == True,
-                                     fetch_links=True).to_list()
-
-    return documents
-
-
-@router.get("/admin", status_code=200, response_model=list[Documents])
-async def get_all_documents_admin(user: User = Depends(
-    current_user)) -> list[Documents]:
-
-    if user.super_user:
+    if user and user.super_user:  # Validate only if user exists
         documents = await Documents.find_all(fetch_links=True).to_list()
     else:
-        search = {"$or": [{"approved": True}, {"owner": user.id}]}
+        search = {"$or": [{"approved": True}]}
+        if user:
+            search["$or"].append(
+                {"owner": user.id})  # Include user-owned datasets if logged in
         documents = await Documents.find(search, fetch_links=True).to_list()
-
     return documents
 
 
@@ -86,7 +79,7 @@ async def delete_document(document_id: PydanticObjectId,
                              detail="Documents does not exist")
 
     await document_to_delete.delete(link_rule=DeleteRules.DELETE_LINKS)
-    await Update.find(zenodo_id = document_to_delete.zenodo.id).delete()
+    await Update.find(zenodo_id=document_to_delete.zenodo.id).delete()
     return {"message": "Document successfully deleted"}
 
 

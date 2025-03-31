@@ -16,11 +16,11 @@ export function useCreateDocument() {
   });
 }
 
-export function useDocuments(user) {
+export function useDocuments() {
   return useQuery({
     queryKey: ["documents"],
     retry: false,
-    queryFn: () => axiosInstance.get(!!user ? `document/admin` : `document/all`),
+    queryFn: () => axiosInstance.get(`document/all`),
   });
 }
 
