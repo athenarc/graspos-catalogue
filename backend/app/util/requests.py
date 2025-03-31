@@ -3,12 +3,12 @@ import requests, ast, re
 
 def get_zenodo_data(source):
 
-    doi_pattern = r'(\d{8})$'
+    doi_pattern = r'\d{8}'
     target_source = "https://zenodo.org/api/records/"
     match = re.search(doi_pattern, source)
     if match:
-        target_source += match.group(1) + "/versions/latest"
-
+        target_source += match.group(0) + "/versions/latest"
+    
     request = None
     try:
         request = requests.get(str(target_source))
@@ -25,6 +25,7 @@ def get_zenodo_data(source):
             CLEANR = re.compile(
                 '<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
             resource = request.json()
+            
             resource["zenodo_id"] = resource["id"]
             resource["source"] = source
             if "metadata" in resource:
