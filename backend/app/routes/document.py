@@ -51,6 +51,10 @@ async def create_document(
     await document.create()
     return document
 
+@router.get("/licenses")
+async def get_licenses():
+    unique_licenses = await Documents.get_unique_licenses_from_zenodo()
+    return {"unique_licenses": unique_licenses}
 
 @router.get("/{document_id}",
             responses={404: {

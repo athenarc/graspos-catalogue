@@ -49,6 +49,10 @@ async def create_tool(tool: Tool, user: User = Depends(current_user)):
     await tool.create()
     return tool
 
+@router.get("/licenses")
+async def get_licenses():
+    unique_licenses = await Tool.get_unique_licenses_from_zenodo()
+    return {"unique_licenses": unique_licenses}
 
 @router.get("/{tool_id}", responses={404: {"detail": "Tool does not exist"}})
 async def get_tool(tool_id: PydanticObjectId) -> Tool:

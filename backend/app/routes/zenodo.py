@@ -54,6 +54,11 @@ async def post_zenodo_records(dataset: Dataset) -> Zenodo:
     return zenodo
 
 
+@router.get("/licenses")
+async def get_licenses():
+    unique_licenses = await Zenodo.get_unique_licenses()
+    return {"unique_licenses": unique_licenses}
+
 @router.get("/{zenodo_id}",
             responses={404: {
                 "detail": "Dataset does not exist"
@@ -83,3 +88,4 @@ async def delete_zenodo(zenodo_id: str, user: User = Depends(current_user)):
 
     await Zenodo.find_one(Zenodo.id == PydanticObjectId(zenodo_id)).delete()
     return {"message": "Zenodo deleted successfully"}
+

@@ -61,3 +61,19 @@ class Tool(Document, ToolView):
                 "owner": "user id"
             }
         }
+
+    
+    @classmethod
+    async def get_unique_licenses_from_zenodo(cls) -> list[dict]:
+        """Return all unique license dicts from linked Zenodo tools."""
+        tools = await cls.find_all().to_list()
+        licenses = set()
+
+        for tool in tools:
+            if tool.zenodo is not None:
+                await tool.fetch_link("zenodo")  # 💡 this line fetches the full Zenodo doc
+                zenodo = tool.zenodo
+                if zenodo.metadata and isinstance(zenodo.metadata.license, dict):
+                    licenses.add(frozenset(zenodo.metadata.license.items()))
+
+        return [dict(license) for license in licenses]

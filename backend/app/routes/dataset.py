@@ -53,6 +53,10 @@ async def create_dataset(dataset: Dataset, user: User = Depends(current_user)):
     await dataset.create()
     return dataset
 
+@router.get("/licenses")
+async def get_licenses():
+    unique_licenses = await Dataset.get_unique_licenses_from_zenodo()
+    return {"unique_licenses": unique_licenses}
 
 @router.get("/{dataset_id}",
             responses={404: {
