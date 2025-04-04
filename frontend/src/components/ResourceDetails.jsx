@@ -1,5 +1,5 @@
 import {
-  Box,
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -8,7 +8,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { useDataset } from "../queries/dataset";
 import { useDocument } from "../queries/document";
 import { useTool } from "../queries/tool";
@@ -27,7 +27,7 @@ function ResourceBasicInformation({ resource }) {
         sx={{
           textAlign: [resource.isLoading ? "center" : "left"],
           overflowY: "auto",
-          maxHeight: "100%",
+          maxHeight: "80vh",
         }}
       >
         {resource.isLoading && <CircularProgress size="3rem" />}
@@ -106,7 +106,7 @@ function ResourceLicense({ resource }) {
 function Dataset({ resourceId }) {
   const dataset = useDataset(resourceId);
   return (
-    <Grid container spacing={2} p={2}>
+    <>
       <Grid size={8}>
         <ResourceBasicInformation resource={dataset} />
       </Grid>
@@ -117,14 +117,14 @@ function Dataset({ resourceId }) {
           <ResourceLicense resource={dataset} />
         </Stack>
       </Grid>
-    </Grid>
+    </>
   );
 }
 
 function Document({ resourceId }) {
   const document = useDocument(resourceId);
   return (
-    <Grid container spacing={2} p={2}>
+    <>
       <Grid size={8}>
         <ResourceBasicInformation resource={document} />
       </Grid>
@@ -135,14 +135,14 @@ function Document({ resourceId }) {
           <ResourceLicense resource={document} />
         </Stack>
       </Grid>
-    </Grid>
+    </>
   );
 }
 
 function Tool({ resourceId }) {
   const tool = useTool(resourceId);
   return (
-    <Grid container spacing={2} p={2}>
+    <>
       <Grid size={8}>
         <ResourceBasicInformation resource={tool} />
       </Grid>
@@ -153,7 +153,7 @@ function Tool({ resourceId }) {
           <ResourceLicense resource={tool} />
         </Stack>
       </Grid>
-    </Grid>
+    </>
   );
 }
 
@@ -162,13 +162,31 @@ export default function ResourceDetails({ type }) {
   const location = useLocation();
   return (
     <>
-      {location.pathname.includes("dataset") && (
-        <Dataset resourceId={resourceId} />
-      )}
-      {location.pathname.includes("documents") && (
-        <Document resourceId={resourceId} />
-      )}
-      {location.pathname.includes("tools") && <Tool resourceId={resourceId} />}
+      <Grid container spacing={2} p={2}>
+        {location.pathname.includes("dataset") && (
+          <Dataset resourceId={resourceId} />
+        )}
+        {location.pathname.includes("documents") && (
+          <Document resourceId={resourceId} />
+        )}
+        {location.pathname.includes("tools") && (
+          <Tool resourceId={resourceId} />
+        )}
+        <Button
+          color="primary"
+          variant="outlined"
+          component={Link}
+          to={-1}
+          sx={{
+            position: "absolute",
+            right: "24px",
+            bottom: "24px",
+            backgroundColor: "#fff",
+          }}
+        >
+          Back
+        </Button>
+      </Grid>
     </>
   );
 }
