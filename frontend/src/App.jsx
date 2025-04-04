@@ -17,7 +17,6 @@ import ToolForm from "./components/Forms/ToolForm";
 import ZenodoForm from "./components/Forms/ZenodoForm";
 import UsersPanelForm from "./components/Forms/UsersForm";
 import ResourcesView from "./components/ZenodoUpdatesModal";
-import ResourceDetails from "./components/ResourceDetails";
 import "./App.css";
 
 function AppRoutes() {
@@ -29,7 +28,6 @@ function AppRoutes() {
     <>
       <Routes location={backgroundLocation || location}>
         <Route path="/" element={<AppLayout />}>
-          <Route path="resource/:resourceId" element={<ResourceDetails />} />
           <Route path="login" element={<LoginForm />} />
           <Route path="profile" element={<div />} />
           <Route path="register" element={<RegisterForm />} />
