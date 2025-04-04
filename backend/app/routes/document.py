@@ -58,7 +58,7 @@ async def create_document(
             }})
 async def get_document(document_id: PydanticObjectId) -> Documents:
 
-    document = await Documents.get(document_id)
+    document = await Documents.get(document_id, fetch_links=True)
 
     if not document:
 

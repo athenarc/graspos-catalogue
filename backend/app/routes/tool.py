@@ -13,8 +13,10 @@ from util.requests import get_zenodo_data
 
 router = APIRouter(prefix="/api/v1/tool", tags=["Tool"])
 
+
 @router.get("/all", status_code=200, response_model=list[Tool])
-async def get_all_tools(user: User | None = Depends(current_user)) -> list[Tool]:
+async def get_all_tools(user: User
+                        | None = Depends(current_user)) -> list[Tool]:
 
     if user and user.super_user:  # Validate only if user exists
         tools = await Tool.find_all(fetch_links=True).to_list()
@@ -51,7 +53,7 @@ async def create_tool(tool: Tool, user: User = Depends(current_user)):
 @router.get("/{tool_id}", responses={404: {"detail": "Tool does not exist"}})
 async def get_tool(tool_id: PydanticObjectId) -> Tool:
 
-    tool = await Tool.get(tool_id)
+    tool = await Tool.get(tool_id, fetch_links=True)
 
     if not tool:
 
@@ -71,7 +73,7 @@ async def delete_tool(tool_id: PydanticObjectId,
         return HTTPException(status_code=404, detail="Tool does not exist")
 
     await tool_to_delete.delete(link_rule=DeleteRules.DELETE_LINKS)
-    await Update.find(zenodo_id = tool_to_delete.zenodo.id).delete()
+    await Update.find(zenodo_id=tool_to_delete.zenodo.id).delete()
     return {"message": "Tool successfully deleted"}
 
 
