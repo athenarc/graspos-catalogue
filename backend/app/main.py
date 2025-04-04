@@ -1,12 +1,13 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from routes import user, auth, mail, register, dataset, document, tool, zenodo
+from routes import user, auth, mail, register, dataset, document, tool, zenodo, update
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 from models.dataset import Dataset
 from models.tool import Tool
 from models.document import Documents
 from models.user import User
+from models.update import Update
 from models.zenodo import Zenodo
 from db import db
 from config import CONFIG
@@ -18,7 +19,7 @@ async def lifespan(app: FastAPI):
     """Initialize application services."""
     app.db = AsyncIOMotorClient(CONFIG.mongodb_uri).graspos
     await init_beanie(app.db,
-                      document_models=[Dataset, User, Documents, Tool, Zenodo])
+                      document_models=[Dataset, User, Documents, Tool, Zenodo, Update])
     print("Startup complete")
     yield
     print("Shutdown complete")
@@ -35,6 +36,7 @@ app = FastAPI(
 )
 
 app.include_router(zenodo.router)
+app.include_router(update.router)
 app.include_router(tool.router)
 app.include_router(dataset.router)
 app.include_router(document.router)

@@ -14,12 +14,14 @@ access_security = JwtAccessBearer(
     CONFIG.authjwt_secret_key,
     access_expires_delta=ACCESS_EXPIRES,
     refresh_expires_delta=REFRESH_EXPIRES,
+    auto_error=False
 )
 
 refresh_security = JwtRefreshBearer(
     CONFIG.authjwt_secret_key,
     access_expires_delta=ACCESS_EXPIRES,
     refresh_expires_delta=REFRESH_EXPIRES,
+    auto_error=False
 )
 
 

@@ -1,0 +1,52 @@
+import pymongo, os, logging
+from pymongo import MongoClient
+from dotenv import load_dotenv
+from models.zenodo import Zenodo
+from models.update import Update
+from util.requests import get_zenodo_data
+from beanie import init_beanie
+import asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
+
+
+async def init(mongodb_uri):
+    db = AsyncIOMotorClient(mongodb_uri).graspos
+    await init_beanie(db, document_models=[Zenodo, Update])
+
+
+async def main():
+
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(filename='zenodo_update.log',
+                        encoding='utf-8',
+                        level=logging.DEBUG)
+
+    load_dotenv()
+    mongo_user = os.environ.get("MONGO_INITDB_ROOT_USERNAME")
+    mongo_pass = os.environ.get("MONGO_INITDB_ROOT_PASSWORD")
+    mongo_host = os.environ.get("MONGO_HOST")
+    mongo_container_port = os.environ.get("MONGO_CONTAINER_PORT")
+    mongodb_uri = f"mongodb://{mongo_user}:{mongo_pass}@{mongo_host}:{mongo_container_port}/"
+
+    await init(mongodb_uri)
+    zenodo_records = await Zenodo.find().to_list()
+
+    for zenodo in zenodo_records:
+
+        zenodo_dataset = get_zenodo_data(zenodo.source)
+
+        if zenodo.source != zenodo_dataset["zenodo_object"]["source"]:
+           
+            zenodo_update = Zenodo(**zenodo_dataset["zenodo_object"])
+            fields = zenodo_update.model_dump(exclude_unset=True)
+            updated_record = Zenodo.model_copy(zenodo, update=fields)
+            await updated_record.save()
+
+            update = Update(
+                zenodo_id=zenodo.id,
+                old_version=zenodo.zenodo_id,
+                new_version=zenodo_dataset["zenodo_object"]["zenodo_id"])
+            await update.save()
+
+
+asyncio.run(main())

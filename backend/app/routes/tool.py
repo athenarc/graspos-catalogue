@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from models.tool import Tool, ToolPatch
 from models.user import User
 from models.zenodo import Zenodo
+from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
 from jwt import access_security
 from util.current_user import current_user
@@ -12,24 +13,17 @@ from util.requests import get_zenodo_data
 
 router = APIRouter(prefix="/api/v1/tool", tags=["Tool"])
 
-
 @router.get("/all", status_code=200, response_model=list[Tool])
-async def get_all_tools() -> list[Tool]:
+async def get_all_tools(user: User | None = Depends(current_user)) -> list[Tool]:
 
-    tools = await Tool.find(Tool.approved == True, fetch_links=True).to_list()
-    return tools
-
-
-@router.get("/admin", status_code=200, response_model=list[Tool])
-async def get_all_tools_admin(user: User = Depends(
-    current_user)) -> list[Tool]:
-
-    if user.super_user:
+    if user and user.super_user:  # Validate only if user exists
         tools = await Tool.find_all(fetch_links=True).to_list()
     else:
-        search = {"$or": [{"approved": True}, {"owner": user.id}]}
+        search = {"$or": [{"approved": True}]}
+        if user:
+            search["$or"].append(
+                {"owner": user.id})  # Include user-owned datasets if logged in
         tools = await Tool.find(search, fetch_links=True).to_list()
-
     return tools
 
 
@@ -77,6 +71,7 @@ async def delete_tool(tool_id: PydanticObjectId,
         return HTTPException(status_code=404, detail="Tool does not exist")
 
     await tool_to_delete.delete(link_rule=DeleteRules.DELETE_LINKS)
+    await Update.find(zenodo_id = tool_to_delete.zenodo.id).delete()
     return {"message": "Tool successfully deleted"}
 
 

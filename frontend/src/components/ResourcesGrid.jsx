@@ -9,7 +9,6 @@ import {
   Box,
   Tabs,
   Tab,
-  touchRippleClasses,
 } from "@mui/material";
 
 import { RectangularVariants } from "./Skeleton";
@@ -72,7 +71,7 @@ function ResourcesFilterBar({ resourceFilter, handleResourceFilterChange }) {
 }
 
 function Datasets({ user, filter }) {
-  const datasets = useDatasets(user);
+  const datasets = useDatasets();
   const [filteredDatasets, setFilteredDatasets] = useState(
     datasets?.data?.data ?? []
   );
@@ -123,7 +122,7 @@ function Datasets({ user, filter }) {
 }
 
 function Documents({ user, filter }) {
-  const documents = useDocuments(user);
+  const documents = useDocuments();
   const [filteredDocuments, setFilteredDocuments] = useState(
     documents?.data?.data ?? []
   );
@@ -174,7 +173,7 @@ function Documents({ user, filter }) {
 }
 
 function Tools({ user, filter }) {
-  const tools = useTools(user);
+  const tools = useTools();
   const [filteredTools, setFilteredTools] = useState(tools?.data?.data ?? []);
   useEffect(() => {
     if (filter !== "") {
