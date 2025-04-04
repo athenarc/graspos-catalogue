@@ -24,6 +24,14 @@ export function useDocuments() {
   });
 }
 
+export function useDocument(documentId) {
+  return useQuery({
+    queryKey: ["document-" + String(documentId)],
+    retry: false,
+    queryFn: () => axiosInstance.get(`document/${documentId}`),
+  });
+}
+
 export function useDeleteDocument() {
   const queryClient = useQueryClient();
   return useMutation({
