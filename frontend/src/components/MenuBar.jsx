@@ -1,18 +1,20 @@
 import { Box, Button, Grid2 as Grid, Stack } from "@mui/material";
 import logo from "../assets/graspos_menu_logo.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import UserDropDownMenu from "./UserDropDownMenu";
 
 export default function MenuBar({ handleLogout, user }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
   function handleProfile() {
-    navigate("/profile");
+    navigate("profile", { state: { backgroundLocation: location } });
   }
   function handleUsers() {
-    navigate("/users");
+    navigate("users", { state: { backgroundLocation: location } });
   }
   function handleZenodoUpdates() {
-    navigate("/zenodo/updates");
+    navigate("zenodo/updates", { state: { backgroundLocation: location } });
   }
   return (
     <Grid
@@ -41,7 +43,7 @@ export default function MenuBar({ handleLogout, user }) {
         <Stack direction="row" justifyContent="flex-end">
           {!user && (
             <Stack direction="row" spacing={1}>
-              <Link to={"register"}>
+              <Link to={"register"} state={{ backgroundLocation: location }}>
                 <Button
                   variant="outlined"
                   sx={{ color: "#fff", border: "none" }}
@@ -49,7 +51,7 @@ export default function MenuBar({ handleLogout, user }) {
                   Register
                 </Button>
               </Link>
-              <Link to={"login"}>
+              <Link to={"login"} state={{ backgroundLocation: location }}>
                 <Button
                   variant="outlined"
                   sx={{ color: "#fff", border: "none" }}

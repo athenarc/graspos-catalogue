@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -24,6 +24,7 @@ import {
 import SaveIcon from "@mui/icons-material/Save";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import Notification from "../Notification";
+import { useAuth } from "../AuthContext";
 
 function UserForm({ user }) {
   const [message, setMessage] = useState("");
@@ -190,13 +191,13 @@ function UserForm({ user }) {
 }
 
 export default function UsersPanelForm() {
-  const { user } = useOutletContext();
+  const { user } = useAuth();
   const users = useUsers();
 
   const navigate = useNavigate();
 
   function handleClose() {
-    navigate("..");
+    navigate(-1);
   }
 
   return (

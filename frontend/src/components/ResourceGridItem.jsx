@@ -325,7 +325,7 @@ function ResourceItemHeader({ resource }) {
             maxWidth: "25vw",
           }}
         >
-          <Link target="_blank" to={resource?.zenodo?.doi_url}>
+          <Link to={"/resource/" + resource?._id}>
             {resource?.zenodo?.title}
           </Link>
         </Typography>

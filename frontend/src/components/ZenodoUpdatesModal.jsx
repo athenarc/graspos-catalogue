@@ -15,9 +15,10 @@ import { useUpdates } from "../queries/update";
 import { useUpdateZenodo } from "../queries/zenodo";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import CloseIcon from "@mui/icons-material/Close";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Notification from "./Notification";
 import { useState } from "react";
+import { useAuth } from "./AuthContext";
 
 function UpdatesTable({ updates }) {
   return (
@@ -62,9 +63,9 @@ function UpdatesTable({ updates }) {
 export default function UpdatesModal() {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
-  const { user } = useOutletContext();
+  const { user } = useAuth();
   function handleClose() {
-    navigate("..");
+    navigate(-1);
   }
   const updates = useUpdates();
   const updateZenodo = useUpdateZenodo();

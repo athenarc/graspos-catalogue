@@ -1,41 +1,73 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import "./App.css";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "./components/AuthContext.jsx";
-import AppLayout from "./components/AppLayout.jsx";
-import LoginForm from "./components/Forms/LoginForm.jsx";
-import ProfileForm from "./components/Forms/ProfileForm.jsx";
-import RegisterForm from "./components/Forms/RegisterForm.jsx";
-import ZenodoForm from "./components/Forms/ZenodoForm.jsx";
-import DatasetForm from "./components/Forms/DatasetForm.jsx";
-import DocumentForm from "./components/Forms/DocumentForm.jsx";
-import ToolForm from "./components/Forms/ToolForm.jsx";
-import UsersPanelForm from "./components/Forms/UsersForm.jsx";
-import ResourcesView from "./components/ZenodoUpdatesModal.jsx";
+import { AuthProvider } from "./components/AuthContext";
+import AppLayout from "./components/AppLayout";
+import LoginForm from "./components/Forms/LoginForm";
+import RegisterForm from "./components/Forms/RegisterForm";
+import ProfileForm from "./components/Forms/ProfileForm";
+import DatasetForm from "./components/Forms/DatasetForm";
+import DocumentForm from "./components/Forms/DocumentForm";
+import ToolForm from "./components/Forms/ToolForm";
+import ZenodoForm from "./components/Forms/ZenodoForm";
+import UsersPanelForm from "./components/Forms/UsersForm";
+import ResourcesView from "./components/ZenodoUpdatesModal";
+import ResourceDetails from "./components/ResourceDetails";
+import "./App.css";
+
+function AppRoutes() {
+  const location = useLocation();
+  const state = location.state;
+  const backgroundLocation = state?.backgroundLocation;
+
+  return (
+    <>
+      <Routes location={backgroundLocation || location}>
+        <Route path="/" element={<AppLayout />}>
+          <Route path="resource/:resourceId" element={<ResourceDetails />} />
+          <Route path="login" element={<LoginForm />} />
+          <Route path="profile" element={<div />} />
+          <Route path="register" element={<RegisterForm />} />
+          <Route path="users" element={<UsersPanelForm />} />
+          <Route path="dataset/add" element={<DatasetForm />} />
+          <Route path="document/add" element={<DocumentForm />} />
+          <Route path="tool/add" element={<ToolForm />} />
+          <Route path="zenodo/add" element={<ZenodoForm />} />
+          <Route path="zenodo/updates" element={<ResourcesView />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Route>
+      </Routes>
+
+      {backgroundLocation && (
+        <Routes>
+          <Route path="/profile" element={<ProfileForm />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="zenodo/updates" element={<ResourcesView />} />
+          <Route path="users" element={<UsersPanelForm />} />
+        </Routes>
+      )}
+    </>
+  );
+}
 
 function App() {
   const queryClient = new QueryClient();
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <BrowserRouter basename="catalogue">
-          <Routes>
-            <Route path="/" element={<AppLayout />}>
-              <Route path="/login" element={<LoginForm />}></Route>
-              <Route path="/register" element={<RegisterForm />}></Route>
-              <Route path="/profile" element={<ProfileForm />}></Route>
-              <Route path="/users" element={<UsersPanelForm />}></Route>
-              <Route path="/dataset/add" element={<DatasetForm />}></Route>
-              <Route path="/document/add" element={<DocumentForm />}></Route>
-              <Route path="/tool/add" element={<ToolForm />}></Route>
-              <Route path="/zenodo/add" element={<ZenodoForm />}></Route>
-              <Route path="/zenodo/updates" element={<ResourcesView />}></Route>
-              <Route path="*" exact element={<Navigate to={"/"} />} />
-            </Route>
-          </Routes>
+          <AppRoutes />
         </BrowserRouter>
       </AuthProvider>
     </QueryClientProvider>
   );
 }
+
 export default App;
