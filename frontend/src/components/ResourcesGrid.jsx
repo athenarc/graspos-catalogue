@@ -9,6 +9,9 @@ import {
   Box,
   Tabs,
   Tab,
+  Divider,
+  Drawer,
+  Typography,
 } from "@mui/material";
 
 import { RectangularVariants } from "./Skeleton";
@@ -234,33 +237,53 @@ export default function ResourcesGrid({ user }) {
   }
   return (
     <>
-      <ResourcesTabs
-        selectedResource={selectedResource}
-        handleSetSelectedResource={handleSetSelectedResource}
-      />
-      <ResourcesFilterBar
-        resourceFilter={resourceFilter}
-        handleResourceFilterChange={handleResourceFilterChange}
-      />
+      <Stack direction="row">
+        <Drawer
+          sx={{
+            width: 200,
+            "& .MuiDrawer-paper": {
+              width: 200,
+              boxSizing: "border-box",
+            },
+          }}
+          variant="permanent"
+          anchor="left"
+        >
+          <Stack direction="column" spacing={2} sx={{marginTop: "10vh",}}>
+            <Typography sx={{p: 2}}>License</Typography>
+          </Stack>
+          <Divider />
+        </Drawer>
+        <Stack direction="column" sx={{width: "100%" }}>
+          <ResourcesTabs
+            selectedResource={selectedResource}
+            handleSetSelectedResource={handleSetSelectedResource}
+          />
+          <ResourcesFilterBar
+            resourceFilter={resourceFilter}
+            handleResourceFilterChange={handleResourceFilterChange}
+          />
+          <Grid
+            container
+            spacing={2}
+            m={2}
+            mt={0}
+            sx={{ maxHeight: "75vh", overflow: "auto" }}
+          >
+            {selectedResource == 0 && (
+              <Datasets user={user} filter={resourceFilter} />
+            )}
 
-      <Grid
-        container
-        spacing={2}
-        m={2}
-        mt={0}
-        sx={{ maxHeight: "75vh", overflow: "auto" }}
-      >
-        {selectedResource == 0 && (
-          <Datasets user={user} filter={resourceFilter} />
-        )}
+            {selectedResource == 1 && (
+              <Documents user={user} filter={resourceFilter} />
+            )}
 
-        {selectedResource == 1 && (
-          <Documents user={user} filter={resourceFilter} />
-        )}
-
-        {selectedResource == 2 && <Tools user={user} filter={resourceFilter} />}
-      </Grid>
-
+            {selectedResource == 2 && (
+              <Tools user={user} filter={resourceFilter} />
+            )}
+          </Grid>
+        </Stack>
+      </Stack>
       <Outlet
         context={{
           user: user,
