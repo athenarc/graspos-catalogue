@@ -84,7 +84,7 @@ export default function DatasetForm() {
               textAlign: "center",
             }}
           >
-            Create Resource
+            Add Dataset
           </DialogTitle>
           <IconButton
             aria-label="close"

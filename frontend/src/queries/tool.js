@@ -16,11 +16,11 @@ export function useCreateTool() {
   });
 }
 
-export function useTools(user) {
+export function useTools() {
   return useQuery({
     queryKey: ["tools"],
     retry: false,
-    queryFn: () => axiosInstance.get(!!user ? `tool/admin` : `tool/all`),
+    queryFn: () => axiosInstance.get(`tool/all`),
   });
 }
 

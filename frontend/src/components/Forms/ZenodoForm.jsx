@@ -127,11 +127,11 @@ export default function ZenodoForm({ zenodoData, setZenodoData, setMessage }) {
         {...register("source", {
           required: "Source can not be empty",
           pattern: {
-            value: /^https:\/\/zenodo\.org\/records\/.*/,
-            message: "Not a valid Zenodo URL",
+            value: /(?:https:\/\/zenodo\.org\/records\/\d{8}|\d{2}\.\d{4}\/zenodo\.\d{8})/,
+            message: "Not a valid Zenodo URLS",
           },
         })}
-        label="Zenodo source"
+        label="Zenodo source or DOI"
         error={!!errors?.source}
         helperText={errors?.source?.message ?? " "}
         fullWidth

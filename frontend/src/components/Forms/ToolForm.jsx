@@ -76,7 +76,7 @@ export default function ToolForm() {
               textAlign: "center",
             }}
           >
-            Create Resource
+            Add Tool
           </DialogTitle>
           <IconButton
             aria-label="close"

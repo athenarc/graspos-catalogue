@@ -82,7 +82,7 @@ export default function DocumentForm() {
               textAlign: "center",
             }}
           >
-            Create Resource
+            Add Document
           </DialogTitle>
           <IconButton
             aria-label="close"
