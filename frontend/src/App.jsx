@@ -29,7 +29,9 @@ function AppRoutes() {
     <>
       <Routes location={backgroundLocation || location}>
         <Route path="/" element={<AppLayout />}>
-          <Route path="resource/:resourceId" element={<ResourceDetails />} />
+          <Route path="datasets/:resourceId" element={<ResourceDetails />} />
+          <Route path="tools/:resourceId" element={<ResourceDetails />} />
+          <Route path="documents/:resourceId" element={<ResourceDetails />} />
           <Route path="login" element={<LoginForm />} />
           <Route path="profile" element={<div />} />
           <Route path="register" element={<RegisterForm />} />
