@@ -9,22 +9,24 @@ from beanie import PydanticObjectId, DeleteRules
 from jwt import access_security
 from util.current_user import current_user
 from util.requests import get_zenodo_data
-import time
 
 router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
+
 @router.get("/all", status_code=200, response_model=list[Dataset])
-async def get_all_datasets(user: User | None = Depends(current_user)) -> list[Dataset]:
+async def get_all_datasets(user: User
+                           | None = Depends(current_user)) -> list[Dataset]:
 
     if user and user.super_user:  # Validate only if user exists
         datasets = await Dataset.find_all(fetch_links=True).to_list()
     else:
         search = {"$or": [{"approved": True}]}
         if user:
-            search["$or"].append({"owner": user.id})  # Include user-owned datasets if logged in
+            search["$or"].append(
+                {"owner": user.id})  # Include user-owned datasets if logged in
 
         datasets = await Dataset.find(search, fetch_links=True).to_list()
-    
+
     return datasets
 
 
@@ -58,7 +60,6 @@ async def create_dataset(dataset: Dataset, user: User = Depends(current_user)):
             }})
 async def get_dataset(dataset_id: PydanticObjectId) -> Dataset:
 
-    time.sleep(2) 
     dataset = await Dataset.get(dataset_id, fetch_links=True)
 
     if not dataset:
@@ -79,7 +80,7 @@ async def delete_dataset(dataset_id: PydanticObjectId):
         return HTTPException(status_code=404, detail="Dataset does not exist")
 
     await dataset_to_delete.delete(link_rule=DeleteRules.DELETE_LINKS)
-    await Update.find(zenodo_id = dataset_to_delete.zenodo.id).delete()
+    await Update.find(zenodo_id=dataset_to_delete.zenodo.id).delete()
     return {"message": "Dataset deleted successfully"}
 
 
