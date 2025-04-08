@@ -20,7 +20,7 @@ export function useDatasets() {
   return useQuery({
     queryKey: ["datasets"],
     retry: false,
-    queryFn: () => axiosInstance.get(`dataset/all`),
+    queryFn: () => axiosInstance.get(`dataset`),
   });
 }
 
