@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "./interceptor";
 
 export function useUpdates() {
@@ -6,6 +6,6 @@ export function useUpdates() {
     queryKey: ["updates"],
     retry: false,
     queryFn: () =>
-      axiosInstance.get(process.env.REACT_APP_BACKEND_HOST + `update/all`),
+      axiosInstance.get(`update`),
   });
 }

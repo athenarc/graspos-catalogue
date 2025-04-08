@@ -10,6 +10,7 @@ export function useLogin() {
     onSuccess: () => {
       queryClient.invalidateQueries(["datasets"]);
       queryClient.invalidateQueries(["documents"]);
+      queryClient.invalidateQueries(["tools"]);
     },
   });
 }
@@ -18,10 +19,7 @@ export function useUpdateUser() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ data }) => {
-      return axiosInstance.patch(
-        process.env.REACT_APP_BACKEND_HOST + `user`,
-        data
-      );
+      return axiosInstance.patch(`user`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["user"]);
@@ -32,10 +30,7 @@ export function useUpdateUser() {
 export function useRegister() {
   return useMutation({
     mutationFn: ({ data }) => {
-      return axiosInstance.post(
-        process.env.REACT_APP_BACKEND_HOST + `register`,
-        data
-      );
+      return axiosInstance.post(`register`, data);
     },
   });
 }
@@ -43,10 +38,7 @@ export function useRegister() {
 export function useUserResetPassword() {
   return useMutation({
     mutationFn: ({ data }) => {
-      return axiosInstance.post(
-        process.env.REACT_APP_BACKEND_HOST + `register/reset-password`,
-        data
-      );
+      return axiosInstance.post(`register/reset-password`, data);
     },
   });
 }

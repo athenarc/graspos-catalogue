@@ -14,8 +14,8 @@ from util.update_zenodo import update_records
 router = APIRouter(prefix="/api/v1/update", tags=["Update"])
 
 
-@router.get("/all/", status_code=200)
-async def get_all_update_records() -> list[Update]:
+@router.get("", status_code=200)
+async def get_all_update_records(user: User = Depends(current_user)) -> list[Update]:
 
     records = await Update.find(fetch_links=True).to_list()
     return records
