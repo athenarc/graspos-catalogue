@@ -24,6 +24,14 @@ export function useDatasets() {
   });
 }
 
+export function useDataset(datasetId) {
+  return useQuery({
+    queryKey: ["dataset-" + String(datasetId)],
+    retry: false,
+    queryFn: () => axiosInstance.get(`dataset/${datasetId}`),
+  });
+}
+
 export function useDeleteDataset() {
   const queryClient = useQueryClient();
   return useMutation({

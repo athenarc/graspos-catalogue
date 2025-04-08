@@ -15,7 +15,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useUpdateUser } from "../../queries/data";
@@ -23,6 +23,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import Notification from "../Notification";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { useAuth } from "../AuthContext";
 
 function ResetPassword({ register, errors }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -64,7 +65,7 @@ function ResetPassword({ register, errors }) {
 }
 
 export default function ProfileForm() {
-  const { user } = useOutletContext();
+  const { user } = useAuth();
   const [showPassowrd, setShowPassword] = useState(false);
 
   function handleSetShowPassword() {
@@ -100,7 +101,7 @@ export default function ProfileForm() {
   }, [user, reset]);
 
   function handleClose() {
-    navigate("..");
+    navigate(-1);
   }
 
   return (
