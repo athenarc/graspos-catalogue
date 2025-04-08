@@ -13,7 +13,7 @@ import time
 
 router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
-@router.get("/all", status_code=200, response_model=list[Dataset])
+@router.get("", status_code=200, response_model=list[Dataset])
 async def get_all_datasets(user: User | None = Depends(current_user)) -> list[Dataset]:
 
     if user and user.super_user:  # Validate only if user exists

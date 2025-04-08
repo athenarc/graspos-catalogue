@@ -14,7 +14,7 @@ from util.requests import get_zenodo_data
 router = APIRouter(prefix="/api/v1/tool", tags=["Tool"])
 
 
-@router.get("/all", status_code=200, response_model=list[Tool])
+@router.get("", status_code=200, response_model=list[Tool])
 async def get_all_tools(user: User
                         | None = Depends(current_user)) -> list[Tool]:
 
