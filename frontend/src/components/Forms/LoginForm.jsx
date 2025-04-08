@@ -10,10 +10,11 @@ import {
   Stack,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { Link, useNavigate, useOutletContext } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useLogin } from "../../queries/data.js";
 import LoginIcon from "@mui/icons-material/Login";
+import { useAuth } from "../AuthContext.jsx";
 
 export default function LoginForm() {
   const {
@@ -26,7 +27,7 @@ export default function LoginForm() {
   } = useForm({ mode: "onBlur" });
 
   const login = useLogin();
-  const { handleLogin } = useOutletContext();
+  const { handleLogin } = useAuth();
   const navigate = useNavigate();
   const onSubmit = (data) => {
     login.mutate(
@@ -47,7 +48,7 @@ export default function LoginForm() {
   };
 
   function handleClose() {
-    navigate("..");
+    navigate(-1);
   }
 
   return (

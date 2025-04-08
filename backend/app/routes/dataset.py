@@ -9,6 +9,7 @@ from beanie import PydanticObjectId, DeleteRules
 from jwt import access_security
 from util.current_user import current_user
 from util.requests import get_zenodo_data
+import time
 
 router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
@@ -38,7 +39,7 @@ async def create_dataset(dataset: Dataset, user: User = Depends(current_user)):
         raise HTTPException(status_code=400, detail=str(error))
 
     data = get_zenodo_data(dataset.source)
-    if data["status"] is not 200:
+    if data["status"] != 200:
         raise HTTPException(status_code=data["status"], detail=data["detail"])
 
     zenodo = Zenodo(**data["zenodo_object"])
@@ -57,7 +58,8 @@ async def create_dataset(dataset: Dataset, user: User = Depends(current_user)):
             }})
 async def get_dataset(dataset_id: PydanticObjectId) -> Dataset:
 
-    dataset = await Dataset.get(dataset_id)
+    time.sleep(2) 
+    dataset = await Dataset.get(dataset_id, fetch_links=True)
 
     if not dataset:
 

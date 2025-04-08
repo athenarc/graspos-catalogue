@@ -24,6 +24,14 @@ export function useTools() {
   });
 }
 
+export function useTool(toolId) {
+  return useQuery({
+    queryKey: ["tool-" + String(toolId)],
+    retry: false,
+    queryFn: () => axiosInstance.get(`tool/${toolId}`),
+  });
+}
+
 export function useDeleteTool() {
   const queryClient = useQueryClient();
   return useMutation({

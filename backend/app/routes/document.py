@@ -39,7 +39,7 @@ async def create_document(
         raise HTTPException(status_code=400, detail=str(error))
 
     data = get_zenodo_data(document.source)
-    if data["status"] is not 200:
+    if data["status"] != 200:
         raise HTTPException(status_code=data["status"], detail=data["detail"])
 
     zenodo = Zenodo(**data["zenodo_object"])
@@ -58,7 +58,7 @@ async def create_document(
             }})
 async def get_document(document_id: PydanticObjectId) -> Documents:
 
-    document = await Documents.get(document_id)
+    document = await Documents.get(document_id, fetch_links=True)
 
     if not document:
 

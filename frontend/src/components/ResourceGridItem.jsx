@@ -307,7 +307,7 @@ function ResourceItemContent({ resource }) {
   );
 }
 
-function ResourceItemHeader({ resource }) {
+function ResourceItemHeader({ resource, type }) {
   return (
     <Stack
       direction={"row"}
@@ -325,7 +325,7 @@ function ResourceItemHeader({ resource }) {
             maxWidth: "25vw",
           }}
         >
-          <Link target="_blank" to={resource?.zenodo?.doi_url}>
+          <Link to={"/"+ type.toLowerCase() + "s/" + resource?._id}>
             {resource?.zenodo?.title}
           </Link>
         </Typography>
@@ -376,7 +376,7 @@ export default function ResourceGridItem({ resource, type, user }) {
         }}
       >
         <CardContent>
-          <ResourceItemHeader resource={resource} />
+          <ResourceItemHeader resource={resource} type={type} />
           <ResourceItemContent resource={resource} />
         </CardContent>
         <CardContent
