@@ -56,7 +56,7 @@ export function useUserInformation(token) {
     queryKey: ["user"],
     retry: false,
     enabled: !!token,
-    queryFn: () => axiosInstance.get(`user`, {}),
+    queryFn: () => axiosInstance.get(`user`),
   });
 }
 
