@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDocuments, useDocument } from "../../../queries/document";
 import { RectangularVariants } from "../../Skeleton";
-import ResourceGridItem from "../ResourceGridItem";
+import ResourceGridItem from "../ResourceTemplate/ResourceGridItem";
 import { Button, Grid2 as Grid, Stack } from "@mui/material";
 import { Link } from "react-router-dom";
 import {
@@ -9,9 +9,9 @@ import {
   ResourceBasicInformation,
   ResourceLicense,
   ResourceTags,
-} from "../ResourceDetails";
+} from "../ResourceTemplate/ResourcePage";
 
-export default function Documents({ user, filter }) {
+export function Documents({ user, filter }) {
   const documents = useDocuments();
   const [filteredDocuments, setFilteredDocuments] = useState(
     documents?.data?.data ?? []

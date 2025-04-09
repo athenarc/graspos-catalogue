@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTools, useTool } from "../../../queries/tool";
 import { RectangularVariants } from "../../Skeleton";
-import ResourceGridItem from "../ResourceGridItem";
+import ResourceGridItem from "../ResourceTemplate/ResourceGridItem";
 import { Button, Grid2 as Grid, Stack } from "@mui/material";
 import { Link } from "react-router-dom";
 import {
@@ -9,9 +9,9 @@ import {
   ResourceBasicInformation,
   ResourceLicense,
   ResourceTags,
-} from "../ResourceDetails";
+} from "../ResourceTemplate/ResourcePage";
 
-export default function Tools({ user, filter }) {
+export function Tools({ user, filter }) {
   const tools = useTools();
   const [filteredTools, setFilteredTools] = useState(tools?.data?.data ?? []);
   useEffect(() => {

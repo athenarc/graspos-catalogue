@@ -1,4 +1,11 @@
-import { Divider, Drawer, Stack, Typography } from "@mui/material";
+import {
+  Divider,
+  Drawer,
+  Grid2 as Grid,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 
 export default function ResourcesFilters() {
   return (
@@ -18,5 +25,31 @@ export default function ResourcesFilters() {
       </Stack>
       <Divider />
     </Drawer>
+  );
+}
+
+export function ResourcesFilterBar({
+  resourceFilter,
+  handleResourceFilterChange,
+}) {
+  return (
+    <Stack sx={{ p: 2 }}>
+      <Grid size={12} sx={{ margin: "auto", textAlign: "left" }}>
+        <TextField
+          slotProps={{
+            input: {
+              style: {
+                borderRadius: "19px",
+                backgroundColor: "#fff",
+              },
+            },
+          }}
+          placeholder="Search Resource.."
+          size="small"
+          value={resourceFilter}
+          onChange={(e) => handleResourceFilterChange(e.target.value)}
+        />
+      </Grid>
+    </Stack>
   );
 }

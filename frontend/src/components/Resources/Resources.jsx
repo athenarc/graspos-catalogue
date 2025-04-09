@@ -1,7 +1,7 @@
 import { Grid2 as Grid } from "@mui/material";
-import Datasets from "./Datasets/Datasets";
-import Documents from "./Documents/Documents";
-import Tools from "./Tools/Tools";
+import { Datasets } from "./Datasets/Datasets";
+import { Documents } from "./Documents/Documents";
+import { Tools } from "./Tools/Tools";
 
 export default function ResourcesGrid({
   user,
