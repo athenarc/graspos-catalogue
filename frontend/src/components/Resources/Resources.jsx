@@ -7,6 +7,7 @@ export default function ResourcesGrid({
   user,
   selectedResource,
   resourceFilter,
+  filters,
 }) {
   return (
     <Grid
@@ -17,14 +18,16 @@ export default function ResourcesGrid({
       sx={{ maxHeight: "75vh", overflow: "auto" }}
     >
       {selectedResource == 0 && (
-        <Datasets user={user} filter={resourceFilter} />
+        <Datasets user={user} filter={resourceFilter} filters={filters} />
       )}
 
       {selectedResource == 1 && (
-        <Documents user={user} filter={resourceFilter} />
+        <Documents user={user} filter={resourceFilter} filters={filters} />
       )}
 
-      {selectedResource == 2 && <Tools user={user} filter={resourceFilter} />}
+      {selectedResource == 2 && (
+        <Tools user={user} filter={resourceFilter} filters={filters} />
+      )}
     </Grid>
   );
 }

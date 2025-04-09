@@ -11,24 +11,29 @@ import {
   ResourceTags,
 } from "../ResourceTemplate/ResourcePage";
 
-export function Datasets({ user, filter }) {
-  const datasets = useDatasets();
-  const [filteredDatasets, setFilteredDatasets] = useState(
-    datasets?.data?.data ?? []
-  );
+export function Datasets({ user, filter, filters }) {
+  // Fetch datasets based on the filters
+  
+  const filterArray = Object.keys(filters).filter((key) => filters[key]);
+  const datasets = useDatasets(filterArray);
+  const [filteredDatasets, setFilteredDatasets] = useState([]);
+
+  // Update filtered datasets whenever datasets, filter, or filters change
   useEffect(() => {
-    if (filter !== "") {
-      setFilteredDatasets(
-        datasets?.data?.data?.filter((dataset) =>
-          dataset?.zenodo?.metadata?.title
-            ?.toLowerCase()
-            .includes(filter.toLowerCase())
-        )
-      );
-    } else {
-      setFilteredDatasets(datasets?.data?.data);
+    if (datasets?.data) {
+      // Apply the filter to datasets if filter is not empty
+      const filteredData = filter
+        ? datasets?.data?.filter((dataset) =>
+            dataset?.zenodo?.metadata?.title
+              ?.toLowerCase()
+              .includes(filter.toLowerCase())
+          )
+        : datasets?.data; // If no filter, show all datasets
+
+      // Update filtered datasets state
+      setFilteredDatasets(filteredData);
     }
-  }, [datasets?.data?.data, filter]);
+  }, [datasets?.data, filter, filters]);
 
   return (
     <>

@@ -11,24 +11,29 @@ import {
   ResourceTags,
 } from "../ResourceTemplate/ResourcePage";
 
-export function Documents({ user, filter }) {
-  const documents = useDocuments();
-  const [filteredDocuments, setFilteredDocuments] = useState(
-    documents?.data?.data ?? []
-  );
+export function Documents({ user, filter, filters }) {
+  // Fetch documents based on the filters
+  
+  const filterArray = Object.keys(filters).filter((key) => filters[key]);
+  const documents = useDocuments(filterArray);
+  const [filteredDocuments, setFilteredDocuments] = useState([]);
+
+  // Update filtered documents whenever documents, filter, or filters change
   useEffect(() => {
-    if (filter !== "") {
-      setFilteredDocuments(
-        documents?.data?.data?.filter((document) =>
-          document?.zenodo?.metadata?.title
-            ?.toLowerCase()
-            .includes(filter.toLowerCase())
-        )
-      );
-    } else {
-      setFilteredDocuments(documents?.data?.data);
+    if (documents?.data) {
+      // Apply the filter to documents if filter is not empty
+      const filteredData = filter
+        ? documents?.data?.filter((document) =>
+            document?.zenodo?.metadata?.title
+              ?.toLowerCase()
+              .includes(filter.toLowerCase())
+          )
+        : documents?.data; // If no filter, show all documents
+
+      // Update filtered documents state
+      setFilteredDocuments(filteredData);
     }
-  }, [documents?.data?.data, filter]);
+  }, [documents?.data, filter, filters]);
 
   return (
     <>

@@ -16,11 +16,32 @@ export function useCreateDataset() {
   });
 }
 
-export function useDatasets() {
+export function useDatasets(filters = []) {
   return useQuery({
-    queryKey: ["datasets"],
+    queryKey: ["datasets", filters], // The query key will trigger a refetch when filters change
     retry: false,
-    queryFn: () => axiosInstance.get(`dataset`),
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      filters.forEach((license) => {
+        params.append("license", license); // Append each filter to the URL params
+      });
+
+      const response = await axiosInstance.get("dataset", {
+        params, // Send filters as query parameters
+      });
+
+      return response.data; // Ensure we're returning the data part of the response
+    },
+    enabled: true, // Only run the query if filters are provided
+  });
+}
+
+export function useDatasetLicenses(enabled) {
+  return useQuery({
+    queryKey: ["dataset-licenses"],
+    retry: false,
+    enabled: enabled,
+    queryFn: () => axiosInstance.get(`dataset/licenses`),
   });
 }
 

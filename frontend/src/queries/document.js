@@ -16,11 +16,32 @@ export function useCreateDocument() {
   });
 }
 
-export function useDocuments() {
+export function useDocuments(filters = []) {
   return useQuery({
-    queryKey: ["documents"],
+    queryKey: ["documents", filters], // The query key will trigger a refetch when filters change
     retry: false,
-    queryFn: () => axiosInstance.get(`document`),
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      filters.forEach((license) => {
+        params.append("license", license); // Append each filter to the URL params
+      });
+
+      const response = await axiosInstance.get("document", {
+        params, // Send filters as query parameters
+      });
+
+      return response.data; // Ensure we're returning the data part of the response
+    },
+    enabled: true, // Only run the query if filters are provided
+  });
+}
+
+export function useDocumentLicenses(enabled) {
+  return useQuery({
+    queryKey: ["document-licenses"],
+    retry: false,
+    enabled: enabled,
+    queryFn: () => axiosInstance.get(`document/licenses`),
   });
 }
 

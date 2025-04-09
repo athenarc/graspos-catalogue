@@ -16,11 +16,32 @@ export function useCreateTool() {
   });
 }
 
-export function useTools() {
+export function useTools(filters = []) {
   return useQuery({
-    queryKey: ["tools"],
+    queryKey: ["tools", filters], // The query key will trigger a refetch when filters change
     retry: false,
-    queryFn: () => axiosInstance.get(`tool`),
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      filters.forEach((license) => {
+        params.append("license", license); // Append each filter to the URL params
+      });
+
+      const response = await axiosInstance.get("tool", {
+        params, // Send filters as query parameters
+      });
+
+      return response.data; // Ensure we're returning the data part of the response
+    },
+    enabled: true, // Only run the query if filters are provided
+  });
+}
+
+export function useToolLicenses(enabled) {
+  return useQuery({
+    queryKey: ["tool-licenses"],
+    retry: false,
+    enabled: enabled,
+    queryFn: () => axiosInstance.get(`tool/licenses`),
   });
 }
 

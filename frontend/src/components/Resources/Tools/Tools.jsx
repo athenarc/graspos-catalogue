@@ -11,22 +11,29 @@ import {
   ResourceTags,
 } from "../ResourceTemplate/ResourcePage";
 
-export function Tools({ user, filter }) {
-  const tools = useTools();
-  const [filteredTools, setFilteredTools] = useState(tools?.data?.data ?? []);
+export function Tools({ user, filter, filters }) {
+  // Fetch tools based on the filters
+  
+  const filterArray = Object.keys(filters).filter((key) => filters[key]);
+  const tools = useTools(filterArray);
+  const [filteredTools, setFilteredTools] = useState([]);
+
+  // Update filtered tools whenever tools, filter, or filters change
   useEffect(() => {
-    if (filter !== "") {
-      setFilteredTools(
-        tools?.data?.data?.filter((tool) =>
-          tool?.zenodo?.metadata?.title
-            ?.toLowerCase()
-            .includes(filter.toLowerCase())
-        )
-      );
-    } else {
-      setFilteredTools(tools?.data?.data);
+    if (tools?.data) {
+      // Apply the filter to tools if filter is not empty
+      const filteredData = filter
+        ? tools?.data?.filter((tool) =>
+            tool?.zenodo?.metadata?.title
+              ?.toLowerCase()
+              .includes(filter.toLowerCase())
+          )
+        : tools?.data; // If no filter, show all tools
+
+      // Update filtered tools state
+      setFilteredTools(filteredData);
     }
-  }, [tools?.data?.data, filter]);
+  }, [tools?.data, filter, filters]);
 
   return (
     <>

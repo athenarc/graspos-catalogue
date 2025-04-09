@@ -1,6 +1,6 @@
 """Dataset router."""
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from models.dataset import Dataset, DatasetPatch
 from models.user import User
 from models.zenodo import Zenodo
@@ -8,23 +8,38 @@ from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
 from util.current_user import current_user, current_user_mandatory
 from util.requests import get_zenodo_data
+from typing import List, Optional
 
 router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
 
 @router.get("", status_code=200, response_model=list[Dataset])
-async def get_all_datasets(user: User
-                           | None = Depends(current_user)) -> list[Dataset]:
+async def get_all_datasets(
+    user: Optional[User] = Depends(current_user),
+    license: Optional[List[str]] = Query(
+        None)  # Optional list of licenses filter
+) -> list[Dataset]:
+    # Start building the search query
+    search = {}
 
-    if user and user.super_user:  # Validate only if user exists
-        datasets = await Dataset.find_all(fetch_links=True).to_list()
-    else:
-        search = {"$or": [{"approved": True}]}
-        if user:
+    if user:
+        if user.super_user:
+            # If user is a super user, fetch all datasets (no 'approved' filter applied)
+            datasets = await Dataset.find_all(fetch_links=True).to_list()
+        else:
+            # Apply 'approved' filter for non-superusers
+            search["$or"] = [{"approved": True}]
             search["$or"].append(
                 {"owner": user.id})  # Include user-owned datasets if logged in
 
-        datasets = await Dataset.find(search, fetch_links=True).to_list()
+    # If licenses are provided, add a filter for licenses
+    if license:
+        # Match datasets where the 'zenodo.metadata.license.id' is in the provided list of licenses
+        search["$or"] = search.get("$or", [])
+        search["$or"].append({"zenodo.metadata.license.id": {"$in": license}})
+
+    # Fetch datasets based on the search query
+    datasets = await Dataset.find(search, fetch_links=True).to_list()
 
     return datasets
 
