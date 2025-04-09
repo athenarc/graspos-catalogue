@@ -8,13 +8,18 @@ from models.zenodo import Zenodo
 from models.user import User
 
 
+class UpdatedZenodoItems(BaseModel):
+
+    zenodo: Link[Zenodo] | None = None
+    old_version: int 
+    new_version: int
+
+
 class Update(BaseModel):
 
-    zenodo_id: Link[Zenodo]
     user_id: Link[User] | None = None
     created_at: datetime | None = datetime.now()
-    old_version: int
-    new_version: int
+    updates: list[UpdatedZenodoItems] | None = None
 
 
 class Update(Document, Update):

@@ -15,7 +15,8 @@ async def update_records(user_id=None, zenodo_id=None):
     if len(records) == 0:
         raise HTTPException(status_code=404,
                                      detail="No resources found!")
-    updated = []
+   
+    zenodo_updates = []
     for record in records:
         record.source += "/versions/latest" if not "/versions/latest" in record.source else ""
         data = get_zenodo_data(record.source)
@@ -38,14 +39,19 @@ async def update_records(user_id=None, zenodo_id=None):
             updated_record = Zenodo.model_copy(zenodo_record, update=fields)
             await updated_record.save()
 
-            update = Update(user_id=user_id,
-                            zenodo_id=record.id,
-                            old_version=record.zenodo_id,
-                            new_version=data["zenodo_object"]["zenodo_id"])
-            await update.save()
-            updated.append(update)
-
+            zenodo_updates.append({
+                "zenodo":
+                updated_record,
+                "old_version":
+                record.zenodo_id,
+                "new_version":
+                updated_record.zenodo_id
+            })
+    
+    if len(zenodo_updates) > 0:
+        update = Update(updates=zenodo_updates, user_id=user_id)
+        await update.save()
     detail = "Zenodo records updated successfully" if not zenodo_id else "Zenodo record " + str(
         zenodo_id) + " updated successfully"
 
-    return {"status": 200, "detail": detail, "records_updated": len(updated)}
+    return {"status": 200, "detail": detail, "records_updated": len(zenodo_updates)}

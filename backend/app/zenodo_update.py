@@ -29,24 +29,29 @@ async def main():
 
     await init(mongodb_uri)
     zenodo_records = await Zenodo.find().to_list()
-
+    
+    zenodo_updates = []
     for zenodo in zenodo_records:
 
         zenodo_dataset = get_zenodo_data(zenodo.source)
-
         if zenodo.metadata.doi != zenodo_dataset["zenodo_object"]["metadata"][
                 "doi"]:
-            print("Updating record: " + str(zenodo.id))
             zenodo_update = Zenodo(**zenodo_dataset["zenodo_object"])
             fields = zenodo_update.model_dump(exclude_unset=True)
             updated_record = Zenodo.model_copy(zenodo, update=fields)
             await updated_record.save()
-
-            update = Update(
-                zenodo_id=zenodo.id,
-                old_version=zenodo.zenodo_id,
-                new_version=zenodo_dataset["zenodo_object"]["zenodo_id"])
-            await update.save()
+            
+            zenodo_updates.append({
+                "zenodo":
+                updated_record,
+                "old_version":
+                zenodo.zenodo_id,
+                "new_version":
+                updated_record.zenodo_id
+            })
+    if len(zenodo_updates) > 0:
+        update = Update(updates=zenodo_updates)
+        await update.save()
 
 
 asyncio.run(main())
