@@ -1,5 +1,4 @@
-import pymongo, os, logging
-from pymongo import MongoClient
+import os, logging
 from dotenv import load_dotenv
 from models.zenodo import Zenodo
 from models.update import Update
@@ -35,8 +34,9 @@ async def main():
 
         zenodo_dataset = get_zenodo_data(zenodo.source)
 
-        if zenodo.source != zenodo_dataset["zenodo_object"]["source"]:
-           
+        if zenodo.metadata.doi != zenodo_dataset["zenodo_object"]["metadata"][
+                "doi"]:
+            print("Updating record: " + str(zenodo.id))
             zenodo_update = Zenodo(**zenodo_dataset["zenodo_object"])
             fields = zenodo_update.model_dump(exclude_unset=True)
             updated_record = Zenodo.model_copy(zenodo, update=fields)

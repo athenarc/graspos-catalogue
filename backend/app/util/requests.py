@@ -2,7 +2,7 @@ import requests, ast, re
 
 
 def get_zenodo_data(source):
-
+    
     doi_pattern = r'\d{8}'
     target_source = "https://zenodo.org/api/records/"
     match = re.search(doi_pattern, source)
@@ -18,7 +18,7 @@ def get_zenodo_data(source):
             "detail": "Not a valid Zenodo url.",
             "zenodo_object": {}
         }
-
+        
     if request.status_code == 200:
 
         if request and request.json():

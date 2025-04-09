@@ -3,10 +3,11 @@
 from beanie import Document
 from datetime import datetime
 from pydantic import BaseModel
-from beanie import PydanticObjectId, Link
+from beanie import Link
 from models.zenodo import Zenodo
 from models.user import User
-    
+
+
 class Update(BaseModel):
 
     zenodo_id: Link[Zenodo]
@@ -14,6 +15,7 @@ class Update(BaseModel):
     created_at: datetime | None = datetime.now()
     old_version: int
     new_version: int
+
 
 class Update(Document, Update):
 
