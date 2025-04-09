@@ -87,6 +87,32 @@ function LicenseFilter({ selectedResource, onFilterChange }) {
   );
 }
 
+export function ResourcesFilterBar({
+  resourceFilter,
+  handleResourceFilterChange,
+}) {
+  return (
+    <Stack sx={{ p: 2 }}>
+      <Grid size={12} sx={{ margin: "auto", textAlign: "left" }}>
+        <TextField
+          slotProps={{
+            input: {
+              style: {
+                borderRadius: "19px",
+                backgroundColor: "#fff",
+              },
+            },
+          }}
+          placeholder="Search Resource.."
+          size="small"
+          value={resourceFilter}
+          onChange={(e) => handleResourceFilterChange(e.target.value)}
+        />
+      </Grid>
+    </Stack>
+  );
+}
+
 export default function ResourcesFilters({
   selectedResource,
   handleChangeFilters,
@@ -111,31 +137,5 @@ export default function ResourcesFilters({
       </Stack>
       <Divider />
     </Drawer>
-  );
-}
-
-export function ResourcesFilterBar({
-  resourceFilter,
-  handleResourceFilterChange,
-}) {
-  return (
-    <Stack sx={{ p: 2 }}>
-      <Grid size={12} sx={{ margin: "auto", textAlign: "left" }}>
-        <TextField
-          slotProps={{
-            input: {
-              style: {
-                borderRadius: "19px",
-                backgroundColor: "#fff",
-              },
-            },
-          }}
-          placeholder="Search Resource.."
-          size="small"
-          value={resourceFilter}
-          onChange={(e) => handleResourceFilterChange(e.target.value)}
-        />
-      </Grid>
-    </Stack>
   );
 }
