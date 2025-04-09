@@ -10,11 +10,18 @@ from models.user import User
 ACCESS_EXPIRES = timedelta(hours=8)
 REFRESH_EXPIRES = timedelta(days=30)
 
-access_security = JwtAccessBearer(
+optional_access_security = JwtAccessBearer(
     CONFIG.authjwt_secret_key,
     access_expires_delta=ACCESS_EXPIRES,
     refresh_expires_delta=REFRESH_EXPIRES,
     auto_error=False
+)
+
+access_security = JwtAccessBearer(
+    CONFIG.authjwt_secret_key,
+    access_expires_delta=ACCESS_EXPIRES,
+    refresh_expires_delta=REFRESH_EXPIRES,
+    auto_error=True
 )
 
 refresh_security = JwtRefreshBearer(

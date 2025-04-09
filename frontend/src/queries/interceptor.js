@@ -1,4 +1,5 @@
 import axios from "axios";
+import { queryClient } from "./queryClient";
 
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_HOST,
@@ -26,6 +27,9 @@ async function refreshTokenFunction() {
       "token",
       JSON.stringify(refreshTokenCall.data.access_token)
     );
+    queryClient.invalidateQueries(["Datasets"]);
+    queryClient.invalidateQueries(["Documents"]);
+    queryClient.invalidateQueries(["Tools"]);
     return Promise.resolve();
   } else {
     return Promise.reject();

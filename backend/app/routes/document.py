@@ -1,36 +1,54 @@
 """Documents router."""
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from models.document import Documents, DocumentsPatch
 from models.user import User
 from models.zenodo import Zenodo
 from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
-from jwt import access_security
-from util.current_user import current_user
+from util.current_user import current_user, current_user_mandatory
 from util.requests import get_zenodo_data
+from typing import List, Optional
 
 router = APIRouter(prefix="/api/v1/document", tags=["Documents"])
 
 
 @router.get("", status_code=200, response_model=list[Documents])
-async def get_all_documents(user: User
-                            | None = Depends(current_user)) -> list[Documents]:
+async def get_all_datasets(
+    user: Optional[User] = Depends(current_user),
+    license: Optional[List[str]] = Query(
+        None)  # Optional list of licenses filter
+) -> list[Documents]:
+    # Start building the search query
+    search = {}
 
-    if user and user.super_user:  # Validate only if user exists
-        documents = await Documents.find_all(fetch_links=True).to_list()
-    else:
-        search = {"$or": [{"approved": True}]}
-        if user:
+    if user:
+        if user.super_user:
+            # If user is a super user, fetch all documents (no 'approved' filter applied)
+            documents = await Documents.find_all(fetch_links=True).to_list()
+        else:
+            # Apply 'approved' filter for non-superusers
+            search["$or"] = [{"approved": True}]
             search["$or"].append(
-                {"owner": user.id})  # Include user-owned datasets if logged in
-        documents = await Documents.find(search, fetch_links=True).to_list()
+                {"owner":
+                 user.id})  # Include user-owned documents if logged in
+
+    # If licenses are provided, add a filter for licenses
+    if license:
+        # Match documents where the 'zenodo.metadata.license.id' is in the provided list of licenses
+        search["$or"] = search.get("$or", [])
+        search["$or"].append({"zenodo.metadata.license.id": {"$in": license}})
+
+    # Fetch documents based on the search query
+    documents = await Documents.find(search, fetch_links=True).to_list()
+
     return documents
 
 
 @router.post("/create", status_code=201)
 async def create_document(
-    document: Documents, user: User = Depends(current_user)) -> Documents:
+    document: Documents, user: User = Depends(current_user_mandatory)
+) -> Documents:
     zenodo = None
 
     try:
@@ -52,6 +70,12 @@ async def create_document(
     return document
 
 
+@router.get("/licenses")
+async def get_licenses():
+    unique_licenses = await Documents.get_unique_licenses_from_zenodo()
+    return {"unique_licenses": unique_licenses}
+
+
 @router.get("/{document_id}",
             responses={404: {
                 "detail": "Documents does not exist"
@@ -70,7 +94,7 @@ async def get_document(document_id: PydanticObjectId) -> Documents:
 
 @router.delete("/{document_id}", status_code=204)
 async def delete_document(document_id: PydanticObjectId,
-                          user: User = Depends(current_user)):
+                          user: User = Depends(current_user_mandatory)):
     document_to_delete = await Documents.get(document_id, fetch_links=True)
 
     if not document_to_delete:
@@ -87,7 +111,7 @@ async def delete_document(document_id: PydanticObjectId,
 async def update_document(
     update: DocumentsPatch,
     document_id: PydanticObjectId,
-    user: User = Depends(current_user)
+    user: User = Depends(current_user_mandatory)
 ) -> DocumentsPatch:
 
     document = await Documents.get(document_id)

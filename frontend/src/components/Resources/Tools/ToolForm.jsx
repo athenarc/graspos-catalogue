@@ -11,16 +11,15 @@ import AddIcon from "@mui/icons-material/Add";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import Notification from "../Notification.jsx";
-import ZenodoForm from "./ZenodoForm.jsx";
-import { useCreateTool } from "../../queries/tool.js";
+import Notification from "../../Notification.jsx";
+import ZenodoForm from "../../Forms/ZenodoForm.jsx";
+import { useCreateTool } from "../../../queries/tool.js";
 
 export default function ToolForm() {
   const [message, setMessage] = useState("");
   const [zenodoData, setZenodoData] = useState();
   const { user } = useOutletContext();
   const {
-    register,
     handleSubmit,
     setError,
     setValue,
