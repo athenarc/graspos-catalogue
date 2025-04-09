@@ -19,7 +19,15 @@ export function ResourceBasicInformation({ resource }) {
       <CardHeader
         title={
           <Typography variant="h5">
-            {resource?.data?.data?.zenodo?.title ?? "Title"}
+            <Link
+              to={
+                "https://zenodo.org/records/" +
+                resource?.data?.data?.zenodo?.zenodo_id
+              }
+              target="_blank"
+            >
+              {resource?.data?.data?.zenodo?.title ?? "Title"}
+            </Link>
           </Typography>
         }
       ></CardHeader>
