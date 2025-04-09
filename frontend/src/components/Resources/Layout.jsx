@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import {
   Grid2 as Grid,
@@ -9,23 +9,15 @@ import {
   Box,
   Tabs,
   Tab,
-  Divider,
-  Drawer,
-  Typography,
 } from "@mui/material";
 
-import { RectangularVariants } from "./Skeleton";
+import { RectangularVariants } from "../Skeleton";
 import ResourceGridItem from "./ResourceGridItem";
-import { useTools } from "../queries/tool";
-import { useDocuments } from "../queries/document";
-import { useDatasets } from "../queries/dataset";
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
+import { useTools } from "../../queries/tool";
+import { useDocuments } from "../../queries/document";
+import { useDatasets } from "../../queries/dataset";
+import ResourcesFilters from "./Filters";
+import ResourcesGrid from "./Resources";
 
 function ResourcesTabs({ selectedResource, handleSetSelectedResource }) {
   return (
@@ -224,7 +216,7 @@ function Tools({ user, filter }) {
   );
 }
 
-export default function ResourcesGrid({ user }) {
+export default function ResourcesGridLayout({ user }) {
   const [resourceFilter, setResourceFilter] = useState("");
   const [selectedResource, setSelectedResource] = useState(0);
 
@@ -236,59 +228,23 @@ export default function ResourcesGrid({ user }) {
     setResourceFilter(value);
   }
   return (
-    <>
-      <Stack direction="row">
-        <Drawer
-          sx={{
-            width: 200,
-            "& .MuiDrawer-paper": {
-              width: 200,
-              boxSizing: "border-box",
-            },
-          }}
-          variant="permanent"
-          anchor="left"
-        >
-          <Stack direction="column" spacing={2} sx={{marginTop: "10vh",}}>
-            <Typography sx={{p: 2}}>License</Typography>
-          </Stack>
-          <Divider />
-        </Drawer>
-        <Stack direction="column" sx={{width: "100%" }}>
-          <ResourcesTabs
-            selectedResource={selectedResource}
-            handleSetSelectedResource={handleSetSelectedResource}
-          />
-          <ResourcesFilterBar
-            resourceFilter={resourceFilter}
-            handleResourceFilterChange={handleResourceFilterChange}
-          />
-          <Grid
-            container
-            spacing={2}
-            m={2}
-            mt={0}
-            sx={{ maxHeight: "75vh", overflow: "auto" }}
-          >
-            {selectedResource == 0 && (
-              <Datasets user={user} filter={resourceFilter} />
-            )}
-
-            {selectedResource == 1 && (
-              <Documents user={user} filter={resourceFilter} />
-            )}
-
-            {selectedResource == 2 && (
-              <Tools user={user} filter={resourceFilter} />
-            )}
-          </Grid>
-        </Stack>
+    <Stack direction="row">
+      <ResourcesFilters />
+      <Stack direction="column" sx={{ width: "100%" }}>
+        <ResourcesTabs
+          selectedResource={selectedResource}
+          handleSetSelectedResource={handleSetSelectedResource}
+        />
+        <ResourcesFilterBar
+          resourceFilter={resourceFilter}
+          handleResourceFilterChange={handleResourceFilterChange}
+        />
+        <ResourcesGrid
+          user={user}
+          selectedResource={selectedResource}
+          resourceFilter={resourceFilter}
+        />
       </Stack>
-      <Outlet
-        context={{
-          user: user,
-        }}
-      />
-    </>
+    </Stack>
   );
 }

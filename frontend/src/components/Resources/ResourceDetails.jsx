@@ -9,11 +9,13 @@ import {
   Typography,
 } from "@mui/material";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { useDataset } from "../queries/dataset";
-import { useDocument } from "../queries/document";
-import { useTool } from "../queries/tool";
+import { useDocument } from "../../queries/document";
+import { useTool } from "../../queries/tool";
+import { Dataset } from "./Datasets/Datasets";
+import { Document } from "./Documents/Documents";
+import { Tool } from "./Tools/Tools";
 
-function ResourceBasicInformation({ resource }) {
+export function ResourceBasicInformation({ resource }) {
   return (
     <Card>
       <CardHeader
@@ -41,7 +43,7 @@ function ResourceBasicInformation({ resource }) {
   );
 }
 
-function ResourceAuthors({ resource }) {
+export function ResourceAuthors({ resource }) {
   return (
     <Card>
       <CardHeader
@@ -63,7 +65,7 @@ function ResourceAuthors({ resource }) {
   );
 }
 
-function ResourceTags({ resource }) {
+export function ResourceTags({ resource }) {
   return (
     <Card>
       <CardHeader
@@ -85,7 +87,7 @@ function ResourceTags({ resource }) {
   );
 }
 
-function ResourceLicense({ resource }) {
+export function ResourceLicense({ resource }) {
   return (
     <Card>
       <CardHeader
@@ -100,60 +102,6 @@ function ResourceLicense({ resource }) {
         )}
       </CardContent>
     </Card>
-  );
-}
-
-function Dataset({ resourceId }) {
-  const dataset = useDataset(resourceId);
-  return (
-    <>
-      <Grid size={8}>
-        <ResourceBasicInformation resource={dataset} />
-      </Grid>
-      <Grid size={4}>
-        <Stack direction="column" spacing={2}>
-          <ResourceAuthors resource={dataset} />
-          <ResourceTags resource={dataset} />
-          <ResourceLicense resource={dataset} />
-        </Stack>
-      </Grid>
-    </>
-  );
-}
-
-function Document({ resourceId }) {
-  const document = useDocument(resourceId);
-  return (
-    <>
-      <Grid size={8}>
-        <ResourceBasicInformation resource={document} />
-      </Grid>
-      <Grid size={4}>
-        <Stack direction="column" spacing={2}>
-          <ResourceAuthors resource={document} />
-          <ResourceTags resource={document} />
-          <ResourceLicense resource={document} />
-        </Stack>
-      </Grid>
-    </>
-  );
-}
-
-function Tool({ resourceId }) {
-  const tool = useTool(resourceId);
-  return (
-    <>
-      <Grid size={8}>
-        <ResourceBasicInformation resource={tool} />
-      </Grid>
-      <Grid size={4}>
-        <Stack direction="column" spacing={2}>
-          <ResourceAuthors resource={tool} />
-          <ResourceTags resource={tool} />
-          <ResourceLicense resource={tool} />
-        </Stack>
-      </Grid>
-    </>
   );
 }
 

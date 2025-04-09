@@ -17,7 +17,7 @@ import ToolForm from "./components/Forms/ToolForm";
 import ZenodoForm from "./components/Forms/ZenodoForm";
 import UsersPanelForm from "./components/Forms/UsersForm";
 import ResourcesView from "./components/ZenodoUpdatesModal";
-import ResourceDetails from "./components/ResourceDetails";
+import ResourceDetails from "./components/Resources/ResourceDetails";
 import "./App.css";
 import { queryClient } from "./queries/queryClient";
 
