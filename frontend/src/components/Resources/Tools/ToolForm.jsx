@@ -20,7 +20,6 @@ export default function ToolForm() {
   const [zenodoData, setZenodoData] = useState();
   const { user } = useOutletContext();
   const {
-    register,
     handleSubmit,
     setError,
     setValue,

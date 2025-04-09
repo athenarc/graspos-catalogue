@@ -9,8 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { useDocument } from "../../queries/document";
-import { useTool } from "../../queries/tool";
 import { Dataset } from "./Datasets/Datasets";
 import { Document } from "./Documents/Documents";
 import { Tool } from "./Tools/Tools";
@@ -109,32 +107,28 @@ export default function ResourceDetails({ type }) {
   const { resourceId } = useParams();
   const location = useLocation();
   return (
-    <>
-      <Grid container spacing={2} p={2}>
-        {location.pathname.includes("dataset") && (
-          <Dataset resourceId={resourceId} />
-        )}
-        {location.pathname.includes("documents") && (
-          <Document resourceId={resourceId} />
-        )}
-        {location.pathname.includes("tools") && (
-          <Tool resourceId={resourceId} />
-        )}
-        <Button
-          color="primary"
-          variant="outlined"
-          component={Link}
-          to={-1}
-          sx={{
-            position: "absolute",
-            right: "24px",
-            bottom: "24px",
-            backgroundColor: "#fff",
-          }}
-        >
-          Back
-        </Button>
-      </Grid>
-    </>
+    <Grid container spacing={2} p={2}>
+      {location.pathname.includes("dataset") && (
+        <Dataset resourceId={resourceId} />
+      )}
+      {location.pathname.includes("documents") && (
+        <Document resourceId={resourceId} />
+      )}
+      {location.pathname.includes("tools") && <Tool resourceId={resourceId} />}
+      <Button
+        color="primary"
+        variant="outlined"
+        component={Link}
+        to={-1}
+        sx={{
+          position: "absolute",
+          right: "24px",
+          bottom: "24px",
+          backgroundColor: "#fff",
+        }}
+      >
+        Back
+      </Button>
+    </Grid>
   );
 }
