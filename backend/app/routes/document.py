@@ -13,7 +13,7 @@ from util.requests import get_zenodo_data
 router = APIRouter(prefix="/api/v1/document", tags=["Documents"])
 
 
-@router.get("/all", status_code=200, response_model=list[Documents])
+@router.get("", status_code=200, response_model=list[Documents])
 async def get_all_documents(user: User
                             | None = Depends(current_user)) -> list[Documents]:
 
@@ -39,7 +39,7 @@ async def create_document(
         raise HTTPException(status_code=400, detail=str(error))
 
     data = get_zenodo_data(document.source)
-    if data["status"] is not 200:
+    if data["status"] != 200:
         raise HTTPException(status_code=data["status"], detail=data["detail"])
 
     zenodo = Zenodo(**data["zenodo_object"])

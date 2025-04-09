@@ -94,7 +94,7 @@ function Datasets({ user, filter }) {
 
   return (
     <>
-      {datasets?.isLoading && <RectangularVariants count={4} />}
+      {datasets?.isLoading && <RectangularVariants count={3} />}
       {datasets?.isSuccess &&
         filteredDatasets?.map((dataset) => (
           <ResourceGridItem
@@ -145,7 +145,7 @@ function Documents({ user, filter }) {
 
   return (
     <>
-      {documents?.isLoading && <RectangularVariants count={4} />}
+      {documents?.isLoading && <RectangularVariants count={3} />}
       {documents?.isFetched &&
         filteredDocuments?.map((document) => (
           <ResourceGridItem
@@ -194,7 +194,7 @@ function Tools({ user, filter }) {
 
   return (
     <>
-      {tools?.isLoading && <RectangularVariants count={4} />}
+      {tools?.isLoading && <RectangularVariants count={3} />}
       {tools?.isFetched &&
         filteredTools?.map((tool) => (
           <ResourceGridItem
