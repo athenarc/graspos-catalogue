@@ -6,8 +6,7 @@ from models.user import User
 from models.zenodo import Zenodo
 from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
-from jwt import access_security
-from util.current_user import current_user
+from util.current_user import current_user, current_user_mandatory
 from typing import Annotated
 from util.requests import get_zenodo_data
 
@@ -30,7 +29,7 @@ async def get_all_tools(user: User
 
 
 @router.post("/create", status_code=201)
-async def create_tool(tool: Tool, user: User = Depends(current_user)):
+async def create_tool(tool: Tool, user: User = Depends(current_user_mandatory)):
     zenodo = None
     try:
         zenodo = Zenodo(source=tool.source)
@@ -68,7 +67,7 @@ async def get_tool(tool_id: PydanticObjectId) -> Tool:
 
 @router.delete("/{tool_id}", status_code=204)
 async def delete_tool(tool_id: PydanticObjectId,
-                      user: User = Depends(current_user)):
+                      user: User = Depends(current_user_mandatory)):
 
     tool_to_delete = await Tool.get(tool_id, fetch_links=True)
 
@@ -85,7 +84,7 @@ async def delete_tool(tool_id: PydanticObjectId,
 async def update_tool(
     update: ToolPatch,
     tool_id: PydanticObjectId,
-    user: User = Depends(current_user)) -> ToolPatch:
+    user: User = Depends(current_user_mandatory)) -> ToolPatch:
 
     tool = await Tool.get(tool_id)
 

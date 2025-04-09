@@ -6,15 +6,15 @@ from models.user import User
 from models.zenodo import Zenodo
 from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
-from jwt import access_security
-from util.current_user import current_user
+from util.current_user import current_user, current_user_mandatory
 from util.requests import get_zenodo_data
 
 router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
 
 @router.get("", status_code=200, response_model=list[Dataset])
-async def get_all_datasets(user: User | None = Depends(current_user)) -> list[Dataset]:
+async def get_all_datasets(user: User
+                           | None = Depends(current_user)) -> list[Dataset]:
 
     if user and user.super_user:  # Validate only if user exists
         datasets = await Dataset.find_all(fetch_links=True).to_list()
@@ -30,7 +30,8 @@ async def get_all_datasets(user: User | None = Depends(current_user)) -> list[Da
 
 
 @router.post("/create", status_code=201)
-async def create_dataset(dataset: Dataset, user: User = Depends(current_user)):
+async def create_dataset(dataset: Dataset,
+                         user: User = Depends(current_user_mandatory)):
     zenodo = None
 
     try:
@@ -52,10 +53,12 @@ async def create_dataset(dataset: Dataset, user: User = Depends(current_user)):
     await dataset.create()
     return dataset
 
+
 @router.get("/licenses")
 async def get_licenses():
     unique_licenses = await Dataset.get_unique_licenses_from_zenodo()
     return {"unique_licenses": unique_licenses}
+
 
 @router.get("/{dataset_id}",
             responses={404: {
@@ -73,7 +76,8 @@ async def get_dataset(dataset_id: PydanticObjectId) -> Dataset:
 
 
 @router.delete("/{dataset_id}", status_code=200)
-async def delete_dataset(dataset_id: PydanticObjectId):
+async def delete_dataset(dataset_id: PydanticObjectId,
+                         user: User = Depends(current_user_mandatory)):
 
     dataset_to_delete = await Dataset.find_one(Dataset.id == dataset_id,
                                                fetch_links=True)
@@ -91,7 +95,7 @@ async def delete_dataset(dataset_id: PydanticObjectId):
 async def update_dataset(
     update: DatasetPatch,
     dataset_id: PydanticObjectId,
-    user: User = Depends(current_user)
+    user: User = Depends(current_user_mandatory)
 ) -> DatasetPatch:
 
     dataset = await Dataset.get(dataset_id)

@@ -19,6 +19,7 @@ import UsersPanelForm from "./components/Forms/UsersForm";
 import ResourcesView from "./components/ZenodoUpdatesModal";
 import ResourceDetails from "./components/ResourceDetails";
 import "./App.css";
+import { queryClient } from "./queries/queryClient";
 
 function AppRoutes() {
   const location = useLocation();
@@ -59,8 +60,7 @@ function AppRoutes() {
 }
 
 function App() {
-  const queryClient = new QueryClient();
-
+  
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>

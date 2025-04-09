@@ -6,8 +6,7 @@ from models.user import User
 from models.zenodo import Zenodo
 from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
-from jwt import access_security
-from util.current_user import current_user
+from util.current_user import current_user, current_user_mandatory
 from util.requests import get_zenodo_data
 
 router = APIRouter(prefix="/api/v1/document", tags=["Documents"])
@@ -30,7 +29,7 @@ async def get_all_documents(user: User
 
 @router.post("/create", status_code=201)
 async def create_document(
-    document: Documents, user: User = Depends(current_user)) -> Documents:
+    document: Documents, user: User = Depends(current_user_mandatory)) -> Documents:
     zenodo = None
 
     try:
@@ -74,7 +73,7 @@ async def get_document(document_id: PydanticObjectId) -> Documents:
 
 @router.delete("/{document_id}", status_code=204)
 async def delete_document(document_id: PydanticObjectId,
-                          user: User = Depends(current_user)):
+                          user: User = Depends(current_user_mandatory)):
     document_to_delete = await Documents.get(document_id, fetch_links=True)
 
     if not document_to_delete:
@@ -91,7 +90,7 @@ async def delete_document(document_id: PydanticObjectId,
 async def update_document(
     update: DocumentsPatch,
     document_id: PydanticObjectId,
-    user: User = Depends(current_user)
+    user: User = Depends(current_user_mandatory)
 ) -> DocumentsPatch:
 
     document = await Documents.get(document_id)
