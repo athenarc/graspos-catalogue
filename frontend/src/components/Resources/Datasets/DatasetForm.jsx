@@ -18,9 +18,9 @@ import AddIcon from "@mui/icons-material/Add";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import Notification from "../Notification.jsx";
-import { useCreateDataset } from "../../queries/dataset.js";
-import ZenodoForm from "./ZenodoForm.jsx";
+import Notification from "../../Notification.jsx";
+import { useCreateDataset } from "../../../queries/dataset.js";
+import ZenodoForm from "../../Forms/ZenodoForm.jsx";
 
 export default function DatasetForm() {
   const [message, setMessage] = useState("");

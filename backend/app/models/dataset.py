@@ -77,3 +77,18 @@ class Dataset(Document, DatasetView):
                 "owner": "user id"
             }
         }
+
+    @classmethod
+    async def get_unique_licenses_from_zenodo(cls) -> list[dict]:
+        """Return all unique license dicts from linked Zenodo datasets."""
+        datasets = await cls.find_all().to_list()
+        licenses = set()
+
+        for dataset in datasets:
+            if dataset.zenodo is not None:
+                await dataset.fetch_link("zenodo")  # 💡 this line fetches the full Zenodo doc
+                zenodo = dataset.zenodo
+                if zenodo.metadata and isinstance(zenodo.metadata.license, dict):
+                    licenses.add(frozenset(zenodo.metadata.license.items()))
+
+        return [dict(license) for license in licenses]

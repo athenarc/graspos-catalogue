@@ -1,36 +1,53 @@
 """Tool router."""
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from models.tool import Tool, ToolPatch
 from models.user import User
 from models.zenodo import Zenodo
 from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
-from jwt import access_security
-from util.current_user import current_user
+from util.current_user import current_user, current_user_mandatory
 from typing import Annotated
 from util.requests import get_zenodo_data
+from typing import List, Optional
 
 router = APIRouter(prefix="/api/v1/tool", tags=["Tool"])
 
 
 @router.get("", status_code=200, response_model=list[Tool])
-async def get_all_tools(user: User
-                        | None = Depends(current_user)) -> list[Tool]:
+async def get_all_datasets(
+    user: Optional[User] = Depends(current_user),
+    license: Optional[List[str]] = Query(
+        None)  # Optional list of licenses filter
+) -> list[Tool]:
+    # Start building the search query
+    search = {}
 
-    if user and user.super_user:  # Validate only if user exists
-        tools = await Tool.find_all(fetch_links=True).to_list()
-    else:
-        search = {"$or": [{"approved": True}]}
-        if user:
+    if user:
+        if user.super_user:
+            # If user is a super user, fetch all tools (no 'approved' filter applied)
+            tools = await Tool.find_all(fetch_links=True).to_list()
+        else:
+            # Apply 'approved' filter for non-superusers
+            search["$or"] = [{"approved": True}]
             search["$or"].append(
-                {"owner": user.id})  # Include user-owned datasets if logged in
-        tools = await Tool.find(search, fetch_links=True).to_list()
+                {"owner":
+                 user.id})  # Include user-owned tools if logged in
+
+    # If licenses are provided, add a filter for licenses
+    if license:
+        # Match tools where the 'zenodo.metadata.license.id' is in the provided list of licenses
+        search["$or"] = search.get("$or", [])
+        search["$or"].append({"zenodo.metadata.license.id": {"$in": license}})
+
+    # Fetch tools based on the search query
+    tools = await Tool.find(search, fetch_links=True).to_list()
+
     return tools
 
 
 @router.post("/create", status_code=201)
-async def create_tool(tool: Tool, user: User = Depends(current_user)):
+async def create_tool(tool: Tool, user: User = Depends(current_user_mandatory)):
     zenodo = None
     try:
         zenodo = Zenodo(source=tool.source)
@@ -49,6 +66,10 @@ async def create_tool(tool: Tool, user: User = Depends(current_user)):
     await tool.create()
     return tool
 
+@router.get("/licenses")
+async def get_licenses():
+    unique_licenses = await Tool.get_unique_licenses_from_zenodo()
+    return {"unique_licenses": unique_licenses}
 
 @router.get("/{tool_id}", responses={404: {"detail": "Tool does not exist"}})
 async def get_tool(tool_id: PydanticObjectId) -> Tool:
@@ -64,7 +85,7 @@ async def get_tool(tool_id: PydanticObjectId) -> Tool:
 
 @router.delete("/{tool_id}", status_code=204)
 async def delete_tool(tool_id: PydanticObjectId,
-                      user: User = Depends(current_user)):
+                      user: User = Depends(current_user_mandatory)):
 
     tool_to_delete = await Tool.get(tool_id, fetch_links=True)
 
@@ -81,7 +102,7 @@ async def delete_tool(tool_id: PydanticObjectId,
 async def update_tool(
     update: ToolPatch,
     tool_id: PydanticObjectId,
-    user: User = Depends(current_user)) -> ToolPatch:
+    user: User = Depends(current_user_mandatory)) -> ToolPatch:
 
     tool = await Tool.get(tool_id)
 

@@ -16,9 +16,9 @@ import AddIcon from "@mui/icons-material/Add";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import Notification from "../Notification.jsx";
-import ZenodoForm from "./ZenodoForm.jsx";
-import { useCreateDocument } from "../../queries/document.js";
+import Notification from "../../Notification.jsx";
+import ZenodoForm from "../../Forms/ZenodoForm.jsx";
+import { useCreateDocument } from "../../../queries/document.js";
 
 export default function DocumentForm() {
   const [message, setMessage] = useState("");

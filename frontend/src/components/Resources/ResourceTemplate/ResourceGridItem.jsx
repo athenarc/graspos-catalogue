@@ -13,8 +13,8 @@ import {
   Grid2,
 } from "@mui/material";
 
-import { useDeleteDataset, useUpdateDataset } from "../queries/dataset";
-import { useDeleteDocument, useUpdateDocument } from "../queries/document";
+import { useDeleteDataset, useUpdateDataset } from "../../../queries/dataset";
+import { useDeleteDocument, useUpdateDocument } from "../../../queries/document";
 
 import { styled } from "@mui/material/styles";
 import { tooltipClasses } from "@mui/material/Tooltip";
@@ -24,12 +24,12 @@ import ClearIcon from "@mui/icons-material/Clear";
 import Check from "@mui/icons-material/Check";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import ConfirmationModal from "./Forms/ConfirmationModal";
-import { useDeleteTool, useUpdateTool } from "../queries/tool";
+import ConfirmationModal from "../../Forms/ConfirmationModal";
+import { useDeleteTool, useUpdateTool } from "../../../queries/tool";
 
-import grasposTools from "../assets/graspos_tools.png";
+import grasposTools from "../../../assets/graspos_tools.png";
 
-import { useUpdateZenodo } from "../queries/zenodo";
+import { useUpdateZenodo } from "../../../queries/zenodo";
 
 const imgs = {
   "graspos-tools": grasposTools,
@@ -364,7 +364,7 @@ export default function ResourceGridItem({ resource, type, user }) {
   }
 
   return (
-    <Grid key={resource?._id} size={{ xs: 10, sm: 4 }}>
+    <Grid key={resource?._id} size={{ xs: 12, lg: 6, xl: 4 }}>
       <Card
         elevation={1}
         sx={{

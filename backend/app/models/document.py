@@ -57,3 +57,19 @@ class Documents(Document, DocumentsPatch):
                 "owner": "user id"
             }
         }
+
+    
+    @classmethod
+    async def get_unique_licenses_from_zenodo(cls) -> list[dict]:
+        """Return all unique license dicts from linked Zenodo documents."""
+        documents = await cls.find_all().to_list()
+        licenses = set()
+
+        for document in documents:
+            if document.zenodo is not None:
+                await document.fetch_link("zenodo")  # 💡 this line fetches the full Zenodo doc
+                zenodo = document.zenodo
+                if zenodo.metadata and isinstance(zenodo.metadata.license, dict):
+                    licenses.add(frozenset(zenodo.metadata.license.items()))
+
+        return [dict(license) for license in licenses]

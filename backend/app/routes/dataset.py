@@ -1,35 +1,52 @@
 """Dataset router."""
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from models.dataset import Dataset, DatasetPatch
 from models.user import User
 from models.zenodo import Zenodo
 from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
-from jwt import access_security
-from util.current_user import current_user
+from util.current_user import current_user, current_user_mandatory
 from util.requests import get_zenodo_data
-import time
+from typing import List, Optional
 
 router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
+
 @router.get("", status_code=200, response_model=list[Dataset])
-async def get_all_datasets(user: User | None = Depends(current_user)) -> list[Dataset]:
+async def get_all_datasets(
+    user: Optional[User] = Depends(current_user),
+    license: Optional[List[str]] = Query(
+        None)  # Optional list of licenses filter
+) -> list[Dataset]:
+    # Start building the search query
+    search = {}
 
-    if user and user.super_user:  # Validate only if user exists
-        datasets = await Dataset.find_all(fetch_links=True).to_list()
-    else:
-        search = {"$or": [{"approved": True}]}
-        if user:
-            search["$or"].append({"owner": user.id})  # Include user-owned datasets if logged in
+    if user:
+        if user.super_user:
+            # If user is a super user, fetch all datasets (no 'approved' filter applied)
+            datasets = await Dataset.find_all(fetch_links=True).to_list()
+        else:
+            # Apply 'approved' filter for non-superusers
+            search["$or"] = [{"approved": True}]
+            search["$or"].append(
+                {"owner": user.id})  # Include user-owned datasets if logged in
 
-        datasets = await Dataset.find(search, fetch_links=True).to_list()
-    
+    # If licenses are provided, add a filter for licenses
+    if license:
+        # Match datasets where the 'zenodo.metadata.license.id' is in the provided list of licenses
+        search["$or"] = search.get("$or", [])
+        search["$or"].append({"zenodo.metadata.license.id": {"$in": license}})
+
+    # Fetch datasets based on the search query
+    datasets = await Dataset.find(search, fetch_links=True).to_list()
+
     return datasets
 
 
 @router.post("/create", status_code=201)
-async def create_dataset(dataset: Dataset, user: User = Depends(current_user)):
+async def create_dataset(dataset: Dataset,
+                         user: User = Depends(current_user_mandatory)):
     zenodo = None
 
     try:
@@ -52,13 +69,18 @@ async def create_dataset(dataset: Dataset, user: User = Depends(current_user)):
     return dataset
 
 
+@router.get("/licenses")
+async def get_licenses():
+    unique_licenses = await Dataset.get_unique_licenses_from_zenodo()
+    return {"unique_licenses": unique_licenses}
+
+
 @router.get("/{dataset_id}",
             responses={404: {
                 "detail": "Dataset does not exist"
             }})
 async def get_dataset(dataset_id: PydanticObjectId) -> Dataset:
 
-    time.sleep(2) 
     dataset = await Dataset.get(dataset_id, fetch_links=True)
 
     if not dataset:
@@ -69,7 +91,8 @@ async def get_dataset(dataset_id: PydanticObjectId) -> Dataset:
 
 
 @router.delete("/{dataset_id}", status_code=200)
-async def delete_dataset(dataset_id: PydanticObjectId):
+async def delete_dataset(dataset_id: PydanticObjectId,
+                         user: User = Depends(current_user_mandatory)):
 
     dataset_to_delete = await Dataset.find_one(Dataset.id == dataset_id,
                                                fetch_links=True)
@@ -79,7 +102,7 @@ async def delete_dataset(dataset_id: PydanticObjectId):
         return HTTPException(status_code=404, detail="Dataset does not exist")
 
     await dataset_to_delete.delete(link_rule=DeleteRules.DELETE_LINKS)
-    await Update.find(zenodo_id = dataset_to_delete.zenodo.id).delete()
+    await Update.find(zenodo_id=dataset_to_delete.zenodo.id).delete()
     return {"message": "Dataset deleted successfully"}
 
 
@@ -87,7 +110,7 @@ async def delete_dataset(dataset_id: PydanticObjectId):
 async def update_dataset(
     update: DatasetPatch,
     dataset_id: PydanticObjectId,
-    user: User = Depends(current_user)
+    user: User = Depends(current_user_mandatory)
 ) -> DatasetPatch:
 
     dataset = await Dataset.get(dataset_id)

@@ -5,7 +5,7 @@ from fastapi_jwt import JwtAuthorizationCredentials
 
 from models.user import User, UserOut, UserPasswordUpdate
 from jwt import access_security
-from util.current_user import current_user
+from util.current_user import current_user_mandatory
 from beanie import PydanticObjectId
 from util.password import hash_password
 
@@ -14,14 +14,14 @@ router = APIRouter(prefix="/api/v1/user", tags=["User"])
 
 @router.get("", response_model=UserOut)
 async def get_user(
-        user: User = Depends(current_user)):  # type: ignore[no-untyped-def]
+        user: User = Depends(current_user_mandatory)):  # type: ignore[no-untyped-def]
     """Return the current user."""
     return user
 
 
 @router.get("/users", response_model=list[UserOut])
 async def get_all_users(
-        user: User = Depends(current_user)):  # type: ignore[no-untyped-def]
+        user: User = Depends(current_user_mandatory)):  # type: ignore[no-untyped-def]
     """Return the current user."""
     users = await User.find_all().to_list()
     return users
@@ -30,7 +30,7 @@ async def get_all_users(
 @router.get("/{user_id}")
 async def get_user(
     user_id: PydanticObjectId,
-    user: User = Depends(current_user)):  # type: ignore[no-untyped-def]
+    user: User = Depends(current_user_mandatory)):  # type: ignore[no-untyped-def]
     """Return the current user."""
     userOut = await User.by_id(user_id)
     if userOut is None:
@@ -41,7 +41,7 @@ async def get_user(
 @router.patch("", response_model=UserOut)
 async def update_user(
     update: UserPasswordUpdate,
-    user: User = Depends(current_user)):  # type: ignore[no-untyped-def]
+    user: User = Depends(current_user_mandatory)):  # type: ignore[no-untyped-def]
     """Update allowed user fields."""
     fields = update.model_dump(exclude_unset=True)
     user = await User.get(fields["id"])

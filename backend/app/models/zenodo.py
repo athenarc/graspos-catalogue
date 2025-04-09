@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from util.requests import get_zenodo_data
 from beanie import PydanticObjectId
-
+from typing import Any
 
 class ZenodoMetadata(BaseModel):
 
@@ -79,3 +79,14 @@ class Zenodo(Document, Zenodo, ZenodoView):
                 "owner": "user id"
             }
         }
+
+    @classmethod
+    async def get_unique_licenses(cls) -> list[dict]:
+        """Return all unique license dicts from the metadata."""
+        documents = await cls.find_all().to_list()
+        licenses = {
+            frozenset(doc.metadata.license.items())
+            for doc in documents
+            if doc.metadata and isinstance(doc.metadata.license, dict)
+        }
+        return [dict(license) for license in licenses]

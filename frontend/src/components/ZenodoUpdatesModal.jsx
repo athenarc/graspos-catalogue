@@ -1,5 +1,6 @@
 import {
   Button,
+  Collapse,
   Dialog,
   DialogActions,
   DialogContent,
@@ -15,45 +16,83 @@ import { useUpdates } from "../queries/update";
 import { useUpdateZenodo } from "../queries/zenodo";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import CloseIcon from "@mui/icons-material/Close";
+import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import Notification from "./Notification";
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
+
+function UpdateRecords({ update }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <TableRow>
+        <TableCell>{update?.user_id?.username ?? "System Update"}</TableCell>
+
+        <TableCell>{update?.updates.length}</TableCell>
+        <TableCell>
+          {new Date(update?.created_at)
+            .toISOString()
+            .replace("T", " ")
+            .slice(0, 19)}
+        </TableCell>
+        <TableCell align="right">
+          {update?.updates.length > 0 && (
+            <IconButton size="small" onClick={() => setOpen(!open)}>
+              {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+            </IconButton>
+          )}
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={4}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Table size="small" aria-label="nested table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Title</TableCell>
+                  <TableCell>Previous Version</TableCell>
+                  <TableCell>New Version</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {update?.updates?.map((detail, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{detail?.zenodo?.title}</TableCell>
+                    <TableCell>{detail.old_version}</TableCell>
+                    <TableCell>{detail.new_version}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </>
+  );
+}
 
 function UpdatesTable({ updates }) {
   return (
     <Table sx={{ backgroundColor: "#FFF" }}>
       <TableHead>
         <TableRow>
-          <TableCell>Resource Title</TableCell>
-          <TableCell>Type</TableCell>
-          <TableCell>User</TableCell>
-          <TableCell>Previous Zenodo ID</TableCell>
-          <TableCell>Current Zenodo ID</TableCell>
+          <TableCell></TableCell>
+          <TableCell>Resources Updated</TableCell>
           <TableCell>Updated On</TableCell>
+          <TableCell></TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
         {updates?.data?.data?.length == 0 && (
           <TableRow key={"no-data"}>
-            <TableCell colSpan={6} sx={{ textAlign: "center" }}>
+            <TableCell colSpan={4} sx={{ textAlign: "center" }}>
               No updates found!
             </TableCell>
           </TableRow>
         )}
         {updates?.data?.data?.map((update) => (
-          <TableRow key={update?._id}>
-            <TableCell>{update?.zenodo_id?.title}</TableCell>
-            <TableCell>
-              {update?.zenodo_id?.metadata?.resource_type?.title}
-            </TableCell>
-            <TableCell>{update?.user_id?.username ?? "System"}</TableCell>
-            <TableCell>{update?.old_version}</TableCell>
-            <TableCell>{update?.new_version}</TableCell>
-            <TableCell>
-              {new Date(update?.created_at).toLocaleDateString()}
-            </TableCell>
-          </TableRow>
+          <UpdateRecords key={update?._id} update={update} />
         ))}
       </TableBody>
     </Table>
@@ -85,7 +124,7 @@ export default function UpdatesModal() {
   }
   return (
     user && (
-      <Dialog onClose={handleClose} open={true} fullWidth maxWidth="lg">
+      <Dialog onClose={handleClose} open={true} fullWidth maxWidth="md">
         <DialogTitle
           sx={{
             backgroundColor: "#20477B",
