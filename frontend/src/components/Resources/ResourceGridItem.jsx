@@ -364,7 +364,7 @@ export default function ResourceGridItem({ resource, type, user }) {
   }
 
   return (
-    <Grid key={resource?._id} size={{ xs: 10, sm: 4 }}>
+    <Grid key={resource?._id} size={{ xs: 12, lg: 6, xl: 4 }}>
       <Card
         elevation={1}
         sx={{

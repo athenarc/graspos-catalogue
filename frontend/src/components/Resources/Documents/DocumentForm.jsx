@@ -4,6 +4,11 @@ import {
   DialogTitle,
   Button,
   IconButton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Stack,
   DialogContent,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -11,11 +16,11 @@ import AddIcon from "@mui/icons-material/Add";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import Notification from "../Notification.jsx";
-import ZenodoForm from "./ZenodoForm.jsx";
-import { useCreateTool } from "../../queries/tool.js";
+import Notification from "../../Notification.jsx";
+import ZenodoForm from "../../Forms/ZenodoForm.jsx";
+import { useCreateDocument } from "../../../queries/document.js";
 
-export default function ToolForm() {
+export default function DocumentForm() {
   const [message, setMessage] = useState("");
   const [zenodoData, setZenodoData] = useState();
   const { user } = useOutletContext();
@@ -28,18 +33,18 @@ export default function ToolForm() {
     formState: { errors, setErr },
   } = useForm({ mode: "onBlur" });
   const navigate = useNavigate();
-  const createTool = useCreateTool();
+  const createDocument = useCreateDocument();
 
   useEffect(() => {
     setValue("source", zenodoData?.source);
   }, [zenodoData]);
 
   const onSubmit = (data) => {
-    createTool.mutate(
+    createDocument.mutate(
       { data },
       {
         onSuccess: () => {
-          setMessage("Tool has been created successfully!");
+          setMessage("Document has been created successfully!");
           setTimeout(() => {
             navigate("..");
           }, 1000);
@@ -68,6 +73,7 @@ export default function ToolForm() {
           noValidate
           onSubmit={handleSubmit(onSubmit)}
           fullWidth
+          maxWidth="md"
         >
           <DialogTitle
             sx={{
@@ -76,7 +82,7 @@ export default function ToolForm() {
               textAlign: "center",
             }}
           >
-            Add Tool
+            Add Document
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -90,20 +96,40 @@ export default function ToolForm() {
           >
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
+
           <DialogContent sx={{ p: 2 }}>
             <ZenodoForm
               zenodoData={zenodoData}
               setZenodoData={setZenodoData}
               setMessage={setMessage}
             />
+            {zenodoData && (
+              <Stack direction="row" useFlexGap spacing={2} sx={{ mt: 2 }}>
+                <FormControl fullWidth>
+                  <InputLabel>Format</InputLabel>
+                  <Select
+                    {...register("format")}
+                    label="Format"
+                    fullWidth
+                    defaultValue="csv"
+                  >
+                    <MenuItem value={"csv"}>CSV</MenuItem>
+                    <MenuItem value={"pdf"}>PDF</MenuItem>
+                    <MenuItem value={"xls"}>XLS</MenuItem>
+                    <MenuItem value={"json"}>JSON</MenuItem>
+                  </Select>
+                </FormControl>
+              </Stack>
+            )}
           </DialogContent>
+
           {zenodoData && (
-            <DialogActions sx={{ p: 2 }}>
+            <DialogActions sx={{ p: 2, pt: 0 }}>
               <Button
                 type="submit"
                 variant="contained"
                 disabled={!zenodoData}
-                loading={createTool?.isPending}
+                loading={createDocument?.isPending}
                 endIcon={<AddIcon />}
                 loadingPosition="end"
                 sx={{ backgroundColor: "#20477B" }}
@@ -113,8 +139,12 @@ export default function ToolForm() {
             </DialogActions>
           )}
         </Dialog>
-        {(createTool?.isSuccess || createTool?.isError) && (
-          <Notification requestStatus={createTool?.status} message={message} />
+
+        {(createDocument?.isSuccess || createDocument?.isError) && (
+          <Notification
+            requestStatus={createDocument?.status}
+            message={message}
+          />
         )}
       </>
     )
