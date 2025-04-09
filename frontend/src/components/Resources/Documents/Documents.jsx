@@ -13,7 +13,7 @@ import {
 
 export function Documents({ user, filter, filters }) {
   // Fetch documents based on the filters
-  
+
   const filterArray = Object.keys(filters).filter((key) => filters[key]);
   const documents = useDocuments(filterArray);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
@@ -23,10 +23,14 @@ export function Documents({ user, filter, filters }) {
     if (documents?.data) {
       // Apply the filter to documents if filter is not empty
       const filteredData = filter
-        ? documents?.data?.filter((document) =>
-            document?.zenodo?.metadata?.title
-              ?.toLowerCase()
-              .includes(filter.toLowerCase())
+        ? documents?.data?.filter(
+            (document) =>
+              document?.zenodo?.metadata?.title
+                ?.toLowerCase()
+                .includes(filter.toLowerCase()) ||
+              document?.zenodo?.metadata?.description
+                ?.toLowerCase()
+                .includes(filter.toLowerCase())
           )
         : documents?.data; // If no filter, show all documents
 

@@ -13,7 +13,7 @@ import {
 
 export function Tools({ user, filter, filters }) {
   // Fetch tools based on the filters
-  
+
   const filterArray = Object.keys(filters).filter((key) => filters[key]);
   const tools = useTools(filterArray);
   const [filteredTools, setFilteredTools] = useState([]);
@@ -23,10 +23,14 @@ export function Tools({ user, filter, filters }) {
     if (tools?.data) {
       // Apply the filter to tools if filter is not empty
       const filteredData = filter
-        ? tools?.data?.filter((tool) =>
-            tool?.zenodo?.metadata?.title
-              ?.toLowerCase()
-              .includes(filter.toLowerCase())
+        ? tools?.data?.filter(
+            (tool) =>
+              tool?.zenodo?.metadata?.title
+                ?.toLowerCase()
+                .includes(filter.toLowerCase()) ||
+              tool?.zenodo?.metadata?.description
+                ?.toLowerCase()
+                .includes(filter.toLowerCase())
           )
         : tools?.data; // If no filter, show all tools
 

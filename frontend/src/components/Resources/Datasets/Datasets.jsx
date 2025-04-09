@@ -13,7 +13,7 @@ import {
 
 export function Datasets({ user, filter, filters }) {
   // Fetch datasets based on the filters
-  
+
   const filterArray = Object.keys(filters).filter((key) => filters[key]);
   const datasets = useDatasets(filterArray);
   const [filteredDatasets, setFilteredDatasets] = useState([]);
@@ -23,10 +23,14 @@ export function Datasets({ user, filter, filters }) {
     if (datasets?.data) {
       // Apply the filter to datasets if filter is not empty
       const filteredData = filter
-        ? datasets?.data?.filter((dataset) =>
-            dataset?.zenodo?.metadata?.title
-              ?.toLowerCase()
-              .includes(filter.toLowerCase())
+        ? datasets?.data?.filter(
+            (dataset) =>
+              dataset?.zenodo?.metadata?.title
+                ?.toLowerCase()
+                .includes(filter.toLowerCase()) ||
+              dataset?.zenodo?.metadata?.description
+                ?.toLowerCase()
+                .includes(filter.toLowerCase())
           )
         : datasets?.data; // If no filter, show all datasets
 
