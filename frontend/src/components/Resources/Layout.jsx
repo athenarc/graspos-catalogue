@@ -32,10 +32,10 @@ export default function ResourcesGridLayout({ user }) {
   const [selectedResource, setSelectedResource] = useState(0);
   const [filters, setFilters] = useState([]);
 
-  function handleChangeFilters(filters){
-    setFilters(filters)
+  function handleChangeFilters(filters) {
+    setFilters(filters);
   }
- 
+
   const handleSetSelectedResource = (event, newValue) => {
     setSelectedResource(newValue);
   };
@@ -45,12 +45,17 @@ export default function ResourcesGridLayout({ user }) {
   }
   return (
     <Stack direction="row">
-      <ResourcesFilters selectedResource={selectedResource} filters={filters} handleChangeFilters={handleChangeFilters}/>
+      <ResourcesFilters
+        selectedResource={selectedResource}
+        filters={filters}
+        handleChangeFilters={handleChangeFilters}
+      />
       <Stack direction="column" sx={{ width: "100%" }}>
         <ResourcesTabs
           selectedResource={selectedResource}
           handleSetSelectedResource={handleSetSelectedResource}
         />
+
         <ResourcesFilterBar
           resourceFilter={resourceFilter}
           handleResourceFilterChange={handleResourceFilterChange}

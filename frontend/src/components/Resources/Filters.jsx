@@ -9,7 +9,7 @@ import {
   ListItem,
   ListItemText,
   Checkbox,
-  ListItemIcon,
+  Card,
 } from "@mui/material";
 
 import { useEffect, useState } from "react";
@@ -62,28 +62,35 @@ function LicenseFilter({ selectedResource, onFilterChange }) {
   }, [selectedLicenses]);
 
   return (
-    <Stack direction="column">
-      <Typography variant="h6" gutterBottom>
-        License
-      </Typography>
-      <Divider />
-
-      <List>
-        {licenseData?.map((license) => (
-          <ListItem key={license.id} onClick={() => handleToggle(license.id)}>
-            <ListItemIcon>
-              <Checkbox
-                edge="start"
-                checked={!!selectedLicenses[license.id]}
-                tabIndex={-1}
-                disableRipple
-              />
-            </ListItemIcon>
-            <ListItemText primary={license.id} />
-          </ListItem>
-        ))}
-      </List>
-    </Stack>
+    licenseData.length > 0 && (
+      <Stack direction="column" spacing="2" p={2} sx={{ mt: 5 }}>
+        <Card>
+          <Typography variant="h6" sx={{ pl: 1 }}>
+            License
+          </Typography>
+          <Divider />
+          <List sx={{ p: 1, backgroundColor: "lightblue" }}>
+            {licenseData?.map((license) => (
+              <ListItem
+                key={license.id}
+                onClick={() => handleToggle(license.id)}
+                sx={{ p: 0 }}
+              >
+                <Checkbox
+                  edge="start"
+                  checked={!!selectedLicenses[license.id]}
+                  tabIndex={-1}
+                  disableRipple
+                  sx={{ pr: 1 }}
+                />
+                <ListItemText primary={license.id} />
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+        </Card>
+      </Stack>
+    )
   );
 }
 
@@ -120,22 +127,21 @@ export default function ResourcesFilters({
   return (
     <Drawer
       sx={{
-        width: 200,
+        width: 300,
         "& .MuiDrawer-paper": {
-          width: 200,
+          width: 300,
           boxSizing: "border-box",
         },
       }}
       variant="permanent"
       anchor="left"
     >
-      <Stack direction="column" spacing={2} sx={{ marginTop: "15vh" }}>
+      <Stack direction="column" spacing={2} sx={{ mt: 12 }}>
         <LicenseFilter
           selectedResource={selectedResource}
           onFilterChange={handleChangeFilters}
         />
       </Stack>
-      <Divider />
     </Drawer>
   );
 }
