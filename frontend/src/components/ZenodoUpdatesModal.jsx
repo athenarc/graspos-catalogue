@@ -59,8 +59,8 @@ function UpdateRecords({ update }) {
                 {update?.updates?.map((detail, index) => (
                   <TableRow key={index}>
                     <TableCell>{detail?.zenodo?.title}</TableCell>
-                    <TableCell>{detail.old_version}</TableCell>
-                    <TableCell>{detail.new_version}</TableCell>
+                    <TableCell>{detail?.old_version}</TableCell>
+                    <TableCell>{detail?.new_version}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
