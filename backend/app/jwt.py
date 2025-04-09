@@ -7,7 +7,7 @@ from fastapi_jwt import JwtAuthorizationCredentials, JwtAccessBearer, JwtRefresh
 from config import CONFIG
 from models.user import User
 
-ACCESS_EXPIRES = timedelta(seconds=2)
+ACCESS_EXPIRES = timedelta(hours=8)
 REFRESH_EXPIRES = timedelta(days=30)
 
 optional_access_security = JwtAccessBearer(
