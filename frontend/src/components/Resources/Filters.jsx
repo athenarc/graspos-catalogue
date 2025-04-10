@@ -10,12 +10,18 @@ import {
   ListItemText,
   Checkbox,
   Card,
+  useMediaQuery,
+  useTheme,
+  Fab,
 } from "@mui/material";
 
+import MenuIcon from "@mui/icons-material/Menu";
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { useEffect, useState } from "react";
 import { useDatasetLicenses } from "../../queries/dataset";
 import { useDocumentLicenses } from "../../queries/document";
 import { useToolLicenses } from "../../queries/tool";
+import { useLocalStorage } from "./Storage";
 
 function LicenseFilter({ selectedResource, onFilterChange }) {
   const [licenseData, setLicenseData] = useState([]);
@@ -48,7 +54,10 @@ function LicenseFilter({ selectedResource, onFilterChange }) {
     isToolLoading,
   ]);
 
-  const [selectedLicenses, setSelectedLicenses] = useState({});
+  const [selectedLicenses, setSelectedLicenses] = useLocalStorage(
+    "selectedLicenses",
+    {}
+  );
 
   const handleToggle = (licenseId) => {
     setSelectedLicenses((prev) => ({
@@ -120,28 +129,72 @@ export function ResourcesFilterBar({
   );
 }
 
-export default function ResourcesFilters({
+function ResourceFilters({ selectedResource, handleChangeFilters }) {
+  return (
+    <Stack direction="column" spacing={2} sx={{ mt: 12 }}>
+      <LicenseFilter
+        selectedResource={selectedResource}
+        onFilterChange={handleChangeFilters}
+      />
+    </Stack>
+  );
+}
+
+export default function ResourcesFiltersDrawer({
   selectedResource,
   handleChangeFilters,
 }) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const toggleDrawer = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
   return (
-    <Drawer
-      sx={{
-        width: 300,
-        "& .MuiDrawer-paper": {
+    <>
+      {/* Floating button for mobile only */}
+      {isMobile && (
+        <Fab
+          color="primary"
+          onClick={toggleDrawer}
+          sx={{
+            position: "fixed",
+            top: 125,
+            right: 20,
+            width: 40,
+            height: 40,
+            zIndex: theme.zIndex.drawer + 2,
+          }}
+        >
+          <FilterAltIcon />
+        </Fab>
+      )}
+
+      <Drawer
+        sx={{
           width: 300,
-          boxSizing: "border-box",
-        },
-      }}
-      variant="permanent"
-      anchor="left"
-    >
-      <Stack direction="column" spacing={2} sx={{ mt: 12 }}>
-        <LicenseFilter
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: 300,
+            boxSizing: "border-box",
+          },
+        }}
+        variant={isMobile ? "temporary" : "permanent"}
+        anchor="left"
+        open={isMobile ? mobileOpen : true}
+        onClose={toggleDrawer}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile
+        }}
+      >
+        <ResourceFilters
           selectedResource={selectedResource}
-          onFilterChange={handleChangeFilters}
+          handleChangeFilters={handleChangeFilters}
         />
-      </Stack>
-    </Drawer>
+      </Drawer>
+    </>
   );
 }

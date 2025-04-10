@@ -75,10 +75,10 @@ export function Dataset({ resourceId }) {
   const dataset = useDataset(resourceId);
   return (
     <>
-      <Grid size={8}>
+      <Grid size={{ xs: 12, lg: 8 }}>
         <ResourceBasicInformation resource={dataset} />
       </Grid>
-      <Grid size={4}>
+      <Grid size={{ xs: 12, lg: 4 }}>
         <Stack direction="column" spacing={2}>
           <ResourceAuthors resource={dataset} />
           <ResourceTags resource={dataset} />

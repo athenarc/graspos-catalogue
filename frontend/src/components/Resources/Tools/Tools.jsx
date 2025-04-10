@@ -75,10 +75,10 @@ export function Tool({ resourceId }) {
   const tool = useTool(resourceId);
   return (
     <>
-      <Grid size={8}>
+      <Grid size={{ xs: 12, lg: 8 }}>
         <ResourceBasicInformation resource={tool} />
       </Grid>
-      <Grid size={4}>
+      <Grid size={{ xs: 12, lg: 4 }}>
         <Stack direction="column" spacing={2}>
           <ResourceAuthors resource={tool} />
           <ResourceTags resource={tool} />

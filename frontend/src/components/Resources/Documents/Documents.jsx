@@ -75,10 +75,10 @@ export function Document({ resourceId }) {
   const document = useDocument(resourceId);
   return (
     <>
-      <Grid size={8}>
+      <Grid size={{ xs: 12, lg: 8 }}>
         <ResourceBasicInformation resource={document} />
       </Grid>
-      <Grid size={4}>
+      <Grid size={{ xs: 12, lg: 4 }}>
         <Stack direction="column" spacing={2}>
           <ResourceAuthors resource={document} />
           <ResourceTags resource={document} />
