@@ -5,6 +5,9 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
+import "@fontsource/montserrat/400.css";
+import "./App.css";
+
 import { QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./components/AuthContext";
 import AppLayout from "./components/AppLayout";
@@ -18,7 +21,6 @@ import ZenodoForm from "./components/Forms/ZenodoForm";
 import UsersPanelForm from "./components/Forms/UsersForm";
 import ResourcesView from "./components/ZenodoUpdatesModal";
 import { ResourcePage } from "./components/Resources/ResourceTemplate/ResourcePage";
-import "./App.css";
 import { queryClient } from "./queries/queryClient";
 
 function AppRoutes() {

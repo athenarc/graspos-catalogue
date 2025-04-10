@@ -15,8 +15,7 @@ import {
   Fab,
 } from "@mui/material";
 
-import MenuIcon from "@mui/icons-material/Menu";
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useEffect, useState } from "react";
 import { useDatasetLicenses } from "../../queries/dataset";
 import { useDocumentLicenses } from "../../queries/document";
@@ -71,7 +70,7 @@ function LicenseFilter({ selectedResource, onFilterChange }) {
   }, [selectedLicenses]);
 
   return (
-    licenseData.length > 0 && (
+    licenseData?.length > 0 && (
       <Stack direction="column" spacing="2" p={2} sx={{ mt: 5 }}>
         <Card>
           <Typography variant="h6" sx={{ pl: 1 }}>
