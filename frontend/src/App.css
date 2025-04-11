@@ -5,6 +5,9 @@ html {
   box-sizing: border-box;
 }
 
+* {
+  font-family: "Montserrat", sans-serif !important;
+}
 body {
   min-height: 100vh;
   justify-content: end;

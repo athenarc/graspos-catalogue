@@ -14,7 +14,17 @@ import {
 export function Documents({ user, filter, filters }) {
   // Fetch documents based on the filters
 
-  const filterArray = Object.keys(filters).filter((key) => filters[key]);
+  // Fetch datasets based on the filters
+  const filterArray = Object.keys(filters || {}).flatMap((filterKey) => {
+    const filterObj = filters[filterKey];
+
+    // Ensure the filterObj is an object before applying filtering logic
+    if (typeof filterObj === "object" && filterObj !== null) {
+      return Object.keys(filterObj).filter((key) => filterObj[key]);
+    }
+
+    return [];
+  });
   const documents = useDocuments(filterArray);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
 
@@ -75,10 +85,10 @@ export function Document({ resourceId }) {
   const document = useDocument(resourceId);
   return (
     <>
-      <Grid size={8}>
+      <Grid size={{ xs: 12, lg: 8 }}>
         <ResourceBasicInformation resource={document} />
       </Grid>
-      <Grid size={4}>
+      <Grid size={{ xs: 12, lg: 4 }}>
         <Stack direction="column" spacing={2}>
           <ResourceAuthors resource={document} />
           <ResourceTags resource={document} />

@@ -13,8 +13,16 @@ import {
 
 export function Tools({ user, filter, filters }) {
   // Fetch tools based on the filters
+  const filterArray = Object.keys(filters || {}).flatMap((filterKey) => {
+    const filterObj = filters[filterKey];
 
-  const filterArray = Object.keys(filters).filter((key) => filters[key]);
+    // Ensure the filterObj is an object before applying filtering logic
+    if (typeof filterObj === "object" && filterObj !== null) {
+      return Object.keys(filterObj).filter((key) => filterObj[key]);
+    }
+
+    return [];
+  });
   const tools = useTools(filterArray);
   const [filteredTools, setFilteredTools] = useState([]);
 
@@ -75,10 +83,10 @@ export function Tool({ resourceId }) {
   const tool = useTool(resourceId);
   return (
     <>
-      <Grid size={8}>
+      <Grid size={{ xs: 12, lg: 8 }}>
         <ResourceBasicInformation resource={tool} />
       </Grid>
-      <Grid size={4}>
+      <Grid size={{ xs: 12, lg: 4 }}>
         <Stack direction="column" spacing={2}>
           <ResourceAuthors resource={tool} />
           <ResourceTags resource={tool} />
