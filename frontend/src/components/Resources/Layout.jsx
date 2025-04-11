@@ -1,29 +1,8 @@
 import { useEffect, useState } from "react";
 import { Box, Stack, Tabs, Tab } from "@mui/material";
-import ResourcesFilters, { ResourcesFilterBar } from "./Filters";
+import ResourcesFilters, { ResourcesFilterSearchBar } from "./Filters";
 import ResourcesGrid from "./Resources";
-
-function useLocalStorage(key, initialValue) {
-  const [storedValue, setStoredValue] = useState(() => {
-    try {
-      const item = localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch (err) {
-      console.error(err);
-      return initialValue;
-    }
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(key, JSON.stringify(storedValue));
-    } catch (err) {
-      console.error(err);
-    }
-  }, [key, storedValue]);
-
-  return [storedValue, setStoredValue];
-}
+import { useLocation, useNavigate } from "react-router-dom";
 
 function ResourcesTabs({ selectedResource, handleSetSelectedResource }) {
   return (
@@ -38,7 +17,7 @@ function ResourcesTabs({ selectedResource, handleSetSelectedResource }) {
       <Tabs
         value={selectedResource}
         onChange={handleSetSelectedResource}
-        aria-label="basic tabs example"
+        aria-label="resource tabs"
         centered
       >
         <Tab label="Datasets" />
@@ -51,26 +30,129 @@ function ResourcesTabs({ selectedResource, handleSetSelectedResource }) {
 
 export default function ResourcesGridLayout({ user }) {
   const [resourceFilter, setResourceFilter] = useState("");
-  const [selectedResource, setSelectedResource] = useLocalStorage("selectedResource", 0);
-  const [filters, setFilters] = useState([]);
+  const [selectedResource, setSelectedResource] = useState(0); // Default to datasets
+  const [filters, setFilters] = useState({ licenses: {} });
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  function handleChangeFilters(filters) {
-    setFilters(filters);
-  }
-
-  const handleSetSelectedResource = (event, newValue) => {
-    setSelectedResource(newValue);
+  const resourceMap = {
+    datasets: 0,
+    documents: 1,
+    tools: 2,
   };
 
-  function handleResourceFilterChange(value) {
-    setResourceFilter(value);
-  }
+  // Extract filters and selected resource from the URL
+  const extractFiltersFromURL = () => {
+    const searchParams = new URLSearchParams(location.search);
+    const newFilters = { licenses: {} };
+
+    // Extract license filters from the URL
+    searchParams.getAll("license").forEach((value) => {
+      newFilters.licenses[value] = true;
+    });
+
+    // Extract the selected resource (tab) from the URL
+    const tab = searchParams.get("tab");
+    if (tab) {
+      setSelectedResource(resourceMap[tab] || 0); // Default to datasets (0) if not found
+    }
+
+    setFilters(newFilters); // Update the filters state
+  };
+
+  useEffect(() => {
+    extractFiltersFromURL();
+  }, [location]);
+
+  // Update the URL with new filters and selected tab
+  const updateURLFilters = (newFilters, selectedTab) => {
+    const searchParams = new URLSearchParams();
+
+    // Serialize licenses and other filters
+    Object.entries(newFilters).forEach(([filterType, filterValues]) => {
+      if (filterType === "licenses") {
+        Object.entries(filterValues).forEach(([license, selected]) => {
+          if (selected) {
+            searchParams.append("license", license);
+          }
+        });
+      }
+    });
+
+    // Set the selected tab (resource) in the URL
+    const resourceName = Object.keys(resourceMap).find(
+      (key) => resourceMap[key] === selectedTab
+    );
+    if (resourceName) {
+      searchParams.set("tab", resourceName);
+    }
+
+    // Update the URL with the new search parameters
+    navigate(
+      { pathname: location.pathname, search: `?${searchParams.toString()}` },
+      { replace: true }
+    );
+  };
+
+  const handleChangeFilters = (newFilters) => {
+    setFilters(newFilters); // Update filters state
+    updateURLFilters(newFilters, selectedResource); // Update URL filters
+  };
+
+  const handleSetSelectedResource = (event, newValue) => {
+    // Reset filters when changing the tab (resource)
+    setFilters({ licenses: {} });
+
+    // Update the selectedResource state (tab change)
+    setSelectedResource(newValue);
+
+    // Reset URL search parameters (except for the tab)
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.delete("license"); // Reset license filters
+
+    const selectedResourceName = Object.keys(resourceMap).find(
+      (key) => resourceMap[key] === newValue
+    );
+    if (selectedResourceName) {
+      searchParams.set("tab", selectedResourceName); // Set the tab resource in the URL
+    }
+
+    // Update the URL without changing the tab parameter
+    navigate(
+      { pathname: location.pathname, search: `?${searchParams.toString()}` },
+      { replace: true }
+    );
+  };
+
+  const handleResourceFilterChange = (value) => {
+    setResourceFilter(value); // Update resource filter value
+  };
+
+  const handleResetFilters = (resetTabs = true) => {
+    // Reset tabs if resetTabs is true
+    if (resetTabs) {
+      setSelectedResource(0); // Set default tab to datasets
+    }
+
+    // Reset filters (e.g., license filters)
+    setFilters({ licenses: {} });
+
+    // Update the URL search parameters without affecting the tab
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.delete("license"); // Reset license filters
+    navigate(
+      { pathname: location.pathname, search: `?${searchParams.toString()}` },
+      { replace: true }
+    );
+  };
+
   return (
     <Stack direction="row">
       <ResourcesFilters
         selectedResource={selectedResource}
-        filters={filters}
+        selectedFilters={filters}
         handleChangeFilters={handleChangeFilters}
+        onResetFilters={handleResetFilters}
       />
       <Stack direction="column" sx={{ width: "100%" }}>
         <ResourcesTabs
@@ -78,7 +160,7 @@ export default function ResourcesGridLayout({ user }) {
           handleSetSelectedResource={handleSetSelectedResource}
         />
 
-        <ResourcesFilterBar
+        <ResourcesFilterSearchBar
           resourceFilter={resourceFilter}
           handleResourceFilterChange={handleResourceFilterChange}
         />

@@ -10,34 +10,47 @@ import {
   ListItemText,
   Checkbox,
   Card,
+  useMediaQuery,
+  useTheme,
+  Fab,
+  Button,
 } from "@mui/material";
-
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useEffect, useState } from "react";
 import { useDatasetLicenses } from "../../queries/dataset";
 import { useDocumentLicenses } from "../../queries/document";
 import { useToolLicenses } from "../../queries/tool";
 
-function LicenseFilter({ selectedResource, onFilterChange }) {
+export function LicenseFilter({
+  selectedResource,
+  onFilterChange,
+  selectedFilters,
+}) {
   const [licenseData, setLicenseData] = useState([]);
+  const [selectedLicenses, setSelectedLicenses] = useState(
+    selectedFilters?.licenses || {}
+  );
 
   const { data: datasetLicenseData, isLoading: isDatasetLoading } =
-    useDatasetLicenses(selectedResource == 0);
+    useDatasetLicenses(selectedResource === 0);
   const { data: documentLicenseData, isLoading: isDocumentLoading } =
-    useDocumentLicenses(selectedResource == 1);
+    useDocumentLicenses(selectedResource === 1);
   const { data: toolLicenseData, isLoading: isToolLoading } = useToolLicenses(
-    selectedResource == 2
+    selectedResource === 2
   );
 
   useEffect(() => {
     if (isDatasetLoading || isDocumentLoading || isToolLoading) return;
-    setLicenseData(
-      selectedResource == 0
+
+    // Set the license data based on the selected resource
+    const resourceLicenseData =
+      selectedResource === 0
         ? datasetLicenseData?.data?.unique_licenses
-        : selectedResource == 1
+        : selectedResource === 1
         ? documentLicenseData?.data?.unique_licenses
-        : toolLicenseData?.data?.unique_licenses
-    );
-    setSelectedLicenses([]);
+        : toolLicenseData?.data?.unique_licenses;
+
+    setLicenseData(resourceLicenseData || []);
   }, [
     selectedResource,
     datasetLicenseData,
@@ -48,29 +61,51 @@ function LicenseFilter({ selectedResource, onFilterChange }) {
     isToolLoading,
   ]);
 
-  const [selectedLicenses, setSelectedLicenses] = useState({});
+  useEffect(() => {
+    if (selectedFilters?.licenses) {
+      // Filter out invalid licenses from selectedFilters.licenses
+      const validSelectedLicenses = Object.keys(
+        selectedFilters.licenses
+      ).reduce((acc, licenseId) => {
+        const licenseExists = licenseData.some(
+          (license) => license.id === licenseId
+        );
+        if (licenseExists) {
+          acc[licenseId] = selectedFilters.licenses[licenseId];
+        }
+        return acc;
+      }, {});
+
+      // Only update the selectedLicenses if there is a change
+      if (
+        JSON.stringify(validSelectedLicenses) !==
+        JSON.stringify(selectedLicenses)
+      ) {
+        setSelectedLicenses(validSelectedLicenses); // Update only if the licenses are different
+        onFilterChange({ licenses: validSelectedLicenses }); // Update the parent with valid licenses
+      }
+    }
+  }, [selectedFilters, licenseData, selectedLicenses, onFilterChange]);
 
   const handleToggle = (licenseId) => {
-    setSelectedLicenses((prev) => ({
-      ...prev,
-      [licenseId]: !prev[licenseId],
-    }));
+    const updatedLicenses = {
+      ...selectedLicenses,
+      [licenseId]: !selectedLicenses[licenseId],
+    };
+    setSelectedLicenses(updatedLicenses);
+    onFilterChange({ licenses: updatedLicenses });
   };
-
-  useEffect(() => {
-    onFilterChange(selectedLicenses);
-  }, [selectedLicenses]);
 
   return (
     licenseData.length > 0 && (
-      <Stack direction="column" spacing="2" p={2} sx={{ mt: 5 }}>
+      <Stack direction="column" spacing={2} p={2}>
         <Card>
           <Typography variant="h6" sx={{ pl: 1 }}>
             License
           </Typography>
           <Divider />
           <List sx={{ p: 1, backgroundColor: "lightblue" }}>
-            {licenseData?.map((license) => (
+            {licenseData.map((license) => (
               <ListItem
                 key={license.id}
                 onClick={() => handleToggle(license.id)}
@@ -94,7 +129,7 @@ function LicenseFilter({ selectedResource, onFilterChange }) {
   );
 }
 
-export function ResourcesFilterBar({
+export function ResourcesFilterSearchBar({
   resourceFilter,
   handleResourceFilterChange,
 }) {
@@ -120,28 +155,100 @@ export function ResourcesFilterBar({
   );
 }
 
-export default function ResourcesFilters({
+function ResourceFilters({
   selectedResource,
   handleChangeFilters,
+  selectedFilters,
 }) {
   return (
-    <Drawer
-      sx={{
-        width: 300,
-        "& .MuiDrawer-paper": {
+    <Stack direction="column" spacing={2}>
+      <LicenseFilter
+        selectedFilters={selectedFilters}
+        selectedResource={selectedResource}
+        onFilterChange={handleChangeFilters}
+      />
+    </Stack>
+  );
+}
+
+export default function ResourcesFiltersDrawer({
+  selectedResource,
+  handleChangeFilters,
+  onResetFilters,
+  selectedFilters,
+}) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const toggleDrawer = () => {
+    setMobileOpen((prev) => !prev);
+  };
+
+  return (
+    <>
+      {/* Floating button for mobile only */}
+      {isMobile && (
+        <Fab
+          color="primary"
+          onClick={toggleDrawer}
+          sx={{
+            position: "fixed",
+            top: 125,
+            right: 20,
+            width: 40,
+            height: 40,
+            zIndex: theme.zIndex.drawer + 2,
+          }}
+        >
+          <FilterAltIcon />
+        </Fab>
+      )}
+
+      <Drawer
+        sx={{
           width: 300,
-          boxSizing: "border-box",
-        },
-      }}
-      variant="permanent"
-      anchor="left"
-    >
-      <Stack direction="column" spacing={2} sx={{ mt: 12 }}>
-        <LicenseFilter
-          selectedResource={selectedResource}
-          onFilterChange={handleChangeFilters}
-        />
-      </Stack>
-    </Drawer>
+          height: "100%",
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: 300,
+            boxSizing: "border-box",
+          },
+        }}
+        variant={isMobile ? "temporary" : "permanent"}
+        anchor="left"
+        open={isMobile ? mobileOpen : true}
+        onClose={toggleDrawer}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile
+        }}
+      >
+        <Stack
+          direction="column"
+          spacing={2}
+          sx={{ height: "100%", justifyContent: "space-between", mt: 12 }} // Ensure content fills full height
+        >
+          <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
+            <ResourceFilters
+              selectedFilters={selectedFilters}
+              selectedResource={selectedResource}
+              handleChangeFilters={handleChangeFilters}
+            />
+          </Stack>
+
+          {/* Reset Filters Button at the bottom */}
+          <Stack direction="column" spacing={2} sx={{ p: 2 }}>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => onResetFilters(false)}
+            >
+              Reset Filters
+            </Button>
+          </Stack>
+        </Stack>
+      </Drawer>
+    </>
   );
 }
