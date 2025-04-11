@@ -13,8 +13,16 @@ import {
 
 export function Datasets({ user, filter, filters }) {
   // Fetch datasets based on the filters
+  const filterArray = Object.keys(filters || {}).flatMap((filterKey) => {
+    const filterObj = filters[filterKey];
 
-  const filterArray = Object.keys(filters).filter((key) => filters[key]);
+    // Ensure the filterObj is an object before applying filtering logic
+    if (typeof filterObj === "object" && filterObj !== null) {
+      return Object.keys(filterObj).filter((key) => filterObj[key]);
+    }
+
+    return [];
+  });
   const datasets = useDatasets(filterArray);
   const [filteredDatasets, setFilteredDatasets] = useState([]);
 
