@@ -14,7 +14,10 @@ import {
 } from "@mui/material";
 
 import { useDeleteDataset, useUpdateDataset } from "../../../queries/dataset";
-import { useDeleteDocument, useUpdateDocument } from "../../../queries/document";
+import {
+  useDeleteDocument,
+  useUpdateDocument,
+} from "../../../queries/document";
 
 import { styled } from "@mui/material/styles";
 import { tooltipClasses } from "@mui/material/Tooltip";
@@ -325,7 +328,10 @@ function ResourceItemHeader({ resource, type }) {
             maxWidth: "25vw",
           }}
         >
-          <Link to={"/"+ type.toLowerCase() + "s/" + resource?._id}>
+          <Link
+            to={"/" + type.toLowerCase() + "s/" + resource?._id}
+            style={{ color: "#AE538E" }}
+          >
             {resource?.zenodo?.title}
           </Link>
         </Typography>
