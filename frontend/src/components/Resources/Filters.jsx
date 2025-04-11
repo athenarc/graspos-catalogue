@@ -118,7 +118,7 @@ export function LicenseFilter({
                   disableRipple
                   sx={{ pr: 1 }}
                 />
-                <ListItemText primary={license.id} sx={{cursor: "pointer"}}/>
+                <ListItemText primary={license.id} sx={{ cursor: "pointer" }} />
               </ListItem>
             ))}
           </List>
@@ -135,7 +135,7 @@ export function ResourcesFilterSearchBar({
 }) {
   return (
     <Stack sx={{ p: 2 }}>
-      <Grid size={12} sx={{ margin: "auto", textAlign: "left" }}>
+      <Grid sx={{ margin: "auto", textAlign: "left" }}>
         <TextField
           slotProps={{
             input: {
@@ -145,10 +145,12 @@ export function ResourcesFilterSearchBar({
               },
             },
           }}
-          placeholder="Search Resource.."
+          placeholder="Search Resource, abstract.."
           size="small"
+          fullWidth
           value={resourceFilter}
           onChange={(e) => handleResourceFilterChange(e.target.value)}
+          sx={{minWidth: "400px"}}
         />
       </Grid>
     </Stack>
@@ -178,7 +180,7 @@ export default function ResourcesFiltersDrawer({
   selectedFilters,
 }) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
