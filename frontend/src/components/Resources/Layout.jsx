@@ -21,8 +21,8 @@ function ResourcesTabs({ selectedResource, handleSetSelectedResource }) {
         centered
       >
         <Tab label="Datasets" />
-        <Tab label="Documents" />
         <Tab label="Tools" />
+        <Tab label="Documents" />
       </Tabs>
     </Box>
   );
@@ -37,8 +37,8 @@ export default function ResourcesGridLayout({ user }) {
 
   const resourceMap = {
     datasets: 0,
-    documents: 1,
-    tools: 2,
+    documents: 2,
+    tools: 1,
   };
 
   // Extract filters and selected resource from the URL
