@@ -20,13 +20,11 @@ export default function ResourcesGrid({
       {selectedResource == 0 && (
         <Datasets user={user} filter={resourceFilter} filters={filters} />
       )}
-
       {selectedResource == 1 && (
-        <Documents user={user} filter={resourceFilter} filters={filters} />
-      )}
-
-      {selectedResource == 2 && (
         <Tools user={user} filter={resourceFilter} filters={filters} />
+      )}
+      {selectedResource == 2 && (
+        <Documents user={user} filter={resourceFilter} filters={filters} />
       )}
     </Grid>
   );

@@ -14,7 +14,10 @@ import {
 } from "@mui/material";
 
 import { useDeleteDataset, useUpdateDataset } from "../../../queries/dataset";
-import { useDeleteDocument, useUpdateDocument } from "../../../queries/document";
+import {
+  useDeleteDocument,
+  useUpdateDocument,
+} from "../../../queries/document";
 
 import { styled } from "@mui/material/styles";
 import { tooltipClasses } from "@mui/material/Tooltip";
@@ -27,7 +30,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ConfirmationModal from "../../Forms/ConfirmationModal";
 import { useDeleteTool, useUpdateTool } from "../../../queries/tool";
 
-import grasposTools from "../../../assets/graspos_tools.png";
+import grasposTools from "../../../assets/os.svg";
 
 import { useUpdateZenodo } from "../../../queries/zenodo";
 
@@ -109,58 +112,60 @@ function ResourceOwnerFunctionalities({ resource, user, type, handleDelete }) {
     );
   }
   return (
-    <>
-      <Tooltip
-        title={"Update " + String(type) + " from Zenodo"}
-        placement="top"
-      >
-        <IconButton
-          disabled={
-            !user ||
-            updateZenodo.isPending ||
-            (!user?.super_user && resource?.owner != user?.id)
-          }
-          onClick={() =>
-            handleUpdateZenodo({
-              id: resource?.zenodo?.id,
-              source: resource?.zenodo?.source,
-            })
-          }
-          sx={{ p: 0.5 }}
-          loading={updateZenodo.isPending}
-          loadingIndicator={
-            <CircularProgress size={15} thickness={5} sx={{ mr: 2.5 }} />
-          }
+    user && (
+      <>
+        <Tooltip
+          title={"Update " + String(type) + " from Zenodo"}
+          placement="top"
         >
-          {!updateZenodo.isPending && <RefreshIcon />}
-        </IconButton>
-      </Tooltip>
-
-      <Tooltip title={"Delete " + String(type)} placement="top">
-        <div>
-          <ConfirmationModal
-            title={"Delete " + String(type)}
-            resource={resource}
-            response={() => handleDelete(resource?._id)}
+          <IconButton
+            disabled={
+              !user ||
+              updateZenodo.isPending ||
+              (!user?.super_user && resource?.owner != user?.id)
+            }
+            onClick={() =>
+              handleUpdateZenodo({
+                id: resource?.zenodo?.id,
+                source: resource?.zenodo?.source,
+              })
+            }
+            sx={{ p: 0.5 }}
+            loading={updateZenodo.isPending}
+            loadingIndicator={
+              <CircularProgress size={15} thickness={5} sx={{ mr: 2.5 }} />
+            }
           >
-            {(handleClickOpen) => (
-              <IconButton
-                color="error"
-                disabled={
-                  !user ||
-                  updateZenodo.isPending ||
-                  (!user?.super_user && resource?.owner != user?.id)
-                }
-                onClick={handleClickOpen}
-                sx={{ p: 0.5 }}
-              >
-                <DeleteIcon />
-              </IconButton>
-            )}
-          </ConfirmationModal>
-        </div>
-      </Tooltip>
-    </>
+            {!updateZenodo.isPending && <RefreshIcon />}
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip title={"Delete " + String(type)} placement="top">
+          <div>
+            <ConfirmationModal
+              title={"Delete " + String(type)}
+              resource={resource}
+              response={() => handleDelete(resource?._id)}
+            >
+              {(handleClickOpen) => (
+                <IconButton
+                  color="error"
+                  disabled={
+                    !user ||
+                    updateZenodo.isPending ||
+                    (!user?.super_user && resource?.owner != user?.id)
+                  }
+                  onClick={handleClickOpen}
+                  sx={{ p: 0.5 }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              )}
+            </ConfirmationModal>
+          </div>
+        </Tooltip>
+      </>
+    )
   );
 }
 
@@ -187,33 +192,26 @@ function ResourceItemKeywords({ resource }) {
 }
 
 function ResourceItemCommunities({ resource }) {
-  return (
-    <Stack direction={"row"} justifyContent="center" spacing={1}>
-      {resource?.zenodo?.metadata?.communities?.map(
-        (community) =>
-          community.id == "graspos-tools" && (
-            <Tooltip
-              key={community.id}
-              title={"Part of " + community.id.replaceAll("-", " ")}
-            >
-              <div id={community.id}>
-                <img
-                  src={imgs[community?.id]}
-                  alt={community.id}
-                  width={"70"}
-                  height={"20"}
-                />
-              </div>
-            </Tooltip>
-          )
-      )}
-    </Stack>
+  return resource?.zenodo?.metadata?.communities?.map(
+    (community) =>
+      community.id.includes("graspos") && (
+        <Tooltip key={community.id} title={"Verified GraspOS " + community.id.replace("graspos-", "").replace(/s$/, "")}>
+          <div id={community.id}>
+            <img
+              src={grasposTools}
+              alt={community.id}
+              width={"50"}
+              height={"20"}
+            />
+          </div>
+        </Tooltip>
+      )
   );
 }
 
 function ResourceItemFooter({ handleDelete, resource, user, type }) {
   return (
-    <Stack direction="column" justifyContent="end">
+    <Stack direction="row" justifyContent="space-between">
       <Stack
         direction={"row"}
         justifyContent="start"
@@ -241,14 +239,15 @@ function ResourceItemFooter({ handleDelete, resource, user, type }) {
       <Stack
         direction={"row"}
         spacing={1}
-        justifyContent="space-between"
+        justifyContent="end"
         alignItems="center"
         sx={{ pt: 1 }}
       >
-        <Stack direction={"row"} spacing={1} sx={{ p: "0!important" }}>
-          <ResourceItemCommunities resource={resource} />
-        </Stack>
-        <Stack direction={"row"} spacing={0} sx={{ p: "0!important" }}>
+        <Stack
+          direction={"row"}
+          spacing={0}
+          sx={{ p: "0!important", textAlign: "right" }}
+        >
           {!resource?.approved && user?.super_user ? (
             <ResourceAdminFunctionalities resource={resource} type={type} />
           ) : (
@@ -277,9 +276,6 @@ function ResourceItemContent({ resource }) {
   return (
     <>
       <Stack direction={"row"} spacing={2} sx={{ pb: 2 }}>
-        <ResourceItemKeywords resource={resource} />
-      </Stack>
-      <Stack direction={"row"} spacing={2} sx={{ pb: 2 }}>
         <NoMaxWidthTooltip title={resource?.zenodo?.metadata?.description}>
           <Typography
             variant="subtitle"
@@ -298,10 +294,9 @@ function ResourceItemContent({ resource }) {
           </Typography>
         </NoMaxWidthTooltip>
       </Stack>
-      <Stack direction="row">
-        {resource?.zenodo?.metadata?.creators?.map(
-          (author) => author?.name + "; "
-        )}
+
+      <Stack direction={"row"} spacing={2} sx={{ pt: 2, pb: 0 }}>
+        <ResourceItemKeywords resource={resource} />
       </Stack>
     </>
   );
@@ -319,13 +314,15 @@ function ResourceItemHeader({ resource, type }) {
         <Typography
           variant="h6"
           sx={{
-            whiteSpace: "nowrap",
+            whiteSpace: "break",
             overflow: "hidden",
-            textOverflow: "ellipsis",
-            maxWidth: "25vw",
+            textOverflow: "break-word",
           }}
         >
-          <Link to={"/"+ type.toLowerCase() + "s/" + resource?._id}>
+          <Link
+            to={"/" + type.toLowerCase() + "s/" + resource?._id}
+            style={{ color: "#AE538E" }}
+          >
             {resource?.zenodo?.title}
           </Link>
         </Typography>
@@ -335,6 +332,7 @@ function ResourceItemHeader({ resource, type }) {
           <PendingActionsIcon color="warning" fontSize="small" />
         </Tooltip>
       )}
+      <ResourceItemCommunities resource={resource} />
     </Stack>
   );
 }
@@ -364,7 +362,7 @@ export default function ResourceGridItem({ resource, type, user }) {
   }
 
   return (
-    <Grid key={resource?._id} size={{ xs: 12, lg: 6, xl: 4 }}>
+    <Grid key={resource?._id} size={{ xs: 12 }}>
       <Card
         elevation={1}
         sx={{
@@ -375,7 +373,7 @@ export default function ResourceGridItem({ resource, type, user }) {
           borderRadius: "10px",
         }}
       >
-        <CardContent>
+        <CardContent sx={{ pb: 0 }}>
           <ResourceItemHeader resource={resource} type={type} />
           <ResourceItemContent resource={resource} />
         </CardContent>

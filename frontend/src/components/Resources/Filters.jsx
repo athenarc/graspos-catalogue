@@ -118,7 +118,7 @@ export function LicenseFilter({
                   disableRipple
                   sx={{ pr: 1 }}
                 />
-                <ListItemText primary={license.id} />
+                <ListItemText primary={license.id} sx={{ cursor: "pointer" }} />
               </ListItem>
             ))}
           </List>
@@ -135,7 +135,7 @@ export function ResourcesFilterSearchBar({
 }) {
   return (
     <Stack sx={{ p: 2 }}>
-      <Grid size={12} sx={{ margin: "auto", textAlign: "left" }}>
+      <Grid sx={{ margin: "auto", textAlign: "left" }}>
         <TextField
           slotProps={{
             input: {
@@ -145,10 +145,12 @@ export function ResourcesFilterSearchBar({
               },
             },
           }}
-          placeholder="Search Resource.."
+          placeholder="Search Resource, abstract.."
           size="small"
+          fullWidth
           value={resourceFilter}
           onChange={(e) => handleResourceFilterChange(e.target.value)}
+          sx={{minWidth: "400px"}}
         />
       </Grid>
     </Stack>
@@ -178,7 +180,7 @@ export default function ResourcesFiltersDrawer({
   selectedFilters,
 }) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -188,7 +190,6 @@ export default function ResourcesFiltersDrawer({
 
   return (
     <>
-      {/* Floating button for mobile only */}
       {isMobile && (
         <Fab
           color="primary"
@@ -221,13 +222,13 @@ export default function ResourcesFiltersDrawer({
         open={isMobile ? mobileOpen : true}
         onClose={toggleDrawer}
         ModalProps={{
-          keepMounted: true, // Better open performance on mobile
+          keepMounted: true,
         }}
       >
         <Stack
           direction="column"
           spacing={2}
-          sx={{ height: "100%", justifyContent: "space-between", mt: 12 }} // Ensure content fills full height
+          sx={{ height: "100%", justifyContent: "space-between", mt: 7.5 }}
         >
           <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
             <ResourceFilters
@@ -237,7 +238,6 @@ export default function ResourcesFiltersDrawer({
             />
           </Stack>
 
-          {/* Reset Filters Button at the bottom */}
           <Stack direction="column" spacing={2} sx={{ p: 2 }}>
             <Button
               variant="outlined"
