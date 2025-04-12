@@ -14,6 +14,10 @@ import {
   useTheme,
   Fab,
   Button,
+  ToggleButton,
+  Box,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useEffect, useState } from "react";
@@ -129,6 +133,29 @@ export function LicenseFilter({
   );
 }
 
+function GrasposVerifiedFilter({ selectedFilters, onFilterChange }) {
+  const handleSwitch = (event) => {
+    onFilterChange({ graspos: event.target.checked });
+  };
+
+  return (
+    <Stack direction="column" spacing={2} p={2}>
+      <Card>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={!!selectedFilters.graspos}
+              onChange={handleSwitch}
+              color="primary"
+            />
+          }
+          label="GraspOS Verified"
+          sx={{ p: 2 }}
+        />
+      </Card>
+    </Stack>
+  );
+}
 export function ResourcesFilterSearchBar({
   resourceFilter,
   handleResourceFilterChange,
@@ -150,7 +177,7 @@ export function ResourcesFilterSearchBar({
           fullWidth
           value={resourceFilter}
           onChange={(e) => handleResourceFilterChange(e.target.value)}
-          sx={{minWidth: "400px"}}
+          sx={{ minWidth: "400px" }}
         />
       </Grid>
     </Stack>
@@ -164,6 +191,10 @@ function ResourceFilters({
 }) {
   return (
     <Stack direction="column" spacing={2}>
+      <GrasposVerifiedFilter
+        selectedFilters={selectedFilters}
+        onFilterChange={handleChangeFilters}
+      />
       <LicenseFilter
         selectedFilters={selectedFilters}
         selectedResource={selectedResource}

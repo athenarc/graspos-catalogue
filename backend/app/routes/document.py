@@ -17,7 +17,8 @@ router = APIRouter(prefix="/api/v1/document", tags=["Documents"])
 async def get_all_datasets(
     user: Optional[User] = Depends(current_user),
     license: Optional[List[str]] = Query(
-        None)  # Optional list of licenses filter
+        None),  # Optional list of licenses filter
+    graspos: Optional[bool] = Query(None)  # Optional list of licenses filter
 ) -> list[Documents]:
     # Start building the search query
     search = {}
@@ -38,6 +39,15 @@ async def get_all_datasets(
         # Match documents where the 'zenodo.metadata.license.id' is in the provided list of licenses
         search["$or"] = search.get("$or", [])
         search["$or"].append({"zenodo.metadata.license.id": {"$in": license}})
+
+    if graspos:
+
+        search["$and"] = search.get("$and", [])
+        search["$and"].append({
+            "zenodo.metadata.communities.id": {
+                "$in": ["graspos-tools", "graspos-datasets"]
+            }
+        })
 
     # Fetch documents based on the search query
     documents = await Documents.find(search, fetch_links=True).to_list()

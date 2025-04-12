@@ -13,6 +13,7 @@ import {
 
 export function Datasets({ user, filter, filters }) {
   // Fetch datasets based on the filters
+
   const filterArray = Object.keys(filters || {}).flatMap((filterKey) => {
     const filterObj = filters[filterKey];
 
@@ -23,7 +24,8 @@ export function Datasets({ user, filter, filters }) {
 
     return [];
   });
-  const datasets = useDatasets(filterArray);
+
+  const datasets = useDatasets(filters);
   const [filteredDatasets, setFilteredDatasets] = useState([]);
 
   // Update filtered datasets whenever datasets, filter, or filters change

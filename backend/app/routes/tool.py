@@ -18,7 +18,8 @@ router = APIRouter(prefix="/api/v1/tool", tags=["Tool"])
 async def get_all_datasets(
     user: Optional[User] = Depends(current_user),
     license: Optional[List[str]] = Query(
-        None)  # Optional list of licenses filter
+        None),  # Optional list of licenses filter
+    graspos: Optional[bool] = Query(None)  # Optional list of licenses filter
 ) -> list[Tool]:
     # Start building the search query
     search = {}
@@ -30,15 +31,22 @@ async def get_all_datasets(
         else:
             # Apply 'approved' filter for non-superusers
             search["$or"] = [{"approved": True}]
-            search["$or"].append(
-                {"owner":
-                 user.id})  # Include user-owned tools if logged in
+            search["$or"].append({"owner": user.id
+                                  })  # Include user-owned tools if logged in
 
     # If licenses are provided, add a filter for licenses
     if license:
         # Match tools where the 'zenodo.metadata.license.id' is in the provided list of licenses
         search["$or"] = search.get("$or", [])
         search["$or"].append({"zenodo.metadata.license.id": {"$in": license}})
+
+    if graspos:
+        search["$and"] = search.get("$and", [])
+        search["$and"].append({
+            "zenodo.metadata.communities.id": {
+                "$in": ["graspos-tools", "graspos-datasets"]
+            }
+        })
 
     # Fetch tools based on the search query
     tools = await Tool.find(search, fetch_links=True).to_list()
@@ -47,7 +55,8 @@ async def get_all_datasets(
 
 
 @router.post("/create", status_code=201)
-async def create_tool(tool: Tool, user: User = Depends(current_user_mandatory)):
+async def create_tool(tool: Tool,
+                      user: User = Depends(current_user_mandatory)):
     zenodo = None
     try:
         zenodo = Zenodo(source=tool.source)
@@ -66,10 +75,12 @@ async def create_tool(tool: Tool, user: User = Depends(current_user_mandatory)):
     await tool.create()
     return tool
 
+
 @router.get("/licenses")
 async def get_licenses():
     unique_licenses = await Tool.get_unique_licenses_from_zenodo()
     return {"unique_licenses": unique_licenses}
+
 
 @router.get("/{tool_id}", responses={404: {"detail": "Tool does not exist"}})
 async def get_tool(tool_id: PydanticObjectId) -> Tool:
@@ -102,7 +113,8 @@ async def delete_tool(tool_id: PydanticObjectId,
 async def update_tool(
     update: ToolPatch,
     tool_id: PydanticObjectId,
-    user: User = Depends(current_user_mandatory)) -> ToolPatch:
+    user: User = Depends(current_user_mandatory)
+) -> ToolPatch:
 
     tool = await Tool.get(tool_id)
 
