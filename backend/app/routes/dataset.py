@@ -14,27 +14,23 @@ router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
 
 @router.get("", status_code=200, response_model=list[Dataset])
-async def get_all_datasets(
-        user: Optional[User] = Depends(current_user),
-        license: Optional[List[str]] = Query(
-            None),  # Optional list of licenses filter
-        graspos: Optional[bool] = Query(None)) -> list[Dataset]:
-    # Start building the search query
+async def get_all_datasets(user: Optional[User] = Depends(current_user),
+                           license: Optional[List[str]] = Query(None),
+                           graspos: Optional[bool] = Query(None),
+                           sort_field: Optional[str] = Query(None),
+                           sort_direction: Optional[str] = Query(
+                               None)) -> list[Dataset]:
+
     search = {}
 
     if user:
         if user.super_user:
-            # If user is a super user, fetch all datasets (no 'approved' filter applied)
             datasets = await Dataset.find_all(fetch_links=True).to_list()
         else:
-            # Apply 'approved' filter for non-superusers
             search["$or"] = [{"approved": True}]
-            search["$or"].append(
-                {"owner": user.id})  # Include user-owned datasets if logged in
+            search["$or"].append({"owner": user.id})
 
-    # If licenses are provided, add a filter for licenses
     if license:
-        # Match datasets where the 'zenodo.metadata.license.id' is in the provided list of licenses
         search["$or"] = search.get("$or", [])
         search["$or"].append({"zenodo.metadata.license.id": {"$in": license}})
 
@@ -47,8 +43,16 @@ async def get_all_datasets(
             }
         })
 
-    # Fetch datasets based on the search query
-    datasets = await Dataset.find(search, fetch_links=True).to_list()
+    if sort_field and sort_direction:
+        zenodo_sort_field = "zenodo.stats." + sort_field
+        if sort_field == "dates":
+            zenodo_sort_field = "zenodo.metadata.publication_date"
+        sort_order = 1 if sort_direction.lower() == 'asc' else -1
+        datasets = await Dataset.find(search, fetch_links=True).sort([
+            (zenodo_sort_field, sort_order)
+        ]).to_list()
+    else:
+        datasets = await Dataset.find(search, fetch_links=True).to_list()
 
     return datasets
 

@@ -36,6 +36,14 @@ export function useDocuments(filters = {}) {
           params.append(key, value);
         }
       });
+      
+      // Handle sorting parameters (sort_field and sort_direction)
+      if (filters.sortField) {
+        params.append("sort_field", filters.sortField); // Add the sort field
+      }
+      if (filters.sortDirection) {
+        params.append("sort_direction", filters.sortDirection); // Add the sort direction
+      }
 
       const response = await axiosInstance.get("document", { params });
 

@@ -22,6 +22,7 @@ export function useTools(filters = {}) {
     retry: false,
     queryFn: async () => {
       const params = new URLSearchParams();
+      
       // Loop through each filter and append key-value pairs to params
       Object.entries(filters).forEach(([key, value]) => {
         if (typeof value === "object" && value !== null) {
@@ -36,6 +37,14 @@ export function useTools(filters = {}) {
           params.append(key, value);
         }
       });
+
+      // Handle sorting parameters (sort_field and sort_direction)
+      if (filters.sortField) {
+        params.append("sort_field", filters.sortField); // Add the sort field
+      }
+      if (filters.sortDirection) {
+        params.append("sort_direction", filters.sortDirection); // Add the sort direction
+      }
 
       const response = await axiosInstance.get("tool", { params });
 

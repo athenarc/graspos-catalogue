@@ -22,10 +22,11 @@ export function useDatasets(filters = {}) {
     retry: false,
     queryFn: async () => {
       const params = new URLSearchParams();
+
       // Loop through each filter and append key-value pairs to params
       Object.entries(filters).forEach(([key, value]) => {
         if (typeof value === "object" && value !== null) {
-          // If the value is an object (like "license"), loop through its properties
+          // If the value is an object (like "licenses"), loop through its properties
           Object.entries(value).forEach(([subKey, subValue]) => {
             if (subValue === true) {
               params.append(key.replace("licenses", "license"), subKey); // Append the subKey as a value if it's true
@@ -37,6 +38,15 @@ export function useDatasets(filters = {}) {
         }
       });
 
+      // Handle sorting parameters (sort_field and sort_direction)
+      if (filters.sortField) {
+        params.append("sort_field", filters.sortField); // Add the sort field
+      }
+      if (filters.sortDirection) {
+        params.append("sort_direction", filters.sortDirection); // Add the sort direction
+      }
+
+      // Make the API call with the search parameters
       const response = await axiosInstance.get("dataset", { params });
 
       return response.data;

@@ -2,7 +2,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getDefaultFilters } from "./filterUtils";
 
-// Function that  filter values from url
 export function useURLFilters(resourceMap) {
   const [filters, setFilters] = useState(getDefaultFilters());
   const [selectedResource, setSelectedResource] = useState(0);
@@ -25,6 +24,11 @@ export function useURLFilters(resourceMap) {
       setSelectedResource(resourceMap[tab]);
     }
 
+    const sortField = searchParams.get("sort_field") || "views";
+    const sortDirection = searchParams.get("sort_direction") || "asc";
+    newFilters.sortField = sortField;
+    newFilters.sortDirection = sortDirection;
+
     setFilters(newFilters);
   }, [location.search]);
 
@@ -36,6 +40,10 @@ export function useURLFilters(resourceMap) {
     });
 
     searchParams.set("graspos", newFilters.graspos);
+
+    searchParams.set("sort_field", newFilters.sortField);
+    searchParams.set("sort_direction", newFilters.sortDirection);
+
     const resourceName = Object.keys(resourceMap).find(
       (key) => resourceMap[key] === selectedTab
     );

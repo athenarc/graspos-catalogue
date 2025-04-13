@@ -31,9 +31,14 @@ function ResourcesTabs({ selectedResource, handleSetSelectedResource }) {
 export default function ResourcesGridLayout({ user }) {
   const resourceMap = {
     datasets: 0,
-    documents: 2,
     tools: 1,
+    documents: 2,
   };
+  const [sortOrder, setSortOrder] = useState({
+    field: "views",
+    direction: "asc",
+  });
+
   const [resourceFilter, setResourceFilter] = useState("");
   const {
     filters,
@@ -53,6 +58,8 @@ export default function ResourcesGridLayout({ user }) {
         selectedFilters={filters}
         handleChangeFilters={handleChangeFilters}
         onResetFilters={handleResetFilters}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
       />
       <Stack direction="column" sx={{ width: "100%" }}>
         <ResourcesTabs
