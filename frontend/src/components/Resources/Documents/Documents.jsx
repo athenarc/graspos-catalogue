@@ -12,26 +12,11 @@ import {
 } from "../ResourceTemplate/ResourcePage";
 
 export function Documents({ user, filter, filters }) {
-  // Fetch documents based on the filters
-
-  // Fetch datasets based on the filters
-  const filterArray = Object.keys(filters || {}).flatMap((filterKey) => {
-    const filterObj = filters[filterKey];
-
-    // Ensure the filterObj is an object before applying filtering logic
-    if (typeof filterObj === "object" && filterObj !== null) {
-      return Object.keys(filterObj).filter((key) => filterObj[key]);
-    }
-
-    return [];
-  });
-  const documents = useDocuments(filterArray);
+  const documents = useDocuments(filters);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
 
-  // Update filtered documents whenever documents, filter, or filters change
   useEffect(() => {
     if (documents?.data) {
-      // Apply the filter to documents if filter is not empty
       const filteredData = filter
         ? documents?.data?.filter(
             (document) =>
@@ -42,9 +27,8 @@ export function Documents({ user, filter, filters }) {
                 ?.toLowerCase()
                 .includes(filter.toLowerCase())
           )
-        : documents?.data; // If no filter, show all documents
+        : documents?.data;
 
-      // Update filtered documents state
       setFilteredDocuments(filteredData);
     }
   }, [documents?.data, filter, filters]);

@@ -12,24 +12,11 @@ import {
 } from "../ResourceTemplate/ResourcePage";
 
 export function Datasets({ user, filter, filters }) {
-  // Fetch datasets based on the filters
-  const filterArray = Object.keys(filters || {}).flatMap((filterKey) => {
-    const filterObj = filters[filterKey];
-
-    // Ensure the filterObj is an object before applying filtering logic
-    if (typeof filterObj === "object" && filterObj !== null) {
-      return Object.keys(filterObj).filter((key) => filterObj[key]);
-    }
-
-    return [];
-  });
-  const datasets = useDatasets(filterArray);
+  const datasets = useDatasets(filters);
   const [filteredDatasets, setFilteredDatasets] = useState([]);
 
-  // Update filtered datasets whenever datasets, filter, or filters change
   useEffect(() => {
     if (datasets?.data) {
-      // Apply the filter to datasets if filter is not empty
       const filteredData = filter
         ? datasets?.data?.filter(
             (dataset) =>
@@ -40,9 +27,8 @@ export function Datasets({ user, filter, filters }) {
                 ?.toLowerCase()
                 .includes(filter.toLowerCase())
           )
-        : datasets?.data; // If no filter, show all datasets
+        : datasets?.data;
 
-      // Update filtered datasets state
       setFilteredDatasets(filteredData);
     }
   }, [datasets?.data, filter, filters]);

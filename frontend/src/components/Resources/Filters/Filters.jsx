@@ -14,12 +14,15 @@ import {
   useTheme,
   Fab,
   Button,
+  Switch,
+  FormControlLabel,
+  Tooltip,
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useEffect, useState } from "react";
-import { useDatasetLicenses } from "../../queries/dataset";
-import { useDocumentLicenses } from "../../queries/document";
-import { useToolLicenses } from "../../queries/tool";
+import { useDatasetLicenses } from "../../../queries/dataset";
+import { useDocumentLicenses } from "../../../queries/document";
+import { useToolLicenses } from "../../../queries/tool";
 
 export function LicenseFilter({
   selectedResource,
@@ -34,19 +37,18 @@ export function LicenseFilter({
   const { data: datasetLicenseData, isLoading: isDatasetLoading } =
     useDatasetLicenses(selectedResource === 0);
   const { data: documentLicenseData, isLoading: isDocumentLoading } =
-    useDocumentLicenses(selectedResource === 1);
+    useDocumentLicenses(selectedResource === 2);
   const { data: toolLicenseData, isLoading: isToolLoading } = useToolLicenses(
-    selectedResource === 2
+    selectedResource === 1
   );
 
   useEffect(() => {
     if (isDatasetLoading || isDocumentLoading || isToolLoading) return;
 
-    // Set the license data based on the selected resource
     const resourceLicenseData =
       selectedResource === 0
         ? datasetLicenseData?.data?.unique_licenses
-        : selectedResource === 1
+        : selectedResource === 2
         ? documentLicenseData?.data?.unique_licenses
         : toolLicenseData?.data?.unique_licenses;
 
@@ -63,7 +65,6 @@ export function LicenseFilter({
 
   useEffect(() => {
     if (selectedFilters?.licenses) {
-      // Filter out invalid licenses from selectedFilters.licenses
       const validSelectedLicenses = Object.keys(
         selectedFilters.licenses
       ).reduce((acc, licenseId) => {
@@ -76,13 +77,12 @@ export function LicenseFilter({
         return acc;
       }, {});
 
-      // Only update the selectedLicenses if there is a change
       if (
         JSON.stringify(validSelectedLicenses) !==
         JSON.stringify(selectedLicenses)
       ) {
-        setSelectedLicenses(validSelectedLicenses); // Update only if the licenses are different
-        onFilterChange({ licenses: validSelectedLicenses }); // Update the parent with valid licenses
+        setSelectedLicenses(validSelectedLicenses);
+        onFilterChange({ licenses: validSelectedLicenses });
       }
     }
   }, [selectedFilters, licenseData, selectedLicenses, onFilterChange]);
@@ -118,7 +118,7 @@ export function LicenseFilter({
                   disableRipple
                   sx={{ pr: 1 }}
                 />
-                <ListItemText primary={license.id} />
+                <ListItemText primary={license.id} sx={{ cursor: "pointer" }} />
               </ListItem>
             ))}
           </List>
@@ -129,13 +129,95 @@ export function LicenseFilter({
   );
 }
 
+function SortFilter({ filters, onFilterChange }) {
+  const handleSortChange = (field) => {
+    const newDirection =
+      filters.sortField === field && filters.sortDirection === "asc"
+        ? "desc"
+        : "asc";
+    onFilterChange({ sortField: field, sortDirection: newDirection });
+  };
+
+  return (
+    <Card sx={{ m: 2, backgroundColor: "lightblue" }}>
+      <Stack direction="column" spacing={2} p={2}>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={() => handleSortChange("views")}
+          sx={{ backgroundColor: "white" }}
+        >
+          Sort by Views{" "}
+          {filters.sortField === "views"
+            ? filters.sortDirection === "asc"
+              ? "↑"
+              : "↓"
+            : ""}
+        </Button>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={() => handleSortChange("downloads")}
+          sx={{ backgroundColor: "white" }}
+        >
+          Sort by Downloads{" "}
+          {filters.sortField === "downloads"
+            ? filters.sortDirection === "asc"
+              ? "↑"
+              : "↓"
+            : ""}
+        </Button>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={() => handleSortChange("dates")}
+          sx={{ backgroundColor: "white" }}
+        >
+          Sort by Dates{" "}
+          {filters.sortField === "dates"
+            ? filters.sortDirection === "asc"
+              ? "↑"
+              : "↓"
+            : ""}
+        </Button>
+      </Stack>
+    </Card>
+  );
+}
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+function GrasposVerifiedFilter({ selectedFilters, onFilterChange }) {
+  const handleSwitch = (event) => {
+    onFilterChange({ graspos: event.target.checked });
+  };
+
+  return (
+    <Card sx={{ m: 2 }}>
+      <Stack direction="row" justifyContent="start" alignItems="center">
+        <FormControlLabel
+          control={
+            <Switch
+              checked={!!selectedFilters.graspos}
+              onChange={handleSwitch}
+              color="primary"
+            />
+          }
+          label="GraspOS Verified"
+          sx={{ p: 2, mr: 0 }}
+        />
+        <Tooltip title="By toggling on resources that are only part of GraspOS communities will be displayed">
+          <InfoOutlinedIcon fontSize="small" />
+        </Tooltip>
+      </Stack>
+    </Card>
+  );
+}
 export function ResourcesFilterSearchBar({
   resourceFilter,
   handleResourceFilterChange,
 }) {
   return (
     <Stack sx={{ p: 2 }}>
-      <Grid size={12} sx={{ margin: "auto", textAlign: "left" }}>
+      <Grid sx={{ margin: "auto", textAlign: "left" }}>
         <TextField
           slotProps={{
             input: {
@@ -145,10 +227,12 @@ export function ResourcesFilterSearchBar({
               },
             },
           }}
-          placeholder="Search Resource.."
+          placeholder="Search Resource, abstract.."
           size="small"
+          fullWidth
           value={resourceFilter}
           onChange={(e) => handleResourceFilterChange(e.target.value)}
+          sx={{ minWidth: "400px" }}
         />
       </Grid>
     </Stack>
@@ -161,10 +245,18 @@ function ResourceFilters({
   selectedFilters,
 }) {
   return (
-    <Stack direction="column" spacing={2}>
+    <Stack direction="column">
+      <GrasposVerifiedFilter
+        selectedFilters={selectedFilters}
+        onFilterChange={handleChangeFilters}
+      />
       <LicenseFilter
         selectedFilters={selectedFilters}
         selectedResource={selectedResource}
+        onFilterChange={handleChangeFilters}
+      />
+      <SortFilter
+        filters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />
     </Stack>
@@ -178,7 +270,7 @@ export default function ResourcesFiltersDrawer({
   selectedFilters,
 }) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -188,7 +280,6 @@ export default function ResourcesFiltersDrawer({
 
   return (
     <>
-      {/* Floating button for mobile only */}
       {isMobile && (
         <Fab
           color="primary"
@@ -221,15 +312,11 @@ export default function ResourcesFiltersDrawer({
         open={isMobile ? mobileOpen : true}
         onClose={toggleDrawer}
         ModalProps={{
-          keepMounted: true, // Better open performance on mobile
+          keepMounted: true,
         }}
       >
-        <Stack
-          direction="column"
-          spacing={2}
-          sx={{ height: "100%", justifyContent: "space-between", mt: 12 }} // Ensure content fills full height
-        >
-          <Stack direction="column" spacing={2} sx={{ flexGrow: 1 }}>
+        <Stack direction="column" sx={{ height: "100%", mt: 7.5 }}>
+          <Stack direction="column" sx={{ flexGrow: 1 }}>
             <ResourceFilters
               selectedFilters={selectedFilters}
               selectedResource={selectedResource}
@@ -237,10 +324,9 @@ export default function ResourcesFiltersDrawer({
             />
           </Stack>
 
-          {/* Reset Filters Button at the bottom */}
-          <Stack direction="column" spacing={2} sx={{ p: 2 }}>
+          <Stack direction="column" sx={{ p: 2 }}>
             <Button
-              variant="outlined"
+              variant="contained"
               color="primary"
               onClick={() => onResetFilters(false)}
             >
