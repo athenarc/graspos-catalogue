@@ -226,7 +226,7 @@ function ResourceItemFooter({ handleDelete, resource, user, type }) {
         alignItems="center"
         spacing={1}
       >
-        <Tooltip title="Zenodo published date">
+        <Tooltip title="Publication date">
           <CalendarMonthIcon />
         </Tooltip>
         {resource?.zenodo?.metadata?.publication_date && (
