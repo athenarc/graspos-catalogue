@@ -12,24 +12,11 @@ import {
 } from "../ResourceTemplate/ResourcePage";
 
 export function Tools({ user, filter, filters }) {
-  // Fetch tools based on the filters
-  const filterArray = Object.keys(filters || {}).flatMap((filterKey) => {
-    const filterObj = filters[filterKey];
-
-    // Ensure the filterObj is an object before applying filtering logic
-    if (typeof filterObj === "object" && filterObj !== null) {
-      return Object.keys(filterObj).filter((key) => filterObj[key]);
-    }
-
-    return [];
-  });
-  const tools = useTools(filterArray);
+  const tools = useTools(filters);
   const [filteredTools, setFilteredTools] = useState([]);
 
-  // Update filtered tools whenever tools, filter, or filters change
   useEffect(() => {
     if (tools?.data) {
-      // Apply the filter to tools if filter is not empty
       const filteredData = filter
         ? tools?.data?.filter(
             (tool) =>
@@ -40,9 +27,8 @@ export function Tools({ user, filter, filters }) {
                 ?.toLowerCase()
                 .includes(filter.toLowerCase())
           )
-        : tools?.data; // If no filter, show all tools
+        : tools?.data;
 
-      // Update filtered tools state
       setFilteredTools(filteredData);
     }
   }, [tools?.data, filter, filters]);

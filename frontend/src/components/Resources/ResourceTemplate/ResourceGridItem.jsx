@@ -28,6 +28,8 @@ import Check from "@mui/icons-material/Check";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ConfirmationModal from "../../Forms/ConfirmationModal";
+import DownloadIcon from "@mui/icons-material/Download";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useDeleteTool, useUpdateTool } from "../../../queries/tool";
 
 import grasposTools from "../../../assets/os.svg";
@@ -195,7 +197,13 @@ function ResourceItemCommunities({ resource }) {
   return resource?.zenodo?.metadata?.communities?.map(
     (community) =>
       community.id.includes("graspos") && (
-        <Tooltip key={community.id} title={"Verified GraspOS " + community.id.replace("graspos-", "").replace(/s$/, "")}>
+        <Tooltip
+          key={community.id}
+          title={
+            "Verified GraspOS " +
+            community.id.replace("graspos-", "").replace(/s$/, "")
+          }
+        >
           <div id={community.id}>
             <img
               src={grasposTools}
@@ -218,7 +226,7 @@ function ResourceItemFooter({ handleDelete, resource, user, type }) {
         alignItems="center"
         spacing={1}
       >
-        <Tooltip title="Zenodo published date">
+        <Tooltip title="Publication date">
           <CalendarMonthIcon />
         </Tooltip>
         {resource?.zenodo?.metadata?.publication_date && (
@@ -293,6 +301,19 @@ function ResourceItemContent({ resource }) {
             {resource?.zenodo?.metadata?.description}
           </Typography>
         </NoMaxWidthTooltip>
+      </Stack>
+      <Stack
+        direction={"row"}
+        justifyContent="start"
+        alignItems="center"
+        spacing={1}
+        sx={{ pb: 2 }}
+      >
+        <DownloadIcon />
+        <Typography>{resource?.zenodo?.stats?.downloads}</Typography>
+
+        <VisibilityIcon />
+        <Typography>{resource?.zenodo?.stats?.views}</Typography>
       </Stack>
 
       <Stack direction={"row"} spacing={2} sx={{ pt: 2, pb: 0 }}>

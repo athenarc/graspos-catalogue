@@ -16,23 +16,41 @@ export function useCreateTool() {
   });
 }
 
-export function useTools(filters = []) {
+export function useTools(filters = {}) {
   return useQuery({
-    queryKey: ["tools", filters], // The query key will trigger a refetch when filters change
+    queryKey: ["tools", filters],
     retry: false,
     queryFn: async () => {
       const params = new URLSearchParams();
-      filters.forEach((license) => {
-        params.append("license", license); // Append each filter to the URL params
+      
+      // Loop through each filter and append key-value pairs to params
+      Object.entries(filters).forEach(([key, value]) => {
+        if (typeof value === "object" && value !== null) {
+          // If the value is an object (like "license"), loop through its properties
+          Object.entries(value).forEach(([subKey, subValue]) => {
+            if (subValue === true) {
+              params.append(key.replace("licenses", "license"), subKey); // Append the subKey as a value if it's true
+            }
+          });
+        } else if (typeof value === "boolean" || value) {
+          // If value is boolean or truthy (like "graspos")
+          params.append(key, value);
+        }
       });
 
-      const response = await axiosInstance.get("tool", {
-        params, // Send filters as query parameters
-      });
+      // Handle sorting parameters (sort_field and sort_direction)
+      if (filters.sortField) {
+        params.append("sort_field", filters.sortField); // Add the sort field
+      }
+      if (filters.sortDirection) {
+        params.append("sort_direction", filters.sortDirection); // Add the sort direction
+      }
 
-      return response.data; // Ensure we're returning the data part of the response
+      const response = await axiosInstance.get("tool", { params });
+
+      return response.data;
     },
-    enabled: true, // Only run the query if filters are provided
+    enabled: true,
   });
 }
 
