@@ -21,9 +21,9 @@ import {
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useEffect, useState } from "react";
-import { useDatasetLicenses } from "../../queries/dataset";
-import { useDocumentLicenses } from "../../queries/document";
-import { useToolLicenses } from "../../queries/tool";
+import { useDatasetLicenses } from "../../../queries/dataset";
+import { useDocumentLicenses } from "../../../queries/document";
+import { useToolLicenses } from "../../../queries/tool";
 
 export function LicenseFilter({
   selectedResource,

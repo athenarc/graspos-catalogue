@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Box, Stack, Tabs, Tab } from "@mui/material";
-import ResourcesFilters, { ResourcesFilterSearchBar } from "./Filters";
+import ResourcesFilters, { ResourcesFilterSearchBar } from "./Filters/Filters";
 import ResourcesGrid from "./Resources";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useURLFilters } from "./Filters/useURLFilters";
 
 function ResourcesTabs({ selectedResource, handleSetSelectedResource }) {
   return (
@@ -29,130 +29,23 @@ function ResourcesTabs({ selectedResource, handleSetSelectedResource }) {
 }
 
 export default function ResourcesGridLayout({ user }) {
-  const [resourceFilter, setResourceFilter] = useState("");
-  const [selectedResource, setSelectedResource] = useState(0); // Default to datasets
-  const [filters, setFilters] = useState({ licenses: {}, graspos: false });
-  const location = useLocation();
-  const navigate = useNavigate();
-
   const resourceMap = {
     datasets: 0,
     documents: 2,
     tools: 1,
   };
-
-  // Extract filters and selected resource from the URL
-  const extractFiltersFromURL = () => {
-    const searchParams = new URLSearchParams(location.search);
-    const newFilters = { licenses: {}, graspos: false };
-
-    // Extract license filters from the URL
-    searchParams.getAll("license").forEach((value) => {
-      newFilters.licenses[value] = true;
-    });
-    const grasposParam = searchParams.get("graspos");
-    newFilters.graspos = grasposParam === "true";
-    // Extract the selected resource (tab) from the URL
-    const tab = searchParams.get("tab");
-    if (tab) {
-      setSelectedResource(resourceMap[tab] || 0); // Default to datasets (0) if not found
-    }
-
-    setFilters(newFilters); // Update the filters state
-  };
-
-  useEffect(() => {
-    extractFiltersFromURL();
-  }, [location]);
-
-  // Update the URL with new filters and selected tab
-  const updateURLFilters = (newFilters, selectedTab) => {
-    const searchParams = new URLSearchParams();
-
-    // Serialize licenses and other filters
-    Object.entries(newFilters).forEach(([filterType, filterValues]) => {
-      if (filterType === "licenses") {
-        Object.entries(filterValues).forEach(([license, selected]) => {
-          if (selected) {
-            searchParams.append("license", license);
-          }
-        });
-      } else if (filterType === "graspos") {
-        searchParams.append("graspos", filterValues);
-      }
-    });
-
-    // Set the selected tab (resource) in the URL
-    const resourceName = Object.keys(resourceMap).find(
-      (key) => resourceMap[key] === selectedTab
-    );
-    if (resourceName) {
-      searchParams.set("tab", resourceName);
-    }
-    // Update the URL with the new search parameters
-    navigate(
-      { pathname: location.pathname, search: `?${searchParams.toString()}` },
-      { replace: true }
-    );
-  };
-
-  const handleChangeFilters = (updatedFilter) => {
-    setFilters((prevState) => {
-      const nextFilters = { ...prevState, ...updatedFilter };
-      updateURLFilters(nextFilters, selectedResource); // Now uses full updated filter state
-      return nextFilters;
-    });
-  };
-
-  const handleSetSelectedResource = (event, newValue) => {
-    // Reset filters when changing the tab (resource)
-    setFilters({ licenses: {}, graspos: false });
-
-    // Update the selectedResource state (tab change)
-    setSelectedResource(newValue);
-
-    // Reset URL search parameters (except for the tab)
-    const searchParams = new URLSearchParams(location.search);
-    searchParams.delete("license"); // Reset license filters
-    searchParams.delete("graspos"); // Reset license filters
-
-    const selectedResourceName = Object.keys(resourceMap).find(
-      (key) => resourceMap[key] === newValue
-    );
-    if (selectedResourceName) {
-      searchParams.set("tab", selectedResourceName); // Set the tab resource in the URL
-    }
-
-    // Update the URL without changing the tab parameter
-    navigate(
-      { pathname: location.pathname, search: `?${searchParams.toString()}` },
-      { replace: true }
-    );
-  };
+  const [resourceFilter, setResourceFilter] = useState("");
+  const {
+    filters,
+    selectedResource,
+    handleChangeFilters,
+    handleSetSelectedResource,
+    handleResetFilters,
+  } = useURLFilters(resourceMap);
 
   const handleResourceFilterChange = (value) => {
-    setResourceFilter(value); // Update resource filter value
+    setResourceFilter(value);
   };
-
-  const handleResetFilters = (resetTabs = true) => {
-    // Reset tabs if resetTabs is true
-    if (resetTabs) {
-      setSelectedResource(0); // Set default tab to datasets
-    }
-
-    // Reset filters (e.g., license filters)
-    setFilters({ licenses: {}, graspos: false });
-
-    // Update the URL search parameters without affecting the tab
-    const searchParams = new URLSearchParams(location.search);
-    searchParams.delete("license"); // Reset license filters
-    searchParams.delete("graspos"); // Reset license filters
-    navigate(
-      { pathname: location.pathname, search: `?${searchParams.toString()}` },
-      { replace: true }
-    );
-  };
-
   return (
     <Stack direction="row">
       <ResourcesFilters
@@ -171,6 +64,7 @@ export default function ResourcesGridLayout({ user }) {
           resourceFilter={resourceFilter}
           handleResourceFilterChange={handleResourceFilterChange}
         />
+
         <ResourcesGrid
           user={user}
           selectedResource={selectedResource}
