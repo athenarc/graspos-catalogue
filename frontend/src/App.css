@@ -9,7 +9,7 @@ html {
   font-family: "Montserrat", sans-serif !important;
 }
 body {
-  min-height: 100vh;
+  min-height: 100dvh;
   justify-content: end;
   align-items: center;
   background: linear-gradient(-45deg, #7c89ff, #d6fff6);
