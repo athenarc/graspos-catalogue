@@ -17,8 +17,11 @@ export function useCreateDataset() {
 }
 
 export function useDatasets(filters = {}) {
+  // Deep comparison of the filters object
+  const queryKey = ["datasets", JSON.stringify(filters)];
+
   return useQuery({
-    queryKey: ["datasets", filters],
+    queryKey: queryKey, // Ensure filters are deeply compared using serialization
     retry: false,
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -46,15 +49,39 @@ export function useDatasets(filters = {}) {
         params.append("sort_direction", filters.sortDirection); // Add the sort direction
       }
 
+      // Handle start and end date filters
+      if (filters.dateRange) {
+        let { startDate, endDate } = filters.dateRange;
+
+        // Ensure startDate and endDate are Date objects
+        if (startDate && !(startDate instanceof Date)) {
+          startDate = new Date(startDate); // Convert startDate to Date if it's not already
+        }
+
+        if (endDate && !(endDate instanceof Date)) {
+          endDate = new Date(endDate); // Convert endDate to Date if it's not already
+        }
+
+        // Append the formatted dates to the URL parameters
+        if (startDate && !isNaN(startDate)) {
+          // Convert startDate to ISO string and append it to the query
+          params.append("start", startDate.toISOString().split("T")[0]);
+        }
+
+        if (endDate && !isNaN(endDate)) {
+          // Convert endDate to ISO string and append it to the query
+          params.append("end", endDate.toISOString().split("T")[0]);
+        }
+      }
+
       // Make the API call with the search parameters
       const response = await axiosInstance.get("dataset", { params });
 
       return response.data;
     },
-    enabled: true,
+    enabled: true, // Ensure this fires by default if filters change
   });
 }
-
 export function useDatasetLicenses(enabled) {
   return useQuery({
     queryKey: ["dataset-licenses"],
