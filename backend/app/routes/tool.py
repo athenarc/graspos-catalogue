@@ -7,9 +7,9 @@ from models.zenodo import Zenodo
 from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
 from util.current_user import current_user, current_user_mandatory
-from typing import Annotated
 from util.requests import get_zenodo_data
 from typing import List, Optional
+from datetime import datetime
 
 router = APIRouter(prefix="/api/v1/tool", tags=["Tool"])
 
@@ -19,8 +19,9 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
                            license: Optional[List[str]] = Query(None),
                            graspos: Optional[bool] = Query(None),
                            sort_field: Optional[str] = Query(None),
-                           sort_direction: Optional[str] = Query(
-                               None)) -> list[Tool]:
+                           sort_direction: Optional[str] = Query(None),
+                           start: Optional[str] = Query(None),
+                           end: Optional[str] = Query(None)) -> list[Tool]:
     search = {}
 
     if user:
@@ -41,6 +42,27 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
                 "$in": ["graspos-tools", "graspos-datasets"]
             }
         })
+
+    # Date range filtering
+    if start:
+        start_date = datetime.fromisoformat(
+            start)  # Parse the ISO date string to a datetime object
+        # Append $gte filter to existing filter, if any
+        search["$and"] = search.get("$and", [])
+        search["$and"].append(
+            {"zenodo.metadata.publication_date": {
+                "$gte": start_date
+            }})
+
+    if end:
+        end_date = datetime.fromisoformat(
+            end)  # Parse the ISO date string to a datetime object
+        # Append $lte filter to existing filter, if any
+        search["$and"] = search.get("$and", [])
+        search["$and"].append(
+            {"zenodo.metadata.publication_date": {
+                "$lte": end_date
+            }})
 
     if sort_field and sort_direction:
         zenodo_sort_field = "zenodo.stats." + sort_field

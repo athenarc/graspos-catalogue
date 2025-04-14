@@ -9,20 +9,25 @@ from beanie import PydanticObjectId, DeleteRules
 from util.current_user import current_user, current_user_mandatory
 from util.requests import get_zenodo_data
 from typing import List, Optional
+from datetime import datetime
 
 router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
 
 @router.get("", status_code=200, response_model=list[Dataset])
-async def get_all_datasets(user: Optional[User] = Depends(current_user),
-                           license: Optional[List[str]] = Query(None),
-                           graspos: Optional[bool] = Query(None),
-                           sort_field: Optional[str] = Query(None),
-                           sort_direction: Optional[str] = Query(
-                               None)) -> list[Dataset]:
+async def get_all_datasets(
+    user: Optional[User] = Depends(current_user),
+    license: Optional[List[str]] = Query(None),
+    graspos: Optional[bool] = Query(None),
+    sort_field: Optional[str] = Query(None),
+    sort_direction: Optional[str] = Query(None),
+    start: Optional[str] = Query(None),
+    end: Optional[str] = Query(None)
+) -> list[Dataset]:
 
     search = {}
 
+    # User-specific filtering
     if user:
         if user.super_user:
             datasets = await Dataset.find_all(fetch_links=True).to_list()
@@ -30,12 +35,13 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
             search["$or"] = [{"approved": True}]
             search["$or"].append({"owner": user.id})
 
+    # License filtering
     if license:
         search["$or"] = search.get("$or", [])
         search["$or"].append({"zenodo.metadata.license.id": {"$in": license}})
 
+    # GraspOS Verified filtering
     if graspos:
-
         search["$and"] = search.get("$and", [])
         search["$and"].append({
             "zenodo.metadata.communities.id": {
@@ -43,6 +49,28 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
             }
         })
 
+    # Date range filtering
+    if start:
+        start_date = datetime.fromisoformat(
+            start)  # Parse the ISO date string to a datetime object
+        # Append $gte filter to existing filter, if any
+        search["$and"] = search.get("$and", [])
+        search["$and"].append(
+            {"zenodo.metadata.publication_date": {
+                "$gte": start_date
+            }})
+
+    if end:
+        end_date = datetime.fromisoformat(
+            end)  # Parse the ISO date string to a datetime object
+        # Append $lte filter to existing filter, if any
+        search["$and"] = search.get("$and", [])
+        search["$and"].append(
+            {"zenodo.metadata.publication_date": {
+                "$lte": end_date
+            }})
+
+    # Sorting
     if sort_field and sort_direction:
         zenodo_sort_field = "zenodo.stats." + sort_field
         if sort_field == "dates":
@@ -53,6 +81,9 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
         ]).to_list()
     else:
         datasets = await Dataset.find(search, fetch_links=True).to_list()
+
+    print("Start: " + str(start))
+    print("End: " + str(end))
 
     return datasets
 

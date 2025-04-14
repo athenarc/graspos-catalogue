@@ -17,8 +17,11 @@ export function useCreateDocument() {
 }
 
 export function useDocuments(filters = {}) {
+  // Deep comparison of the filters object
+  const queryKey = ["documents", JSON.stringify(filters)];
+
   return useQuery({
-    queryKey: ["documents", filters],
+    queryKey: queryKey,
     retry: false,
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -36,13 +39,38 @@ export function useDocuments(filters = {}) {
           params.append(key, value);
         }
       });
-      
+
       // Handle sorting parameters (sort_field and sort_direction)
       if (filters.sortField) {
         params.append("sort_field", filters.sortField); // Add the sort field
       }
       if (filters.sortDirection) {
         params.append("sort_direction", filters.sortDirection); // Add the sort direction
+      }
+
+      // Handle start and end date filters
+      if (filters.dateRange) {
+        let { startDate, endDate } = filters.dateRange;
+
+        // Ensure startDate and endDate are Date objects
+        if (startDate && !(startDate instanceof Date)) {
+          startDate = new Date(startDate); // Convert startDate to Date if it's not already
+        }
+
+        if (endDate && !(endDate instanceof Date)) {
+          endDate = new Date(endDate); // Convert endDate to Date if it's not already
+        }
+
+        // Append the formatted dates to the URL parameters
+        if (startDate && !isNaN(startDate)) {
+          // Convert startDate to ISO string and append it to the query
+          params.append("start", startDate.toISOString().split("T")[0]);
+        }
+
+        if (endDate && !isNaN(endDate)) {
+          // Convert endDate to ISO string and append it to the query
+          params.append("end", endDate.toISOString().split("T")[0]);
+        }
       }
 
       const response = await axiosInstance.get("document", { params });

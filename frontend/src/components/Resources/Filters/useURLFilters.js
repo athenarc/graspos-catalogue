@@ -14,9 +14,7 @@ const normalizeToLocalMidnight = (date) => {
   localDate.setHours(0, 0, 0, 0); // Set time to midnight (00:00:00)
 
   // Adjust for timezone difference to ensure the date is in local time
-  const adjustedDate = new Date(
-    localDate.getTime() - localTimezoneOffset * 60000
-  );
+  const adjustedDate = new Date(localDate.getTime() - localTimezoneOffset * 60000);
 
   return adjustedDate;
 };
