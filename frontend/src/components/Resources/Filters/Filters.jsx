@@ -291,8 +291,8 @@ export default function ResourcesFiltersDrawer({
           onClick={toggleDrawer}
           sx={{
             position: "fixed",
-            top: 125,
-            right: 20,
+            top: 124,
+            right: 24,
             width: 40,
             height: 40,
             zIndex: theme.zIndex.drawer + 2,

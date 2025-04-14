@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 import { useTools, useTool } from "../../../queries/tool";
 import { RectangularVariants } from "../../Skeleton";
 import ResourceGridItem from "../ResourceTemplate/ResourceGridItem";
-import { Button, Grid2 as Grid, Stack } from "@mui/material";
+import {
+  Button,
+  Fab,
+  Grid2 as Grid,
+  Stack,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { Link } from "react-router-dom";
 import {
   ResourceAuthors,
@@ -10,10 +17,13 @@ import {
   ResourceLicense,
   ResourceTags,
 } from "../ResourceTemplate/ResourcePage";
+import AddIcon from "@mui/icons-material/Add";
 
 export function Tools({ user, filter, filters }) {
   const tools = useTools(filters);
   const [filteredTools, setFilteredTools] = useState([]);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
     if (tools?.data) {
@@ -45,7 +55,27 @@ export function Tools({ user, filter, filters }) {
             user={user}
           />
         ))}
-      {user && (
+
+      {user && isMobile && (
+        <Fab
+          color="primary"
+          component={Link}
+          to="/tool/add"
+          title="Add Tool"
+          sx={{
+            position: "fixed",
+            bottom: 24,
+            right: 24,
+            width: 40,
+            height: 40,
+            zIndex: theme.zIndex.drawer + 2,
+          }}
+        >
+          <AddIcon />
+        </Fab>
+      )}
+
+      {user && !isMobile && (
         <Button
           color="primary"
           variant="outlined"
@@ -53,8 +83,8 @@ export function Tools({ user, filter, filters }) {
           to="/tool/add"
           sx={{
             position: "absolute",
-            right: "24px",
-            bottom: "24px",
+            right: 24,
+            bottom: 24,
             backgroundColor: "#fff",
           }}
         >

@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 import { useDocuments, useDocument } from "../../../queries/document";
 import { RectangularVariants } from "../../Skeleton";
 import ResourceGridItem from "../ResourceTemplate/ResourceGridItem";
-import { Button, Grid2 as Grid, Stack } from "@mui/material";
+import {
+  Button,
+  Fab,
+  Grid2 as Grid,
+  Stack,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { Link } from "react-router-dom";
 import {
   ResourceAuthors,
@@ -11,9 +18,13 @@ import {
   ResourceTags,
 } from "../ResourceTemplate/ResourcePage";
 
+import AddIcon from "@mui/icons-material/Add";
+
 export function Documents({ user, filter, filters }) {
   const documents = useDocuments(filters);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
     if (documents?.data) {
@@ -45,7 +56,27 @@ export function Documents({ user, filter, filters }) {
             user={user}
           />
         ))}
-      {user && (
+
+      {user && isMobile && (
+        <Fab
+          color="primary"
+          component={Link}
+          to="/document/add"
+          title="Add Document"
+          sx={{
+            position: "fixed",
+            bottom: 24,
+            right: 24,
+            width: 40,
+            height: 40,
+            zIndex: theme.zIndex.drawer + 2,
+          }}
+        >
+          <AddIcon />
+        </Fab>
+      )}
+
+      {user && !isMobile && (
         <Button
           color="primary"
           variant="outlined"
@@ -53,8 +84,8 @@ export function Documents({ user, filter, filters }) {
           to="/document/add"
           sx={{
             position: "absolute",
-            right: "24px",
-            bottom: "24px",
+            right: 24,
+            bottom: 24,
             backgroundColor: "#fff",
           }}
         >
