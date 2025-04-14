@@ -19,10 +19,79 @@ import {
   Tooltip,
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDatasetLicenses } from "../../../queries/dataset";
 import { useDocumentLicenses } from "../../../queries/document";
 import { useToolLicenses } from "../../../queries/tool";
+
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+
+export function DateFilter({ selectedFilters, onFilterChange }) {
+  const { dateRange } = selectedFilters || {};
+
+  // Extract the start and end dates directly from selectedFilters
+  const startDate = dateRange?.startDate ? new Date(dateRange.startDate) : null;
+  const endDate = dateRange?.endDate ? new Date(dateRange.endDate) : null;
+
+  // Handle filter change when date range changes
+  const handleDateRangeChange = useCallback(
+    (newStartDate, newEndDate) => {
+      // Only call onFilterChange if there is a change in the date range
+      const hasChanged =
+        (newStartDate &&
+          newStartDate.toISOString() !== selectedFilters.dateRange.startDate) ||
+        (newEndDate &&
+          newEndDate.toISOString() !== selectedFilters.dateRange.endDate);
+
+      if (hasChanged) {
+        onFilterChange({
+          dateRange: {
+            startDate: newStartDate ? newStartDate.toISOString() : null,
+            endDate: newEndDate ? newEndDate.toISOString() : null,
+          },
+        });
+      }
+    },
+    [selectedFilters, onFilterChange] // Dependency on selectedFilters
+  );
+
+  useEffect(() => {
+    // If the selectedFilters.dateRange is changed externally, no need to update state
+    // This effect ensures that the component is properly synced with the parent
+  }, [selectedFilters]);
+
+  return (
+    <Stack direction="column" spacing={2} p={2}>
+      <Card>
+        <Typography variant="h6" sx={{ pl: 1 }}>
+          Publication Date
+        </Typography>
+        <Divider />
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <Stack spacing={2} p={2}>
+            <DatePicker
+              label="Start Date"
+              value={startDate}
+              onChange={(newValue) => handleDateRangeChange(newValue, endDate)}
+              disableFuture // Optional: Disable future dates if needed
+            />
+            <DatePicker
+              label="End Date"
+              value={endDate}
+              onChange={(newValue) =>
+                handleDateRangeChange(startDate, newValue)
+              }
+              disableFuture // Optional: Disable future dates if needed
+            />
+          </Stack>
+        </LocalizationProvider>
+        <Divider />
+      </Card>
+    </Stack>
+  );
+}
 
 export function LicenseFilter({
   selectedResource,
@@ -258,6 +327,10 @@ function ResourceFilters({
       <LicenseFilter
         selectedFilters={selectedFilters}
         selectedResource={selectedResource}
+        onFilterChange={handleChangeFilters}
+      />
+      <DateFilter
+        selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />
       <SortFilter
