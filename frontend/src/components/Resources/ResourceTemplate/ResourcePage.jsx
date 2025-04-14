@@ -35,7 +35,7 @@ export function ResourceBasicInformation({ resource }) {
         sx={{
           textAlign: [resource.isLoading ? "center" : "left"],
           overflowY: "auto",
-          maxHeight: "80vh",
+          maxHeight: "80dvh",
         }}
       >
         {resource.isLoading && <CircularProgress size="3rem" />}

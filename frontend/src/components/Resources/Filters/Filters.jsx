@@ -19,10 +19,78 @@ import {
   Tooltip,
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDatasetLicenses } from "../../../queries/dataset";
 import { useDocumentLicenses } from "../../../queries/document";
 import { useToolLicenses } from "../../../queries/tool";
+
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+
+export function DateFilter({ selectedFilters, onFilterChange }) {
+  const { dateRange } = selectedFilters || {};
+
+  // Extract the start and end dates directly from selectedFilters
+  const startDate = dateRange?.startDate ? new Date(dateRange.startDate) : null;
+  const endDate = dateRange?.endDate ? new Date(dateRange.endDate) : null;
+
+  // Handle filter change when date range changes
+  const handleDateRangeChange = useCallback(
+    (newStartDate, newEndDate) => {
+      // Only call onFilterChange if there is a change in the date range
+      const hasChanged =
+        (newStartDate &&
+          newStartDate.toISOString() !== selectedFilters.dateRange.startDate) ||
+        (newEndDate &&
+          newEndDate.toISOString() !== selectedFilters.dateRange.endDate);
+
+      if (hasChanged) {
+        onFilterChange({
+          dateRange: {
+            startDate: newStartDate ? newStartDate.toISOString() : null,
+            endDate: newEndDate ? newEndDate.toISOString() : null,
+          },
+        });
+      }
+    },
+    [selectedFilters, onFilterChange] // Dependency on selectedFilters
+  );
+
+  useEffect(() => {
+    // If the selectedFilters.dateRange is changed externally, no need to update state
+    // This effect ensures that the component is properly synced with the parent
+  }, [selectedFilters]);
+
+  return (
+    <Card>
+      <Typography
+        variant="h6"
+        sx={{ pl: 1, backgroundColor: "lightblue", color: "white" }}
+      >
+        Publication Date
+      </Typography>
+      <Divider />
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <Stack spacing={2} p={2}>
+          <DatePicker
+            label="Start Date"
+            value={startDate}
+            onChange={(newValue) => handleDateRangeChange(newValue, endDate)}
+            disableFuture // Optional: Disable future dates if needed
+          />
+          <DatePicker
+            label="End Date"
+            value={endDate}
+            onChange={(newValue) => handleDateRangeChange(startDate, newValue)}
+            disableFuture // Optional: Disable future dates if needed
+          />
+        </Stack>
+      </LocalizationProvider>
+      <Divider />
+    </Card>
+  );
+}
 
 export function LicenseFilter({
   selectedResource,
@@ -98,33 +166,34 @@ export function LicenseFilter({
 
   return (
     licenseData.length > 0 && (
-      <Stack direction="column" spacing={2} p={2}>
-        <Card>
-          <Typography variant="h6" sx={{ pl: 1 }}>
-            License
-          </Typography>
-          <Divider />
-          <List sx={{ p: 1, backgroundColor: "lightblue" }}>
-            {licenseData.map((license) => (
-              <ListItem
-                key={license.id}
-                onClick={() => handleToggle(license.id)}
-                sx={{ p: 0 }}
-              >
-                <Checkbox
-                  edge="start"
-                  checked={!!selectedLicenses[license.id]}
-                  tabIndex={-1}
-                  disableRipple
-                  sx={{ pr: 1 }}
-                />
-                <ListItemText primary={license.id} sx={{ cursor: "pointer" }} />
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-        </Card>
-      </Stack>
+      <Card>
+        <Typography
+          variant="h6"
+          sx={{ pl: 1, backgroundColor: "lightblue", color: "white" }}
+        >
+          License
+        </Typography>
+        <Divider />
+        <List sx={{ p: 1 }}>
+          {licenseData.map((license) => (
+            <ListItem
+              key={license.id}
+              onClick={() => handleToggle(license.id)}
+              sx={{ p: 0 }}
+            >
+              <Checkbox
+                edge="start"
+                checked={!!selectedLicenses[license.id]}
+                tabIndex={-1}
+                disableRipple
+                sx={{ pr: 1 }}
+              />
+              <ListItemText primary={license.id} sx={{ cursor: "pointer" }} />
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+      </Card>
     )
   );
 }
@@ -139,7 +208,7 @@ function SortFilter({ filters, onFilterChange }) {
   };
 
   return (
-    <Card sx={{ m: 2, backgroundColor: "lightblue" }}>
+    <Card sx={{ backgroundColor: "lightblue" }}>
       <Stack direction="column" spacing={2} p={2}>
         <Button
           variant="outlined"
@@ -191,7 +260,7 @@ function GrasposVerifiedFilter({ selectedFilters, onFilterChange }) {
   };
 
   return (
-    <Card sx={{ m: 2 }}>
+    <Card>
       <Stack direction="row" justifyContent="start" alignItems="center">
         <FormControlLabel
           control={
@@ -229,10 +298,15 @@ export function ResourcesFilterSearchBar({
           }}
           placeholder="Search Resource, abstract.."
           size="small"
-          fullWidth
           value={resourceFilter}
           onChange={(e) => handleResourceFilterChange(e.target.value)}
-          sx={{ minWidth: "400px" }}
+          sx={{
+            width: {
+              xs: "100%",
+              sm: "400px",
+              md: "500px",
+            },
+          }}
         />
       </Grid>
     </Stack>
@@ -245,21 +319,27 @@ function ResourceFilters({
   selectedFilters,
 }) {
   return (
-    <Stack direction="column">
-      <GrasposVerifiedFilter
-        selectedFilters={selectedFilters}
-        onFilterChange={handleChangeFilters}
-      />
-      <LicenseFilter
-        selectedFilters={selectedFilters}
-        selectedResource={selectedResource}
-        onFilterChange={handleChangeFilters}
-      />
-      <SortFilter
-        filters={selectedFilters}
-        onFilterChange={handleChangeFilters}
-      />
-    </Stack>
+    <>
+      <Stack direction="column" spacing={2} p={2}>
+        <GrasposVerifiedFilter
+          selectedFilters={selectedFilters}
+          onFilterChange={handleChangeFilters}
+        />
+        <LicenseFilter
+          selectedFilters={selectedFilters}
+          selectedResource={selectedResource}
+          onFilterChange={handleChangeFilters}
+        />
+        <DateFilter
+          selectedFilters={selectedFilters}
+          onFilterChange={handleChangeFilters}
+        />
+        <SortFilter
+          filters={selectedFilters}
+          onFilterChange={handleChangeFilters}
+        />
+      </Stack>
+    </>
   );
 }
 
@@ -286,8 +366,8 @@ export default function ResourcesFiltersDrawer({
           onClick={toggleDrawer}
           sx={{
             position: "fixed",
-            top: 125,
-            right: 20,
+            top: 124,
+            right: 24,
             width: 40,
             height: 40,
             zIndex: theme.zIndex.drawer + 2,

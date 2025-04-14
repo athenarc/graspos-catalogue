@@ -284,23 +284,23 @@ function ResourceItemContent({ resource }) {
   return (
     <>
       <Stack direction={"row"} spacing={2} sx={{ pb: 2 }}>
-        <NoMaxWidthTooltip title={resource?.zenodo?.metadata?.description}>
-          <Typography
-            variant="subtitle"
-            sx={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              display: "-webkit-box",
-              WebkitLineClamp: "3",
-              WebkitBoxOrient: "vertical",
-              [`& .tooltip`]: {
-                maxWidth: 1000,
-              },
-            }}
-          >
-            {resource?.zenodo?.metadata?.description}
-          </Typography>
-        </NoMaxWidthTooltip>
+        {/* <NoMaxWidthTooltip title={resource?.zenodo?.metadata?.description}> */}
+        <Typography
+          variant="subtitle"
+          sx={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "-webkit-box",
+            WebkitLineClamp: "8",
+            WebkitBoxOrient: "vertical",
+            [`& .tooltip`]: {
+              maxWidth: 2000,
+            },
+          }}
+        >
+          {resource?.zenodo?.metadata?.description}
+        </Typography>
+        {/* </NoMaxWidthTooltip> */}
       </Stack>
       <Stack
         direction={"row"}
