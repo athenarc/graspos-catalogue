@@ -229,10 +229,15 @@ export function ResourcesFilterSearchBar({
           }}
           placeholder="Search Resource, abstract.."
           size="small"
-          fullWidth
           value={resourceFilter}
           onChange={(e) => handleResourceFilterChange(e.target.value)}
-          sx={{ minWidth: "400px" }}
+          sx={{
+            width: {
+              xs: "100%",
+              sm: "400px",
+              md: "500px",
+            },
+          }}
         />
       </Grid>
     </Stack>
