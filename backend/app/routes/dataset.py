@@ -15,15 +15,13 @@ router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
 
 @router.get("", status_code=200, response_model=list[Dataset])
-async def get_all_datasets(
-    user: Optional[User] = Depends(current_user),
-    license: Optional[List[str]] = Query(None),
-    graspos: Optional[bool] = Query(None),
-    sort_field: Optional[str] = Query(None),
-    sort_direction: Optional[str] = Query(None),
-    start: Optional[str] = Query(None),
-    end: Optional[str] = Query(None)
-) -> list[Dataset]:
+async def get_all_datasets(user: Optional[User] = Depends(current_user),
+                           license: Optional[List[str]] = Query(None),
+                           graspos: Optional[bool] = Query(None),
+                           sort_field: Optional[str] = Query(None),
+                           sort_direction: Optional[str] = Query(None),
+                           start: Optional[str] = Query(None),
+                           end: Optional[str] = Query(None)) -> list[Dataset]:
 
     search = {}
 
@@ -81,9 +79,6 @@ async def get_all_datasets(
         ]).to_list()
     else:
         datasets = await Dataset.find(search, fetch_links=True).to_list()
-
-    print("Start: " + str(start))
-    print("End: " + str(end))
 
     return datasets
 
