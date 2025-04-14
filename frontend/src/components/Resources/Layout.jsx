@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Box, Stack, Tabs, Tab } from "@mui/material";
-import ResourcesFilters, { ResourcesFilterSearchBar } from "./Filters/Filters";
+import ResourcesFilters from "./Filters/FilterDrawer";
 import ResourcesGrid from "./Resources";
-import { useURLFilters } from "./Filters/useURLFilters";
+import { useURLFilters } from "./Filters/Utils/useURLFilters";
+import SearchBar from "./Filters/SearchBar";
 
 function ResourcesTabs({ selectedResource, handleSetSelectedResource }) {
   return (
@@ -67,7 +68,7 @@ export default function ResourcesGridLayout({ user }) {
           handleSetSelectedResource={handleSetSelectedResource}
         />
 
-        <ResourcesFilterSearchBar
+        <SearchBar
           resourceFilter={resourceFilter}
           handleResourceFilterChange={handleResourceFilterChange}
         />
