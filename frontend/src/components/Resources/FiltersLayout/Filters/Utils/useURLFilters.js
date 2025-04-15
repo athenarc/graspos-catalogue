@@ -1,6 +1,17 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getDefaultFilters } from "./filterUtils";
+
+const getDefaultFilters = () => ({
+  licenses: {},
+  keywords: [],
+  graspos: false,
+  sortField: "views",
+  sortDirection: "asc",
+  dateRange: {
+    startDate: null,
+    endDate: null,
+  },
+});
 
 // Helper function to normalize dates to the local timezone and midnight
 const normalizeToLocalMidnight = (date) => {
@@ -14,7 +25,9 @@ const normalizeToLocalMidnight = (date) => {
   localDate.setHours(0, 0, 0, 0); // Set time to midnight (00:00:00)
 
   // Adjust for timezone difference to ensure the date is in local time
-  const adjustedDate = new Date(localDate.getTime() - localTimezoneOffset * 60000);
+  const adjustedDate = new Date(
+    localDate.getTime() - localTimezoneOffset * 60000
+  );
 
   return adjustedDate;
 };
@@ -38,6 +51,11 @@ export function useURLFilters(resourceMap) {
     // Licenses
     searchParams.getAll("license").forEach((value) => {
       newFilters.licenses[value] = true;
+    });
+
+    // Keywords
+    searchParams.getAll("keyword").forEach((value) => {
+      newFilters.keywords.push(value);
     });
 
     // GraspOS Verified
@@ -77,6 +95,10 @@ export function useURLFilters(resourceMap) {
       if (value) searchParams.append("license", key);
     });
 
+    // Keywords
+    Object.entries(newFilters.keywords || {}).forEach(([key, value]) => {
+      searchParams.append("keyword", value);
+    });
     // GraspOS Verified
     searchParams.set("graspos", newFilters.graspos);
 

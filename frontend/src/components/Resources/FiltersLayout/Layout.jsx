@@ -4,6 +4,7 @@ import LicenseFilter from "./Filters/LicenseFacetFilter";
 import DateFilter from "./Filters/DatePickerFilter";
 import SortFilter from "./Filters/SortFilter";
 import ResourcesFiltersDrawer from "./FilterDrawer";
+import TagAutocompleteFilter from "./Filters/TagAutocompleteFilter";
 
 function ResourceFilters({
   selectedResource,
@@ -17,6 +18,11 @@ function ResourceFilters({
         onFilterChange={handleChangeFilters}
       />
       <LicenseFilter
+        selectedFilters={selectedFilters}
+        selectedResource={selectedResource}
+        onFilterChange={handleChangeFilters}
+      />
+      <TagAutocompleteFilter
         selectedFilters={selectedFilters}
         selectedResource={selectedResource}
         onFilterChange={handleChangeFilters}

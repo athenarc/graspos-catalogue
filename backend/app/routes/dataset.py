@@ -17,6 +17,7 @@ router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 @router.get("", status_code=200, response_model=list[Dataset])
 async def get_all_datasets(user: Optional[User] = Depends(current_user),
                            license: Optional[List[str]] = Query(None),
+                           keyword: Optional[List[str]] = Query(None),
                            graspos: Optional[bool] = Query(None),
                            sort_field: Optional[str] = Query(None),
                            sort_direction: Optional[str] = Query(None),
@@ -37,6 +38,11 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
     if license:
         search["$or"] = search.get("$or", [])
         search["$or"].append({"zenodo.metadata.license.id": {"$in": license}})
+
+    # Keyword filtering
+    if keyword:
+        search["$or"] = search.get("$or", [])
+        search["$or"].append({"zenodo.metadata.keywords": {"$in": keyword}})
 
     # GraspOS Verified filtering
     if graspos:
@@ -108,10 +114,18 @@ async def create_dataset(dataset: Dataset,
     return dataset
 
 
-@router.get("/licenses")
-async def get_licenses():
-    unique_licenses = await Dataset.get_unique_licenses_from_zenodo()
-    return {"unique_licenses": unique_licenses}
+@router.get("/fields/unique")
+async def get_unique_metadata_values(field: str = Query(
+    ..., description="Field name inside zenodo.metadata")):
+    """
+    Return unique values from the given field in Zenodo metadata across all datasets.
+    """
+    try:
+        unique_values = await Dataset.get_unique_field_values_from_zenodo(field
+                                                                          )
+        return {f"unique_{field}": unique_values}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.get("/{dataset_id}",

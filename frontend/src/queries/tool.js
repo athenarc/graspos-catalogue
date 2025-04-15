@@ -31,6 +31,14 @@ export function useTools(filters = {}) {
         if (typeof value === "object" && value !== null) {
           // If the value is an object (like "license"), loop through its properties
           Object.entries(value).forEach(([subKey, subValue]) => {
+            if (key == "keywords") {
+              value.forEach((arrayValue) => {
+                params.append(
+                  key.replace(key, key.replace(/s+$/, "")),
+                  arrayValue
+                );
+              });
+            }
             if (subValue === true) {
               params.append(key.replace("licenses", "license"), subKey); // Append the subKey as a value if it's true
             }
@@ -82,12 +90,15 @@ export function useTools(filters = {}) {
   });
 }
 
-export function useToolLicenses(enabled) {
+export function useToolUniqueFieldValues(field, enabled) {
   return useQuery({
-    queryKey: ["tool-licenses"],
+    queryKey: ["tool-unique-field-values", field],
+    enabled: enabled && !!field,
     retry: false,
-    enabled: enabled,
-    queryFn: () => axiosInstance.get(`tool/licenses`),
+    queryFn: () =>
+      axiosInstance
+        .get(`/tool/fields/unique`, { params: { field } })
+        .then((res) => res),
   });
 }
 

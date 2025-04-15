@@ -7,9 +7,9 @@ import {
   Checkbox,
   Card,
 } from "@mui/material";
-import { useDatasetLicenses } from "../../../../queries/dataset";
-import { useDocumentLicenses } from "../../../../queries/document";
-import { useToolLicenses } from "../../../../queries/tool";
+import { useDatasetUniqueFieldValues } from "../../../../queries/dataset";
+import { useDocumentUniqueFieldValues } from "../../../../queries/document";
+import { useToolUniqueFieldValues } from "../../../../queries/tool";
 import { useEffect, useState } from "react";
 
 export default function LicenseFilter({
@@ -23,22 +23,21 @@ export default function LicenseFilter({
   );
 
   const { data: datasetLicenseData, isLoading: isDatasetLoading } =
-    useDatasetLicenses(selectedResource === 0);
+    useDatasetUniqueFieldValues("license", selectedResource === 0);
   const { data: documentLicenseData, isLoading: isDocumentLoading } =
-    useDocumentLicenses(selectedResource === 2);
-  const { data: toolLicenseData, isLoading: isToolLoading } = useToolLicenses(
-    selectedResource === 1
-  );
+    useDocumentUniqueFieldValues("license", selectedResource === 2);
+  const { data: toolLicenseData, isLoading: isToolLoading } =
+    useToolUniqueFieldValues("license", selectedResource === 1);
 
   useEffect(() => {
     if (isDatasetLoading || isDocumentLoading || isToolLoading) return;
 
     const resourceLicenseData =
       selectedResource === 0
-        ? datasetLicenseData?.data?.unique_licenses
+        ? datasetLicenseData?.data?.unique_license
         : selectedResource === 2
-        ? documentLicenseData?.data?.unique_licenses
-        : toolLicenseData?.data?.unique_licenses;
+        ? documentLicenseData?.data?.unique_license
+        : toolLicenseData?.data?.unique_license;
 
     setLicenseData(resourceLicenseData || []);
   }, [
