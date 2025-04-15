@@ -6,7 +6,7 @@ export function RectangularVariants({ count, height = 300 }) {
   return (
     <Grid container spacing={2} sx={{ width: "100%" }}>
       {[...Array(count)].map((e, i) => (
-        <Grid key={i} size={{ xs: 10, sm: 4 }}>
+        <Grid key={i} size={{ xs: 12 }}>
           <Skeleton
             key={i}
             variant="rounded"

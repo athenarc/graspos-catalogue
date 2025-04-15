@@ -45,7 +45,7 @@ export function Tools({ user, filter, filters }) {
 
   return (
     <>
-      {tools?.isLoading && <RectangularVariants count={3} />}
+      {tools?.isLoading && <RectangularVariants count={2} />}
       {tools?.isFetched &&
         filteredTools?.map((tool) => (
           <ResourceGridItem
