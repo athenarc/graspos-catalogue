@@ -31,8 +31,16 @@ export function useDatasets(filters = {}) {
         if (typeof value === "object" && value !== null) {
           // If the value is an object (like "licenses"), loop through its properties
           Object.entries(value).forEach(([subKey, subValue]) => {
+            if (key == "keywords") {
+              value.forEach((arrayValue) => {
+                params.append(
+                  key.replace(key, key.replace(/s+$/, "")),
+                  arrayValue
+                );
+              });
+            }
             if (subValue === true) {
-              params.append(key.replace("licenses", "license"), subKey); // Append the subKey as a value if it's true
+              params.append(key.replace(key, key.replace(/s+$/, "")), subKey); // Append the subKey as a value if it's true
             }
           });
         } else if (typeof value === "boolean" || value) {
@@ -82,12 +90,15 @@ export function useDatasets(filters = {}) {
     enabled: true, // Ensure this fires by default if filters change
   });
 }
-export function useDatasetLicenses(enabled) {
+export function useDatasetUniqueFieldValues(field, enabled) {
   return useQuery({
-    queryKey: ["dataset-licenses"],
+    queryKey: ["dataset-unique-field-values", field],
+    enabled: enabled && !!field,
     retry: false,
-    enabled: enabled,
-    queryFn: () => axiosInstance.get(`dataset/licenses`),
+    queryFn: () =>
+      axiosInstance
+        .get(`/dataset/fields/unique`, { params: { field } })
+        .then((res) => res),
   });
 }
 

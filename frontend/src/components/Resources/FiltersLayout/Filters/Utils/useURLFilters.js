@@ -1,28 +1,28 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { getDefaultFilters } from "./filterUtils";
+import { useState, useEffect, useRef } from "react";
 
-// Helper function to normalize dates to the local timezone and midnight
+const getDefaultFilters = () => ({
+  licenses: {},
+  keywords: [],
+  graspos: false,
+  sortField: "views",
+  sortDirection: "asc",
+  dateRange: {
+    startDate: null,
+    endDate: null,
+  },
+});
+
 const normalizeToLocalMidnight = (date) => {
   if (!date) return null;
-
-  // Get the local timezone offset in minutes
-  const localTimezoneOffset = date.getTimezoneOffset();
-
-  // Create a new Date object in local time, but with the time reset to midnight
   const localDate = new Date(date);
-  localDate.setHours(0, 0, 0, 0); // Set time to midnight (00:00:00)
-
-  // Adjust for timezone difference to ensure the date is in local time
-  const adjustedDate = new Date(localDate.getTime() - localTimezoneOffset * 60000);
-
-  return adjustedDate;
+  localDate.setHours(0, 0, 0, 0);
+  return localDate;
 };
 
-// Function to format date to YYYY-MM-DD in local timezone
 const formatDateToLocalString = (date) => {
   const localDate = normalizeToLocalMidnight(date);
-  return localDate.toISOString().split("T")[0]; // Get YYYY-MM-DD format
+  return localDate.toISOString().split("T")[0];
 };
 
 export function useURLFilters(resourceMap) {
@@ -31,80 +31,88 @@ export function useURLFilters(resourceMap) {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const isFirstLoad = useRef(true);
+
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const newFilters = getDefaultFilters();
 
-    // Licenses
+    // Parse filters from URL
     searchParams.getAll("license").forEach((value) => {
       newFilters.licenses[value] = true;
     });
 
-    // GraspOS Verified
-    const grasposParam = searchParams.get("graspos");
-    newFilters.graspos = grasposParam === "true";
+    searchParams.getAll("keyword").forEach((value) => {
+      newFilters.keywords.push(value);
+    });
 
-    // Sorting
-    const sortField = searchParams.get("sort_field") || "views";
-    const sortDirection = searchParams.get("sort_direction") || "asc";
-    newFilters.sortField = sortField;
-    newFilters.sortDirection = sortDirection;
+    newFilters.graspos = searchParams.get("graspos") === "true";
+    newFilters.sortField = searchParams.get("sort_field") || "views";
+    newFilters.sortDirection = searchParams.get("sort_direction") || "asc";
 
-    // Date Range
     const startDate = searchParams.get("start");
     const endDate = searchParams.get("end");
-    if (startDate || endDate) {
-      newFilters.dateRange = {
-        startDate: startDate ? new Date(startDate) : null,
-        endDate: endDate ? new Date(endDate) : null,
-      };
-    }
+    newFilters.dateRange = {
+      startDate: startDate ? new Date(startDate) : null,
+      endDate: endDate ? new Date(endDate) : null,
+    };
 
-    // Tab / Resource
+    // Parse selected tab
     const tab = searchParams.get("tab");
-    if (tab && resourceMap[tab] !== undefined) {
-      setSelectedResource(resourceMap[tab]);
+    const resourceIndex = resourceMap[tab];
+
+    // Update selected resource only if different
+    if (resourceIndex !== undefined && resourceIndex !== selectedResource) {
+      setSelectedResource(resourceIndex);
     }
 
-    setFilters(newFilters);
+    // Update filters only if different
+    const newFiltersJSON = JSON.stringify(newFilters);
+    const currentFiltersJSON = JSON.stringify(filters);
+    if (newFiltersJSON !== currentFiltersJSON) {
+      setFilters(newFilters);
+    }
+
+    // Prevent updating URL on initial load
+    isFirstLoad.current = false;
   }, [location.search]);
 
   const updateURL = (newFilters, selectedTab) => {
+    if (isFirstLoad.current) return; // prevent router change on first load
+
     const searchParams = new URLSearchParams();
 
-    // Licenses
     Object.entries(newFilters.licenses || {}).forEach(([key, value]) => {
       if (value) searchParams.append("license", key);
     });
 
-    // GraspOS Verified
-    searchParams.set("graspos", newFilters.graspos);
+    newFilters.keywords?.forEach((value) => {
+      searchParams.append("keyword", value);
+    });
 
-    // Sort
+    searchParams.set("graspos", newFilters.graspos);
     searchParams.set("sort_field", newFilters.sortField);
     searchParams.set("sort_direction", newFilters.sortDirection);
 
-    // Date Range
     if (newFilters.dateRange?.startDate) {
-      const startDate = new Date(newFilters.dateRange.startDate);
-      if (!isNaN(startDate)) {
-        // Adjust the start date to local timezone and set to midnight
-        searchParams.set("start", formatDateToLocalString(startDate));
-      }
+      searchParams.set(
+        "start",
+        formatDateToLocalString(newFilters.dateRange.startDate)
+      );
     }
     if (newFilters.dateRange?.endDate) {
-      const endDate = new Date(newFilters.dateRange.endDate);
-      if (!isNaN(endDate)) {
-        // Adjust the end date to local timezone and set to midnight
-        searchParams.set("end", formatDateToLocalString(endDate));
-      }
+      searchParams.set(
+        "end",
+        formatDateToLocalString(newFilters.dateRange.endDate)
+      );
     }
 
-    // Tab / Resource
     const resourceName = Object.keys(resourceMap).find(
       (key) => resourceMap[key] === selectedTab
     );
-    if (resourceName) searchParams.set("tab", resourceName);
+    if (resourceName) {
+      searchParams.set("tab", resourceName);
+    }
 
     navigate({ search: searchParams.toString() }, { replace: true });
   };
