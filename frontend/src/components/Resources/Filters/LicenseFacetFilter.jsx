@@ -94,7 +94,7 @@ export default function LicenseFilter({
           License
         </Typography>
         <Divider />
-        <List sx={{ p: 1 }}>
+        <List sx={{ p: 1, overflow: "auto", maxHeight: "20dvh" }}>
           {licenseData.map((license) => (
             <ListItem
               key={license.id}

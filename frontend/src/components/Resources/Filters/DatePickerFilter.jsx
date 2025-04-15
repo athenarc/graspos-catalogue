@@ -49,18 +49,18 @@ export default function DateFilter({ selectedFilters, onFilterChange }) {
       </Typography>
       <Divider />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Stack spacing={2} p={2}>
+        <Stack spacing={2} p={2} sx={{ overflow: "auto", maxHeight: "20dvh" }}>
           <DatePicker
             label="Start Date"
             value={startDate}
             onChange={(newValue) => handleDateRangeChange(newValue, endDate)}
-            disableFuture // Optional: Disable future dates if needed
+            disableFuture
           />
           <DatePicker
             label="End Date"
             value={endDate}
             onChange={(newValue) => handleDateRangeChange(startDate, newValue)}
-            disableFuture // Optional: Disable future dates if needed
+            disableFuture
           />
         </Stack>
       </LocalizationProvider>
