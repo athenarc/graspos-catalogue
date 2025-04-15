@@ -45,7 +45,7 @@ export function Datasets({ user, filter, filters }) {
 
   return (
     <>
-      {datasets?.isLoading && <RectangularVariants count={3} />}
+      {datasets?.isLoading && <RectangularVariants count={2} />}
       {datasets?.isSuccess &&
         filteredDatasets?.map((dataset) => (
           <ResourceGridItem

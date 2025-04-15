@@ -46,7 +46,7 @@ export function Documents({ user, filter, filters }) {
 
   return (
     <>
-      {documents?.isLoading && <RectangularVariants count={3} />}
+      {documents?.isLoading && <RectangularVariants count={2} />}
       {documents?.isFetched &&
         filteredDocuments?.map((document) => (
           <ResourceGridItem
