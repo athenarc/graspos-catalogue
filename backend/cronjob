@@ -1,1 +1,1 @@
-*/1 * * * * /usr/local/bin/python /app/zenodo_update.py >> /var/log/cron.log 2>&1
+*/1 * * * * /usr/local/bin/python app/zenodo_update.py >> /var/log/cron.log 2>&1
