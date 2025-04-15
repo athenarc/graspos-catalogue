@@ -7,9 +7,9 @@ import {
   Checkbox,
   Card,
 } from "@mui/material";
-import { useDatasetLicenses } from "../../../queries/dataset";
-import { useDocumentLicenses } from "../../../queries/document";
-import { useToolLicenses } from "../../../queries/tool";
+import { useDatasetLicenses } from "../../../../queries/dataset";
+import { useDocumentLicenses } from "../../../../queries/document";
+import { useToolLicenses } from "../../../../queries/tool";
 import { useEffect, useState } from "react";
 
 export default function LicenseFilter({

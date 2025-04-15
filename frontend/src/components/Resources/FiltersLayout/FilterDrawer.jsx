@@ -8,50 +8,14 @@ import {
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useState } from "react";
-import GrasposVerifiedFilter from "./GrasposFilterSwitch";
-import LicenseFilter from "./LicenseFacetFilter";
-import DateFilter from "./DatePickerFilter";
-import SortFilter from "./SortFilter";
-
-function ResourceFilters({
-  selectedResource,
-  handleChangeFilters,
-  selectedFilters,
-}) {
-  return (
-    <>
-      <Stack direction="column" spacing={2} p={2}>
-        <GrasposVerifiedFilter
-          selectedFilters={selectedFilters}
-          onFilterChange={handleChangeFilters}
-        />
-        <LicenseFilter
-          selectedFilters={selectedFilters}
-          selectedResource={selectedResource}
-          onFilterChange={handleChangeFilters}
-        />
-        <DateFilter
-          selectedFilters={selectedFilters}
-          onFilterChange={handleChangeFilters}
-        />
-        <SortFilter
-          filters={selectedFilters}
-          onFilterChange={handleChangeFilters}
-        />
-      </Stack>
-    </>
-  );
-}
 
 export default function ResourcesFiltersDrawer({
-  selectedResource,
-  handleChangeFilters,
+  ResourceFilters,
+  resourceFiltersProps,
   onResetFilters,
-  selectedFilters,
 }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const toggleDrawer = () => {
@@ -96,13 +60,7 @@ export default function ResourcesFiltersDrawer({
         }}
       >
         <Stack direction="column" sx={{ height: "100%", mt: 7.5 }}>
-          <Stack direction="column" sx={{ flexGrow: 1 }}>
-            <ResourceFilters
-              selectedFilters={selectedFilters}
-              selectedResource={selectedResource}
-              handleChangeFilters={handleChangeFilters}
-            />
-          </Stack>
+          <ResourceFilters {...resourceFiltersProps} />
 
           <Stack direction="column" sx={{ p: 2 }}>
             <Button
