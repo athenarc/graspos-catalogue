@@ -30,6 +30,14 @@ export function useDocuments(filters = {}) {
         if (typeof value === "object" && value !== null) {
           // If the value is an object (like "license"), loop through its properties
           Object.entries(value).forEach(([subKey, subValue]) => {
+            if (key == "keywords") {
+              value.forEach((arrayValue) => {
+                params.append(
+                  key.replace(key, key.replace(/s+$/, "")),
+                  arrayValue
+                );
+              });
+            }
             if (subValue === true) {
               params.append(key.replace("licenses", "license"), subKey); // Append the subKey as a value if it's true
             }
@@ -81,12 +89,15 @@ export function useDocuments(filters = {}) {
   });
 }
 
-export function useDocumentLicenses(enabled) {
+export function useDocumentUniqueFieldValues(field, enabled) {
   return useQuery({
-    queryKey: ["document-licenses"],
+    queryKey: ["document-unique-field-values", field],
+    enabled: enabled && !!field,
     retry: false,
-    enabled: enabled,
-    queryFn: () => axiosInstance.get(`document/licenses`),
+    queryFn: () =>
+      axiosInstance
+        .get(`/document/fields/unique`, { params: { field } })
+        .then((res) => res),
   });
 }
 

@@ -64,16 +64,40 @@ class Tool(Document, ToolView):
 
     
     @classmethod
-    async def get_unique_licenses_from_zenodo(cls) -> list[dict]:
-        """Return all unique license dicts from linked Zenodo tools."""
+    async def get_unique_field_values_from_zenodo(cls,
+                                                  field_name: str) -> list:
+        """
+        Return all unique values for a given metadata field from linked Zenodo tools.
+
+        :param field_name: The field name in zenodo.metadata to extract unique values from.
+        :return: A list of unique field values (dicts or scalars).
+        """
         tools = await cls.find_all().to_list()
-        licenses = set()
+        unique_values = set()
 
         for tool in tools:
             if tool.zenodo is not None:
-                await tool.fetch_link("zenodo")  # 💡 this line fetches the full Zenodo doc
+                await tool.fetch_link("zenodo")
                 zenodo = tool.zenodo
-                if zenodo.metadata and isinstance(zenodo.metadata.license, dict):
-                    licenses.add(frozenset(zenodo.metadata.license.items()))
+                metadata = zenodo.metadata
 
-        return [dict(license) for license in licenses]
+                if metadata:
+                    value = getattr(metadata, field_name, None)
+
+                    if isinstance(value, list):
+                        for item in value:
+                            if isinstance(item, dict):
+                                unique_values.add(frozenset(item.items()))
+                            else:
+                                unique_values.add(item)
+                    elif isinstance(value, dict):
+                        unique_values.add(frozenset(value.items()))
+                    elif value is not None:
+                        unique_values.add(value)
+
+        # Convert any frozen dicts back to regular dicts
+        result = [
+            dict(item) if isinstance(item, frozenset) else item
+            for item in unique_values
+        ]
+        return result
