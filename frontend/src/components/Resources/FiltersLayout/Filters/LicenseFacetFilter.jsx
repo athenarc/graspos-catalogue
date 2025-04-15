@@ -112,11 +112,7 @@ export default function LicenseFilter({
             </ListItem>
           ))
         ) : (
-          <Typography
-            variant="subtitle"
-            textAlign="center"
-            sx={{ p: 2 }}
-          ></Typography>
+          <Typography sx={{ p: 2 }}></Typography>
         )}
       </List>
       <Divider />
