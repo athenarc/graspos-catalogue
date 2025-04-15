@@ -61,15 +61,9 @@ export default function ResourcesGridLayout({ user }) {
         selectedFilters={filters}
         handleChangeFilters={handleChangeFilters}
         onResetFilters={handleResetFilters}
-      />
-      {/* <ResourcesFiltersDrawer
-        selectedResource={selectedResource}
-        selectedFilters={filters}
-        handleChangeFilters={handleChangeFilters}
-        onResetFilters={handleResetFilters}
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
-      /> */}
+      />
       <Stack direction="column" sx={{ width: "100%" }}>
         <ResourcesTabs
           selectedResource={selectedResource}

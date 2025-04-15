@@ -82,9 +82,9 @@ export default function KeywordAutocompleteFilter({
         value={selectedKeywords}
         onChange={handleChange}
         getOptionLabel={(option) => option}
-        renderKeywords={(value, getKeywordProps) =>
+        renderTags={(value, getTagProps) =>
           value.map((option, index) => (
-            <Chip label={option} {...getKeywordProps({ index })} key={option} />
+            <Chip label={option} {...getTagProps({ index })} key={option} />
           ))
         }
         renderInput={(params) => (
