@@ -85,17 +85,17 @@ export default function LicenseFilter({
   };
 
   return (
-    licenseData.length > 0 && (
-      <Card>
-        <Typography
-          variant="h6"
-          sx={{ pl: 1, backgroundColor: "lightblue", color: "white" }}
-        >
-          License
-        </Typography>
-        <Divider />
-        <List sx={{ p: 1, overflow: "auto", maxHeight: "20dvh" }}>
-          {licenseData.map((license) => (
+    <Card>
+      <Typography
+        variant="h6"
+        sx={{ pl: 1, backgroundColor: "lightblue", color: "white" }}
+      >
+        License
+      </Typography>
+      <Divider />
+      <List sx={{ px: 2, py: 1, overflow: "auto", maxHeight: "20dvh" }}>
+        {licenseData.length > 0 ? (
+          licenseData.map((license) => (
             <ListItem
               key={license.id}
               onClick={() => handleToggle(license.id)}
@@ -106,14 +106,20 @@ export default function LicenseFilter({
                 checked={!!selectedLicenses[license.id]}
                 tabIndex={-1}
                 disableRipple
-                sx={{ pr: 1 }}
+                sx={{ p: 1 }}
               />
               <ListItemText primary={license.id} sx={{ cursor: "pointer" }} />
             </ListItem>
-          ))}
-        </List>
-        <Divider />
-      </Card>
-    )
+          ))
+        ) : (
+          <Typography
+            variant="subtitle"
+            textAlign="center"
+            sx={{ p: 2 }}
+          ></Typography>
+        )}
+      </List>
+      <Divider />
+    </Card>
   );
 }
