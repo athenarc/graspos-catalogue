@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Box, Stack, Tabs, Tab } from "@mui/material";
-// import ResourcesFilters from "./Filters/FilterDrawer";
 import ResourcesGrid from "./Resources";
 import { useURLFilters } from "./FiltersLayout/Filters/Utils/useURLFilters";
 import SearchBar from "./FiltersLayout/Filters/SearchBar";
 import FiltersLayout from "./FiltersLayout/Layout";
-import ResourcesFiltersDrawer from "./FiltersLayout/FilterDrawer";
 
 function ResourcesTabs({ selectedResource, handleSetSelectedResource }) {
   return (
@@ -37,10 +35,6 @@ export default function ResourcesGridLayout({ user }) {
     tools: 1,
     documents: 2,
   };
-  const [sortOrder, setSortOrder] = useState({
-    field: "views",
-    direction: "asc",
-  });
 
   const [resourceFilter, setResourceFilter] = useState("");
   const {
@@ -61,8 +55,6 @@ export default function ResourcesGridLayout({ user }) {
         selectedFilters={filters}
         handleChangeFilters={handleChangeFilters}
         onResetFilters={handleResetFilters}
-        sortOrder={sortOrder}
-        setSortOrder={setSortOrder}
       />
       <Stack direction="column" sx={{ width: "100%" }}>
         <ResourcesTabs

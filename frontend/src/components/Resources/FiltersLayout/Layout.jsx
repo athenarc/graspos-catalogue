@@ -34,7 +34,7 @@ function ResourceFilters({
       <SortFilter
         filters={selectedFilters}
         onFilterChange={handleChangeFilters}
-      />{" "}
+      />
     </Stack>
   );
 }
