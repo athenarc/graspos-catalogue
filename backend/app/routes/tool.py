@@ -17,7 +17,7 @@ router = APIRouter(prefix="/api/v1/tool", tags=["Tool"])
 @router.get("", status_code=200, response_model=list[Tool])
 async def get_all_datasets(user: Optional[User] = Depends(current_user),
                            license: Optional[List[str]] = Query(None),
-                           keyword: Optional[List[str]] = Query(None),
+                           tag: Optional[List[str]] = Query(None),
                            graspos: Optional[bool] = Query(None),
                            sort_field: Optional[str] = Query(None),
                            sort_direction: Optional[str] = Query(None),
@@ -34,9 +34,9 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
             search["$or"].append({"owner": user.id})
 
     # Keyword filtering
-    if keyword:
+    if tag:
         search["$or"] = search.get("$or", [])
-        search["$or"].append({"zenodo.metadata.keywords": {"$in": keyword}})
+        search["$or"].append({"zenodo.metadata.keywords": {"$in": tag}})
 
     if license:
         search["$or"] = search.get("$or", [])

@@ -16,8 +16,8 @@ export default function KeywordAutocompleteFilter({
   selectedFilters,
   onFilterChange,
 }) {
-  const [keywordOptions, setKeywordOptions] = useState([]);
-  const [selectedKeywords, setSelectedKeywords] = useState(
+  const [tagOptions, setTagOptions] = useState([]);
+  const [selectedTags, setSelectedTags] = useState(
     selectedFilters?.keywords || []
   );
 
@@ -38,7 +38,7 @@ export default function KeywordAutocompleteFilter({
         ? documentKeywordsData?.data?.unique_keywords
         : toolKeywordsData?.data?.unique_keywords;
 
-    setKeywordOptions(resourceKeywords || []);
+    setTagOptions(resourceKeywords || []);
   }, [
     selectedResource,
     datasetUniqueFieldValues,
@@ -50,21 +50,21 @@ export default function KeywordAutocompleteFilter({
   ]);
 
   useEffect(() => {
-    if (selectedFilters?.keywords) {
-      const validKeywords = selectedFilters.keywords.filter((keyword) =>
-        keywordOptions.includes(keyword)
+    if (selectedFilters?.tags) {
+      const validKeywords = selectedFilters.tags.filter((tag) =>
+        tagOptions.includes(tag)
       );
 
-      if (JSON.stringify(validKeywords) !== JSON.stringify(selectedKeywords)) {
-        setSelectedKeywords(validKeywords);
-        onFilterChange({ keywords: validKeywords });
+      if (JSON.stringify(validKeywords) !== JSON.stringify(selectedTags)) {
+        setSelectedTags(validKeywords);
+        onFilterChange({ tags: validKeywords });
       }
     }
-  }, [selectedFilters, keywordOptions]);
+  }, [selectedFilters, tagOptions]);
 
   const handleChange = (event, value) => {
-    setSelectedKeywords(value);
-    onFilterChange({ keywords: value });
+    setSelectedTags(value);
+    onFilterChange({ tags: value });
   };
 
   return (
@@ -73,13 +73,13 @@ export default function KeywordAutocompleteFilter({
         variant="h6"
         sx={{ pl: 1, backgroundColor: "lightblue", color: "white" }}
       >
-        Keywords
+        Tags
       </Typography>
       <Divider />
       <Autocomplete
         multiple
-        options={keywordOptions}
-        value={selectedKeywords}
+        options={tagOptions}
+        value={selectedTags}
         onChange={handleChange}
         getOptionLabel={(option) => option}
         renderTags={(value, getTagProps) =>
@@ -91,7 +91,7 @@ export default function KeywordAutocompleteFilter({
           <TextField
             {...params}
             variant="outlined"
-            placeholder="Select keywords"
+            placeholder="Select tags"
           />
         )}
         sx={{ p: 2 }}

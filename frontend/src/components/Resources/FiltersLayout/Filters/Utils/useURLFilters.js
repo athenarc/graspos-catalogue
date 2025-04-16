@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 
 const getDefaultFilters = () => ({
   licenses: {},
-  keywords: [],
+  tags: [],
   graspos: false,
   sortField: "views",
   sortDirection: "asc",
@@ -42,8 +42,8 @@ export function useURLFilters(resourceMap) {
       newFilters.licenses[value] = true;
     });
 
-    searchParams.getAll("keyword").forEach((value) => {
-      newFilters.keywords.push(value);
+    searchParams.getAll("tag").forEach((value) => {
+      newFilters.tags.push(value);
     });
 
     newFilters.graspos = searchParams.get("graspos") === "true";
@@ -86,8 +86,8 @@ export function useURLFilters(resourceMap) {
       if (value) searchParams.append("license", key);
     });
 
-    newFilters.keywords?.forEach((value) => {
-      searchParams.append("keyword", value);
+    newFilters.tags?.forEach((value) => {
+      searchParams.append("tag", value);
     });
 
     searchParams.set("graspos", newFilters.graspos);
