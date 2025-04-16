@@ -5,6 +5,7 @@ import DateFilter from "./Filters/DatePickerFilter";
 import SortFilter from "./Filters/SortFilter";
 import ResourcesFiltersDrawer from "./FilterDrawer";
 import TagAutocompleteFilter from "./Filters/TagAutocompleteFilter";
+import TextFilter from "./Filters/FullTextSearchInput";
 
 function ResourceFilters({
   selectedResource,
@@ -14,6 +15,10 @@ function ResourceFilters({
   return (
     <Stack direction="column" spacing={2} p={2} sx={{ flexGrow: 1 }}>
       <GrasposVerifiedFilter
+        selectedFilters={selectedFilters}
+        onFilterChange={handleChangeFilters}
+      />
+      <TextFilter
         selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />

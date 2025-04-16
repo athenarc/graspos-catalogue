@@ -17,12 +17,13 @@ router = APIRouter(prefix="/api/v1/document", tags=["Documents"])
 @router.get("", status_code=200, response_model=list[Documents])
 async def get_all_datasets(user: Optional[User] = Depends(current_user),
                            license: Optional[List[str]] = Query(None),
-                           keyword: Optional[List[str]] = Query(None),
+                           tag: Optional[List[str]] = Query(None),
                            graspos: Optional[bool] = Query(None),
                            sort_field: Optional[str] = Query(None),
                            sort_direction: Optional[str] = Query(None),
                            start: Optional[str] = Query(None),
-                           end: Optional[str] = Query(
+                           end: Optional[str] = Query(None),
+                           text: Optional[str] = Query(
                                None)) -> list[Documents]:
 
     search = {}
@@ -39,9 +40,9 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
         search["$or"].append({"zenodo.metadata.license.id": {"$in": license}})
 
     # Keyword filtering
-    if keyword:
+    if tag:
         search["$or"] = search.get("$or", [])
-        search["$or"].append({"zenodo.metadata.keywords": {"$in": keyword}})
+        search["$or"].append({"zenodo.metadata.keywords": {"$in": tag}})
 
     if graspos:
 
@@ -72,6 +73,21 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
             {"zenodo.metadata.publication_date": {
                 "$lte": end_date
             }})
+
+    if text:
+        zenodo_search_results = await Zenodo.find({
+            "$text": {
+                "$search": text
+            }
+        }).to_list()
+
+        # Extract the IDs of matching Zenodo documents
+        zenodo_ids = [
+            PydanticObjectId(zenodo.id) for zenodo in zenodo_search_results
+        ]  # Ensure IDs are strings
+        if zenodo_ids:
+            search["$and"] = search.get("$and", [])
+            search["$and"].append({"zenodo._id": {"$in": zenodo_ids}}, )
 
     if sort_field and sort_direction:
         zenodo_sort_field = "zenodo.metadata.stats." + sort_field

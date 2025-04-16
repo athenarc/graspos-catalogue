@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useDataset, useDatasets } from "../../../queries/dataset";
 import { RectangularVariants } from "../../Skeleton";
 import ResourceGridItem from "../ResourceTemplate/ResourceGridItem";
@@ -19,35 +18,16 @@ import {
 } from "../ResourceTemplate/ResourcePage";
 import AddIcon from "@mui/icons-material/Add";
 
-export function Datasets({ user, filter, filters }) {
+export function Datasets({ user, filters }) {
   const datasets = useDatasets(filters);
-  const [filteredDatasets, setFilteredDatasets] = useState([]);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
-  useEffect(() => {
-    if (datasets?.data) {
-      const filteredData = filter
-        ? datasets?.data?.filter(
-            (dataset) =>
-              dataset?.zenodo?.metadata?.title
-                ?.toLowerCase()
-                .includes(filter.toLowerCase()) ||
-              dataset?.zenodo?.metadata?.description
-                ?.toLowerCase()
-                .includes(filter.toLowerCase())
-          )
-        : datasets?.data;
-
-      setFilteredDatasets(filteredData);
-    }
-  }, [datasets?.data, filter, filters]);
 
   return (
     <>
       {datasets?.isLoading && <RectangularVariants count={2} />}
       {datasets?.isSuccess &&
-        filteredDatasets?.map((dataset) => (
+        datasets?.data?.map((dataset) => (
           <ResourceGridItem
             key={dataset?._id}
             resource={dataset}
