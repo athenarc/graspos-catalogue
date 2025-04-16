@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useDocuments, useDocument } from "../../../queries/document";
 import { RectangularVariants } from "../../Skeleton";
 import ResourceGridItem from "../ResourceTemplate/ResourceGridItem";
@@ -20,35 +19,16 @@ import {
 
 import AddIcon from "@mui/icons-material/Add";
 
-export function Documents({ user, filter, filters }) {
+export function Documents({ user, filters }) {
   const documents = useDocuments(filters);
-  const [filteredDocuments, setFilteredDocuments] = useState([]);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
-  useEffect(() => {
-    if (documents?.data) {
-      const filteredData = filter
-        ? documents?.data?.filter(
-            (document) =>
-              document?.zenodo?.metadata?.title
-                ?.toLowerCase()
-                .includes(filter.toLowerCase()) ||
-              document?.zenodo?.metadata?.description
-                ?.toLowerCase()
-                .includes(filter.toLowerCase())
-          )
-        : documents?.data;
-
-      setFilteredDocuments(filteredData);
-    }
-  }, [documents?.data, filter, filters]);
 
   return (
     <>
       {documents?.isLoading && <RectangularVariants count={2} />}
       {documents?.isFetched &&
-        filteredDocuments?.map((document) => (
+        documents?.data?.map((document) => (
           <ResourceGridItem
             key={document._id}
             resource={document}

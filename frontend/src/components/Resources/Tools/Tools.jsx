@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useTools, useTool } from "../../../queries/tool";
 import { RectangularVariants } from "../../Skeleton";
 import ResourceGridItem from "../ResourceTemplate/ResourceGridItem";
@@ -19,35 +18,16 @@ import {
 } from "../ResourceTemplate/ResourcePage";
 import AddIcon from "@mui/icons-material/Add";
 
-export function Tools({ user, filter, filters }) {
+export function Tools({ user, filters }) {
   const tools = useTools(filters);
-  const [filteredTools, setFilteredTools] = useState([]);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
-  useEffect(() => {
-    if (tools?.data) {
-      const filteredData = filter
-        ? tools?.data?.filter(
-            (tool) =>
-              tool?.zenodo?.metadata?.title
-                ?.toLowerCase()
-                .includes(filter.toLowerCase()) ||
-              tool?.zenodo?.metadata?.description
-                ?.toLowerCase()
-                .includes(filter.toLowerCase())
-          )
-        : tools?.data;
-
-      setFilteredTools(filteredData);
-    }
-  }, [tools?.data, filter, filters]);
 
   return (
     <>
       {tools?.isLoading && <RectangularVariants count={2} />}
       {tools?.isFetched &&
-        filteredTools?.map((tool) => (
+        tools?.data?.map((tool) => (
           <ResourceGridItem
             key={tool._id}
             resource={tool}

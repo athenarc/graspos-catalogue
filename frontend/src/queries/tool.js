@@ -31,7 +31,7 @@ export function useTools(filters = {}) {
         if (typeof value === "object" && value !== null) {
           // If the value is an object (like "license"), loop through its properties
           Object.entries(value).forEach(([subKey, subValue]) => {
-            if (key == "keywords") {
+            if (key == "tags") {
               value.forEach((arrayValue) => {
                 params.append(
                   key.replace(key, key.replace(/s+$/, "")),

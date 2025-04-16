@@ -45,9 +45,6 @@ export default function ResourcesGridLayout({ user }) {
     handleResetFilters,
   } = useURLFilters(resourceMap);
 
-  const handleResourceFilterChange = (value) => {
-    setResourceFilter(value);
-  };
   return (
     <Stack direction="row">
       <FiltersLayout
@@ -61,12 +58,6 @@ export default function ResourcesGridLayout({ user }) {
           selectedResource={selectedResource}
           handleSetSelectedResource={handleSetSelectedResource}
         />
-
-        <SearchBar
-          resourceFilter={resourceFilter}
-          handleResourceFilterChange={handleResourceFilterChange}
-        />
-
         <ResourcesGrid
           user={user}
           selectedResource={selectedResource}
