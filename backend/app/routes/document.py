@@ -85,9 +85,9 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
         zenodo_ids = [
             PydanticObjectId(zenodo.id) for zenodo in zenodo_search_results
         ]  # Ensure IDs are strings
-        if zenodo_ids:
-            search["$and"] = search.get("$and", [])
-            search["$and"].append({"zenodo._id": {"$in": zenodo_ids}}, )
+        
+        search["$and"] = search.get("$and", [])
+        search["$and"].append({"zenodo._id": {"$in": zenodo_ids}}, )
 
     if sort_field and sort_direction:
         zenodo_sort_field = "zenodo.metadata.stats." + sort_field
