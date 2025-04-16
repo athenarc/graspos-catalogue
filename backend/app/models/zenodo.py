@@ -1,67 +1,84 @@
-"""Zenodo models."""
-
-from beanie import Document
+from beanie import Document, PydanticObjectId
 from datetime import datetime
-from pydantic import BaseModel, Field
-from datetime import datetime
-from util.requests import get_zenodo_data
-from beanie import PydanticObjectId
-from typing import Any
+from pydantic import BaseModel
+import pymongo
+from pymongo import IndexModel
 
+
+# ZenodoMetadata remains the same
 class ZenodoMetadata(BaseModel):
-
-    title: str | None = None  #	"BIP! DB: A Dataset of Impact Measures for Research Products"
-    doi: str | None = None  #	"10.5281/zenodo.14444109"
-    publication_date: datetime | None = None  #	"2024-12-13"
-    description: str | None = None  #`<p>This dataset contains…e the above article.</p>`
-    access_right: str | None = None  #	"open"
-    creators: list | None = None  #	[…]
-    keywords: list | None = None  #	[…]
-    version: str | None = None  #	"17"
-    references: list | None = None  #	[…]
-    resource_type: object | None = None  #	{…}
-    license: object | None = None  #	{…}
-    grants: list | None = None  #	[…]
-    communities: list | None = None  #	[…]
-    relations: object | None = None  #	{…}
-    notes: str | None = None  #	"Please cite: Thanasis Ve…n Volume) 2021: 456-460"
+    title: str | None = None
+    doi: str | None = None
+    publication_date: datetime | None = None
+    description: str | None = None
+    access_right: str | None = None
+    creators: list | None = None
+    keywords: list | None = None
+    version: str | None = None
+    references: list | None = None
+    resource_type: object | None = None
+    license: object | None = None
+    grants: list | None = None
+    communities: list | None = None
+    relations: object | None = None
+    notes: str | None = None
 
 
 class Zenodo(BaseModel):
     source: str
-    created: datetime | None = None  #"2024-12-14T07:58:16.324225+00:00",
-    modified: datetime | None = None,  #"2024-12-14T07:58:16.696455+00:00",
-    zenodo_id: int | None = None,  #14444109,
-    conceptrecid: str | None = None,  #"4386934",
-    doi: str | None = None,  #"10.5281/zenodo.14444109",
-    conceptdoi: str | None = None,  #"10.5281/zenodo.4386934",
-    doi_url: str | None = None,  #"https://doi.org/10.5281/zenodo.14444109",
-    metadata: ZenodoMetadata | None = None,  #{…},
-    title: str | None = None,  #"BIP! DB: A Dataset of Im…s for Research Products",
-    links: object | None = None,  #{…},
-    updated: datetime | None = None,  #"2024-12-14T07:58:16.696455+00:00",
-    recid: str | None = None,  #"14444109",
-    revision: int | None = None,  #4,
-    files: list | None = None,  #[…],
-    swh: object | None = None,  #{},
-    owners: list | None = None,  #[…],
-    status: str | None = None,  #"published",
-    stats: object | None = None,  #{…},
-    state: str | None = None,  #"done",
-    submitted: bool | None = None  #true,
+    created: datetime | None = None
+    modified: datetime | None = None
+    zenodo_id: int | None = None
+    conceptrecid: str | None = None
+    doi: str | None = None
+    conceptdoi: str | None = None
+    doi_url: str | None = None
+    metadata: ZenodoMetadata | None = None
+    title: str | None = None
+    links: object | None = None
+    updated: datetime | None = None
+    recid: str | None = None
+    revision: int | None = None
+    files: list | None = None
+    swh: object | None = None
+    owners: list | None = None
+    status: str | None = None
+    stats: object | None = None
+    state: str | None = None
+    submitted: bool | None = None
 
 
+# ZenodoView remains unchanged
 class ZenodoView(BaseModel):
-
     source: str | None = None
+
 
 class ZenodoUpdate(BaseModel):
     id: PydanticObjectId | None = None
+
 
 class Zenodo(Document, Zenodo, ZenodoView):
 
     class Settings:
         name = "zenodo"
+        # Full-text index defined correctly using pymongo.TEXT
+        # indexes = [
+        #     "metadata_title_description_index", 
+        #     [
+        #         ("metadata.title", pymongo.TEXT),
+        #         ("metadata.description", pymongo.TEXT),
+        #     ],
+        # ]
+        indexes = [
+            IndexModel(
+                [("metadata.title", pymongo.TEXT), ("metadata.description", pymongo.TEXT)],  # Compound text index
+                name="metadata_title_description_text",
+                weights={"metadata.title": 1, "metadata.description": 1},  # Optional: You can add custom weights
+                default_language="english",
+                language_override="language",
+                textIndexVersion=3
+            ),
+        ]
 
     class Config:
         json_schema_extra = {

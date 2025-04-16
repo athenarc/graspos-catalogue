@@ -22,7 +22,8 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
                            sort_field: Optional[str] = Query(None),
                            sort_direction: Optional[str] = Query(None),
                            start: Optional[str] = Query(None),
-                           end: Optional[str] = Query(
+                           end: Optional[str] = Query(None),
+                           text: Optional[str] = Query(
                                None)) -> list[Documents]:
 
     search = {}
@@ -72,6 +73,21 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
             {"zenodo.metadata.publication_date": {
                 "$lte": end_date
             }})
+
+    if text:
+        zenodo_search_results = await Zenodo.find({
+            "$text": {
+                "$search": text
+            }
+        }).to_list()
+
+        # Extract the IDs of matching Zenodo documents
+        zenodo_ids = [
+            PydanticObjectId(zenodo.id) for zenodo in zenodo_search_results
+        ]  # Ensure IDs are strings
+        if zenodo_ids:
+            search["$and"] = search.get("$and", [])
+            search["$and"].append({"zenodo._id": {"$in": zenodo_ids}}, )
 
     if sort_field and sort_direction:
         zenodo_sort_field = "zenodo.metadata.stats." + sort_field
