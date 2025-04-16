@@ -20,16 +20,19 @@ async def main():
                         encoding='utf-8',
                         level=logging.DEBUG)
 
-    load_dotenv()
+    load_dotenv(dotenv_path="/code/.env")
     mongo_user = os.environ.get("MONGO_INITDB_ROOT_USERNAME")
     mongo_pass = os.environ.get("MONGO_INITDB_ROOT_PASSWORD")
     mongo_host = os.environ.get("MONGO_HOST")
     mongo_container_port = os.environ.get("MONGO_CONTAINER_PORT")
     mongodb_uri = f"mongodb://{mongo_user}:{mongo_pass}@{mongo_host}:{mongo_container_port}/"
+    logger.debug(
+        f"Mongo URI: mongodb://{mongo_user}:***@{mongo_host}:{mongo_container_port}/"
+    )
 
     await init(mongodb_uri)
     zenodo_records = await Zenodo.find().to_list()
-    
+
     zenodo_updates = []
     for zenodo in zenodo_records:
 
@@ -40,14 +43,11 @@ async def main():
             fields = zenodo_update.model_dump(exclude_unset=True)
             updated_record = Zenodo.model_copy(zenodo, update=fields)
             await updated_record.save()
-            
+
             zenodo_updates.append({
-                "zenodo":
-                updated_record,
-                "old_version":
-                zenodo.zenodo_id,
-                "new_version":
-                updated_record.zenodo_id
+                "zenodo": updated_record,
+                "old_version": zenodo.zenodo_id,
+                "new_version": updated_record.zenodo_id
             })
     if len(zenodo_updates) > 0:
         update = Update(updates=zenodo_updates)

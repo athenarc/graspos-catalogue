@@ -22,5 +22,11 @@ RUN chmod 0644 /etc/cron.d/my-cron-job && \
 # Set PYTHONPATH so imports work from app/
 ENV PYTHONPATH="/code/app"
 
-# Start cron and FastAPI server
-CMD ["/bin/bash", "-c", "python app/zenodo_update.py && cron && tail -f /var/log/cron.log & uvicorn main:app --host 0.0.0.0 --port 8080 --reload"]
+# Copy the entrypoint script
+COPY ./entrypoint.sh /code/entrypoint.sh
+
+# Give execution permissions
+RUN chmod +x /code/entrypoint.sh
+
+# Run the script
+ENTRYPOINT ["/code/entrypoint.sh"]
