@@ -11,6 +11,7 @@ const getDefaultFilters = () => ({
     startDate: null,
     endDate: null,
   },
+  text: "",
 });
 
 const normalizeToLocalMidnight = (date) => {
@@ -32,6 +33,7 @@ export function useURLFilters(resourceMap) {
   const navigate = useNavigate();
 
   const isFirstLoad = useRef(true);
+  const [textState, setTextState] = useState("");
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -69,7 +71,9 @@ export function useURLFilters(resourceMap) {
     // Update filters only if different
     const newFiltersJSON = JSON.stringify(newFilters);
     const currentFiltersJSON = JSON.stringify(filters);
+
     if (newFiltersJSON !== currentFiltersJSON) {
+      newFilters.text = filters.text;
       setFilters(newFilters);
     }
 
@@ -128,7 +132,9 @@ export function useURLFilters(resourceMap) {
   const handleSetSelectedResource = (event, newValue) => {
     setSelectedResource(newValue);
     const emptyFilters = getDefaultFilters();
-    setFilters(emptyFilters);
+    const urlEmptyFilters = emptyFilters;
+    urlEmptyFilters.text = filters.text;
+    setFilters(urlEmptyFilters);
     updateURL(emptyFilters, newValue);
   };
 
