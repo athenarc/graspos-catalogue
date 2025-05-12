@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Box, Stack, Tabs, Tab } from "@mui/material";
 import ResourcesGrid from "./Resources";
 import { useURLFilters } from "./FiltersLayout/Filters/Utils/useURLFilters";
-import SearchBar from "./FiltersLayout/Filters/SearchBar";
 import FiltersLayout from "./FiltersLayout/Layout";
+import GlobalSearchBar from "./FiltersLayout/Filters/GlobalSearchBar";
 
 function ResourcesTabs({ selectedResource, handleSetSelectedResource }) {
   return (
@@ -58,6 +58,14 @@ export default function ResourcesGridLayout({ user }) {
           selectedResource={selectedResource}
           handleSetSelectedResource={handleSetSelectedResource}
         />
+        <Stack direction="row">
+          <GlobalSearchBar
+            selectedResource={selectedResource}
+            selectedFilters={filters}
+            onFilterChange={handleChangeFilters}
+            onResetFilters={handleResetFilters}
+          />
+        </Stack>
         <ResourcesGrid
           user={user}
           selectedResource={selectedResource}
