@@ -5,26 +5,38 @@ import { useURLFilters } from "./FiltersLayout/Filters/Utils/useURLFilters";
 import FiltersLayout from "./FiltersLayout/Layout";
 import GlobalSearchBar from "./FiltersLayout/Filters/GlobalSearchBar";
 
-function ResourcesTabs({ selectedResource, handleSetSelectedResource }) {
+function ResourcesTabs({
+  selectedResource,
+  handleSetSelectedResource,
+  filters,
+  handleChangeFilters,
+}) {
   return (
     <Box
-      justifyContent="center"
       sx={{
         backgroundColor: "#f0fcfb",
         borderBottom: 1,
         borderColor: "divider",
       }}
     >
-      <Tabs
-        value={selectedResource}
-        onChange={handleSetSelectedResource}
-        aria-label="resource tabs"
-        centered
-      >
-        <Tab label="Datasets" />
-        <Tab label="Tools" />
-        <Tab label="Documents" />
-      </Tabs>
+      <Stack direction="row" justifyContent="center" pt={0}>
+        <GlobalSearchBar
+          selectedFilters={filters}
+          onFilterChange={handleChangeFilters}
+        />
+      </Stack>
+      <Stack direction="row" justifyContent="center" pt={0}>
+        <Tabs
+          value={selectedResource}
+          onChange={handleSetSelectedResource}
+          aria-label="resource tabs"
+          centered
+        >
+          <Tab label="Datasets" />
+          <Tab label="Tools" />
+          <Tab label="Documents" />
+        </Tabs>
+      </Stack>
     </Box>
   );
 }
@@ -57,21 +69,20 @@ export default function ResourcesGridLayout({ user }) {
         <ResourcesTabs
           selectedResource={selectedResource}
           handleSetSelectedResource={handleSetSelectedResource}
+          selectedFilters={filters}
+          handleChangeFilters={handleChangeFilters}
         />
-        <Stack direction="row">
-          <GlobalSearchBar
+        <Stack
+          direction="column"
+          sx={{ maxHeight: "82.4dvh", overflowY: "auto" }}
+        >
+          <ResourcesGrid
+            user={user}
             selectedResource={selectedResource}
-            selectedFilters={filters}
-            onFilterChange={handleChangeFilters}
-            onResetFilters={handleResetFilters}
+            resourceFilter={resourceFilter}
+            filters={filters}
           />
         </Stack>
-        <ResourcesGrid
-          user={user}
-          selectedResource={selectedResource}
-          resourceFilter={resourceFilter}
-          filters={filters}
-        />
       </Stack>
     </Stack>
   );

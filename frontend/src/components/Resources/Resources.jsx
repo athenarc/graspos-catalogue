@@ -11,7 +11,7 @@ export default function ResourcesGrid({
   filters,
 }) {
   return (
-    <Box sx={{ maxHeight: "85.5dvh", overflowY: "auto", p: 2 }}>
+    <Box sx={{ p: 2 }}>
       <Grid container spacing={2}>
         {selectedResource == 0 && (
           <Datasets user={user} filter={resourceFilter} filters={filters} />
