@@ -2,7 +2,6 @@ import { Stack } from "@mui/material";
 import GrasposVerifiedFilter from "./Filters/GrasposFilterSwitch";
 import LicenseFilter from "./Filters/LicenseFacetFilter";
 import DateFilter from "./Filters/DatePickerFilter";
-import SortFilter from "./Filters/SortFilter";
 import ResourcesFiltersDrawer from "./FilterDrawer";
 import TagAutocompleteFilter from "./Filters/TagAutocompleteFilter";
 
@@ -29,10 +28,6 @@ function ResourceFilters({
       />
       <DateFilter
         selectedFilters={selectedFilters}
-        onFilterChange={handleChangeFilters}
-      />
-      <SortFilter
-        filters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />
     </Stack>

@@ -18,8 +18,7 @@ import {
 } from "../ResourceTemplate/ResourcePage";
 import AddIcon from "@mui/icons-material/Add";
 
-export function Tools({ user, filters }) {
-  const tools = useTools(filters);
+export function Tools({ tools, user }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
