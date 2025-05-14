@@ -1,42 +1,81 @@
-import { useState } from "react";
-import { Box, Stack, Tabs, Tab } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Box, Stack, Tabs, Tab, Grid2, Typography } from "@mui/material";
 import ResourcesGrid from "./Resources";
 import { useURLFilters } from "./FiltersLayout/Filters/Utils/useURLFilters";
 import FiltersLayout from "./FiltersLayout/Layout";
 import GlobalSearchBar from "./FiltersLayout/Filters/GlobalSearchBar";
+import SortFilter from "./FiltersLayout/Filters/SortFilter";
+import { useDatasets } from "../../queries/dataset";
+import { useTools } from "../../queries/tool";
+import { useDocuments } from "../../queries/document";
 
-function ResourcesTabs({ selectedResource, handleSetSelectedResource }) {
+function ResourcesTabs({
+  selectedResource,
+  handleSetSelectedResource,
+  filters,
+  handleChangeFilters,
+  resourcesFetched,
+}) {
   return (
     <Box
-      justifyContent="center"
       sx={{
         backgroundColor: "#f0fcfb",
         borderBottom: 1,
         borderColor: "divider",
       }}
     >
-      <Tabs
-        value={selectedResource}
-        onChange={handleSetSelectedResource}
-        aria-label="resource tabs"
-        centered
-      >
-        <Tab label="Datasets" />
-        <Tab label="Tools" />
-        <Tab label="Documents" />
-      </Tabs>
+      <Stack direction="row" justifyContent="center" pt={0}>
+        <GlobalSearchBar
+          selectedFilters={filters}
+          onFilterChange={handleChangeFilters}
+        />
+      </Stack>
+      <Stack direction="row" justifyContent="center" pt={0}>
+        <Tabs
+          value={selectedResource}
+          onChange={handleSetSelectedResource}
+          aria-label="resource tabs"
+          centered
+        >
+          <Tab
+            label={
+              resourcesFetched?.Datasets?.results !== "undefined"
+                ? `Datasets (${resourcesFetched?.Datasets?.results})`
+                : "Datasets"
+            }
+          />
+          <Tab
+            label={
+              resourcesFetched?.Tools?.results !== "undefined"
+                ? `Tools (${resourcesFetched?.Tools?.results})`
+                : "Tools"
+            }
+          />
+          <Tab
+            label={
+              resourcesFetched?.Documents?.results !== "undefined"
+                ? `Documents (${resourcesFetched?.Documents?.results})`
+                : "Documents"
+            }
+          />
+        </Tabs>
+      </Stack>
     </Box>
   );
 }
 
 export default function ResourcesGridLayout({ user }) {
   const resourceMap = {
-    datasets: 0,
-    tools: 1,
-    documents: 2,
+    Datasets: 0,
+    Tools: 1,
+    Documents: 2,
   };
-
-  const [resourceFilter, setResourceFilter] = useState("");
+  const [resourcesFetched, setResourcesFetched] = useState(0);
+  const [resourceFilter, setResourceFilter] = useState({
+    Datasets: { results: 0 },
+    Documents: { results: 0 },
+    Tools: { results: 0 },
+  });
   const {
     filters,
     selectedResource,
@@ -44,6 +83,18 @@ export default function ResourcesGridLayout({ user }) {
     handleSetSelectedResource,
     handleResetFilters,
   } = useURLFilters(resourceMap);
+
+  const datasets = useDatasets(filters);
+  const tools = useTools(filters);
+  const documents = useDocuments(filters);
+  useEffect(() => {
+    setResourcesFetched((prev) => ({
+      ...prev,
+      Datasets: { results: datasets?.data?.length ?? 0 },
+      Tools: { results: tools?.data?.length ?? 0 },
+      Documents: { results: documents?.data?.length ?? 0 },
+    }));
+  }, [datasets?.data, tools?.data, documents?.data]);
 
   return (
     <Stack direction="row">
@@ -57,21 +108,35 @@ export default function ResourcesGridLayout({ user }) {
         <ResourcesTabs
           selectedResource={selectedResource}
           handleSetSelectedResource={handleSetSelectedResource}
+          selectedFilters={filters}
+          handleChangeFilters={handleChangeFilters}
+          resourcesFetched={resourcesFetched}
         />
-        <Stack direction="row">
-          <GlobalSearchBar
+        <Grid2 container p={1} alignItems="end">
+          <Grid2 size={8} p={1}></Grid2>
+          <Grid2 size={4}>
+            <SortFilter
+              filters={filters}
+              onFilterChange={handleChangeFilters}
+            />
+          </Grid2>
+        </Grid2>
+
+        <Stack
+          direction="column"
+          sx={{ maxHeight: "65dvh", overflowY: "auto" }}
+        >
+          <ResourcesGrid
+            user={user}
             selectedResource={selectedResource}
-            selectedFilters={filters}
-            onFilterChange={handleChangeFilters}
-            onResetFilters={handleResetFilters}
+            resourceFilter={resourceFilter}
+            filters={filters}
+            setResourcesFetched={setResourcesFetched}
+            datasets={datasets}
+            documents={documents}
+            tools={tools}
           />
         </Stack>
-        <ResourcesGrid
-          user={user}
-          selectedResource={selectedResource}
-          resourceFilter={resourceFilter}
-          filters={filters}
-        />
       </Stack>
     </Stack>
   );

@@ -19,8 +19,7 @@ import {
 
 import AddIcon from "@mui/icons-material/Add";
 
-export function Documents({ user, filters }) {
-  const documents = useDocuments(filters);
+export function Documents({ documents, user }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 

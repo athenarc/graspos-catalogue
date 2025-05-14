@@ -9,18 +9,40 @@ export default function ResourcesGrid({
   selectedResource,
   resourceFilter,
   filters,
+  setResourcesFetched,
+  datasets,
+  documents,
+  tools,
 }) {
   return (
-    <Box sx={{ maxHeight: "85.5dvh", overflowY: "auto", p: 2 }}>
+    <Box sx={{ p: 2, pt: 0 }}>
       <Grid container spacing={2}>
         {selectedResource == 0 && (
-          <Datasets user={user} filter={resourceFilter} filters={filters} />
+          <Datasets
+            datasets={datasets}
+            user={user}
+            filter={resourceFilter}
+            filters={filters}
+            setResourcesFetched={setResourcesFetched}
+          />
         )}
         {selectedResource == 1 && (
-          <Tools user={user} filter={resourceFilter} filters={filters} />
+          <Tools
+            tools={tools}
+            user={user}
+            filter={resourceFilter}
+            filters={filters}
+            setResourcesFetched={setResourcesFetched}
+          />
         )}
         {selectedResource == 2 && (
-          <Documents user={user} filter={resourceFilter} filters={filters} />
+          <Documents
+            documents={documents}
+            user={user}
+            filter={resourceFilter}
+            filters={filters}
+            setResourcesFetched={setResourcesFetched}
+          />
         )}
       </Grid>
     </Box>
