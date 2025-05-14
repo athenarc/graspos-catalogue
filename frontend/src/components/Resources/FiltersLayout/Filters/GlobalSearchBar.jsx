@@ -27,7 +27,7 @@ export default function GlobalSearchBar({
     [selectedFilters?.text, onFilterChange]
   );
   return (
-    <Stack sx={{ p: 2, width: "100%" }}>
+    <Stack sx={{ pt: 2, width: "100%" }}>
       <Grid sx={{ margin: "auto" }}>
         <TextField
           slotProps={{
@@ -38,9 +38,9 @@ export default function GlobalSearchBar({
               },
             },
           }}
+          size="small"
           variant="outlined"
           placeholder="Search Resources..."
-          fullWidth
           value={textValue}
           onChange={handleTextChange}
           sx={{
