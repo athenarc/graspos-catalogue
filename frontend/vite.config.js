@@ -10,6 +10,9 @@ export default defineConfig(({ mode }) => {
       "process.env.REACT_APP_BACKEND_HOST": JSON.stringify(
         env.REACT_APP_BACKEND_HOST
       ),
+      "process.env.REACT_APP_BASE_PATH": JSON.stringify(
+        env.REACT_APP_BASE_PATH
+      ),
     },
     base: env.REACT_APP_BASE_PATH,
     server: {

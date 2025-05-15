@@ -47,7 +47,7 @@ app.include_router(mail.router)
 app.include_router(register.router)
 
 origins = [
-    "http://localhost", "http://localhost:5173",
+    "http://localhost", "http://localhost:5173", "http://localhost:5173/catalogue/",
     "https://graspos-infra.athenarc.gr/catalogue/"
 ]
 app.add_middleware(

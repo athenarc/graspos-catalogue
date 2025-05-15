@@ -65,7 +65,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BrowserRouter basename="catalogue">
+        <BrowserRouter basename={process.env.REACT_APP_BASE_PATH}>
           <AppRoutes />
         </BrowserRouter>
       </AuthProvider>

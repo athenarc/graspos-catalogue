@@ -128,7 +128,9 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+.env*
+!.env.template
+
 .venv
 env/
 venv/
@@ -175,6 +177,9 @@ cython_debug/
 
 mongodb/db/*
 !mongodb/db/.gitkeep
+
+mongodb/docker-entrypoint-initdb.d/*
+!mongodb/docker-entrypoint-initdb.d/.gitkeep
 
 backend/test/*
 
