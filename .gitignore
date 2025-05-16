@@ -187,3 +187,5 @@ docker-compose-dev.yaml
 /frontend/Dockerfile.dev
 
 vm.txt
+
+*.server.*

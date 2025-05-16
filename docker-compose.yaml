@@ -30,7 +30,7 @@ services:
     env_file:
       - .env
     ports:
-      - "80:82"
+      - "${FRONTEND_HOST_PORT:-5173}:80"
     restart: always
     depends_on:
       graspos-backend:
