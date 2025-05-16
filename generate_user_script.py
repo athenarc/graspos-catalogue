@@ -1,6 +1,7 @@
 import os
 import bcrypt
 from dotenv import load_dotenv, set_key
+from datetime import datetime 
 
 ENV_FILE = ".env"
 load_dotenv(ENV_FILE)
@@ -19,7 +20,7 @@ js_script = f"""
 db = db.getSiblingDB("graspos");
 
 db.User.insertOne({{
-  email: "",
+  email: "test@test.com",
   first_name: "",
   last_name: "",
   super_user: true,
@@ -27,7 +28,7 @@ db.User.insertOne({{
   organization: "",
   disabled: false,
   password: "{hashed_password}",
-  email_confirmed_at: "",
+  email_confirmed_at: "{datetime.now()}",
   orcid: "",
 }});
 """

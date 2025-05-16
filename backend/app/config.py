@@ -20,8 +20,8 @@ class Settings(BaseModel):
     # SECURITY SETTINGS
     authjwt_secret_key: str = config("SECRET_KEY")
     salt: bytes = config("SALT").encode()
-    backend_docs_username: str = config("BACKEND_DOCS_USERNAME", default="user")
-    backend_docs_password: str = config("BACKEND_DOCS_PASSWORD", default="password")
+    mongo_super_user: str = config("MONGO_SUPER_USER", default="super_user")
+    mongo_super_user_password: str = config("MONGO_SUPER_USER_PASSWORD", default="super_user")
     
     # MAIL SETTINGS
     mail_console: bool = config("MAIL_CONSOLE", default=False, cast=bool)

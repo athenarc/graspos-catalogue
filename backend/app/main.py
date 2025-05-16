@@ -70,9 +70,9 @@ security = HTTPBasic()
 def get_current_username(
         credentials: HTTPBasicCredentials = Depends(security)):
     correct_username = secrets.compare_digest(credentials.username,
-                                              CONFIG.backend_docs_username)
+                                              CONFIG.mongo_super_user)
     correct_password = secrets.compare_digest(credentials.password,
-                                              CONFIG.backend_docs_password)
+                                              CONFIG.mongo_super_user_password)
     if not (correct_username and correct_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
