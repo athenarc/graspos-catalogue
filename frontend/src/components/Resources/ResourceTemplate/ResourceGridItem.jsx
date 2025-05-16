@@ -331,28 +331,31 @@ function ResourceItemHeader({ resource, type }) {
       alignItems="center"
       mb={2}
     >
-      <Tooltip title={resource?.zenodo?.title}>
-        <Typography
-          variant="h6"
-          sx={{
-            whiteSpace: "break",
-            overflow: "hidden",
-            textOverflow: "break-word",
-          }}
-        >
-          <Link
-            to={"/" + type.toLowerCase() + "s/" + resource?._id}
-            style={{ color: "#AE538E" }}
+      <Stack direction="row" gap={2}>
+        <Tooltip title={resource?.zenodo?.title}>
+          <Typography
+            variant="h6"
+            sx={{
+              whiteSpace: "break",
+              overflow: "hidden",
+              textOverflow: "break-word",
+            }}
           >
-            {resource?.zenodo?.title}
-          </Link>
-        </Typography>
-      </Tooltip>
-      {!resource?.approved && (
-        <Tooltip title="Resource pending approval">
-          <PendingActionsIcon color="warning" fontSize="small" />
+            <Link
+              to={"/" + type.toLowerCase() + "s/" + resource?._id}
+              style={{ color: "#AE538E" }}
+            >
+              {resource?.zenodo?.title}
+            </Link>
+          </Typography>
         </Tooltip>
-      )}
+        {!resource?.approved && (
+          <Tooltip title="Resource pending approval">
+            <PendingActionsIcon color="warning" fontSize="small" />
+          </Tooltip>
+        )}
+      </Stack>
+
       <ResourceItemCommunities resource={resource} />
     </Stack>
   );
