@@ -1,22 +1,44 @@
 services:
-  graspos-frontend:
-    depends_on:
-      graspos-backend:
-        condition: service_started
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
+  frontend:
     container_name: graspos-frontend
-
-    ports:
-      - "5173:80"
+    build:
+      context: .
+      dockerfile: ${FRONTEND_DOCKERFILE:-./frontend/Dockerfile.dev}
     env_file:
       - .env
+    ports:
+      - "${FRONTEND_HOST_PORT:-5173}:${FRONTEND_PORT:-5173}"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     restart: always
     environment:
       - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      graspos-backend:
+        condition: service_started
     networks:
       - api_bridge
+    profiles:
+      - dev
+
+  graspos-frontend:
+    container_name: graspos-frontend
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile.prod
+    env_file:
+      - .env
+    ports:
+      - "${FRONTEND_HOST_PORT:-5173}:80"
+    restart: always
+    depends_on:
+      graspos-backend:
+        condition: service_started
+    networks:
+      - api_bridge
+    profiles:
+      - prod
 
   graspos-backend:
     container_name: graspos-backend
@@ -24,11 +46,11 @@ services:
     restart: always
     depends_on:
       mongodb:
-        condition: service_started
+        condition: service_healthy
     env_file:
       - .env
     ports:
-      - "8001:8080"
+      - "${REACT_APP_BACKEND_HOST_PORT:-8000}:8080"
     volumes:
       - ./backend/app:/code/app
     networks:
@@ -37,10 +59,14 @@ services:
   mongodb:
     container_name: mongodb
     image: ${MONGO_IMAGE}
-    platform: ${MONGO_PLATFORM}
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "which mongosh && mongosh --eval \"db.adminCommand('ping')\" || mongo --eval \"db.adminCommand('ping')\""]
+      interval: 10s
+      timeout: 10s
+      retries: 5
     ports:
-      - "${MONGO_CONTAINER_PORT}:27017"
+      - "${MONGO_CONTAINER_PORT:-27017}:27017"
     env_file:
       - .env
     volumes:
