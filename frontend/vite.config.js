@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
     define: {
       "process.env.REACT_APP_BACKEND_HOST": JSON.stringify(
         env.REACT_APP_BACKEND_HOST +
-          (env.PROD==="yes"
+          (env.REACT_APP_PROD==="yes"
             ? env.REACT_APP_BACKEND_PROXY_PATH
             : ":" +
               env.REACT_APP_BACKEND_HOST_PORT +

@@ -46,17 +46,19 @@ app.include_router(auth.router)
 app.include_router(mail.router)
 app.include_router(register.router)
 
-origins = [
-    "http://localhost", "http://localhost:5173", "http://localhost:5173/catalogue/",
-    "https://graspos-infra.athenarc.gr/catalogue/"
-]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost",
+        "http://localhost:5173/catalogue",
+        "https://graspos-infra.athenarc.gr",
+        "https://graspos-infra.athenarc.gr/catalogue",
+    ],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 import secrets
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials

@@ -14,7 +14,6 @@ services:
     restart: always
     environment:
       - CHOKIDAR_USEPOLLING=true
-      - PROD=no
     depends_on:
       graspos-backend:
         condition: service_started
@@ -33,8 +32,6 @@ services:
     ports:
       - "${FRONTEND_HOST_PORT:-5173}:82"
     restart: always
-    environment:
-      - PROD=yes
     depends_on:
       graspos-backend:
         condition: service_started

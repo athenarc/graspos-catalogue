@@ -10,11 +10,11 @@ class Settings(BaseModel):
     root_url: str = config("ROOT_URL", default="http://localhost:8080")
     
     # MONGO ENGINE SETTINGS
-    mongo_user: str = config("MONGO_INITDB_ROOT_USERNAME")
-    mongo_pass: str = config("MONGO_INITDB_ROOT_PASSWORD")
-    mongo_host: str = config("MONGO_HOST")
-    mongo_container_port: str = config("MONGO_CONTAINER_PORT")
-    mongo_initdb_database: str = config("MONGO_INITDB_DATABASE")
+    mongo_user: str = config("MONGO_INITDB_ROOT_USERNAME", "graspos")
+    mongo_pass: str = config("MONGO_INITDB_ROOT_PASSWORD", "graspos")
+    mongo_host: str = config("MONGO_HOST", "mongodb")
+    mongo_container_port: str = config("MONGO_CONTAINER_PORT", default=27017)
+    mongo_initdb_database: str = config("MONGO_INITDB_DATABASE", default="graspos")
     mongodb_uri: str = f"mongodb://{mongo_user}:{mongo_pass}@{mongo_host}:{mongo_container_port}/"
 
     # SECURITY SETTINGS
