@@ -46,17 +46,19 @@ app.include_router(auth.router)
 app.include_router(mail.router)
 app.include_router(register.router)
 
-origins = [
-    "http://localhost", "http://localhost:5173",
-    "https://graspos-infra.athenarc.gr/catalogue/"
-]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost",
+        "http://localhost:5173/catalogue",
+        "https://graspos-infra.athenarc.gr",
+        "https://graspos-infra.athenarc.gr/catalogue",
+    ],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 import secrets
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -70,9 +72,9 @@ security = HTTPBasic()
 def get_current_username(
         credentials: HTTPBasicCredentials = Depends(security)):
     correct_username = secrets.compare_digest(credentials.username,
-                                              CONFIG.backend_docs_username)
+                                              CONFIG.mongo_super_user)
     correct_password = secrets.compare_digest(credentials.password,
-                                              CONFIG.backend_docs_password)
+                                              CONFIG.mongo_super_user_password)
     if not (correct_username and correct_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

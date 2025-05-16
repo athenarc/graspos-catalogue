@@ -1,15 +1,25 @@
-# build env
 FROM node AS build
+
 WORKDIR /app
-COPY package*.json ./
+
+COPY frontend/package*.json ./
+
 RUN npm install
-COPY . ./
+
+COPY frontend/ .
+
+COPY .env .env
+
 RUN npm run build
 
-# production env
 FROM nginx:stable-alpine
+
 COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
+
 WORKDIR /usr/share/nginx/html
-EXPOSE 82
+
+EXPOSE 80
+
 CMD ["nginx", "-g", "daemon off;"]
