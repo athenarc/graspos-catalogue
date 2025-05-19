@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Stack, Tabs, Tab, Grid2, Typography } from "@mui/material";
+import { Box, Stack, Tabs, Tab } from "@mui/material";
 import ResourcesGrid from "./Resources";
 import { useURLFilters } from "./FiltersLayout/Filters/Utils/useURLFilters";
 import FiltersLayout from "./FiltersLayout/Layout";
@@ -8,6 +8,9 @@ import SortFilter from "./FiltersLayout/Filters/SortFilter";
 import { useDatasets } from "../../queries/dataset";
 import { useTools } from "../../queries/tool";
 import { useDocuments } from "../../queries/document";
+import LicenseAutocompleteFilter from "./FiltersLayout/Filters/LicenseMultiAutocompleteFilter";
+import DateFilter from "./FiltersLayout/Filters/DatePickerFilter";
+import TagAutoCompleteFilter from "./FiltersLayout/Filters/TagAutocompleteFilter";
 
 function ResourcesTabs({
   selectedResource,
@@ -104,7 +107,7 @@ export default function ResourcesGridLayout({ user }) {
         handleChangeFilters={handleChangeFilters}
         onResetFilters={handleResetFilters}
       />
-      <Stack direction="column" sx={{ width: "100%" }}>
+      <Stack direction="column">
         <ResourcesTabs
           selectedResource={selectedResource}
           handleSetSelectedResource={handleSetSelectedResource}
@@ -112,31 +115,39 @@ export default function ResourcesGridLayout({ user }) {
           handleChangeFilters={handleChangeFilters}
           resourcesFetched={resourcesFetched}
         />
-        <Grid2 container p={1} alignItems="end">
-          <Grid2 size={8} p={1}></Grid2>
-          <Grid2 size={4}>
-            <SortFilter
-              filters={filters}
-              onFilterChange={handleChangeFilters}
-            />
-          </Grid2>
-        </Grid2>
-
         <Stack
-          direction="column"
-          sx={{ maxHeight: "65dvh", overflowY: "auto" }}
+          direction={{ md: "column", lg: "row" }}
+          gap={2}
+          justifyContent="center"
+          sx={{ p: 2 }}
         >
-          <ResourcesGrid
-            user={user}
+          <LicenseAutocompleteFilter
+            selectedFilters={filters}
             selectedResource={selectedResource}
-            resourceFilter={resourceFilter}
-            filters={filters}
-            setResourcesFetched={setResourcesFetched}
-            datasets={datasets}
-            documents={documents}
-            tools={tools}
+            onFilterChange={handleChangeFilters}
           />
+          <TagAutoCompleteFilter
+            selectedFilters={filters}
+            selectedResource={selectedResource}
+            onFilterChange={handleChangeFilters}
+          />
+          <DateFilter
+            selectedFilters={filters}
+            onFilterChange={handleChangeFilters}
+          />
+          <SortFilter filters={filters} onFilterChange={handleChangeFilters} />
         </Stack>
+
+        <ResourcesGrid
+          user={user}
+          selectedResource={selectedResource}
+          resourceFilter={resourceFilter}
+          filters={filters}
+          setResourcesFetched={setResourcesFetched}
+          datasets={datasets}
+          documents={documents}
+          tools={tools}
+        />
       </Stack>
     </Stack>
   );
