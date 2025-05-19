@@ -184,7 +184,7 @@ mongodb/docker-entrypoint-initdb.d/*
 backend/test/*
 
 docker-compose-dev.yaml
-/frontend/Dockerfile.dev
+# /frontend/Dockerfile.dev
 
 vm.txt
 
