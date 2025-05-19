@@ -75,7 +75,7 @@ export default function TagAutoCompleteFilter({
       renderInput={(params) => (
         <TextField {...params} variant="outlined" placeholder="Select tags" />
       )}
-      sx={{ width: { xs: "100%", lg: "50%" } }}
+      sx={{ width: { xs: "100%", lg: "60%" } }}
     />
   );
 }

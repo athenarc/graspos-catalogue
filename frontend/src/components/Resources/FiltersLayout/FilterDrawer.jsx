@@ -63,7 +63,7 @@ export default function ResourcesFiltersDrawer({
           keepMounted: true,
         }}
       >
-        <Stack spacing={2} sx={{ mt: 9, px: 2 }}>
+        <Stack spacing={2} sx={{ mt: 9 }}>
           <ResourceFilters {...resourceFiltersProps} />
         </Stack>
 
