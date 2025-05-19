@@ -107,7 +107,7 @@ export default function ResourcesGridLayout({ user }) {
         handleChangeFilters={handleChangeFilters}
         onResetFilters={handleResetFilters}
       />
-      <Stack direction="column">
+      <Stack direction="column" sx={{width: "100%"}}>
         <ResourcesTabs
           selectedResource={selectedResource}
           handleSetSelectedResource={handleSetSelectedResource}
