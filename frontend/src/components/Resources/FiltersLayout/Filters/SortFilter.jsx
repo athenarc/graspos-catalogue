@@ -28,8 +28,8 @@ export default function SortFilter({ filters, onFilterChange }) {
           <MenuItem value="views|desc">Views ↓</MenuItem>
           <MenuItem value="downloads|asc">Downloads ↑</MenuItem>
           <MenuItem value="downloads|desc">Downloads ↓</MenuItem>
-          <MenuItem value="dates|asc">Publication Dates ↑</MenuItem>
-          <MenuItem value="dates|desc">Publication Dates ↓</MenuItem>
+          <MenuItem value="dates|asc">Publication date ↑</MenuItem>
+          <MenuItem value="dates|desc">Publication date ↓</MenuItem>
         </Select>
       </FormControl>
     </Stack>

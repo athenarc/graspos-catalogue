@@ -51,8 +51,8 @@ function UpdateRecords({ update }) {
               <TableHead>
                 <TableRow>
                   <TableCell>Title</TableCell>
-                  <TableCell>Previous Version</TableCell>
-                  <TableCell>New Version</TableCell>
+                  <TableCell>Previous version</TableCell>
+                  <TableCell>New version</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -78,8 +78,8 @@ function UpdatesTable({ updates }) {
       <TableHead>
         <TableRow>
           <TableCell></TableCell>
-          <TableCell>Resources Updated</TableCell>
-          <TableCell>Updated On</TableCell>
+          <TableCell>Number of resources</TableCell>
+          <TableCell>Timestamp</TableCell>
           <TableCell></TableCell>
         </TableRow>
       </TableHead>
@@ -132,7 +132,7 @@ export default function UpdatesModal() {
             textAlign: "center",
           }}
         >
-          Resource Updates From Zenodo
+          Resource updates
         </DialogTitle>
         <IconButton
           aria-label="close"
@@ -160,7 +160,7 @@ export default function UpdatesModal() {
             loadingPosition="end"
             sx={{ backgroundColor: "#20477B" }}
           >
-            Update Resources
+            Update resources
           </Button>
         </DialogActions>
         {(updateZenodo?.isSuccess || updateZenodo?.isError) && (
