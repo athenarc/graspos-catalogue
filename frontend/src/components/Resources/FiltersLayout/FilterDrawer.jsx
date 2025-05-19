@@ -5,6 +5,7 @@ import {
   useTheme,
   Fab,
   Button,
+  Box,
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useState } from "react";
@@ -44,11 +45,14 @@ export default function ResourcesFiltersDrawer({
       <Drawer
         sx={{
           width: 350,
-          height: "100%",
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: 350,
+            height: "100vh",
             boxSizing: "border-box",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
           },
         }}
         variant={isMobile ? "temporary" : "permanent"}
@@ -59,19 +63,23 @@ export default function ResourcesFiltersDrawer({
           keepMounted: true,
         }}
       >
-        <Stack direction="column" sx={{ height: "100%", mt: 9 }}>
+        <Stack spacing={2} sx={{ mt: 9, px: 2 }}>
           <ResourceFilters {...resourceFiltersProps} />
-
-          <Stack direction="column" sx={{ p: 2 }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => onResetFilters(false)}
-            >
-              Reset Filters
-            </Button>
-          </Stack>
         </Stack>
+
+        <Box sx={{ p: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={() => {
+              if (isMobile) toggleDrawer();
+              onResetFilters(false);
+            }}
+          >
+            Reset Filters
+          </Button>
+        </Box>
       </Drawer>
     </>
   );
