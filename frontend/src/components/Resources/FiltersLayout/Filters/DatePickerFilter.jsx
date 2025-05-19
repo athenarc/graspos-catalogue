@@ -1,4 +1,4 @@
-import { Divider, Stack, Typography, Card } from "@mui/material";
+import { Stack } from "@mui/material";
 import { useCallback, useEffect } from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -7,14 +7,11 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 export default function DateFilter({ selectedFilters, onFilterChange }) {
   const { dateRange } = selectedFilters || {};
 
-  // Extract the start and end dates directly from selectedFilters
   const startDate = dateRange?.startDate ? new Date(dateRange.startDate) : null;
   const endDate = dateRange?.endDate ? new Date(dateRange.endDate) : null;
 
-  // Handle filter change when date range changes
   const handleDateRangeChange = useCallback(
     (newStartDate, newEndDate) => {
-      // Only call onFilterChange if there is a change in the date range
       const hasChanged =
         (newStartDate &&
           newStartDate.toISOString() !== selectedFilters.dateRange.startDate) ||
@@ -30,40 +27,29 @@ export default function DateFilter({ selectedFilters, onFilterChange }) {
         });
       }
     },
-    [selectedFilters, onFilterChange] // Dependency on selectedFilters
+    [selectedFilters, onFilterChange]
   );
 
-  useEffect(() => {
-    // If the selectedFilters.dateRange is changed externally, no need to update state
-    // This effect ensures that the component is properly synced with the parent
-  }, [selectedFilters]);
+  useEffect(() => {}, [selectedFilters]);
 
   return (
-    <Card>
-      <Typography
-        variant="h6"
-        sx={{ pl: 1, backgroundColor: "lightblue", color: "white" }}
-      >
-        Publication date
-      </Typography>
-      <Divider />
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Stack spacing={2} p={2} sx={{ overflow: "auto", maxHeight: "20dvh" }}>
-          <DatePicker
-            label="Start date"
-            value={startDate}
-            onChange={(newValue) => handleDateRangeChange(newValue, endDate)}
-            disableFuture
-          />
-          <DatePicker
-            label="End date"
-            value={endDate}
-            onChange={(newValue) => handleDateRangeChange(startDate, newValue)}
-            disableFuture
-          />
-        </Stack>
-      </LocalizationProvider>
-      <Divider />
-    </Card>
+    <LocalizationProvider dateAdapter={AdapterDateFns} sx={{ p: 0 }}>
+      <Stack direction="row" spacing={2}>
+        <DatePicker
+          label="Start date"
+          value={startDate}
+          onChange={(newValue) => handleDateRangeChange(newValue, endDate)}
+          disableFuture
+          sx={{ width: { xs: "100%", md: "50%" } }}
+        />
+        <DatePicker
+          label="End date"
+          value={endDate}
+          onChange={(newValue) => handleDateRangeChange(startDate, newValue)}
+          disableFuture
+          sx={{ width: { xs: "100%", md: "50%" } }}
+        />
+      </Stack>
+    </LocalizationProvider>
   );
 }
