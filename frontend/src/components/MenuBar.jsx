@@ -24,22 +24,58 @@ export default function MenuBar({ handleLogout, user }) {
       justifyContent="center"
       sx={{
         backgroundColor: "#20477B",
-        boxShadow:
-          " rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;",
+        boxShadow: "rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;",
         width: "100%",
         position: "relative;",
         zIndex: "1202",
         px: 2,
         py: 1,
+        minHeight: { xs: 56, sm: 64 }, // 7 units for mobile, 8 units for desktop
+        display: "flex",
+        padding: "12px 14px",
       }}
     >
-      <Grid size={4} sx={{ margin: "auto", textAlign: "left" }}>
-        <Link to="https://graspos-infra.athenarc.gr/" target="_blank">
-          <img src={logo} alt="GraspOS-Logo" width={150} height={40} />
+      <Grid
+        size={4}
+        sx={{
+          margin: "auto",
+          textAlign: "left",
+          display: "flex",
+          alignItems: "center",
+          height: "100%",
+        }}
+      >
+        <Link
+          to="https://graspos-infra.athenarc.gr/"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            height: "100%",
+          }}
+        >
+          <img
+            src={logo}
+            alt="GraspOS-Logo"
+            style={{
+              height: "48px", // 6 spacing units (6 * 8px)
+              width: "auto",
+              objectFit: "contain",
+            }}
+          />
         </Link>
       </Grid>
       <Grid size={4} sx={{ margin: "auto", textAlign: "center" }}></Grid>
-      <Grid size={4} sx={{ textAlign: "right", margin: "auto" }}>
+      <Grid
+        size={4}
+        sx={{
+          textAlign: "right",
+          margin: "auto",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-end",
+          height: "100%",
+        }}
+      >
         <Stack direction="row" justifyContent="flex-end">
           {!user && (
             <Stack direction="row" spacing={1}>
