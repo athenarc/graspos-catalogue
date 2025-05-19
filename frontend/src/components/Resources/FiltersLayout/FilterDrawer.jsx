@@ -59,7 +59,7 @@ export default function ResourcesFiltersDrawer({
           keepMounted: true,
         }}
       >
-        <Stack direction="column" sx={{ height: "100%", mt: 7.5 }}>
+        <Stack direction="column" sx={{ height: "100%", mt: 9 }}>
           <ResourceFilters {...resourceFiltersProps} />
 
           <Stack direction="column" sx={{ p: 2 }}>

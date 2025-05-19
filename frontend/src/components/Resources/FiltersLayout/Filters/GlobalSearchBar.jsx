@@ -40,7 +40,7 @@ export default function GlobalSearchBar({
           }}
           size="small"
           variant="outlined"
-          placeholder="Search Resources..."
+          placeholder="Search resources..."
           value={textValue}
           onChange={handleTextChange}
           sx={{

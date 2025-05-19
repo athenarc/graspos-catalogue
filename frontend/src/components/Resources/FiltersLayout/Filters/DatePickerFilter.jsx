@@ -44,19 +44,19 @@ export default function DateFilter({ selectedFilters, onFilterChange }) {
         variant="h6"
         sx={{ pl: 1, backgroundColor: "lightblue", color: "white" }}
       >
-        Publication Date
+        Publication date
       </Typography>
       <Divider />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Stack spacing={2} p={2} sx={{ overflow: "auto", maxHeight: "20dvh" }}>
           <DatePicker
-            label="Start Date"
+            label="Start date"
             value={startDate}
             onChange={(newValue) => handleDateRangeChange(newValue, endDate)}
             disableFuture
           />
           <DatePicker
-            label="End Date"
+            label="End date"
             value={endDate}
             onChange={(newValue) => handleDateRangeChange(startDate, newValue)}
             disableFuture
