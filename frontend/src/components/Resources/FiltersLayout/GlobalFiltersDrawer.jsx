@@ -6,6 +6,8 @@ import {
   Fab,
   Button,
   Box,
+  Typography,
+  Divider,
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { useState } from "react";
@@ -15,7 +17,7 @@ export default function ResourcesFiltersDrawer({
   resourceFiltersProps,
   onResetFilters,
   isMobile,
-  theme
+  theme,
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -63,7 +65,23 @@ export default function ResourcesFiltersDrawer({
           keepMounted: true,
         }}
       >
-        <Stack spacing={2} sx={{ mt: 9 }}>
+        <Stack gap={2} sx={{ mt: 9 }}>
+          <Typography
+            variant="h5"
+            sx={{
+              px: 2,
+              pt: 2,
+              pb: 0,
+              fontWeight: 600,
+              textTransform: "uppercase",
+              textAlign: "center",
+              color: "text.secondary",
+            }}
+          >
+            Filters
+          </Typography>
+
+          <Divider sx={{ m: 0, pb: 0 }} />
           <ResourceFilters {...resourceFiltersProps} />
         </Stack>
 
