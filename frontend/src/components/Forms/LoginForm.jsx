@@ -69,7 +69,7 @@ export default function LoginForm() {
             textAlign: "center",
           }}
         >
-          Login Form
+          Login form
         </DialogTitle>
         <IconButton
           aria-label="close"

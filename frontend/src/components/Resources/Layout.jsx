@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Stack, Tabs, Tab, Grid2, Typography } from "@mui/material";
+import { Box, Stack, Tabs, Tab } from "@mui/material";
 import ResourcesGrid from "./Resources";
 import { useURLFilters } from "./FiltersLayout/Filters/Utils/useURLFilters";
 import FiltersLayout from "./FiltersLayout/Layout";
@@ -8,6 +8,9 @@ import SortFilter from "./FiltersLayout/Filters/SortFilter";
 import { useDatasets } from "../../queries/dataset";
 import { useTools } from "../../queries/tool";
 import { useDocuments } from "../../queries/document";
+import LicenseAutocompleteFilter from "./FiltersLayout/Filters/LicenseMultiAutocompleteFilter";
+import DateFilter from "./FiltersLayout/Filters/DatePickerFilter";
+import TagAutoCompleteFilter from "./FiltersLayout/Filters/TagAutocompleteFilter";
 
 function ResourcesTabs({
   selectedResource,
@@ -97,14 +100,28 @@ export default function ResourcesGridLayout({ user }) {
   }, [datasets?.data, tools?.data, documents?.data]);
 
   return (
-    <Stack direction="row">
-      <FiltersLayout
-        selectedResource={selectedResource}
-        selectedFilters={filters}
-        handleChangeFilters={handleChangeFilters}
-        onResetFilters={handleResetFilters}
-      />
-      <Stack direction="column" sx={{ width: "100%" }}>
+    <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+      <Box
+        sx={{
+          width: { xs: 0, md: 350 },
+          flexShrink: 0,
+        }}
+      >
+        <FiltersLayout
+          selectedResource={selectedResource}
+          selectedFilters={filters}
+          handleChangeFilters={handleChangeFilters}
+          onResetFilters={handleResetFilters}
+        />
+      </Box>
+      <Box
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden", // 👈 Κλείδωσε scroll από πάνω
+        }}
+      >
         <ResourcesTabs
           selectedResource={selectedResource}
           handleSetSelectedResource={handleSetSelectedResource}
@@ -112,20 +129,29 @@ export default function ResourcesGridLayout({ user }) {
           handleChangeFilters={handleChangeFilters}
           resourcesFetched={resourcesFetched}
         />
-        <Grid2 container p={1} alignItems="end">
-          <Grid2 size={8} p={1}></Grid2>
-          <Grid2 size={4}>
-            <SortFilter
-              filters={filters}
-              onFilterChange={handleChangeFilters}
-            />
-          </Grid2>
-        </Grid2>
-
         <Stack
-          direction="column"
-          sx={{ maxHeight: "65dvh", overflowY: "auto" }}
+          direction={{ md: "column", lg: "row" }}
+          gap={2}
+          justifyContent="center"
+          sx={{ p: 4 }}
         >
+          <LicenseAutocompleteFilter
+            selectedFilters={filters}
+            selectedResource={selectedResource}
+            onFilterChange={handleChangeFilters}
+          />
+          <TagAutoCompleteFilter
+            selectedFilters={filters}
+            selectedResource={selectedResource}
+            onFilterChange={handleChangeFilters}
+          />
+          <DateFilter
+            selectedFilters={filters}
+            onFilterChange={handleChangeFilters}
+          />
+          <SortFilter filters={filters} onFilterChange={handleChangeFilters} />
+        </Stack>
+        <Box sx={{ flexGrow: 1, overflowY: "auto", p: 2, pb: 12, pt: 1 }}>
           <ResourcesGrid
             user={user}
             selectedResource={selectedResource}
@@ -136,8 +162,8 @@ export default function ResourcesGridLayout({ user }) {
             documents={documents}
             tools={tools}
           />
-        </Stack>
-      </Stack>
-    </Stack>
+        </Box>
+      </Box>
+    </Box>
   );
 }

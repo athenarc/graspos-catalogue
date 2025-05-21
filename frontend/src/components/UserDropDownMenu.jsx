@@ -102,7 +102,7 @@ export default function UserDropDownMenu({
               <Avatar>
                 <SystemUpdateAltIcon />
               </Avatar>
-              Zenodo Updates
+              Resource updates
             </MenuItem>
           </>
         )}

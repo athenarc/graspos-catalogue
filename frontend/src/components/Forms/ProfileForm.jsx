@@ -123,7 +123,7 @@ export default function ProfileForm() {
               textAlign: "center",
             }}
           >
-            My Profile
+            My profile
           </DialogTitle>
           <IconButton
             aria-label="close"

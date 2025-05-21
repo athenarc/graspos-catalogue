@@ -1,17 +1,10 @@
-import {
-  Autocomplete,
-  TextField,
-  Card,
-  Typography,
-  Divider,
-  Chip,
-} from "@mui/material";
+import { Autocomplete, TextField, Chip } from "@mui/material";
 import { useDatasetUniqueFieldValues } from "../../../../queries/dataset";
 import { useDocumentUniqueFieldValues } from "../../../../queries/document";
 import { useToolUniqueFieldValues } from "../../../../queries/tool";
 import { useEffect, useState } from "react";
 
-export default function KeywordAutocompleteFilter({
+export default function TagAutoCompleteFilter({
   selectedResource,
   selectedFilters,
   onFilterChange,
@@ -68,35 +61,21 @@ export default function KeywordAutocompleteFilter({
   };
 
   return (
-    <Card>
-      <Typography
-        variant="h6"
-        sx={{ pl: 1, backgroundColor: "lightblue", color: "white" }}
-      >
-        Tags
-      </Typography>
-      <Divider />
-      <Autocomplete
-        multiple
-        options={tagOptions}
-        value={selectedTags}
-        onChange={handleChange}
-        getOptionLabel={(option) => option}
-        renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <Chip label={option} {...getTagProps({ index })} key={option} />
-          ))
-        }
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant="outlined"
-            placeholder="Select tags"
-          />
-        )}
-        sx={{ p: 2 }}
-      />
-      <Divider />
-    </Card>
+    <Autocomplete
+      multiple
+      options={tagOptions}
+      value={selectedTags}
+      onChange={handleChange}
+      getOptionLabel={(option) => option}
+      renderTags={(value, getTagProps) =>
+        value.map((option, index) => (
+          <Chip label={option} {...getTagProps({ index })} key={option} />
+        ))
+      }
+      renderInput={(params) => (
+        <TextField {...params} variant="outlined" placeholder="Select tags" />
+      )}
+      sx={{ width: { xs: "100%", lg: "60%" } }}
+    />
   );
 }
