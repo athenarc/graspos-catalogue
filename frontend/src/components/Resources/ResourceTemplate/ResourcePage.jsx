@@ -299,16 +299,16 @@ export function ResourceStatistics({ resource }) {
                   fontWeight="500" 
                   color="primary.main"
                 >
-                  {resource?.data?.data?.zenodo?.stats?.views ?? 0}
+                  {resource?.data?.data?.zenodo?.stats?.downloads ?? 0}
                 </Typography>
                 <Stack 
                   direction="row" 
                   spacing={1} 
                   alignItems="center"
                 >
-                  <VisibilityIcon sx={{ fontSize: "1.1rem", color: 'text.secondary' }} />
+                  <DownloadIcon sx={{ fontSize: "1.1rem", color: 'text.secondary' }} />
                   <Typography variant="body2" color="text.secondary">
-                    views
+                    downloads
                   </Typography>
                 </Stack>
               </Stack>
@@ -326,16 +326,16 @@ export function ResourceStatistics({ resource }) {
                   fontWeight="500" 
                   color="primary.main"
                 >
-                  {resource?.data?.data?.zenodo?.stats?.downloads ?? 0}
+                  {resource?.data?.data?.zenodo?.stats?.views ?? 0}
                 </Typography>
                 <Stack 
                   direction="row" 
                   spacing={1} 
                   alignItems="center"
                 >
-                  <DownloadIcon sx={{ fontSize: "1.1rem", color: 'text.secondary' }} />
+                  <VisibilityIcon sx={{ fontSize: "1.1rem", color: 'text.secondary' }} />
                   <Typography variant="body2" color="text.secondary">
-                    downloads
+                    views
                   </Typography>
                 </Stack>
               </Stack>
