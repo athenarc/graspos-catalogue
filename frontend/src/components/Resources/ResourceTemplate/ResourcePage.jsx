@@ -73,7 +73,6 @@ export function ResourceBasicInformation({ resource }) {
 
 export function ResourceAuthors({ resource }) {
   const authors = resource?.data?.data?.zenodo?.metadata?.creators || [];
-  console.log(authors);
   return (
     <Card
       sx={{
@@ -98,21 +97,51 @@ export function ResourceAuthors({ resource }) {
       <CardContent sx={{ textAlign: [resource.isLoading ? "center" : "left"] }}>
         {resource.isLoading && <CircularProgress size="3rem" />}
         {resource && (
-          <Stack direction="column">
+          <Stack direction="column" spacing={1}>
             {authors.map((author) => (
-              <Stack direction="row" key={author?.name} alignItems="center">
-                {author?.name + " " + author?.affiliation}
-                {author?.orcid && (
-                  <Link
-                    to={"https://orcid.org/" + author?.orcid}
-                    target="_blank"
+              <Stack direction="column" key={author?.name} spacing={0.5}>
+                <Stack direction="row" alignItems="center">
+                  {author?.orcid ? (
+                    <Link
+                      to={"https://orcid.org/" + author?.orcid}
+                      target="_blank"
+                      style={{ textDecoration: 'none' }}
+                    >
+                      <Stack direction="row" alignItems="center">
+                        <Typography 
+                          variant="body1" 
+                          fontWeight={500}
+                          sx={{ 
+                            color: 'text.primary',
+                            '&:hover': { color: 'primary.main' }
+                          }}
+                        >
+                          {author?.name}
+                        </Typography>
+                        <Avatar
+                          sx={{ bgcolor: "#A6CE39", width: 20, height: 20, ml: 1 }}
+                          alt="orcid"
+                          src={orcidLogo}
+                        />
+                      </Stack>
+                    </Link>
+                  ) : (
+                    <Typography variant="body1" fontWeight={500}>
+                      {author?.name}
+                    </Typography>
+                  )}
+                </Stack>
+                {author?.affiliation && (
+                  <Typography 
+                    variant="body2" 
+                    color="text.secondary"
+                    sx={{ 
+                      fontSize: "0.875rem",
+                      fontStyle: "italic"
+                    }}
                   >
-                    <Avatar
-                      sx={{ bgcolor: "#A6CE39", width: 20, height: 20, ml: 1 }}
-                      alt="orcid"
-                      src={orcidLogo}
-                    />
-                  </Link>
+                    {author.affiliation}
+                  </Typography>
                 )}
               </Stack>
             ))}
