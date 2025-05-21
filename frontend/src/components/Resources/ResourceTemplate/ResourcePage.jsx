@@ -3,8 +3,10 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Chip,
   CircularProgress,
   Grid2 as Grid,
+  Grid2,
   Stack,
   Typography,
 } from "@mui/material";
@@ -72,6 +74,8 @@ export function ResourceAuthors({ resource }) {
 }
 
 export function ResourceTags({ resource }) {
+  console.log(resource?.data?.data?.zenodo?.metadata?.keywords);
+  const keywords = resource?.data?.data?.zenodo?.metadata?.keywords;
   return (
     <Card>
       <CardHeader
@@ -80,12 +84,27 @@ export function ResourceTags({ resource }) {
       <CardContent sx={{ textAlign: [resource.isLoading ? "center" : "left"] }}>
         {resource.isLoading && <CircularProgress size="3rem" />}
         {resource && (
-          <Stack direction="column">
-            {resource?.data?.data?.zenodo?.metadata?.keywords?.map((tag) => (
-              <Stack direction="row" key={tag}>
-                {tag}
-              </Stack>
-            ))}
+          <Stack direction="column" justifyContent="center">
+            {keywords?.length > 0 ? (
+              <Grid2 container spacing={1}>
+                {keywords?.map((keyword) => (
+                  <Chip
+                    key={keyword}
+                    label={keyword}
+                    color="primary"
+                    variant="outlined"
+                    size="small"
+                  />
+                ))}
+              </Grid2>
+            ) : (
+              <Typography
+                variant="body2"
+                sx={{ color: "text.secondary", fontStyle: "italic" }}
+              >
+                No tags available
+              </Typography>
+            )}
           </Stack>
         )}
       </CardContent>
