@@ -37,13 +37,13 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
 
     # License filtering
     if license:
-        search["$or"] = search.get("$or", [])
-        search["$or"].append({"zenodo.metadata.license.id": {"$in": license}})
+        search["$and"] = search.get("$and", [])
+        search["$and"].append({"zenodo.metadata.license.id": {"$in": license}})
 
     # Keyword filtering
     if tag:
-        search["$or"] = search.get("$or", [])
-        search["$or"].append({"zenodo.metadata.keywords": {"$in": tag}})
+        search["$and"] = search.get("$and", [])
+        search["$and"].append({"zenodo.metadata.keywords": {"$in": tag}})
 
     # GraspOS Verified filtering
     if graspos:
@@ -86,7 +86,7 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
         zenodo_ids = [
             PydanticObjectId(zenodo.id) for zenodo in zenodo_search_results
         ]  # Ensure IDs are strings
-        
+
         search["$and"] = search.get("$and", [])
         search["$and"].append({"zenodo._id": {"$in": zenodo_ids}}, )
 

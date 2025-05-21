@@ -1,8 +1,7 @@
-import { useTools, useTool } from "../../../queries/tool";
+import { useTool } from "../../../queries/tool";
 import { RectangularVariants } from "../../Skeleton";
 import ResourceGridItem from "../ResourceTemplate/ResourceGridItem";
 import {
-  Button,
   Fab,
   Grid2 as Grid,
   Stack,
@@ -52,23 +51,6 @@ export function Tools({ tools, user }) {
         >
           <AddIcon />
         </Fab>
-      )}
-
-      {user && !isMobile && (
-        <Button
-          color="primary"
-          variant="outlined"
-          component={Link}
-          to="/tool/add"
-          sx={{
-            position: "absolute",
-            right: 24,
-            bottom: 24,
-            backgroundColor: "#fff",
-          }}
-        >
-          Add Tool
-        </Button>
       )}
     </>
   );

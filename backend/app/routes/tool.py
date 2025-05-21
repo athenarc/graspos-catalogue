@@ -30,17 +30,17 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
         if user.super_user:
             tools = await Tool.find_all(fetch_links=True).to_list()
         else:
-            search["$or"] = [{"approved": True}]
-            search["$or"].append({"owner": user.id})
+            search["$and"] = [{"approved": True}]
+            search["$and"].append({"owner": user.id})
 
     # Keyword filtering
     if tag:
-        search["$or"] = search.get("$or", [])
-        search["$or"].append({"zenodo.metadata.keywords": {"$in": tag}})
+        search["$and"] = search.get("$and", [])
+        search["$and"].append({"zenodo.metadata.keywords": {"$in": tag}})
 
     if license:
-        search["$or"] = search.get("$or", [])
-        search["$or"].append({"zenodo.metadata.license.id": {"$in": license}})
+        search["$and"] = search.get("$and", [])
+        search["$and"].append({"zenodo.metadata.license.id": {"$in": license}})
 
     if graspos:
         search["$and"] = search.get("$and", [])

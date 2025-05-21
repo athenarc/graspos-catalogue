@@ -36,13 +36,13 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
             search["$or"].append({"owner": user.id})
 
     if license:
-        search["$or"] = search.get("$or", [])
-        search["$or"].append({"zenodo.metadata.license.id": {"$in": license}})
+        search["$and"] = search.get("$and", [])
+        search["$and"].append({"zenodo.metadata.license.id": {"$in": license}})
 
     # Keyword filtering
     if tag:
-        search["$or"] = search.get("$or", [])
-        search["$or"].append({"zenodo.metadata.keywords": {"$in": tag}})
+        search["$and"] = search.get("$and", [])
+        search["$and"].append({"zenodo.metadata.keywords": {"$in": tag}})
 
     if graspos:
 
