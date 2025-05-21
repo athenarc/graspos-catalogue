@@ -228,7 +228,7 @@ function ResourceItemCommunities({ resource }) {
   );
 }
 
-function ResourceItemFooter({ handleDelete, resource, user, type }) {
+export function ResourceItemFooter({ handleDelete, resource, user, type }) {
   return (
     <Stack
       direction="row"

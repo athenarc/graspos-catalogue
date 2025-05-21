@@ -1,10 +1,14 @@
 import {
+  Avatar,
+  Box,
   Button,
   Card,
   CardContent,
   CardHeader,
+  Chip,
   CircularProgress,
   Grid2 as Grid,
+  Grid2,
   Stack,
   Typography,
 } from "@mui/material";
@@ -12,10 +16,28 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import { Dataset } from "../Datasets/Datasets";
 import { Document } from "../Documents/Documents";
 import { Tool } from "../Tools/Tools";
+import orcidLogo from "../../../assets/orcid.logo.icon.svg";
+import { ResourceItemFooter } from "./ResourceGridItem";
 
 export function ResourceBasicInformation({ resource }) {
   return (
-    <Card>
+    <Card
+      sx={{
+        lineHeight: 1.5,
+        flexDirection: "column",
+        display: "flex",
+        justifyContent: "space-between",
+        borderRadius: "5px",
+        border: "1px solid #e0dfdf",
+        backgroundColor: "#f8faff",
+        boxShadow: 0,
+        transition: "box-shadow 0.3s ease-in-out",
+        "&:hover": {
+          boxShadow: 4,
+        },
+        color: "#555",
+      }}
+    >
       <CardHeader
         title={
           <Typography variant="h5">
@@ -35,13 +57,13 @@ export function ResourceBasicInformation({ resource }) {
         sx={{
           textAlign: [resource.isLoading ? "center" : "left"],
           overflowY: "auto",
-          maxHeight: "80dvh",
         }}
       >
         {resource.isLoading && <CircularProgress size="3rem" />}
         {resource && (
-          <Stack direction="column">
+          <Stack direction="column" gap={2}>
             {resource?.data?.data?.zenodo?.metadata?.description}
+            <ResourceItemFooter resource={resource?.data?.data} />
           </Stack>
         )}
       </CardContent>
@@ -50,8 +72,26 @@ export function ResourceBasicInformation({ resource }) {
 }
 
 export function ResourceAuthors({ resource }) {
+  const authors = resource?.data?.data?.zenodo?.metadata?.creators || [];
+  console.log(authors);
   return (
-    <Card>
+    <Card
+      sx={{
+        lineHeight: 1.5,
+        flexDirection: "column",
+        display: "flex",
+        justifyContent: "space-between",
+        borderRadius: "5px",
+        border: "1px solid #e0dfdf",
+        backgroundColor: "#f8faff",
+        boxShadow: 0,
+        transition: "box-shadow 0.3s ease-in-out",
+        "&:hover": {
+          boxShadow: 4,
+        },
+        color: "#555",
+      }}
+    >
       <CardHeader
         title={<Typography variant="h5">Authors</Typography>}
       ></CardHeader>
@@ -59,9 +99,21 @@ export function ResourceAuthors({ resource }) {
         {resource.isLoading && <CircularProgress size="3rem" />}
         {resource && (
           <Stack direction="column">
-            {resource?.data?.data?.zenodo?.metadata?.creators?.map((author) => (
-              <Stack direction="row" key={author?.name}>
+            {authors.map((author) => (
+              <Stack direction="row" key={author?.name} alignItems="center">
                 {author?.name + " " + author?.affiliation}
+                {author?.orcid && (
+                  <Link
+                    to={"https://orcid.org/" + author?.orcid}
+                    target="_blank"
+                  >
+                    <Avatar
+                      sx={{ bgcolor: "#A6CE39", width: 20, height: 20, ml: 1 }}
+                      alt="orcid"
+                      src={orcidLogo}
+                    />
+                  </Link>
+                )}
               </Stack>
             ))}
           </Stack>
@@ -72,20 +124,52 @@ export function ResourceAuthors({ resource }) {
 }
 
 export function ResourceTags({ resource }) {
+  const keywords = resource?.data?.data?.zenodo?.metadata?.keywords || [];
   return (
-    <Card>
+    <Card
+      sx={{
+        lineHeight: 1.5,
+        flexDirection: "column",
+        display: "flex",
+        justifyContent: "space-between",
+        borderRadius: "5px",
+        border: "1px solid #e0dfdf",
+        backgroundColor: "#f8faff",
+        boxShadow: 0,
+        transition: "box-shadow 0.3s ease-in-out",
+        "&:hover": {
+          boxShadow: 4,
+        },
+        color: "#555",
+      }}
+    >
       <CardHeader
         title={<Typography variant="h5">Tags</Typography>}
       ></CardHeader>
       <CardContent sx={{ textAlign: [resource.isLoading ? "center" : "left"] }}>
         {resource.isLoading && <CircularProgress size="3rem" />}
         {resource && (
-          <Stack direction="column">
-            {resource?.data?.data?.zenodo?.metadata?.keywords?.map((tag) => (
-              <Stack direction="row" key={tag}>
-                {tag}
-              </Stack>
-            ))}
+          <Stack direction="column" justifyContent="center">
+            {keywords?.length > 0 ? (
+              <Grid2 container spacing={1}>
+                {keywords?.map((keyword) => (
+                  <Chip
+                    key={keyword}
+                    label={keyword}
+                    color="primary"
+                    variant="outlined"
+                    size="small"
+                  />
+                ))}
+              </Grid2>
+            ) : (
+              <Typography
+                variant="body2"
+                sx={{ color: "text.secondary", fontStyle: "italic" }}
+              >
+                No tags available
+              </Typography>
+            )}
           </Stack>
         )}
       </CardContent>
@@ -95,7 +179,23 @@ export function ResourceTags({ resource }) {
 
 export function ResourceLicense({ resource }) {
   return (
-    <Card>
+    <Card
+      sx={{
+        lineHeight: 1.5,
+        flexDirection: "column",
+        display: "flex",
+        justifyContent: "space-between",
+        borderRadius: "5px",
+        border: "1px solid #e0dfdf",
+        backgroundColor: "#f8faff",
+        boxShadow: 0,
+        transition: "box-shadow 0.3s ease-in-out",
+        "&:hover": {
+          boxShadow: 4,
+        },
+        color: "#555",
+      }}
+    >
       <CardHeader
         title={<Typography variant="h5">License</Typography>}
       ></CardHeader>
@@ -114,29 +214,42 @@ export function ResourceLicense({ resource }) {
 export function ResourcePage() {
   const { resourceId } = useParams();
   const location = useLocation();
+
   return (
-    <Grid container spacing={2} p={2}>
-      {location.pathname.includes("dataset") && (
-        <Dataset resourceId={resourceId} />
-      )}
-      {location.pathname.includes("documents") && (
-        <Document resourceId={resourceId} />
-      )}
-      {location.pathname.includes("tools") && <Tool resourceId={resourceId} />}
-      <Button
-        color="primary"
-        variant="outlined"
-        component={Link}
-        to={-1}
-        sx={{
-          position: "absolute",
-          right: "24px",
-          bottom: "24px",
-          backgroundColor: "#fff",
-        }}
-      >
-        Back
-      </Button>
-    </Grid>
+    <Box
+      sx={{
+        position: "relative",
+        height: "calc(100vh - 112px)",
+        overflowY: "auto",
+        px: 2,
+        py: 2,
+      }}
+    >
+      <Grid container spacing={2} p={2} sx={{ minHeight: "100%" }}>
+        {location.pathname.includes("dataset") && (
+          <Dataset resourceId={resourceId} />
+        )}
+        {location.pathname.includes("documents") && (
+          <Document resourceId={resourceId} />
+        )}
+        {location.pathname.includes("tools") && (
+          <Tool resourceId={resourceId} />
+        )}
+        <Button
+          color="primary"
+          variant="outlined"
+          component={Link}
+          to={-1}
+          sx={{
+            position: "absolute",
+            right: "24px",
+            bottom: "24px",
+            backgroundColor: "#fff",
+          }}
+        >
+          Back
+        </Button>
+      </Grid>
+    </Box>
   );
 }
