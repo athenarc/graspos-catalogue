@@ -82,7 +82,7 @@ export default function RegisterForm() {
             textAlign: "center",
           }}
         >
-          Registration Form
+          Registration form
         </DialogTitle>
         <IconButton
           aria-label="close"
@@ -136,11 +136,11 @@ export default function RegisterForm() {
             />
             <TextField
               {...register("first_name")}
-              label="First Name"
+              label="First name"
               fullWidth
             />
 
-            <TextField {...register("last_name")} label="Last Name" fullWidth />
+            <TextField {...register("last_name")} label="Last name" fullWidth />
 
             <TextField
               {...register("orcid", {

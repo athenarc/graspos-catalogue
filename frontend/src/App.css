@@ -1,13 +1,32 @@
 * {
   font-family: "Montserrat", sans-serif !important;
 }
-body {
-  background: linear-gradient(-45deg, #7c89ff, #d6fff6);
-}
+
 html,
 body,
 #root {
   height: 100%;
   margin: 0;
   overflow: hidden;
+  letter-spacing: 0.3px;
+}
+
+/* Common text styles */
+p, span, div {
+  text-align: justify;
+}
+
+/* Headings specific styles */
+h1, h2, h3 {
+  font-weight: bold;
+}
+
+/* Links text */
+a {
+  color: rgb(174, 83, 142);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
