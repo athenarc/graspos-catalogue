@@ -30,10 +30,13 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
 
     if user:
         if user.super_user:
-            documents = await Documents.find_all(fetch_links=True).to_list()
+            datasets = await Documents.find_all(fetch_links=True).to_list()
+
         else:
             search["$or"] = [{"approved": True}]
             search["$or"].append({"owner": user.id})
+    else: 
+        search["$or"] = [{"approved": True}]
 
     if license:
         search["$and"] = search.get("$and", [])

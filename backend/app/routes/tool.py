@@ -28,10 +28,13 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
 
     if user:
         if user.super_user:
-            tools = await Tool.find_all(fetch_links=True).to_list()
+            datasets = await Tool.find_all(fetch_links=True).to_list()
+
         else:
-            search["$and"] = [{"approved": True}]
-            search["$and"].append({"owner": user.id})
+            search["$or"] = [{"approved": True}]
+            search["$or"].append({"owner": user.id})
+    else: 
+        search["$or"] = [{"approved": True}]
 
     # Keyword filtering
     if tag:

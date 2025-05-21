@@ -4,7 +4,7 @@ import ResourcesFiltersDrawer from "./GlobalFiltersDrawer";
 
 function ResourceFilters({ handleChangeFilters, selectedFilters }) {
   return (
-    <Stack direction="column" spacing={2} p={2} sx={{ flexGrow: 1 }}>
+    <Stack direction="column" spacing={2} sx={{ flexGrow: 1, px: 2 }}>
       <GrasposVerifiedFilter
         selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
