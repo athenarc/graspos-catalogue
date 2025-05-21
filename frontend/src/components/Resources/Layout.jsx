@@ -103,9 +103,8 @@ export default function ResourcesGridLayout({ user }) {
     <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <Box
         sx={{
-          width: 350,
+          width: { xs: 0, md: 350 },
           flexShrink: 0,
-          display: { xs: "none", md: "block" },
         }}
       >
         <FiltersLayout
@@ -134,7 +133,7 @@ export default function ResourcesGridLayout({ user }) {
           direction={{ md: "column", lg: "row" }}
           gap={2}
           justifyContent="center"
-          sx={{ p: 4  }}
+          sx={{ p: 4 }}
         >
           <LicenseAutocompleteFilter
             selectedFilters={filters}
