@@ -1,8 +1,7 @@
-import { useDocuments, useDocument } from "../../../queries/document";
+import { useDocument } from "../../../queries/document";
 import { RectangularVariants } from "../../Skeleton";
 import ResourceGridItem from "../ResourceTemplate/ResourceGridItem";
 import {
-  Button,
   Fab,
   Grid2 as Grid,
   Stack,
@@ -53,23 +52,6 @@ export function Documents({ documents, user }) {
         >
           <AddIcon />
         </Fab>
-      )}
-
-      {user && !isMobile && (
-        <Button
-          color="primary"
-          variant="outlined"
-          component={Link}
-          to="/document/add"
-          sx={{
-            position: "absolute",
-            right: 24,
-            bottom: 24,
-            backgroundColor: "#fff",
-          }}
-        >
-          Add Document
-        </Button>
       )}
     </>
   );

@@ -1,12 +1,8 @@
 import { Stack } from "@mui/material";
 import GrasposVerifiedFilter from "./Filters/GrasposFilterSwitch";
-import ResourcesFiltersDrawer from "./FilterDrawer";
+import ResourcesFiltersDrawer from "./GlobalFiltersDrawer";
 
-function ResourceFilters({
-  selectedResource,
-  handleChangeFilters,
-  selectedFilters,
-}) {
+function ResourceFilters({ handleChangeFilters, selectedFilters }) {
   return (
     <Stack direction="column" spacing={2} p={2} sx={{ flexGrow: 1 }}>
       <GrasposVerifiedFilter
@@ -22,9 +18,13 @@ export default function FiltersLayout({
   handleChangeFilters,
   onResetFilters,
   selectedFilters,
+  isMobile,
+  theme
 }) {
   return (
     <ResourcesFiltersDrawer
+      isMobile={isMobile}
+      theme={theme}
       onResetFilters={onResetFilters}
       ResourceFilters={ResourceFilters}
       resourceFiltersProps={{

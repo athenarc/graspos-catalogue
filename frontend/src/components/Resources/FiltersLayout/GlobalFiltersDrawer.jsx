@@ -14,9 +14,9 @@ export default function ResourcesFiltersDrawer({
   ResourceFilters,
   resourceFiltersProps,
   onResetFilters,
+  isMobile,
+  theme
 }) {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const toggleDrawer = () => {

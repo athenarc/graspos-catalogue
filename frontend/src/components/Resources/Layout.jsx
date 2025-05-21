@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
-import { Box, Stack, Tabs, Tab } from "@mui/material";
+import { Box, Stack, Tabs, Tab, useTheme, useMediaQuery } from "@mui/material";
 import ResourcesGrid from "./Resources";
 import { useURLFilters } from "./FiltersLayout/Filters/Utils/useURLFilters";
 import FiltersLayout from "./FiltersLayout/Layout";
 import GlobalSearchBar from "./FiltersLayout/Filters/GlobalSearchBar";
-import SortFilter from "./FiltersLayout/Filters/SortFilter";
 import { useDatasets } from "../../queries/dataset";
 import { useTools } from "../../queries/tool";
 import { useDocuments } from "../../queries/document";
-import LicenseAutocompleteFilter from "./FiltersLayout/Filters/LicenseMultiAutocompleteFilter";
-import DateFilter from "./FiltersLayout/Filters/DatePickerFilter";
-import TagAutoCompleteFilter from "./FiltersLayout/Filters/TagAutocompleteFilter";
+import LocalFiltersStack from "./FiltersLayout/LocalFiltersStack";
 
 function ResourcesTabs({
   selectedResource,
@@ -79,6 +76,9 @@ export default function ResourcesGridLayout({ user }) {
     Documents: { results: 0 },
     Tools: { results: 0 },
   });
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const {
     filters,
     selectedResource,
@@ -112,6 +112,8 @@ export default function ResourcesGridLayout({ user }) {
           selectedFilters={filters}
           handleChangeFilters={handleChangeFilters}
           onResetFilters={handleResetFilters}
+          isMobile={isMobile}
+          theme={theme}
         />
       </Box>
       <Box
@@ -119,7 +121,7 @@ export default function ResourcesGridLayout({ user }) {
           flexGrow: 1,
           display: "flex",
           flexDirection: "column",
-          overflow: "hidden", // 👈 Κλείδωσε scroll από πάνω
+          overflow: "hidden",
         }}
       >
         <ResourcesTabs
@@ -129,28 +131,13 @@ export default function ResourcesGridLayout({ user }) {
           handleChangeFilters={handleChangeFilters}
           resourcesFetched={resourcesFetched}
         />
-        <Stack
-          direction={{ md: "column", lg: "row" }}
-          gap={2}
-          justifyContent="center"
-          sx={{ p: 4 }}
-        >
-          <LicenseAutocompleteFilter
-            selectedFilters={filters}
-            selectedResource={selectedResource}
-            onFilterChange={handleChangeFilters}
-          />
-          <TagAutoCompleteFilter
-            selectedFilters={filters}
-            selectedResource={selectedResource}
-            onFilterChange={handleChangeFilters}
-          />
-          <DateFilter
-            selectedFilters={filters}
-            onFilterChange={handleChangeFilters}
-          />
-          <SortFilter filters={filters} onFilterChange={handleChangeFilters} />
-        </Stack>
+        <LocalFiltersStack
+          user={user}
+          selectedResource={selectedResource}
+          filters={filters}
+          handleChangeFilters={handleChangeFilters}
+          isMobile={isMobile}
+        />
         <Box sx={{ flexGrow: 1, overflowY: "auto", p: 2, pb: 12, pt: 1 }}>
           <ResourcesGrid
             user={user}

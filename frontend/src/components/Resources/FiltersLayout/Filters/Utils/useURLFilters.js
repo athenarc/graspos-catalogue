@@ -134,6 +134,7 @@ export function useURLFilters(resourceMap) {
     const emptyFilters = getDefaultFilters();
     const urlEmptyFilters = emptyFilters;
     urlEmptyFilters.text = filters.text;
+    urlEmptyFilters.graspos = filters.graspos;
     setFilters(urlEmptyFilters);
     updateURL(emptyFilters, newValue);
   };

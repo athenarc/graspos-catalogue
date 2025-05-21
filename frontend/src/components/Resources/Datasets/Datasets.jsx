@@ -1,8 +1,7 @@
-import { useDataset, useDatasets } from "../../../queries/dataset";
+import { useDataset } from "../../../queries/dataset";
 import { RectangularVariants } from "../../Skeleton";
 import ResourceGridItem from "../ResourceTemplate/ResourceGridItem";
 import {
-  Button,
   Fab,
   Grid2 as Grid,
   Stack,
@@ -51,23 +50,6 @@ export function Datasets({ datasets, user }) {
         >
           <AddIcon />
         </Fab>
-      )}
-
-      {user && !isMobile && (
-        <Button
-          color="primary"
-          variant="outlined"
-          component={Link}
-          to="/dataset/add"
-          sx={{
-            position: "absolute",
-            right: 24,
-            bottom: 24,
-            backgroundColor: "#fff",
-          }}
-        >
-          Add Dataset
-        </Button>
       )}
     </>
   );
