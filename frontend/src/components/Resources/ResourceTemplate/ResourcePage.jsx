@@ -17,6 +17,7 @@ import { Dataset } from "../Datasets/Datasets";
 import { Document } from "../Documents/Documents";
 import { Tool } from "../Tools/Tools";
 import orcidLogo from "../../../assets/orcid.logo.icon.svg";
+import { ResourceItemFooter } from "./ResourceGridItem";
 
 export function ResourceBasicInformation({ resource }) {
   return (
@@ -44,8 +45,9 @@ export function ResourceBasicInformation({ resource }) {
       >
         {resource.isLoading && <CircularProgress size="3rem" />}
         {resource && (
-          <Stack direction="column">
+          <Stack direction="column" gap={2}>
             {resource?.data?.data?.zenodo?.metadata?.description}
+            <ResourceItemFooter resource={resource?.data?.data} />
           </Stack>
         )}
       </CardContent>
