@@ -87,7 +87,7 @@ function ResourceAdminFunctionalities({ type, resource }) {
       </Tooltip>
       <Tooltip
         title={
-          "Reject " + String(type) + ". " + String(type) + " will be deleted"
+          "Reject " + String(type) + ". " + String(type + " will be deleted")
         }
         sx={{ p: 0.5 }}
       >
@@ -228,22 +228,76 @@ function ResourceItemCommunities({ resource }) {
   );
 }
 
-export function ResourceItemFooter({ handleDelete, resource, user, type }) {
+export function ResourceItemHeader({ resource, type, user, handleDelete }) {
   return (
     <Stack
       direction="row"
       justifyContent="space-between"
-      sx={{
-        fontSize: "0.95rem",
-        py: 0.75,
+      alignItems="flex-start"
+      mb={2}
+      sx={{ position: "relative" }}
+    >
+      {/* Title section */}
+      <Stack direction="column" spacing={1} sx={{ flex: 1, pr: 8 }}>
+        <Typography
+          variant="h6"
+          sx={{
+            whiteSpace: "break",
+            overflow: "hidden",
+            textOverflow: "break-word",
+            fontWeight: "bold",
+          }}
+        >
+          <Link to={"/" + type.toLowerCase() + "s/" + resource?._id}>
+            {resource?.zenodo?.title}
+          </Link>
+        </Typography>
+        {!resource?.approved && (
+          <Tooltip title="Resource pending approval">
+            <PendingActionsIcon color="warning" fontSize="small" />
+          </Tooltip>
+        )}
+      </Stack>
+
+      {/* Action buttons in top right */}
+      <Stack 
+        direction="row" 
+        spacing={1} 
+        sx={{ 
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          zIndex: 1
+        }}
+      >
+        {!resource?.approved && user?.super_user ? (
+          <ResourceAdminFunctionalities resource={resource} type={type} />
+        ) : (
+          <ResourceOwnerFunctionalities
+            handleDelete={handleDelete}
+            resource={resource}
+            user={user}
+            type={type}
+          />
+        )}
+      </Stack>
+    </Stack>
+  );
+}
+
+export function ResourceItemFooter({ resource }) {
+  return (
+    <Stack 
+      direction="row" 
+      justifyContent="space-between"
+      alignItems="center"
+      sx={{ 
+        pt: 1.5,
+        mt: 2
       }}
     >
-      <Stack
-        direction="row"
-        justifyContent="start"
-        alignItems="center"
-        spacing={1}
-      >
+      {/* Left side - stats */}
+      <Stack direction="row" spacing={2} alignItems="center">
         <Tooltip title="Publication date">
           <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
         </Tooltip>
@@ -278,21 +332,9 @@ export function ResourceItemFooter({ handleDelete, resource, user, type }) {
         </Typography>
       </Stack>
 
-      <Stack
-        direction={"row"}
-        spacing={0}
-        sx={{ p: "0!important", textAlign: "right" }}
-      >
-        {!resource?.approved && user?.super_user ? (
-          <ResourceAdminFunctionalities resource={resource} type={type} />
-        ) : (
-          <ResourceOwnerFunctionalities
-            handleDelete={handleDelete}
-            resource={resource}
-            user={user}
-            type={type}
-          />
-        )}
+      {/* Right side - GraspOS logo */}
+      <Stack direction="row" alignItems="center">
+        <ResourceItemCommunities resource={resource} />
       </Stack>
     </Stack>
   );
@@ -306,7 +348,7 @@ const NoMaxWidthTooltip = styled(({ className, ...props }) => (
   },
 });
 
-function ResourceItemContent({ resource }) {
+export function ResourceItemContent({ resource }) {
   return (
     <>
       <Stack direction={"row"} spacing={2} sx={{ pb: 2 }}>
@@ -340,41 +382,6 @@ function ResourceItemContent({ resource }) {
         <ResourceItemKeywords resource={resource} />
       </Stack>
     </>
-  );
-}
-
-function ResourceItemHeader({ resource, type }) {
-  return (
-    <Stack
-      direction={"row"}
-      justifyContent="space-between"
-      alignItems="center"
-      mb={2}
-    >
-      <Stack direction="row" gap={1}>
-        <Typography
-          variant="h6"
-          sx={{
-            whiteSpace: "break",
-            overflow: "hidden",
-            textOverflow: "break-word",
-            fontWeight: "bold",
-          }}
-        >
-          <Link to={"/" + type.toLowerCase() + "s/" + resource?._id}>
-            {resource?.zenodo?.title}
-          </Link>
-        </Typography>
-        {!resource?.approved && (
-          <Tooltip title="Resource pending approval">
-            <PendingActionsIcon color="warning" fontSize="small" />
-          </Tooltip>
-        )}
-      </Stack>
-      <Stack direction="row" gap={1}>
-        <ResourceItemCommunities resource={resource} />
-      </Stack>
-    </Stack>
   );
 }
 
@@ -423,7 +430,12 @@ export default function ResourceGridItem({ resource, type, user }) {
         }}
       >
         <CardContent sx={{ pb: 0 }}>
-          <ResourceItemHeader resource={resource} type={type} />
+          <ResourceItemHeader
+            resource={resource}
+            type={type}
+            user={user}
+            handleDelete={handleDelete}
+          />
           <ResourceItemContent resource={resource} />
         </CardContent>
         <CardContent
@@ -432,12 +444,7 @@ export default function ResourceGridItem({ resource, type, user }) {
             pt: 0.5,
           }}
         >
-          <ResourceItemFooter
-            handleDelete={handleDelete}
-            resource={resource}
-            user={user}
-            type={type}
-          />
+          <ResourceItemFooter resource={resource} />
         </CardContent>
       </Card>
     </Grid>
