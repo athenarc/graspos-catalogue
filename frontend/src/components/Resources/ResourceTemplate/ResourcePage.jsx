@@ -18,6 +18,8 @@ import { Document } from "../Documents/Documents";
 import { Tool } from "../Tools/Tools";
 import orcidLogo from "../../../assets/orcid.logo.icon.svg";
 import { ResourceItemFooter } from "./ResourceGridItem";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Added import
+import LaunchIcon from '@mui/icons-material/Launch'; // Added import
 
 // Common card styles without transition and hover effect
 const cardStyles = {
@@ -33,24 +35,50 @@ const cardStyles = {
 };
 
 export function ResourceBasicInformation({ resource }) {
+  console.log(resource?.data?.data?.zenodo?.metadata?.description);
   return (
     <Card sx={cardStyles}>
       <CardHeader
         sx={{ pb: 1 }}
         title={
-          <Typography variant="h5">
-            <Link
-              to={
-                "https://zenodo.org/records/" +
-                resource?.data?.data?.zenodo?.zenodo_id
-              }
-              target="_blank"
-            >
-              {resource?.data?.data?.zenodo?.title ?? "Title"}
-            </Link>
-          </Typography>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Typography variant="h5" component="div">
+              <Link
+                to={
+                  "https://zenodo.org/records/" +
+                  resource?.data?.data?.zenodo?.zenodo_id
+                }
+                target="_blank"
+                style={{ 
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: 'inherit'
+                }}
+              >
+                <Typography
+                  component="span"
+                  variant="h5"
+                  sx={{ 
+                    fontWeight: 'bold',
+                    color: 'rgb(174, 83, 142)',
+                    '&:hover': {
+                      textDecoration: 'underline'
+                    }
+                  }}
+                >
+                  {resource?.data?.data?.zenodo?.title ?? "Title"}
+                </Typography>
+                <LaunchIcon sx={{ 
+                  fontSize: '0.8em',
+                  color: 'rgb(174, 83, 142)'
+                }} />
+              </Link>
+            </Typography>
+          </Stack>
         }
-      ></CardHeader>
+      />
       <CardContent
         sx={{
           textAlign: [resource.isLoading ? "center" : "left"],
@@ -61,7 +89,17 @@ export function ResourceBasicInformation({ resource }) {
         {resource.isLoading && <CircularProgress size="3rem" />}
         {resource && (
           <Stack direction="column" gap={2}>
-            {resource?.data?.data?.zenodo?.metadata?.description}
+            <Typography
+              component="pre"
+              sx={{
+                whiteSpace: 'pre-wrap',
+                fontFamily: 'inherit',
+                margin: 0,
+                fontSize: 'inherit'
+              }}
+            >
+              {resource?.data?.data?.zenodo?.metadata?.description}
+            </Typography>
             <ResourceItemFooter resource={resource?.data?.data} />
           </Stack>
         )}
@@ -216,38 +254,35 @@ export function ResourcePage() {
   return (
     <Box
       sx={{
-        position: "relative",
         height: "calc(100vh - 112px)",
         overflowY: "auto",
         px: 2,
         py: 2,
       }}
     >
-      <Grid container spacing={1.5} p={2} sx={{ minHeight: "100%" }}>
-        {location.pathname.includes("dataset") && (
-          <Dataset resourceId={resourceId} />
-        )}
-        {location.pathname.includes("documents") && (
-          <Document resourceId={resourceId} />
-        )}
-        {location.pathname.includes("tools") && (
-          <Tool resourceId={resourceId} />
-        )}
+      <Stack spacing={2}>
         <Button
           color="primary"
           variant="outlined"
           component={Link}
           to={-1}
-          sx={{
-            position: "absolute",
-            right: "24px",
-            bottom: "24px",
-            backgroundColor: "#fff",
-          }}
+          startIcon={<ArrowBackIcon />}
+          sx={{ width: 'fit-content', backgroundColor: "#fff" }}
         >
           Back
         </Button>
-      </Grid>
+        <Grid container spacing={1.5} sx={{ minHeight: "100%" }}>
+          {location.pathname.includes("dataset") && (
+            <Dataset resourceId={resourceId} />
+          )}
+          {location.pathname.includes("documents") && (
+            <Document resourceId={resourceId} />
+          )}
+          {location.pathname.includes("tools") && (
+            <Tool resourceId={resourceId} />
+          )}
+        </Grid>
+      </Stack>
     </Box>
   );
 }
