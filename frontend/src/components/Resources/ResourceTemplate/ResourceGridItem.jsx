@@ -12,10 +12,10 @@ import {
   IconButton,
   Grid2,
   Chip,
-  Divider
+  Divider,
 } from "@mui/material";
 
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 
 import { useDeleteDataset, useUpdateDataset } from "../../../queries/dataset";
 import {
@@ -177,23 +177,26 @@ function ResourceOwnerFunctionalities({ resource, user, type, handleDelete }) {
 
 function ResourceItemKeywords({ resource }) {
   const keywords = resource?.zenodo?.metadata?.keywords || [];
-  
+
   return (
     <Stack direction="column" justifyContent="center">
       {keywords.length > 0 ? (
         <Grid2 container spacing={1}>
           {keywords.map((keyword) => (
-            <Chip 
+            <Chip
               key={keyword}
               label={keyword}
-              color="primary" 
-              variant="outlined" 
+              color="primary"
+              variant="outlined"
               size="small"
             />
           ))}
         </Grid2>
       ) : (
-        <Typography variant="body2" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+        <Typography
+          variant="body2"
+          sx={{ color: "text.secondary", fontStyle: "italic" }}
+        >
           No tags available
         </Typography>
       )}
@@ -227,25 +230,25 @@ function ResourceItemCommunities({ resource }) {
 
 function ResourceItemFooter({ handleDelete, resource, user, type }) {
   return (
-    <Stack 
-      direction="row" 
+    <Stack
+      direction="row"
       justifyContent="space-between"
-      sx={{ 
-        fontSize: '0.95rem',  // Slightly larger than before (was 0.875rem)
-        py: 0.75  // Slightly more vertical padding
+      sx={{
+        fontSize: "0.95rem",
+        py: 0.75,
       }}
     >
       <Stack
         direction="row"
         justifyContent="start"
         alignItems="center"
-        spacing={1}  // Increased from 0.5 for more horizontal spacing
+        spacing={1}
       >
         <Tooltip title="Publication date">
-          <CalendarMonthIcon sx={{ fontSize: '1.1rem' }} />
+          <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
         </Tooltip>
         {resource?.zenodo?.metadata?.publication_date && (
-          <Typography variant="body2" sx={{ fontSize: '0.95rem' }}>
+          <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
             {new Date(
               resource?.zenodo?.metadata?.publication_date
             ).toLocaleDateString([], {
@@ -256,25 +259,25 @@ function ResourceItemFooter({ handleDelete, resource, user, type }) {
           </Typography>
         )}
         {resource?.zenodo?.metadata?.version && (
-          <Typography variant="body2" sx={{ fontSize: '0.95rem' }}>
+          <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
             (v.{resource?.zenodo?.metadata?.version})
           </Typography>
         )}
         <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
         <Tooltip title="Downloads on Zenodo">
-          <DownloadIcon sx={{ fontSize: '1.1rem' }} />
+          <DownloadIcon sx={{ fontSize: "1.1rem" }} />
         </Tooltip>
-        <Typography variant="body2" sx={{ fontSize: '0.95rem' }}>
+        <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
           {resource?.zenodo?.stats?.downloads}
         </Typography>
         <Tooltip title="Views on Zenodo">
-          <VisibilityIcon sx={{ fontSize: '1.1rem' }} />
+          <VisibilityIcon sx={{ fontSize: "1.1rem" }} />
         </Tooltip>
-        <Typography variant="body2" sx={{ fontSize: '0.95rem' }}>
+        <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
           {resource?.zenodo?.stats?.views}
         </Typography>
       </Stack>
-      
+
       <Stack
         direction={"row"}
         spacing={0}
@@ -307,11 +310,10 @@ function ResourceItemContent({ resource }) {
   return (
     <>
       <Stack direction={"row"} spacing={2} sx={{ pb: 2 }}>
-        {/* <NoMaxWidthTooltip title={resource?.zenodo?.metadata?.description}> */}
         <Typography
           variant="subtitle"
           sx={{
-            variant: 'paragraph',
+            variant: "paragraph",
             overflow: "hidden",
             textOverflow: "ellipsis",
             display: "-webkit-box",
@@ -324,12 +326,11 @@ function ResourceItemContent({ resource }) {
         >
           {resource?.zenodo?.metadata?.description}
         </Typography>
-        {/* </NoMaxWidthTooltip> */}
       </Stack>
-      
-      <Stack 
-        direction="row" 
-        spacing={1} 
+
+      <Stack
+        direction="row"
+        spacing={1}
         sx={{ pt: 0, pb: 0 }}
         alignItems="center"
       >
@@ -350,7 +351,7 @@ function ResourceItemHeader({ resource, type }) {
       alignItems="center"
       mb={2}
     >
-      {/* <Tooltip title={resource?.zenodo?.title}> */}
+      <Stack direction="row" gap={1}>
         <Typography
           variant="h6"
           sx={{
@@ -360,19 +361,19 @@ function ResourceItemHeader({ resource, type }) {
             fontWeight: "bold",
           }}
         >
-          <Link
-            to={"/" + type.toLowerCase() + "s/" + resource?._id}
-          >
+          <Link to={"/" + type.toLowerCase() + "s/" + resource?._id}>
             {resource?.zenodo?.title}
           </Link>
         </Typography>
-      {/* </Tooltip> */}
-      {!resource?.approved && (
-        <Tooltip title="Resource pending approval">
-          <PendingActionsIcon color="warning" fontSize="small" />
-        </Tooltip>
-      )}
-      <ResourceItemCommunities resource={resource} />
+        {!resource?.approved && (
+          <Tooltip title="Resource pending approval">
+            <PendingActionsIcon color="warning" fontSize="small" />
+          </Tooltip>
+        )}
+      </Stack>
+      <Stack direction="row" gap={1}>
+        <ResourceItemCommunities resource={resource} />
+      </Stack>
     </Stack>
   );
 }
@@ -411,12 +412,12 @@ export default function ResourceGridItem({ resource, type, user }) {
           display: "flex",
           justifyContent: "space-between",
           borderRadius: "5px",
-          border: '1px solid #e0dfdf',
+          border: "1px solid #e0dfdf",
           backgroundColor: "#f8faff",
-          boxShadow: 0, // No default shadow
-          transition: "box-shadow 0.3s ease-in-out", // Smooth transition
+          boxShadow: 0,
+          transition: "box-shadow 0.3s ease-in-out",
           "&:hover": {
-            boxShadow: 4, // Shadow on hover
+            boxShadow: 4,
           },
           color: "#555",
         }}
@@ -427,8 +428,8 @@ export default function ResourceGridItem({ resource, type, user }) {
         </CardContent>
         <CardContent
           sx={{
-            paddingBottom: "8px !important",  // Reduced bottom padding
-            pt: 0.5,  // Reduced top padding
+            paddingBottom: "8px !important",
+            pt: 0.5,
           }}
         >
           <ResourceItemFooter
