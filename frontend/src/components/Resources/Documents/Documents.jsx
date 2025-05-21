@@ -14,6 +14,7 @@ import {
   ResourceBasicInformation,
   ResourceLicense,
   ResourceTags,
+  ResourceStatistics,
 } from "../ResourceTemplate/ResourcePage";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -69,6 +70,7 @@ export function Document({ resourceId }) {
           <ResourceAuthors resource={document} />
           <ResourceTags resource={document} />
           <ResourceLicense resource={document} />
+          <ResourceStatistics resource={document} />
         </Stack>
       </Grid>
     </>

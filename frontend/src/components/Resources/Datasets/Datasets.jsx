@@ -14,6 +14,7 @@ import {
   ResourceBasicInformation,
   ResourceLicense,
   ResourceTags,
+  ResourceStatistics,
 } from "../ResourceTemplate/ResourcePage";
 import AddIcon from "@mui/icons-material/Add";
 
@@ -67,6 +68,7 @@ export function Dataset({ resourceId }) {
           <ResourceAuthors resource={dataset} />
           <ResourceTags resource={dataset} />
           <ResourceLicense resource={dataset} />
+          <ResourceStatistics resource={dataset} />
         </Stack>
       </Grid>
     </>

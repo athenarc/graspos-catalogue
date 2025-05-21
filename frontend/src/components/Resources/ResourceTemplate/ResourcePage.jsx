@@ -11,6 +11,8 @@ import {
   Grid2,
   Stack,
   Typography,
+  Tooltip,
+  Divider,
 } from "@mui/material";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { Dataset } from "../Datasets/Datasets";
@@ -20,6 +22,10 @@ import orcidLogo from "../../../assets/orcid.logo.icon.svg";
 import { ResourceItemFooter } from "./ResourceGridItem";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Added import
 import LaunchIcon from '@mui/icons-material/Launch'; // Added import
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import HistoryIcon from '@mui/icons-material/History';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import DownloadIcon from '@mui/icons-material/Download';
 
 // Common card styles without transition and hover effect
 const cardStyles = {
@@ -35,13 +41,20 @@ const cardStyles = {
 };
 
 export function ResourceBasicInformation({ resource }) {
-  console.log(resource?.data?.data?.zenodo?.metadata?.description);
+  const formatDate = (dateString) => {
+    return dateString ? new Date(dateString).toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    }) : '';
+  };
+
   return (
     <Card sx={cardStyles}>
       <CardHeader
         sx={{ pb: 1 }}
         title={
-          <Stack direction="row" alignItems="center" spacing={1}>
+          <Stack direction="column" spacing={1}>
             <Typography variant="h5" component="div">
               <Link
                 to={
@@ -76,6 +89,26 @@ export function ResourceBasicInformation({ resource }) {
                 }} />
               </Link>
             </Typography>
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Tooltip title="Publication date">
+                  <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
+                </Tooltip>
+                <Typography variant="body2" color="text.secondary">
+                  {formatDate(resource?.data?.data?.zenodo?.metadata?.publication_date)}
+                </Typography>
+              </Stack>
+              {resource?.data?.data?.zenodo?.metadata?.version && (
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Tooltip title="Version">
+                    <HistoryIcon sx={{ fontSize: "1.1rem" }} />
+                  </Tooltip>
+                  <Typography variant="body2" color="text.secondary">
+                    Version {resource?.data?.data?.zenodo?.metadata?.version}
+                  </Typography>
+                </Stack>
+              )}
+            </Stack>
           </Stack>
         }
       />
@@ -100,7 +133,7 @@ export function ResourceBasicInformation({ resource }) {
             >
               {resource?.data?.data?.zenodo?.metadata?.description}
             </Typography>
-            <ResourceItemFooter resource={resource?.data?.data} />
+            {/* <ResourceItemFooter resource={resource?.data?.data} /> */}
           </Stack>
         )}
       </CardContent>
@@ -241,6 +274,87 @@ export function ResourceLicense({ resource }) {
           <Typography>
             {resource?.data?.data?.zenodo?.metadata?.license?.id}
           </Typography>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function ResourceStatistics({ resource }) {
+  return (
+    <Card sx={cardStyles}>
+      <CardHeader
+        sx={{ pb: 1 }}
+        title={<Typography variant="h5">User Statistics</Typography>}
+      />
+      <CardContent
+        sx={{
+          textAlign: [resource.isLoading ? "center" : "left"],
+          pt: 1,
+        }}
+      >
+        {resource.isLoading && <CircularProgress size="3rem" />}
+        {resource && (
+          <Stack
+            direction="row"
+            spacing={2}
+            divider={<Divider orientation="vertical" flexItem />}
+            sx={{ width: '100%' }}
+          >
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="center"
+              sx={{ width: '50%', py: 2 }}
+            >
+              <Stack alignItems="center" spacing={1}>
+                <Typography 
+                  variant="h4" 
+                  fontWeight="500" 
+                  color="primary.main"
+                >
+                  {resource?.data?.data?.zenodo?.stats?.views ?? 0}
+                </Typography>
+                <Stack 
+                  direction="row" 
+                  spacing={1} 
+                  alignItems="center"
+                >
+                  <VisibilityIcon sx={{ fontSize: "1.1rem", color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">
+                    views
+                  </Typography>
+                </Stack>
+              </Stack>
+            </Stack>
+            
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="center"
+              sx={{ width: '50%', py: 2 }}
+            >
+              <Stack alignItems="center" spacing={1}>
+                <Typography 
+                  variant="h4" 
+                  fontWeight="500" 
+                  color="primary.main"
+                >
+                  {resource?.data?.data?.zenodo?.stats?.downloads ?? 0}
+                </Typography>
+                <Stack 
+                  direction="row" 
+                  spacing={1} 
+                  alignItems="center"
+                >
+                  <DownloadIcon sx={{ fontSize: "1.1rem", color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">
+                    downloads
+                  </Typography>
+                </Stack>
+              </Stack>
+            </Stack>
+          </Stack>
         )}
       </CardContent>
     </Card>
