@@ -100,14 +100,28 @@ export default function ResourcesGridLayout({ user }) {
   }, [datasets?.data, tools?.data, documents?.data]);
 
   return (
-    <Stack direction="row">
-      <FiltersLayout
-        selectedResource={selectedResource}
-        selectedFilters={filters}
-        handleChangeFilters={handleChangeFilters}
-        onResetFilters={handleResetFilters}
-      />
-      <Stack direction="column">
+    <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+      <Box
+        sx={{
+          width: { xs: 0, md: 350 },
+          flexShrink: 0,
+        }}
+      >
+        <FiltersLayout
+          selectedResource={selectedResource}
+          selectedFilters={filters}
+          handleChangeFilters={handleChangeFilters}
+          onResetFilters={handleResetFilters}
+        />
+      </Box>
+      <Box
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden", // 👈 Κλείδωσε scroll από πάνω
+        }}
+      >
         <ResourcesTabs
           selectedResource={selectedResource}
           handleSetSelectedResource={handleSetSelectedResource}
@@ -119,7 +133,7 @@ export default function ResourcesGridLayout({ user }) {
           direction={{ md: "column", lg: "row" }}
           gap={2}
           justifyContent="center"
-          sx={{ p: 2 }}
+          sx={{ p: 4 }}
         >
           <LicenseAutocompleteFilter
             selectedFilters={filters}
@@ -137,18 +151,19 @@ export default function ResourcesGridLayout({ user }) {
           />
           <SortFilter filters={filters} onFilterChange={handleChangeFilters} />
         </Stack>
-
-        <ResourcesGrid
-          user={user}
-          selectedResource={selectedResource}
-          resourceFilter={resourceFilter}
-          filters={filters}
-          setResourcesFetched={setResourcesFetched}
-          datasets={datasets}
-          documents={documents}
-          tools={tools}
-        />
-      </Stack>
-    </Stack>
+        <Box sx={{ flexGrow: 1, overflowY: "auto", p: 2, pb: 12, pt: 1 }}>
+          <ResourcesGrid
+            user={user}
+            selectedResource={selectedResource}
+            resourceFilter={resourceFilter}
+            filters={filters}
+            setResourcesFetched={setResourcesFetched}
+            datasets={datasets}
+            documents={documents}
+            tools={tools}
+          />
+        </Box>
+      </Box>
+    </Box>
   );
 }

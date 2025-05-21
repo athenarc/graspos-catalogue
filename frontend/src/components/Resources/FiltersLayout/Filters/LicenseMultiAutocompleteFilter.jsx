@@ -89,7 +89,7 @@ export default function LicenseAutocompleteFilter({
           placeholder="Select licenses"
         />
       )}
-      sx={{ width: { xs: "100%", lg: "50%" } }}
+      sx={{ width: { xs: "100%", lg: "60%" } }}
     />
   );
 }

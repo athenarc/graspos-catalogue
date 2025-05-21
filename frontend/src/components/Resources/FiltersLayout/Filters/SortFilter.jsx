@@ -12,7 +12,7 @@ export default function SortFilter({ filters, onFilterChange }) {
     <FormControl
       fullWidth
       variant="outlined"
-      sx={{ width: { xs: "100%", lg: "50%" } }}
+      sx={{ width: { xs: "100%", lg: "60%" } }}
     >
       <InputLabel id="sort-filter-label">Sort Results By</InputLabel>
       <Select
