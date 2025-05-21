@@ -39,6 +39,7 @@ export function ResourceBasicInformation({ resource }) {
       }}
     >
       <CardHeader
+        sx={{ pb: 1 }}
         title={
           <Typography variant="h5">
             <Link
@@ -57,6 +58,7 @@ export function ResourceBasicInformation({ resource }) {
         sx={{
           textAlign: [resource.isLoading ? "center" : "left"],
           overflowY: "auto",
+          pt: 1,
         }}
       >
         {resource.isLoading && <CircularProgress size="3rem" />}
@@ -92,9 +94,15 @@ export function ResourceAuthors({ resource }) {
       }}
     >
       <CardHeader
+        sx={{ pb: 1 }}
         title={<Typography variant="h5">Authors</Typography>}
       ></CardHeader>
-      <CardContent sx={{ textAlign: [resource.isLoading ? "center" : "left"] }}>
+      <CardContent
+        sx={{
+          textAlign: [resource.isLoading ? "center" : "left"],
+          pt: 1,
+        }}
+      >
         {resource.isLoading && <CircularProgress size="3rem" />}
         {resource && (
           <Stack direction="column" spacing={1}>
@@ -173,9 +181,15 @@ export function ResourceTags({ resource }) {
       }}
     >
       <CardHeader
+        sx={{ pb: 1 }}
         title={<Typography variant="h5">Tags</Typography>}
       ></CardHeader>
-      <CardContent sx={{ textAlign: [resource.isLoading ? "center" : "left"] }}>
+      <CardContent
+        sx={{
+          textAlign: [resource.isLoading ? "center" : "left"],
+          pt: 1,
+        }}
+      >
         {resource.isLoading && <CircularProgress size="3rem" />}
         {resource && (
           <Stack direction="column" justifyContent="center">
@@ -226,9 +240,15 @@ export function ResourceLicense({ resource }) {
       }}
     >
       <CardHeader
+        sx={{ pb: 1 }}
         title={<Typography variant="h5">License</Typography>}
       ></CardHeader>
-      <CardContent sx={{ textAlign: [resource.isLoading ? "center" : "left"] }}>
+      <CardContent
+        sx={{
+          textAlign: [resource.isLoading ? "center" : "left"],
+          pt: 1,
+        }}
+      >
         {resource.isLoading && <CircularProgress size="3rem" />}
         {resource && (
           <Typography>
@@ -254,7 +274,7 @@ export function ResourcePage() {
         py: 2,
       }}
     >
-      <Grid container spacing={2} p={2} sx={{ minHeight: "100%" }}>
+      <Grid container spacing={1.5} p={2} sx={{ minHeight: "100%" }}>
         {location.pathname.includes("dataset") && (
           <Dataset resourceId={resourceId} />
         )}
