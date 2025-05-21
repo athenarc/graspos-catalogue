@@ -43,7 +43,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useDeleteTool, useUpdateTool } from "../../../queries/tool";
 
-import grasposTools from "../../../assets/os.svg";
+import VerifiedIcon from '@mui/icons-material/Verified'; // Add this import
 
 import { useUpdateZenodo } from "../../../queries/zenodo";
 
@@ -52,10 +52,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
-
-const imgs = {
-  "graspos-tools": grasposTools,
-};
+import HistoryIcon from '@mui/icons-material/History'; // Add this import
+import AssignmentIcon from '@mui/icons-material/Assignment'; // Add this import
 
 export function ResourceItemKeywords({ resource }) {
   const keywords = resource?.zenodo?.metadata?.keywords || [];
@@ -86,8 +84,28 @@ export function ResourceItemKeywords({ resource }) {
   );
 }
 
-export function ResourceItemCommunities({ resource }) {
-  // ...existing code...
+function ResourceItemCommunities({ resource }) {
+  return resource?.zenodo?.metadata?.communities?.map(
+    (community) =>
+      community.id.includes("graspos") && (
+        <Tooltip
+          key={community.id}
+          title={
+            "Verified GraspOS " +
+            community.id.replace("graspos-", "").replace(/s$/, "")
+          }
+        >
+          <VerifiedIcon 
+            color="primary" 
+            sx={{ 
+              fontSize: "1.2rem",
+              verticalAlign: "middle",
+              ml: 1
+            }} 
+          />
+        </Tooltip>
+      )
+  );
 }
 
 export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
@@ -159,9 +177,6 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
         onClick={handleClick}
         size="small"
         sx={{
-          position: "absolute",
-          top: 8,
-          right: 8,
           backgroundColor: "rgba(255,255,255,0.8)",
           "&:hover": {
             backgroundColor: "rgba(255,255,255,0.9)",
@@ -367,85 +382,113 @@ export function ResourceItemHeader({ resource, type, user, handleDelete }) {
       mb={2}
       sx={{ position: "relative" }}
     >
-      <Stack direction="column" spacing={1} sx={{ flex: 1, pr: user ? 8 : 0 }}>
-        <Typography
-          variant="h6"
-          sx={{
-            whiteSpace: "break",
-            overflow: "hidden",
-            textOverflow: "break-word",
-            fontWeight: "bold",
-          }}
-        >
-          <Link to={"/" + type.toLowerCase() + "s/" + resource?._id}>
-            {resource?.zenodo?.title}
-          </Link>
-        </Typography>
+      <Stack direction="column" spacing={1} sx={{ flex: 1, pr: user ? 16 : 8 }}>
+        <Stack direction="row" alignItems="center">
+          <Typography
+            variant="h6"
+            sx={{
+              whiteSpace: "break",
+              overflow: "hidden",
+              textOverflow: "break-word",
+              fontWeight: "bold",
+            }}
+          >
+            <Link to={"/" + type.toLowerCase() + "s/" + resource?._id}>
+              {resource?.zenodo?.title}
+            </Link>
+          </Typography>
+          <ResourceItemCommunities resource={resource} />
+        </Stack>
       </Stack>
 
-      {/* Only show actions menu if user is logged in */}
-      {user && (
-        <ResourceActionsMenu
-          resource={resource}
-          type={type}
-          user={user}
-          handleDelete={handleDelete}
-        />
-      )}
+      {/* Top right actions area */}
+      <Stack 
+        direction="row" 
+        spacing={1} 
+        alignItems="center"
+        sx={{ 
+          position: "absolute",
+          top: 8,
+          right: 8,
+          gap: 1,
+        }}
+      >
+        {user && (
+          <ResourceActionsMenu
+            resource={resource}
+            type={type}
+            user={user}
+            handleDelete={handleDelete}
+          />
+        )}
+      </Stack>
     </Stack>
   );
 }
 
 export function ResourceItemFooter({ resource }) {
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
   return (
     <Stack
       direction="row"
       justifyContent="space-between"
       alignItems="center"
-      sx={{
-        pt: 1.5,
-        mt: 2,
-      }}
     >
-      {/* Left side - stats */}
+      {/* Left side - publication date, version and license */}
       <Stack direction="row" spacing={2} alignItems="center">
         <Tooltip title="Publication date">
           <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
         </Tooltip>
         {resource?.zenodo?.metadata?.publication_date && (
           <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-            {new Date(
-              resource?.zenodo?.metadata?.publication_date
-            ).toLocaleDateString([], {
-              year: "numeric",
-              month: "numeric",
-              day: "numeric",
-            })}
+            {formatDate(resource.zenodo.metadata.publication_date)}
           </Typography>
         )}
         {resource?.zenodo?.metadata?.version && (
-          <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-            (v.{resource?.zenodo?.metadata?.version})
-          </Typography>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Tooltip title="Version">
+              <HistoryIcon sx={{ fontSize: "1.1rem" }} />
+            </Tooltip>
+            <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
+              {resource.zenodo.metadata.version}
+            </Typography>
+          </Stack>
         )}
-        <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-        <Tooltip title="Downloads on Zenodo">
-          <DownloadIcon sx={{ fontSize: "1.1rem" }} />
-        </Tooltip>
-        <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-          {resource?.zenodo?.stats?.downloads}
-        </Typography>
-        <Tooltip title="Views on Zenodo">
-          <VisibilityIcon sx={{ fontSize: "1.1rem" }} />
-        </Tooltip>
-        <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-          {resource?.zenodo?.stats?.views}
-        </Typography>
+        {resource?.zenodo?.metadata?.license?.id && (
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Tooltip title="License">
+              <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
+            </Tooltip>
+            <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
+              {resource.zenodo.metadata.license.id}
+            </Typography>
+          </Stack>
+        )}
       </Stack>
 
-      {/* Right side - GraspOS logo */}
-      <Stack direction="row" alignItems="center">
-        <ResourceItemCommunities resource={resource} />
+      {/* Right side - stats only */}
+      <Stack direction="row" spacing={2} alignItems="center">
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Tooltip title="Downloads on Zenodo">
+            <DownloadIcon sx={{ fontSize: "1.1rem" }} />
+          </Tooltip>
+          <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
+            {resource?.zenodo?.stats?.downloads}
+          </Typography>
+          <Tooltip title="Views on Zenodo">
+            <VisibilityIcon sx={{ fontSize: "1.1rem" }} />
+          </Tooltip>
+          <Typography variant="body2" sx={{ fontSize: "0.95rem", mr: 2 }}>
+            {resource?.zenodo?.stats?.views}
+          </Typography>
+        </Stack>
       </Stack>
     </Stack>
   );
@@ -462,7 +505,7 @@ const NoMaxWidthTooltip = styled(({ className, ...props }) => (
 export function ResourceItemContent({ resource }) {
   return (
     <>
-      <Stack direction={"row"} spacing={2} sx={{ pb: 2 }}>
+      <Stack direction={"row"} spacing={2} sx={{ pb: 1.5 }}>
         <Typography
           variant="subtitle"
           sx={{
@@ -484,7 +527,7 @@ export function ResourceItemContent({ resource }) {
       <Stack
         direction="row"
         spacing={1}
-        sx={{ pt: 0, pb: 0 }}
+        sx={{ pt: 0, pb: 1.5 }}
         alignItems="center"
       >
         <Tooltip title="Tags">
@@ -553,7 +596,7 @@ export default function ResourceGridItem({ resource, type, user }) {
         <CardContent
           sx={{
             paddingBottom: "8px !important",
-            pt: 0.5,
+            paddingTop: "0 !important",
           }}
         >
           <ResourceItemFooter resource={resource} />
