@@ -2,9 +2,6 @@ import {
   Avatar,
   Box,
   Button,
-  Card,
-  CardContent,
-  CardHeader,
   Chip,
   CircularProgress,
   Grid2 as Grid,
@@ -13,6 +10,9 @@ import {
   Typography,
   Tooltip,
   Divider,
+  Card,
+  CardHeader,
+  CardContent,
 } from "@mui/material";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { Dataset } from "../Datasets/Datasets";
@@ -50,94 +50,79 @@ export function ResourceBasicInformation({ resource }) {
   };
 
   return (
-    <Card sx={cardStyles}>
-      <CardHeader
-        sx={{ pb: 1 }}
-        title={
-          <Stack direction="column" spacing={1}>
-            <Typography variant="h5" component="div">
-              <Link
-                to={
-                  "https://zenodo.org/records/" +
-                  resource?.data?.data?.zenodo?.zenodo_id
-                }
-                target="_blank"
-                style={{ 
-                  textDecoration: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  color: 'inherit'
-                }}
-              >
-                <Typography
-                  component="span"
-                  variant="h5"
-                  sx={{ 
-                    fontWeight: 'bold',
-                    color: 'rgb(174, 83, 142)',
-                    '&:hover': {
-                      textDecoration: 'underline'
-                    }
-                  }}
-                >
-                  {resource?.data?.data?.zenodo?.title ?? "Title"}
-                </Typography>
-                <LaunchIcon sx={{ 
-                  fontSize: '0.8em',
-                  color: 'rgb(174, 83, 142)'
-                }} />
-              </Link>
-            </Typography>
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Tooltip title="Publication date">
-                  <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
-                </Tooltip>
-                <Typography variant="body2" color="text.secondary">
-                  {formatDate(resource?.data?.data?.zenodo?.metadata?.publication_date)}
-                </Typography>
-              </Stack>
-              {resource?.data?.data?.zenodo?.metadata?.version && (
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <Tooltip title="Version">
-                    <HistoryIcon sx={{ fontSize: "1.1rem" }} />
-                  </Tooltip>
-                  <Typography variant="body2" color="text.secondary">
-                    Version {resource?.data?.data?.zenodo?.metadata?.version}
-                  </Typography>
-                </Stack>
-              )}
-            </Stack>
-          </Stack>
-        }
-      />
-      <CardContent
-        sx={{
-          textAlign: [resource.isLoading ? "center" : "left"],
-          overflowY: "auto",
-          pt: 1,
-        }}
-      >
-        {resource.isLoading && <CircularProgress size="3rem" />}
-        {resource && (
-          <Stack direction="column" gap={2}>
+    <Stack spacing={3}>
+      <Stack direction="column" spacing={2}>
+        <Typography variant="h5" component="div">
+          <Link
+            to={
+              "https://zenodo.org/records/" +
+              resource?.data?.data?.zenodo?.zenodo_id
+            }
+            target="_blank"
+            style={{ 
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: 'inherit'
+            }}
+          >
             <Typography
-              component="pre"
-              sx={{
-                whiteSpace: 'pre-wrap',
-                fontFamily: 'inherit',
-                margin: 0,
-                fontSize: 'inherit'
+              component="span"
+              variant="h5"
+              sx={{ 
+                fontWeight: 'bold',
+                color: 'rgb(174, 83, 142)',
+                '&:hover': {
+                  textDecoration: 'underline'
+                }
               }}
             >
-              {resource?.data?.data?.zenodo?.metadata?.description}
+              {resource?.data?.data?.zenodo?.title ?? "Title"}
             </Typography>
-            {/* <ResourceItemFooter resource={resource?.data?.data} /> */}
+            <LaunchIcon sx={{ 
+              fontSize: '0.8em',
+              color: 'rgb(174, 83, 142)'
+            }} />
+          </Link>
+        </Typography>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Tooltip title="Publication date">
+              <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
+            </Tooltip>
+            <Typography variant="body2" color="text.secondary">
+              {formatDate(resource?.data?.data?.zenodo?.metadata?.publication_date)}
+            </Typography>
           </Stack>
-        )}
-      </CardContent>
-    </Card>
+          {resource?.data?.data?.zenodo?.metadata?.version && (
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Tooltip title="Version">
+                <HistoryIcon sx={{ fontSize: "1.1rem" }} />
+              </Tooltip>
+              <Typography variant="body2" color="text.secondary">
+                Version {resource?.data?.data?.zenodo?.metadata?.version}
+              </Typography>
+            </Stack>
+          )}
+        </Stack>
+      </Stack>
+
+      {resource.isLoading && <CircularProgress size="3rem" />}
+      {resource && (
+        <Typography
+          component="pre"
+          sx={{
+            whiteSpace: 'pre-wrap',
+            fontFamily: 'inherit',
+            margin: 0,
+            fontSize: '0.875rem'
+          }}
+        >
+          {resource?.data?.data?.zenodo?.metadata?.description}
+        </Typography>
+      )}
+    </Stack>
   );
 }
 
@@ -219,7 +204,7 @@ export function ResourceTags({ resource }) {
       <CardHeader
         sx={{ pb: 1 }}
         title={<Typography variant="h5">Tags</Typography>}
-      ></CardHeader>
+      />
       <CardContent
         sx={{
           textAlign: [resource.isLoading ? "center" : "left"],
@@ -232,13 +217,14 @@ export function ResourceTags({ resource }) {
             {keywords?.length > 0 ? (
               <Grid2 container spacing={1}>
                 {keywords?.map((keyword) => (
-                  <Chip
-                    key={keyword}
-                    label={keyword}
-                    color="primary"
-                    variant="outlined"
-                    size="small"
-                  />
+                  <Grid2 key={keyword}>
+                    <Chip
+                      label={keyword}
+                      color="primary"
+                      variant="outlined"
+                      size="small"
+                    />
+                  </Grid2>
                 ))}
               </Grid2>
             ) : (
