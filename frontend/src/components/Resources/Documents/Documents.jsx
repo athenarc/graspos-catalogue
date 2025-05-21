@@ -66,7 +66,16 @@ export function Document({ resourceId }) {
         <ResourceBasicInformation resource={document} />
       </Grid>
       <Grid size={{ xs: 12, lg: 4 }}>
-        <Stack direction="column" spacing={2}>
+        <Stack 
+          direction="column" 
+          spacing={3}
+          sx={{
+            position: 'sticky',
+            top: 24,
+            width: '100%',
+            margin: '0 auto',
+          }}
+        >
           <ResourceAuthors resource={document} />
           <ResourceTags resource={document} />
           <ResourceLicense resource={document} />

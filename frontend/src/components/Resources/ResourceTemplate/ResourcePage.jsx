@@ -356,11 +356,19 @@ export function ResourcePage() {
       sx={{
         height: "calc(100vh - 112px)",
         overflowY: "auto",
-        px: 2,
+        display: 'flex',
+        justifyContent: 'center',
+        px: { xs: 2, md: 4, lg: 6, xl: 8 }, // Reduced padding
         py: 2,
       }}
     >
-      <Stack spacing={2}>
+      <Stack 
+        spacing={2}
+        sx={{ 
+          width: '100%',
+          maxWidth: { sm: '700px', md: '1000px', lg: '1400px', xl: '1600px' }, // Increased max-width
+        }}
+      >
         <Button
           color="primary"
           variant="outlined"
@@ -371,7 +379,13 @@ export function ResourcePage() {
         >
           Back
         </Button>
-        <Grid container spacing={1.5} sx={{ minHeight: "100%" }}>
+        <Grid 
+          container 
+          spacing={4}
+          sx={{ 
+            minHeight: "100%",
+          }}
+        >
           {location.pathname.includes("dataset") && (
             <Dataset resourceId={resourceId} />
           )}
