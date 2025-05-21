@@ -21,7 +21,23 @@ import { ResourceItemFooter } from "./ResourceGridItem";
 
 export function ResourceBasicInformation({ resource }) {
   return (
-    <Card>
+    <Card
+      sx={{
+        lineHeight: 1.5,
+        flexDirection: "column",
+        display: "flex",
+        justifyContent: "space-between",
+        borderRadius: "5px",
+        border: "1px solid #e0dfdf",
+        backgroundColor: "#f8faff",
+        boxShadow: 0,
+        transition: "box-shadow 0.3s ease-in-out",
+        "&:hover": {
+          boxShadow: 4,
+        },
+        color: "#555",
+      }}
+    >
       <CardHeader
         title={
           <Typography variant="h5">
@@ -59,7 +75,23 @@ export function ResourceAuthors({ resource }) {
   const authors = resource?.data?.data?.zenodo?.metadata?.creators || [];
   console.log(authors);
   return (
-    <Card>
+    <Card
+      sx={{
+        lineHeight: 1.5,
+        flexDirection: "column",
+        display: "flex",
+        justifyContent: "space-between",
+        borderRadius: "5px",
+        border: "1px solid #e0dfdf",
+        backgroundColor: "#f8faff",
+        boxShadow: 0,
+        transition: "box-shadow 0.3s ease-in-out",
+        "&:hover": {
+          boxShadow: 4,
+        },
+        color: "#555",
+      }}
+    >
       <CardHeader
         title={<Typography variant="h5">Authors</Typography>}
       ></CardHeader>
@@ -94,7 +126,23 @@ export function ResourceAuthors({ resource }) {
 export function ResourceTags({ resource }) {
   const keywords = resource?.data?.data?.zenodo?.metadata?.keywords || [];
   return (
-    <Card>
+    <Card
+      sx={{
+        lineHeight: 1.5,
+        flexDirection: "column",
+        display: "flex",
+        justifyContent: "space-between",
+        borderRadius: "5px",
+        border: "1px solid #e0dfdf",
+        backgroundColor: "#f8faff",
+        boxShadow: 0,
+        transition: "box-shadow 0.3s ease-in-out",
+        "&:hover": {
+          boxShadow: 4,
+        },
+        color: "#555",
+      }}
+    >
       <CardHeader
         title={<Typography variant="h5">Tags</Typography>}
       ></CardHeader>
@@ -131,7 +179,23 @@ export function ResourceTags({ resource }) {
 
 export function ResourceLicense({ resource }) {
   return (
-    <Card>
+    <Card
+      sx={{
+        lineHeight: 1.5,
+        flexDirection: "column",
+        display: "flex",
+        justifyContent: "space-between",
+        borderRadius: "5px",
+        border: "1px solid #e0dfdf",
+        backgroundColor: "#f8faff",
+        boxShadow: 0,
+        transition: "box-shadow 0.3s ease-in-out",
+        "&:hover": {
+          boxShadow: 4,
+        },
+        color: "#555",
+      }}
+    >
       <CardHeader
         title={<Typography variant="h5">License</Typography>}
       ></CardHeader>
