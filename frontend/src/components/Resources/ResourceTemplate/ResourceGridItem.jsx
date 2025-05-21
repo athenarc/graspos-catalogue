@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import CloseIcon from '@mui/icons-material/Close';
 
 import {
   Grid2 as Grid,
@@ -13,6 +14,11 @@ import {
   Grid2,
   Chip,
   Divider,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Box, // Add this import
 } from "@mui/material";
 
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
@@ -34,148 +40,24 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ConfirmationModal from "../../Forms/ConfirmationModal";
 import DownloadIcon from "@mui/icons-material/Download";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useDeleteTool, useUpdateTool } from "../../../queries/tool";
 
 import grasposTools from "../../../assets/os.svg";
 
 import { useUpdateZenodo } from "../../../queries/zenodo";
 
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+
 const imgs = {
   "graspos-tools": grasposTools,
 };
 
-function ResourceAdminFunctionalities({ type, resource }) {
-  const updateDataset = useUpdateDataset(resource?._id);
-  const updateDocument = useUpdateDocument(resource?._id);
-  const updateTool = useUpdateTool(resource?._id);
-  const [queryState, setQueryState] = useState(false);
-  let query = null;
-  function handleUpdate(approved) {
-    setQueryState(true);
-    if (type === "Document") {
-      query = updateDocument;
-    } else if (type === "Dataset") {
-      query = updateDataset;
-    } else {
-      query = updateTool;
-    }
-    query.mutate(
-      { approved },
-      {
-        onSuccess: (data) => {
-          setQueryState(false);
-        },
-        onError: (e) => {
-          setQueryState(false);
-        },
-      }
-    );
-  }
-  return (
-    <Stack direction="row">
-      <Tooltip title={"Approve " + String(type)}>
-        <IconButton
-          disabled={queryState}
-          color="success"
-          onClick={() => {
-            handleUpdate(true);
-          }}
-          sx={{ p: 0.5 }}
-        >
-          <Check fontSize="" />
-        </IconButton>
-      </Tooltip>
-      <Tooltip
-        title={
-          "Reject " + String(type) + ". " + String(type + " will be deleted")
-        }
-        sx={{ p: 0.5 }}
-      >
-        <IconButton
-          disabled={queryState}
-          color="error"
-          onClick={() => {
-            handleUpdate(false);
-          }}
-        >
-          <ClearIcon />
-        </IconButton>
-      </Tooltip>
-    </Stack>
-  );
-}
-
-function ResourceOwnerFunctionalities({ resource, user, type, handleDelete }) {
-  const updateZenodo = useUpdateZenodo();
-
-  function handleUpdateZenodo(data) {
-    updateZenodo.mutate(
-      { data },
-      {
-        onSuccess: (data) => {},
-        onError: (e) => {},
-      }
-    );
-  }
-  return (
-    user && (
-      <>
-        <Tooltip
-          title={"Update " + String(type) + " from Zenodo"}
-          placement="top"
-        >
-          <IconButton
-            disabled={
-              !user ||
-              updateZenodo.isPending ||
-              (!user?.super_user && resource?.owner != user?.id)
-            }
-            onClick={() =>
-              handleUpdateZenodo({
-                id: resource?.zenodo?.id,
-                source: resource?.zenodo?.source,
-              })
-            }
-            sx={{ p: 0.5 }}
-            loading={updateZenodo.isPending}
-            loadingIndicator={
-              <CircularProgress size={15} thickness={5} sx={{ mr: 2.5 }} />
-            }
-          >
-            {!updateZenodo.isPending && <RefreshIcon />}
-          </IconButton>
-        </Tooltip>
-
-        <Tooltip title={"Delete " + String(type)} placement="top">
-          <div>
-            <ConfirmationModal
-              title={"Delete " + String(type)}
-              resource={resource}
-              response={() => handleDelete(resource?._id)}
-            >
-              {(handleClickOpen) => (
-                <IconButton
-                  color="error"
-                  disabled={
-                    !user ||
-                    updateZenodo.isPending ||
-                    (!user?.super_user && resource?.owner != user?.id)
-                  }
-                  onClick={handleClickOpen}
-                  sx={{ p: 0.5 }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              )}
-            </ConfirmationModal>
-          </div>
-        </Tooltip>
-      </>
-    )
-  );
-}
-
-function ResourceItemKeywords({ resource }) {
+export function ResourceItemKeywords({ resource }) {
   const keywords = resource?.zenodo?.metadata?.keywords || [];
 
   return (
@@ -204,27 +86,275 @@ function ResourceItemKeywords({ resource }) {
   );
 }
 
-function ResourceItemCommunities({ resource }) {
-  return resource?.zenodo?.metadata?.communities?.map(
-    (community) =>
-      community.id.includes("graspos") && (
-        <Tooltip
-          key={community.id}
-          title={
-            "Verified GraspOS " +
-            community.id.replace("graspos-", "").replace(/s$/, "")
-          }
+export function ResourceItemCommunities({ resource }) {
+  // ...existing code...
+}
+
+export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const updateZenodo = useUpdateZenodo();
+  const [queryState, setQueryState] = useState(false);
+  
+  // Initialize update hooks at component level
+  const updateDocument = useUpdateDocument(resource?._id);
+  const updateDataset = useUpdateDataset(resource?._id);
+  const updateTool = useUpdateTool(resource?._id);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleUpdateZenodo = (data) => {
+    updateZenodo.mutate(
+      { data },
+      {
+        onSuccess: () => handleClose(),
+        onError: () => handleClose(),
+      }
+    );
+  };
+
+  const handleUpdate = (approved) => {
+    setQueryState(true);
+    // Use the pre-initialized hooks
+    const updateQuery = type === "Document" 
+      ? updateDocument 
+      : type === "Dataset" 
+        ? updateDataset 
+        : updateTool;
+
+    updateQuery.mutate(
+      { approved },
+      {
+        onSuccess: () => {
+          setQueryState(false);
+          handleClose();
+        },
+        onError: () => {
+          setQueryState(false);
+          handleClose();
+        },
+      }
+    );
+  };
+
+  const handleDeleteClick = () => {
+    setConfirmDelete(true);
+    handleClose();
+  };
+
+  const handleConfirmDelete = () => {
+    handleDelete(resource?._id);
+    setConfirmDelete(false);
+  };
+
+  return (
+    <>
+      <IconButton
+        onClick={handleClick}
+        size="small"
+        sx={{
+          position: "absolute",
+          top: 8,
+          right: 8,
+          backgroundColor: "rgba(255,255,255,0.8)",
+          "&:hover": {
+            backgroundColor: "rgba(255,255,255,0.9)",
+          },
+        }}
+      >
+        <MoreVertIcon fontSize="small" />
+      </IconButton>
+
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+        {!resource?.approved && user?.super_user ? (
+          <>
+            <MenuItem onClick={() => handleUpdate(true)} disabled={queryState}>
+              <ListItemIcon>
+                <Check fontSize="small" color="success" />
+              </ListItemIcon>
+              <ListItemText>Approve {type.toLowerCase()}</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={() => handleUpdate(false)} disabled={queryState}>
+              <ListItemIcon>
+                <ClearIcon fontSize="small" color="error" />
+              </ListItemIcon>
+              <ListItemText>Reject {type.toLowerCase()}</ListItemText>
+            </MenuItem>
+          </>
+        ) : (
+          user && (
+            <>
+              <Tooltip 
+                title={
+                  !user || (!user?.super_user && resource?.owner !== user?.id)
+                    ? "You don't have permission to perform this action"
+                    : updateZenodo.isPending
+                    ? "Update in progress..."
+                    : ""
+                }
+              >
+                <span> {/* Wrapper needed for disabled elements */}
+                  <MenuItem
+                    onClick={() =>
+                      handleUpdateZenodo({
+                        id: resource?.zenodo?.id,
+                        source: resource?.zenodo?.source,
+                      })
+                    }
+                    disabled={
+                      !user ||
+                      updateZenodo.isPending ||
+                      (!user?.super_user && resource?.owner !== user?.id)
+                    }
+                  >
+                    <ListItemIcon>
+                      <RefreshIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Update</ListItemText>
+                  </MenuItem>
+                </span>
+              </Tooltip>
+              <Tooltip 
+                title={
+                  !user || (!user?.super_user && resource?.owner !== user?.id)
+                    ? "You don't have permission to perform this action"
+                    : ""
+                }
+              >
+                <span> {/* Wrapper needed for disabled elements */}
+                  <MenuItem
+                    onClick={handleDeleteClick}
+                    disabled={
+                      !user ||
+                      updateZenodo.isPending ||
+                      (!user?.super_user && resource?.owner !== user?.id)
+                    }
+                  >
+                    <ListItemIcon>
+                      <DeleteIcon fontSize="small" color="error" />
+                    </ListItemIcon>
+                    <ListItemText>Delete</ListItemText>
+                  </MenuItem>
+                </span>
+              </Tooltip>
+            </>
+          )
+        )}
+      </Menu>
+
+      {/* Updated Delete Confirmation Dialog to match Zenodo form style */}
+      <Dialog
+        open={confirmDelete}
+        onClose={() => setConfirmDelete(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle
+          sx={{
+            bgcolor: '#20477B',
+            color: 'white',
+            textAlign: "center",
+          }}
         >
-          <div id={community.id}>
-            <img
-              src={grasposTools}
-              alt={community.id}
-              width={"50"}
-              height={"20"}
-            />
-          </div>
-        </Tooltip>
-      )
+          Delete {type.toLowerCase()}
+
+          <IconButton
+            aria-label="close"
+            onClick={() => setConfirmDelete(false)}  // Changed this line
+            sx={(theme) => ({
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: theme.palette.grey[500],
+            })}
+          >
+            <CloseIcon sx={{ color: "white" }} />
+          </IconButton>
+        </DialogTitle>
+        <Divider />
+        <DialogContent sx={{ px: 3, pb: 3, pt: 3 }}>
+
+          <Stack spacing={4}>
+            <Typography sx={{ mt: 5 }}>
+              Are you sure you want to delete this {type.toLowerCase()}?
+            </Typography>
+            <Typography 
+              variant="body2" 
+              color="text.secondary"
+              sx={{ fontStyle: 'italic' }}
+            >
+              Title: {resource?.zenodo?.title}
+            </Typography>
+            <Box
+              sx={{
+                bgcolor: '#fff3f3',
+                border: '1px solid #ffcdd2',
+                borderRadius: 1,
+                p: 2,
+              }}
+            >
+              <Typography
+                color="error"
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  fontWeight: 500,
+                }}
+              >
+                <DeleteIcon color="error" fontSize="small" />
+                This action cannot be undone. The resource will be permanently removed.
+              </Typography>
+            </Box>
+            
+          </Stack>
+        </DialogContent>
+        <DialogActions
+          sx={{
+            px: 3,
+            py: 2,
+            bgcolor: '#f8f9fa',
+            borderTop: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <Button
+            onClick={() => setConfirmDelete(false)}
+            variant="outlined"
+            sx={{
+              mr: 1,
+              px: 3,
+              textTransform: 'none',
+              fontWeight: 500,
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            color="error"
+            variant="contained"
+            autoFocus
+            sx={{
+              px: 3,
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': {
+                bgcolor: 'error.dark',
+              },
+            }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }
 
@@ -237,8 +367,7 @@ export function ResourceItemHeader({ resource, type, user, handleDelete }) {
       mb={2}
       sx={{ position: "relative" }}
     >
-      {/* Title section */}
-      <Stack direction="column" spacing={1} sx={{ flex: 1, pr: 8 }}>
+      <Stack direction="column" spacing={1} sx={{ flex: 1, pr: user ? 8 : 0 }}>
         <Typography
           variant="h6"
           sx={{
@@ -252,48 +381,30 @@ export function ResourceItemHeader({ resource, type, user, handleDelete }) {
             {resource?.zenodo?.title}
           </Link>
         </Typography>
-        {!resource?.approved && (
-          <Tooltip title="Resource pending approval">
-            <PendingActionsIcon color="warning" fontSize="small" />
-          </Tooltip>
-        )}
       </Stack>
 
-      {/* Action buttons in top right */}
-      <Stack 
-        direction="row" 
-        spacing={1} 
-        sx={{ 
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          zIndex: 1
-        }}
-      >
-        {!resource?.approved && user?.super_user ? (
-          <ResourceAdminFunctionalities resource={resource} type={type} />
-        ) : (
-          <ResourceOwnerFunctionalities
-            handleDelete={handleDelete}
-            resource={resource}
-            user={user}
-            type={type}
-          />
-        )}
-      </Stack>
+      {/* Only show actions menu if user is logged in */}
+      {user && (
+        <ResourceActionsMenu
+          resource={resource}
+          type={type}
+          user={user}
+          handleDelete={handleDelete}
+        />
+      )}
     </Stack>
   );
 }
 
 export function ResourceItemFooter({ resource }) {
   return (
-    <Stack 
-      direction="row" 
+    <Stack
+      direction="row"
       justifyContent="space-between"
       alignItems="center"
-      sx={{ 
+      sx={{
         pt: 1.5,
-        mt: 2
+        mt: 2,
       }}
     >
       {/* Left side - stats */}
@@ -419,8 +530,9 @@ export default function ResourceGridItem({ resource, type, user }) {
           display: "flex",
           justifyContent: "space-between",
           borderRadius: "5px",
-          border: "1px solid #e0dfdf",
-          backgroundColor: "#f8faff",
+          border: "1px solid",
+          borderColor: !resource?.approved ? '#FFD700' : '#e0dfdf',
+          backgroundColor: !resource?.approved ? '#FFFDE7' : '#f8faff',
           boxShadow: 0,
           transition: "box-shadow 0.3s ease-in-out",
           "&:hover": {
