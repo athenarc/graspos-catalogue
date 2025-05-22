@@ -193,7 +193,7 @@ async def update_dataset(
     fields = update.model_dump(exclude_unset=True)
 
     if "approved" in fields and not fields["approved"]:
-        await dataset.delete()
+        await dataset.delete(link_rule=DeleteRules.DELETE_LINKS)
     else:
         dataset = Dataset.model_copy(dataset, update=fields)
         await dataset.save()
