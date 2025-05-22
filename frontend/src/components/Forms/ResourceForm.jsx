@@ -12,6 +12,8 @@ import {
   FormControl,
   Divider,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
@@ -36,6 +38,9 @@ export default function ResourceForm() {
   const [resourceType, setResourceType] = useState("dataset");
   const { user } = useAuth();
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
   const {
     register,
     handleSubmit,
@@ -51,22 +56,18 @@ export default function ResourceForm() {
   const createDataset = useCreateDataset();
   const createTool = useCreateTool();
   const createDocument = useCreateDocument();
-
   const zenodo = useZenodo();
 
   useEffect(() => {
-    if (zenodoData && zenodoData.source) {
-      setValue("source", zenodoData.source);
-    } else {
-      setValue("source", "");
-    }
-  }, [zenodoData]);
+    setValue("source", zenodoData?.source || "");
+  }, [zenodoData, setValue]);
 
-  const getMutation = () => {
-    if (resourceType === "tool") return createTool;
-    if (resourceType === "document") return createDocument;
-    return createDataset;
-  };
+  const getMutation = () =>
+    resourceType === "tool"
+      ? createTool
+      : resourceType === "document"
+      ? createDocument
+      : createDataset;
 
   const onSubmit = (data) => {
     const mutation = getMutation();
@@ -74,15 +75,14 @@ export default function ResourceForm() {
       { data },
       {
         onSuccess: () => {
-          setMessage(`${resourceType} has been created successfully!`);
+          setMessage(`${resourceType} created successfully!`);
           navigate("..");
         },
         onError: (error) => {
           reset();
-          setMessage(error?.response?.detail || "Error occurred");
-          setError("source", {
-            message: error?.response?.detail || "Error occurred",
-          });
+          const detail = error?.response?.detail || "Error occurred";
+          setMessage(detail);
+          setError("source", { message: detail });
         },
       }
     );
@@ -90,25 +90,23 @@ export default function ResourceForm() {
 
   const onZenodoSearch = () => {
     const sourceValue = watch("source");
-
     if (!sourceValue) {
       setError("source", { message: "Source cannot be empty" });
       return;
     }
-
     zenodo.mutate(
       { data: { source: sourceValue } },
       {
-        onSuccess: (data) => {
-          setZenodoData(data?.data);
+        onSuccess: ({ data }) => {
+          setZenodoData(data);
           setMessage("Zenodo data fetched!");
-          setValue("source", data?.data?.source);
+          setValue("source", data.source);
         },
         onError: (error) => {
-          setMessage(error?.response?.data?.detail || "Zenodo search failed");
-          setError("source", {
-            message: error?.response?.data?.detail || "Zenodo search failed",
-          });
+          const detail =
+            error?.response?.data?.detail || "Zenodo search failed";
+          setMessage(detail);
+          setError("source", { message: detail });
           setZenodoData(null);
         },
       }
@@ -121,9 +119,7 @@ export default function ResourceForm() {
     setMessage("");
   };
 
-  function handleClose() {
-    navigate("..");
-  }
+  const handleClose = () => navigate("..");
 
   const mutation = getMutation();
 
@@ -133,11 +129,12 @@ export default function ResourceForm() {
         <Dialog
           component="form"
           onClose={handleClose}
-          open={true}
+          open
           noValidate
-          onSubmit={handleSubmit(onSubmit)}
           fullWidth
-          maxWidth={zenodoData ? "lg" : "sm"}
+          fullScreen={isMobile}
+          maxWidth={isMobile ? undefined : zenodoData ? "lg" : "sm"}
+          onSubmit={handleSubmit(onSubmit)}
         >
           <DialogTitle
             sx={{
@@ -160,14 +157,12 @@ export default function ResourceForm() {
           >
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
-          <DialogContent sx={{ p: 4 }}>
-            <Stack direction="row" spacing={4}>
-              <Stack
-                direction="column"
-                alignContent="flex-start"
-                spacing={2}
-                sx={{ width: "100%" }}
-              >
+          <DialogContent sx={{ p: isMobile ? 2 : 4 }}>
+            <Stack
+              direction={isMobile ? "column" : "row"}
+              spacing={isMobile ? 2 : 4}
+            >
+              <Stack spacing={2} sx={{ flex: 1 }}>
                 <ZenodoForm
                   register={register}
                   errors={errors}
@@ -177,12 +172,15 @@ export default function ResourceForm() {
                   isLoading={zenodo.isPending}
                 />
               </Stack>
+
               {zenodoData && (
                 <>
-                  <Divider orientation="vertical" flexItem />
-                  <Stack direction="column" spacing={2} sx={{ width: "100%" }}>
+                  {!isMobile && <Divider orientation="vertical" flexItem />}
+
+                  <Stack spacing={2} sx={{ flex: 1 }}>
                     <Typography variant="h6">Resource Details</Typography>
-                    <FormControl fullWidth sx={{ mb: 2 }}>
+
+                    <FormControl fullWidth>
                       <InputLabel>Resource Type</InputLabel>
                       <Select
                         disabled={!zenodoData}
@@ -210,24 +208,26 @@ export default function ResourceForm() {
               )}
             </Stack>
           </DialogContent>
+
           {zenodoData && (
             <DialogActions sx={{ p: 2, pt: 0 }}>
               <Button
                 type="submit"
                 variant="contained"
                 disabled={!zenodoData}
-                loading={mutation?.isPending}
+                loading={mutation.isPending}
                 loadingPosition="end"
                 endIcon={<AddIcon />}
                 sx={{ backgroundColor: "#20477B" }}
               >
-                {mutation?.isPending ? "Creating..." : "Create"}
+                {mutation.isPending ? "Creating..." : "Create"}
               </Button>
             </DialogActions>
           )}
         </Dialog>
-        {(!mutation?.isSuccess || mutation?.isError) && (
-          <Notification requestStatus={mutation?.status} message={message} />
+
+        {mutation.status !== "success" && (
+          <Notification requestStatus={mutation.status} message={message} />
         )}
       </>
     )
