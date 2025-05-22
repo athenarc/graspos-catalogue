@@ -3,15 +3,17 @@ import requests, ast, re
 
 def get_zenodo_data(source):
     
-    doi_pattern = r'\d{8}'
+    doi_pattern = r'\d+'
     target_source = "https://zenodo.org/api/records/"
     match = re.search(doi_pattern, source)
     if match:
         target_source += match.group(0) + "/versions/latest"
+        
     
     request = None
     try:
         request = requests.get(str(target_source))
+      
     except requests.exceptions.RequestException as e:
         return {
             "status": 404,
@@ -22,18 +24,12 @@ def get_zenodo_data(source):
     if request.status_code == 200:
 
         if request and request.json():
-            CLEANR = re.compile(
-                '<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
+           
             resource = request.json()
-            
             resource["zenodo_id"] = resource["id"]
             resource["source"] = source
-            if "metadata" in resource:
-                if "description" in resource["metadata"]:
-                    resource["metadata"]["description"] = re.sub(
-                        CLEANR, '', resource["metadata"]["description"])
             del resource["id"]
-
+            
             return {"status": 200, "zenodo_object": resource}
     else:
         if str(request.status_code).startswith('5'):
