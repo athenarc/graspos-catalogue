@@ -73,7 +73,7 @@ export function ResourceBasicInformation({ resource }) {
 
 export function ResourceAuthors({ resource }) {
   const authors = resource?.data?.data?.zenodo?.metadata?.creators || [];
-  console.log(authors);
+
   return (
     <Card
       sx={{
