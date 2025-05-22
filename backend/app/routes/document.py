@@ -192,7 +192,7 @@ async def update_document(
     fields = update.model_dump(exclude_unset=True)
 
     if "approved" in fields and not fields["approved"]:
-        await document.delete()
+        await document.delete(link_rule=DeleteRules.DELETE_LINKS)
     else:
         document = Documents.model_copy(document, update=fields)
         await document.save()

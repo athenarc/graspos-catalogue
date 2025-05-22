@@ -1,167 +1,191 @@
 import {
-  Button,
-  TextField,
+  InputBase,
+  Paper,
+  Tooltip,
+  Divider,
   Stack,
-  TextareaAutosize,
-  Grid2,
+  IconButton,
+  CircularProgress,
+  Typography,
+  Card,
+  Box,
 } from "@mui/material";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import SearchIcon from "@mui/icons-material/Search";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
-import { useZenodo } from "../../queries/zenodo.js";
+import HistoryIcon from "@mui/icons-material/History"; // Add this import
+import AssignmentIcon from "@mui/icons-material/Assignment"; // Add this import
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import DOMPurify from "dompurify";
+import { Link } from "react-router-dom";
 
-function ZenodoData({ zenodoData }) {
-  const [displayAuthors, setDisplayAuthors] = useState(false);
+const cardStyles = {
+  flexDirection: "column",
+  display: "flex",
+  borderRadius: "5px",
+  border: "1px solid #e0dfdf",
+  backgroundColor: "#f8faff",
+  boxShadow: 0,
+  color: "#555",
+  p: 2,
+};
 
-  function handleDisplayAuthors() {
-    setDisplayAuthors(!displayAuthors);
-  }
+export default function ZenodoForm({
+  register,
+  errors,
+  zenodoData,
+  onZenodoSearch,
+  handleReset,
+  isLoading,
+}) {
   return (
-    <Stack direction={"column"} spacing={2} useFlexGap>
-      <TextField value={zenodoData?.title} disabled label="Title" fullWidth />
-      <TextareaAutosize
-        value={zenodoData?.metadata?.description}
-        disabled
-        label="Description"
-        maxRows="4"
-        minRows="4"
-        sx={{ borderRadius: "20px !important" }}
-      />
-      <Stack direction={"row"} spacing={2} useFlexGap>
-        <TextField
-          value={zenodoData?.doi}
-          disabled
-          label="Zenodo DOI"
-          fullWidth
-        />
-        <TextField
-          value={new Date(
-            zenodoData?.metadata?.publication_date
-          ).toLocaleDateString()}
-          disabled
-          label="Publication Date"
-          fullWidth
-        />
-      </Stack>
-
-      <Stack direction={"row"} spacing={2} useFlexGap>
-        <TextField
-          value={zenodoData?.metadata?.license?.id}
-          disabled
-          label="License"
-          fullWidth
-        />
-        <TextField
-          value={zenodoData?.metadata?.resource_type?.title}
-          disabled
-          label="Type"
-          fullWidth
-        />
-      </Stack>
-
-      <Button
-        onClick={handleDisplayAuthors}
-        endIcon={displayAuthors ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+    <>
+      <Paper
+        sx={{
+          p: 0.5,
+          display: "flex",
+          alignItems: "center",
+          width: "100%",
+        }}
       >
-        Authors
-      </Button>
+        <InputBase
+          {...register("source", {
+            required: "Source cannot be empty",
+            pattern: {
+              value:
+                /(?:https:\/\/zenodo\.org\/records\/\d+|\d{2}\.\d{4}\/zenodo\.\d+)/,
+              message: "Not a valid Zenodo URL or DOI",
+            },
+          })}
+          sx={{ pl: 1, flex: 1 }}
+          placeholder="Zenodo source or DOI"
+          error={!!errors?.source}
+          inputProps={{ "aria-label": "Zenodo source or DOI" }}
+        />
+        <Tooltip title="Search Zenodo">
+          <IconButton
+            type="button"
+            onClick={onZenodoSearch}
+            sx={{ p: "10px", minWidth: "40px" }}
+            aria-label="search"
+            disabled={isLoading}
+            color="primary"
+          >
+            {isLoading ? <CircularProgress size={24} /> : <SearchIcon />}
+          </IconButton>
+        </Tooltip>
 
-      {displayAuthors && (
-        <Grid2 container spacing={2}>
-          {zenodoData?.metadata?.creators?.map((creator) => (
-            <Grid2 size={4}>
-              <TextField
-                value={creator?.name}
-                disabled
-                label="Author"
-                title={creator?.name}
-              />
-            </Grid2>
-          ))}
-        </Grid2>
+        <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+
+        <Tooltip title="Reset search">
+          <IconButton
+            type="button"
+            onClick={handleReset}
+            sx={{ p: "10px", minWidth: "40px" }}
+            aria-label="reset"
+          >
+            <RestartAltIcon />
+          </IconButton>
+        </Tooltip>
+      </Paper>
+
+      {errors?.source && (
+        <div style={{ color: "red", fontSize: "0.8rem" }}>
+          {errors.source.message}
+        </div>
       )}
-    </Stack>
-  );
-}
 
-export default function ZenodoForm({ zenodoData, setZenodoData, setMessage }) {
-  const {
-    register,
-    handleSubmit,
-    setError,
-    reset,
-    formState: { errors },
-  } = useForm({ mode: "onBlur" });
+      {zenodoData && (
+        <Card component="Stack" p={2} sx={cardStyles}>
+          <Stack direction="column" spacing={1}>
+            <Typography
+              component="span"
+              variant="h6"
+              sx={{
+                fontWeight: "bold",
+                color: "rgb(174, 83, 142)",
+              }}
+            >
+              Preview
+            </Typography>
+            <Typography variant="subtitle">
+              <Link
+                to={"https://zenodo.org/records/" + zenodoData?.zenodo_id}
+                target="_blank"
+              >
+                {zenodoData?.title}
+              </Link>
+            </Typography>
+            <Typography
+              variant="subtitle"
+              sx={{
+                variant: "paragraph",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                display: "-webkit-box",
+                WebkitLineClamp: "6",
+                WebkitBoxOrient: "vertical",
+                mt: "0 !important",
+                [`& .tooltip`]: {
+                  maxWidth: 2000,
+                },
+              }}
+            >
+              <Tooltip title={zenodoData?.metadata?.description}>
+                <Box
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(
+                      zenodoData?.metadata?.description
+                    ),
+                  }}
+                />
+              </Tooltip>
+            </Typography>
 
-  const zenodo = useZenodo();
-
-  const onSubmit = (data) => {
-    zenodo.mutate(
-      { data },
-      {
-        onSuccess: (data) => {
-          setZenodoData(data?.data);
-          setMessage("Zendodo data received!");
-        },
-        onError: (error) => {
-          setMessage(error?.response?.data?.detail);
-          setError("source", {
-            message: error?.response?.data?.detail,
-          });
-        },
-      }
-    );
-  };
-  function handleReset() {
-    reset();
-    setZenodoData();
-  }
-
-  return (
-    <Stack direction="column" spacing={2}>
-      <TextField
-        required
-        {...register("source", {
-          required: "Source can not be empty",
-          pattern: {
-            value:
-              /(?:https:\/\/zenodo\.org\/records\/\d+|\d{2}\.\d{4}\/zenodo\.\d+)/,
-            message: "Not a valid Zenodo URLS",
-          },
-        })}
-        label="Zenodo source or DOI"
-        error={!!errors?.source}
-        helperText={errors?.source?.message ?? " "}
-        fullWidth
-      />
-      <Stack
-        direction={"row"}
-        spacing={2}
-        justifyContent={"end"}
-        sx={{ mt: "0 !important" }}
-      >
-        <Button
-          variant="outlined"
-          onClick={handleReset}
-          endIcon={<RestartAltIcon />}
-        >
-          Reset
-        </Button>
-        <Button
-          type="submit"
-          onClick={handleSubmit(onSubmit)}
-          variant="contained"
-          loading={zenodo?.isPending}
-          endIcon={<SearchIcon />}
-          loadingPosition="end"
-        >
-          Search
-        </Button>
-      </Stack>
-      {zenodoData && <ZenodoData zenodoData={zenodoData} />}
-    </Stack>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Stack direction="row" spacing={2} alignItems="center">
+                <Tooltip title="Publication date">
+                  <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
+                </Tooltip>
+                {zenodoData?.metadata?.publication_date && (
+                  <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
+                    {new Date(
+                      zenodoData?.metadata?.publication_date
+                    ).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </Typography>
+                )}
+                {zenodoData?.metadata?.version && (
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Tooltip title="Version">
+                      <HistoryIcon sx={{ fontSize: "1.1rem" }} />
+                    </Tooltip>
+                    <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
+                      {zenodoData?.metadata?.version}
+                    </Typography>
+                  </Stack>
+                )}
+                {zenodoData?.metadata?.license?.id && (
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Tooltip title="License">
+                      <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
+                    </Tooltip>
+                    <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
+                      {zenodoData?.metadata?.license?.id}
+                    </Typography>
+                  </Stack>
+                )}
+              </Stack>
+            </Stack>
+          </Stack>
+        </Card>
+      )}
+    </>
   );
 }

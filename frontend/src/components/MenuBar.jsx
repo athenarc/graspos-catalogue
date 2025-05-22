@@ -16,6 +16,9 @@ export default function MenuBar({ handleLogout, user }) {
   function handleZenodoUpdates() {
     navigate("zenodo/updates", { state: { backgroundLocation: location } });
   }
+  function handleAddResource() {
+    navigate("resource/add", { state: { backgroundLocation: location } });
+  }
   return (
     <Grid
       component={Box}
@@ -104,6 +107,7 @@ export default function MenuBar({ handleLogout, user }) {
               handleUsers={handleUsers}
               handleLogout={handleLogout}
               handleZenodoUpdates={handleZenodoUpdates}
+              handleAddResource={handleAddResource}
             />
           )}
         </Stack>

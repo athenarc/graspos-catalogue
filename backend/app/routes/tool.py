@@ -180,7 +180,7 @@ async def update_tool(
     fields = update.model_dump(exclude_unset=True)
 
     if "approved" in fields and not fields["approved"]:
-        await tool.delete()
+        await tool.delete(link_rule=DeleteRules.DELETE_LINKS)
     else:
         tool = Tool.model_copy(tool, update=fields)
         await tool.save()
