@@ -58,6 +58,16 @@ function ResourcesTabs({
                 : "Documents"
             }
           />
+          <Tab
+            label="Services"
+            disabled
+            sx={{
+              opacity: 0.7,
+              '&.Mui-disabled': {
+                color: 'text.secondary'
+              }
+            }}
+          />
         </Tabs>
       </Stack>
     </Box>
