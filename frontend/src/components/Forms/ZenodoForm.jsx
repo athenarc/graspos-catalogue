@@ -72,7 +72,7 @@ function ZenodoData({ zenodoData }) {
       {displayAuthors && (
         <Grid2 container spacing={2}>
           {zenodoData?.metadata?.creators?.map((creator) => (
-            <Grid2 size={4}>
+            <Grid2 size={4} key={creator?.name}>
               <TextField
                 value={creator?.name}
                 disabled
