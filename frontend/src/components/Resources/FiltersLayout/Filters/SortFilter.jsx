@@ -14,19 +14,19 @@ export default function SortFilter({ filters, onFilterChange }) {
       variant="outlined"
       sx={{ width: { xs: "100%", lg: "60%" } }}
     >
-      <InputLabel id="sort-filter-label">Sort Results By</InputLabel>
+      <InputLabel id="sort-filter-label">Sort results by</InputLabel>
       <Select
         labelId="sort-filter-label"
         label="Sort Results By"
         value={getValue()}
         onChange={handleChange}
       >
-        <MenuItem value="views|asc">Views ↑</MenuItem>
         <MenuItem value="views|desc">Views ↓</MenuItem>
-        <MenuItem value="downloads|asc">Downloads ↑</MenuItem>
+        <MenuItem value="views|asc">Views ↑</MenuItem>
         <MenuItem value="downloads|desc">Downloads ↓</MenuItem>
-        <MenuItem value="dates|asc">Publication date ↑</MenuItem>
+        <MenuItem value="downloads|asc">Downloads ↑</MenuItem>
         <MenuItem value="dates|desc">Publication date ↓</MenuItem>
+        <MenuItem value="dates|asc">Publication date ↑</MenuItem>
       </Select>
     </FormControl>
   );

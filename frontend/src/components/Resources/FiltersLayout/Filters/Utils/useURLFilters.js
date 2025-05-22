@@ -6,7 +6,7 @@ const getDefaultFilters = () => ({
   tags: [],
   graspos: false,
   sortField: "views",
-  sortDirection: "asc",
+  sortDirection: "desc",
   dateRange: {
     startDate: null,
     endDate: null,
