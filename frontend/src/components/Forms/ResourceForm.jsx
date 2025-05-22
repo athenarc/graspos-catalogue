@@ -5,13 +5,13 @@ import {
   Button,
   IconButton,
   DialogContent,
-  TextField,
   Stack,
   InputLabel,
   Select,
   MenuItem,
   FormControl,
-  TextareaAutosize,
+  Divider,
+  Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
@@ -28,28 +28,38 @@ import { useAuth } from "../AuthContext.jsx";
 import DatasetFormFields from "./DatasetFormFields.jsx";
 import DocumentFormFields from "./DocumentsFormFields.jsx";
 import ToolFormFields from "./ToolFormFields.jsx";
+import { useZenodo } from "../../queries/zenodo.js";
 
 export default function ResourceForm() {
   const [message, setMessage] = useState("");
-  const [zenodoData, setZenodoData] = useState();
+  const [zenodoData, setZenodoData] = useState(null);
   const [resourceType, setResourceType] = useState("dataset");
   const { user } = useAuth();
+
   const {
     register,
     handleSubmit,
     setError,
     setValue,
     reset,
+    watch,
     formState: { errors },
   } = useForm({ mode: "onBlur" });
+
   const navigate = useNavigate();
 
   const createDataset = useCreateDataset();
   const createTool = useCreateTool();
   const createDocument = useCreateDocument();
 
+  const zenodo = useZenodo();
+
   useEffect(() => {
-    setValue("source", zenodoData?.source);
+    if (zenodoData && zenodoData.source) {
+      setValue("source", zenodoData.source);
+    } else {
+      setValue("source", "");
+    }
   }, [zenodoData]);
 
   const getMutation = () => {
@@ -69,13 +79,46 @@ export default function ResourceForm() {
         },
         onError: (error) => {
           reset();
-          setMessage(error?.response?.detail);
+          setMessage(error?.response?.detail || "Error occurred");
           setError("source", {
-            message: error?.response?.detail,
+            message: error?.response?.detail || "Error occurred",
           });
         },
       }
     );
+  };
+
+  const onZenodoSearch = () => {
+    const sourceValue = watch("source");
+
+    if (!sourceValue) {
+      setError("source", { message: "Source cannot be empty" });
+      return;
+    }
+
+    zenodo.mutate(
+      { data: { source: sourceValue } },
+      {
+        onSuccess: (data) => {
+          setZenodoData(data?.data);
+          setMessage("Zenodo data fetched!");
+          setValue("source", data?.data?.source);
+        },
+        onError: (error) => {
+          setMessage(error?.response?.data?.detail || "Zenodo search failed");
+          setError("source", {
+            message: error?.response?.data?.detail || "Zenodo search failed",
+          });
+          setZenodoData(null);
+        },
+      }
+    );
+  };
+
+  const handleReset = () => {
+    reset();
+    setZenodoData(null);
+    setMessage("");
   };
 
   function handleClose() {
@@ -94,7 +137,7 @@ export default function ResourceForm() {
           noValidate
           onSubmit={handleSubmit(onSubmit)}
           fullWidth
-          maxWidth="md"
+          maxWidth={zenodoData ? "lg" : "sm"}
         >
           <DialogTitle
             sx={{
@@ -117,39 +160,55 @@ export default function ResourceForm() {
           >
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
-          <DialogContent sx={{ p: 2 }}>
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel>Resource Type</InputLabel>
-              <Select
-                value={resourceType}
-                label="Resource Type"
-                onChange={(e) => setResourceType(e.target.value)}
+          <DialogContent sx={{ p: 4 }}>
+            <Stack direction="row" spacing={4}>
+              <Stack
+                direction="column"
+                alignContent="flex-start"
+                spacing={2}
+                sx={{ width: "100%" }}
               >
-                <MenuItem value="dataset">Dataset</MenuItem>
-                <MenuItem value="tool">Tool</MenuItem>
-                <MenuItem value="document">Document</MenuItem>
-              </Select>
-            </FormControl>
+                <ZenodoForm
+                  register={register}
+                  errors={errors}
+                  zenodoData={zenodoData}
+                  onZenodoSearch={onZenodoSearch}
+                  handleReset={handleReset}
+                  isLoading={zenodo.isPending}
+                />
+              </Stack>
+              {zenodoData && (
+                <>
+                  <Divider orientation="vertical" flexItem />
+                  <Stack direction="column" spacing={2} sx={{ width: "100%" }}>
+                    <Typography variant="h6">Resource Details</Typography>
+                    <FormControl fullWidth sx={{ mb: 2 }}>
+                      <InputLabel>Resource Type</InputLabel>
+                      <Select
+                        disabled={!zenodoData}
+                        value={resourceType}
+                        label="Resource Type"
+                        onChange={(e) => setResourceType(e.target.value)}
+                      >
+                        <MenuItem value="dataset">Dataset</MenuItem>
+                        <MenuItem value="tool">Tool</MenuItem>
+                        <MenuItem value="document">Document</MenuItem>
+                      </Select>
+                    </FormControl>
 
-            <ZenodoForm
-              zenodoData={zenodoData}
-              setZenodoData={setZenodoData}
-              setMessage={setMessage}
-            />
-
-            {zenodoData && (
-              <>
-                {resourceType === "dataset" && (
-                  <DatasetFormFields register={register} errors={errors} />
-                )}
-                {resourceType === "document" && (
-                  <DocumentFormFields register={register} errors={errors} />
-                )}
-                {resourceType === "tool" && (
-                  <ToolFormFields register={register} errors={errors} />
-                )}
-              </>
-            )}
+                    {resourceType === "dataset" && (
+                      <DatasetFormFields register={register} errors={errors} />
+                    )}
+                    {resourceType === "document" && (
+                      <DocumentFormFields register={register} errors={errors} />
+                    )}
+                    {resourceType === "tool" && (
+                      <ToolFormFields register={register} errors={errors} />
+                    )}
+                  </Stack>
+                </>
+              )}
+            </Stack>
           </DialogContent>
           {zenodoData && (
             <DialogActions sx={{ p: 2, pt: 0 }}>
