@@ -14,6 +14,7 @@ import Logout from "@mui/icons-material/Logout";
 import { CircularVariants } from "./Skeleton";
 import GroupIcon from "@mui/icons-material/Group";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
+import AddIcon from "@mui/icons-material/Add";
 
 export default function UserDropDownMenu({
   user,
@@ -21,6 +22,7 @@ export default function UserDropDownMenu({
   handleProfile,
   handleUsers,
   handleZenodoUpdates,
+  handleAddResource,
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -90,6 +92,7 @@ export default function UserDropDownMenu({
         <MenuItem onClick={handleProfile}>
           <Avatar /> Profile
         </MenuItem>
+
         {user?.super_user && (
           <>
             <MenuItem onClick={handleUsers}>
@@ -106,6 +109,12 @@ export default function UserDropDownMenu({
             </MenuItem>
           </>
         )}
+        <MenuItem onClick={handleAddResource}>
+          <Avatar>
+            <AddIcon />
+          </Avatar>
+          Add resource
+        </MenuItem>
         <Divider />
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>

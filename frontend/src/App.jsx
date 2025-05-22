@@ -14,14 +14,12 @@ import AppLayout from "./components/AppLayout";
 import LoginForm from "./components/Forms/LoginForm";
 import RegisterForm from "./components/Forms/RegisterForm";
 import ProfileForm from "./components/Forms/ProfileForm";
-import DatasetForm from "./components/Resources/Datasets/DatasetForm";
-import DocumentForm from "./components/Resources/Documents/DocumentForm";
-import ToolForm from "./components/Resources/Tools/ToolForm";
 import ZenodoForm from "./components/Forms/ZenodoForm";
 import UsersPanelForm from "./components/Forms/UsersForm";
-import ResourcesView from "./components/ZenodoUpdatesModal";
+import UpdatesModal from "./components/ZenodoUpdatesModal";
 import { ResourcePage } from "./components/Resources/ResourceTemplate/ResourcePage";
 import { queryClient } from "./queries/queryClient";
+import ResourceForm from "./components/Forms/ResourceForm";
 
 function AppRoutes() {
   const location = useLocation();
@@ -39,11 +37,9 @@ function AppRoutes() {
           <Route path="profile" element={<div />} />
           <Route path="register" element={<RegisterForm />} />
           <Route path="users" element={<UsersPanelForm />} />
-          <Route path="dataset/add" element={<DatasetForm />} />
-          <Route path="document/add" element={<DocumentForm />} />
-          <Route path="tool/add" element={<ToolForm />} />
           <Route path="zenodo/add" element={<ZenodoForm />} />
-          <Route path="zenodo/updates" element={<ResourcesView />} />
+          <Route path="resource/add" element={<ResourceForm />} />
+          <Route path="zenodo/updates" element={<UpdatesModal />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Route>
       </Routes>
@@ -53,8 +49,9 @@ function AppRoutes() {
           <Route path="/profile" element={<ProfileForm />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
-          <Route path="zenodo/updates" element={<ResourcesView />} />
+          <Route path="zenodo/updates" element={<UpdatesModal />} />
           <Route path="users" element={<UsersPanelForm />} />
+          <Route path="resource/add" element={<ResourceForm />} />
         </Routes>
       )}
     </>
