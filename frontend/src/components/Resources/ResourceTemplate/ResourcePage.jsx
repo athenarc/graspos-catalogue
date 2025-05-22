@@ -18,8 +18,12 @@ import { Document } from "../Documents/Documents";
 import { Tool } from "../Tools/Tools";
 import orcidLogo from "../../../assets/orcid.logo.icon.svg";
 import { ResourceItemFooter } from "./ResourceGridItem";
+import DOMPurify from "dompurify";
 
 export function ResourceBasicInformation({ resource }) {
+  const sanitizedHtml = DOMPurify.sanitize(
+    resource?.data?.data?.zenodo?.metadata?.description
+  );
   return (
     <Card
       sx={{
@@ -62,7 +66,7 @@ export function ResourceBasicInformation({ resource }) {
         {resource.isLoading && <CircularProgress size="3rem" />}
         {resource && (
           <Stack direction="column" gap={2}>
-            {resource?.data?.data?.zenodo?.metadata?.description}
+            <Box dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
             <ResourceItemFooter resource={resource?.data?.data} />
           </Stack>
         )}

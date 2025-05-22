@@ -13,7 +13,9 @@ import {
   Grid2,
   Chip,
   Divider,
+  Box,
 } from "@mui/material";
+import DOMPurify from "dompurify";
 
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 
@@ -307,6 +309,9 @@ const NoMaxWidthTooltip = styled(({ className, ...props }) => (
 });
 
 function ResourceItemContent({ resource }) {
+  const sanitizedHtml = DOMPurify.sanitize(
+    resource?.zenodo?.metadata?.description
+  );
   return (
     <>
       <Stack direction={"row"} spacing={2} sx={{ pb: 2 }}>
@@ -324,7 +329,7 @@ function ResourceItemContent({ resource }) {
             },
           }}
         >
-          {resource?.zenodo?.metadata?.description}
+          <Box dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
         </Typography>
       </Stack>
 
