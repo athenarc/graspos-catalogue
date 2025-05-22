@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 
 import {
   Grid2 as Grid,
@@ -18,8 +18,9 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Box, // Add this import
+  Box,
 } from "@mui/material";
+import DOMPurify from "dompurify";
 
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 
@@ -43,17 +44,17 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useDeleteTool, useUpdateTool } from "../../../queries/tool";
 
-import VerifiedIcon from '@mui/icons-material/Verified'; // Add this import
+import VerifiedIcon from "@mui/icons-material/Verified"; // Add this import
 
 import { useUpdateZenodo } from "../../../queries/zenodo";
 
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
-import HistoryIcon from '@mui/icons-material/History'; // Add this import
-import AssignmentIcon from '@mui/icons-material/Assignment'; // Add this import
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import Button from "@mui/material/Button";
+import HistoryIcon from "@mui/icons-material/History"; // Add this import
+import AssignmentIcon from "@mui/icons-material/Assignment"; // Add this import
 
 export function ResourceItemKeywords({ resource }) {
   const keywords = resource?.zenodo?.metadata?.keywords || [];
@@ -95,13 +96,13 @@ function ResourceItemCommunities({ resource }) {
             community.id.replace("graspos-", "").replace(/s$/, "")
           }
         >
-          <VerifiedIcon 
-            color="primary" 
-            sx={{ 
+          <VerifiedIcon
+            color="primary"
+            sx={{
               fontSize: "1.2rem",
               verticalAlign: "middle",
-              ml: 1
-            }} 
+              ml: 1,
+            }}
           />
         </Tooltip>
       )
@@ -113,7 +114,7 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const updateZenodo = useUpdateZenodo();
   const [queryState, setQueryState] = useState(false);
-  
+
   // Initialize update hooks at component level
   const updateDocument = useUpdateDocument(resource?._id);
   const updateDataset = useUpdateDataset(resource?._id);
@@ -140,10 +141,11 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
   const handleUpdate = (approved) => {
     setQueryState(true);
     // Use the pre-initialized hooks
-    const updateQuery = type === "Document" 
-      ? updateDocument 
-      : type === "Dataset" 
-        ? updateDataset 
+    const updateQuery =
+      type === "Document"
+        ? updateDocument
+        : type === "Dataset"
+        ? updateDataset
         : updateTool;
 
     updateQuery.mutate(
@@ -205,7 +207,7 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
         ) : (
           user && (
             <>
-              <Tooltip 
+              <Tooltip
                 title={
                   !user || (!user?.super_user && resource?.owner !== user?.id)
                     ? "You don't have permission to perform this action"
@@ -214,7 +216,9 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
                     : ""
                 }
               >
-                <span> {/* Wrapper needed for disabled elements */}
+                <span>
+                  {" "}
+                  {/* Wrapper needed for disabled elements */}
                   <MenuItem
                     onClick={() =>
                       handleUpdateZenodo({
@@ -235,14 +239,16 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
                   </MenuItem>
                 </span>
               </Tooltip>
-              <Tooltip 
+              <Tooltip
                 title={
                   !user || (!user?.super_user && resource?.owner !== user?.id)
                     ? "You don't have permission to perform this action"
                     : ""
                 }
               >
-                <span> {/* Wrapper needed for disabled elements */}
+                <span>
+                  {" "}
+                  {/* Wrapper needed for disabled elements */}
                   <MenuItem
                     onClick={handleDeleteClick}
                     disabled={
@@ -272,16 +278,15 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
       >
         <DialogTitle
           sx={{
-            bgcolor: '#20477B',
-            color: 'white',
+            bgcolor: "#20477B",
+            color: "white",
             textAlign: "center",
           }}
         >
           Delete {type.toLowerCase()}
-
           <IconButton
             aria-label="close"
-            onClick={() => setConfirmDelete(false)}  // Changed this line
+            onClick={() => setConfirmDelete(false)} // Changed this line
             sx={(theme) => ({
               position: "absolute",
               right: 8,
@@ -294,22 +299,21 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
         </DialogTitle>
         <Divider />
         <DialogContent sx={{ px: 3, pb: 3, pt: 3 }}>
-
           <Stack spacing={4}>
             <Typography sx={{ mt: 5 }}>
               Are you sure you want to delete this {type.toLowerCase()}?
             </Typography>
-            <Typography 
-              variant="body2" 
+            <Typography
+              variant="body2"
               color="text.secondary"
-              sx={{ fontStyle: 'italic' }}
+              sx={{ fontStyle: "italic" }}
             >
               Title: {resource?.zenodo?.title}
             </Typography>
             <Box
               sx={{
-                bgcolor: '#fff3f3',
-                border: '1px solid #ffcdd2',
+                bgcolor: "#fff3f3",
+                border: "1px solid #ffcdd2",
                 borderRadius: 1,
                 p: 2,
               }}
@@ -317,26 +321,26 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
               <Typography
                 color="error"
                 sx={{
-                  display: 'flex',
-                  alignItems: 'center',
+                  display: "flex",
+                  alignItems: "center",
                   gap: 1,
                   fontWeight: 500,
                 }}
               >
                 <DeleteIcon color="error" fontSize="small" />
-                This action cannot be undone. The resource will be permanently removed.
+                This action cannot be undone. The resource will be permanently
+                removed.
               </Typography>
             </Box>
-            
           </Stack>
         </DialogContent>
         <DialogActions
           sx={{
             px: 3,
             py: 2,
-            bgcolor: '#f8f9fa',
-            borderTop: '1px solid',
-            borderColor: 'divider',
+            bgcolor: "#f8f9fa",
+            borderTop: "1px solid",
+            borderColor: "divider",
           }}
         >
           <Button
@@ -345,7 +349,7 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
             sx={{
               mr: 1,
               px: 3,
-              textTransform: 'none',
+              textTransform: "none",
               fontWeight: 500,
             }}
           >
@@ -358,10 +362,10 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
             autoFocus
             sx={{
               px: 3,
-              textTransform: 'none',
+              textTransform: "none",
               fontWeight: 500,
-              '&:hover': {
-                bgcolor: 'error.dark',
+              "&:hover": {
+                bgcolor: "error.dark",
               },
             }}
           >
@@ -402,11 +406,11 @@ export function ResourceItemHeader({ resource, type, user, handleDelete }) {
       </Stack>
 
       {/* Top right actions area */}
-      <Stack 
-        direction="row" 
-        spacing={1} 
+      <Stack
+        direction="row"
+        spacing={1}
         alignItems="center"
-        sx={{ 
+        sx={{
           position: "absolute",
           top: 8,
           right: 8,
@@ -428,19 +432,15 @@ export function ResourceItemHeader({ resource, type, user, handleDelete }) {
 
 export function ResourceItemFooter({ resource }) {
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-GB', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
     });
   };
 
   return (
-    <Stack
-      direction="row"
-      justifyContent="space-between"
-      alignItems="center"
-    >
+    <Stack direction="row" justifyContent="space-between" alignItems="center">
       {/* Left side - publication date, version and license */}
       <Stack direction="row" spacing={2} alignItems="center">
         <Tooltip title="Publication date">
@@ -503,6 +503,9 @@ const NoMaxWidthTooltip = styled(({ className, ...props }) => (
 });
 
 export function ResourceItemContent({ resource }) {
+  const sanitizedHtml = DOMPurify.sanitize(
+    resource?.zenodo?.metadata?.description
+  );
   return (
     <>
       <Stack direction={"row"} spacing={2} sx={{ pb: 1.5 }}>
@@ -520,7 +523,7 @@ export function ResourceItemContent({ resource }) {
             },
           }}
         >
-          {resource?.zenodo?.metadata?.description}
+          <Box dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
         </Typography>
       </Stack>
 
@@ -574,8 +577,8 @@ export default function ResourceGridItem({ resource, type, user }) {
           justifyContent: "space-between",
           borderRadius: "5px",
           border: "1px solid",
-          borderColor: !resource?.approved ? '#FFD700' : '#e0dfdf',
-          backgroundColor: !resource?.approved ? '#FFFDE7' : '#f8faff',
+          borderColor: !resource?.approved ? "#FFD700" : "#e0dfdf",
+          backgroundColor: !resource?.approved ? "#FFFDE7" : "#f8faff",
           boxShadow: 0,
           transition: "box-shadow 0.3s ease-in-out",
           "&:hover": {

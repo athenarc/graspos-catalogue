@@ -20,12 +20,13 @@ import { Document } from "../Documents/Documents";
 import { Tool } from "../Tools/Tools";
 import orcidLogo from "../../../assets/orcid.logo.icon.svg";
 import { ResourceItemFooter } from "./ResourceGridItem";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // Added import
-import LaunchIcon from '@mui/icons-material/Launch'; // Added import
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import HistoryIcon from '@mui/icons-material/History';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import DownloadIcon from '@mui/icons-material/Download';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack"; // Added import
+import LaunchIcon from "@mui/icons-material/Launch"; // Added import
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import HistoryIcon from "@mui/icons-material/History";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import DownloadIcon from "@mui/icons-material/Download";
+import DOMPurify from "dompurify";
 
 // Common card styles without transition and hover effect
 const cardStyles = {
@@ -41,12 +42,17 @@ const cardStyles = {
 };
 
 export function ResourceBasicInformation({ resource }) {
+  const sanitizedHtml = DOMPurify.sanitize(
+    resource?.data?.data?.zenodo?.metadata?.description
+  );
   const formatDate = (dateString) => {
-    return dateString ? new Date(dateString).toLocaleDateString('en-GB', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    }) : '';
+    return dateString
+      ? new Date(dateString).toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })
+      : "";
   };
 
   return (
@@ -59,31 +65,33 @@ export function ResourceBasicInformation({ resource }) {
               resource?.data?.data?.zenodo?.zenodo_id
             }
             target="_blank"
-            style={{ 
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              color: 'inherit'
+            style={{
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              color: "inherit",
             }}
           >
             <Typography
               component="span"
               variant="h5"
-              sx={{ 
-                fontWeight: 'bold',
-                color: 'rgb(174, 83, 142)',
-                '&:hover': {
-                  textDecoration: 'underline'
-                }
+              sx={{
+                fontWeight: "bold",
+                color: "rgb(174, 83, 142)",
+                "&:hover": {
+                  textDecoration: "underline",
+                },
               }}
             >
               {resource?.data?.data?.zenodo?.title ?? "Title"}
             </Typography>
-            <LaunchIcon sx={{ 
-              fontSize: '0.8em',
-              color: 'rgb(174, 83, 142)'
-            }} />
+            <LaunchIcon
+              sx={{
+                fontSize: "0.8em",
+                color: "rgb(174, 83, 142)",
+              }}
+            />
           </Link>
         </Typography>
         <Stack direction="row" spacing={2} alignItems="center">
@@ -92,7 +100,9 @@ export function ResourceBasicInformation({ resource }) {
               <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
             </Tooltip>
             <Typography variant="body2" color="text.secondary">
-              {formatDate(resource?.data?.data?.zenodo?.metadata?.publication_date)}
+              {formatDate(
+                resource?.data?.data?.zenodo?.metadata?.publication_date
+              )}
             </Typography>
           </Stack>
           {resource?.data?.data?.zenodo?.metadata?.version && (
@@ -111,15 +121,13 @@ export function ResourceBasicInformation({ resource }) {
       {resource.isLoading && <CircularProgress size="3rem" />}
       {resource && (
         <Typography
-          component="pre"
           sx={{
-            whiteSpace: 'pre-wrap',
-            fontFamily: 'inherit',
+            fontFamily: "inherit",
             margin: 0,
-            fontSize: '0.875rem'
+            fontSize: "0.875rem",
           }}
         >
-          {resource?.data?.data?.zenodo?.metadata?.description}
+          <Box dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
         </Typography>
       )}
     </Stack>
@@ -150,21 +158,26 @@ export function ResourceAuthors({ resource }) {
                     <Link
                       to={"https://orcid.org/" + author?.orcid}
                       target="_blank"
-                      style={{ textDecoration: 'none' }}
+                      style={{ textDecoration: "none" }}
                     >
                       <Stack direction="row" alignItems="center">
-                        <Typography 
-                          variant="body1" 
+                        <Typography
+                          variant="body1"
                           fontWeight={500}
-                          sx={{ 
-                            color: 'text.primary',
-                            '&:hover': { color: 'primary.main' }
+                          sx={{
+                            color: "text.primary",
+                            "&:hover": { color: "primary.main" },
                           }}
                         >
                           {author?.name}
                         </Typography>
                         <Avatar
-                          sx={{ bgcolor: "#A6CE39", width: 20, height: 20, ml: 1 }}
+                          sx={{
+                            bgcolor: "#A6CE39",
+                            width: 20,
+                            height: 20,
+                            ml: 1,
+                          }}
                           alt="orcid"
                           src={orcidLogo}
                         />
@@ -177,12 +190,12 @@ export function ResourceAuthors({ resource }) {
                   )}
                 </Stack>
                 {author?.affiliation && (
-                  <Typography 
-                    variant="body2" 
+                  <Typography
+                    variant="body2"
                     color="text.secondary"
-                    sx={{ 
+                    sx={{
                       fontSize: "0.875rem",
-                      fontStyle: "italic"
+                      fontStyle: "italic",
                     }}
                   >
                     {author.affiliation}
@@ -285,55 +298,43 @@ export function ResourceStatistics({ resource }) {
             direction="row"
             spacing={2}
             divider={<Divider orientation="vertical" flexItem />}
-            sx={{ width: '100%' }}
+            sx={{ width: "100%" }}
           >
             <Stack
               direction="row"
               alignItems="center"
               justifyContent="center"
-              sx={{ width: '50%', py: 2 }}
+              sx={{ width: "50%", py: 2 }}
             >
               <Stack alignItems="center" spacing={1}>
-                <Typography 
-                  variant="h4" 
-                  fontWeight="500" 
-                  color="primary.main"
-                >
+                <Typography variant="h4" fontWeight="500" color="primary.main">
                   {resource?.data?.data?.zenodo?.stats?.downloads ?? 0}
                 </Typography>
-                <Stack 
-                  direction="row" 
-                  spacing={1} 
-                  alignItems="center"
-                >
-                  <DownloadIcon sx={{ fontSize: "1.1rem", color: 'text.secondary' }} />
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <DownloadIcon
+                    sx={{ fontSize: "1.1rem", color: "text.secondary" }}
+                  />
                   <Typography variant="body2" color="text.secondary">
                     downloads
                   </Typography>
                 </Stack>
               </Stack>
             </Stack>
-            
+
             <Stack
               direction="row"
               alignItems="center"
               justifyContent="center"
-              sx={{ width: '50%', py: 2 }}
+              sx={{ width: "50%", py: 2 }}
             >
               <Stack alignItems="center" spacing={1}>
-                <Typography 
-                  variant="h4" 
-                  fontWeight="500" 
-                  color="primary.main"
-                >
+                <Typography variant="h4" fontWeight="500" color="primary.main">
                   {resource?.data?.data?.zenodo?.stats?.views ?? 0}
                 </Typography>
-                <Stack 
-                  direction="row" 
-                  spacing={1} 
-                  alignItems="center"
-                >
-                  <VisibilityIcon sx={{ fontSize: "1.1rem", color: 'text.secondary' }} />
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <VisibilityIcon
+                    sx={{ fontSize: "1.1rem", color: "text.secondary" }}
+                  />
                   <Typography variant="body2" color="text.secondary">
                     views
                   </Typography>
@@ -356,17 +357,17 @@ export function ResourcePage() {
       sx={{
         height: "calc(100vh - 112px)",
         overflowY: "auto",
-        display: 'flex',
-        justifyContent: 'center',
+        display: "flex",
+        justifyContent: "center",
         px: { xs: 2, md: 4, lg: 6, xl: 8 }, // Reduced padding
         py: 2,
       }}
     >
-      <Stack 
+      <Stack
         spacing={2}
-        sx={{ 
-          width: '100%',
-          maxWidth: { sm: '700px', md: '1000px', lg: '1400px', xl: '1600px' }, // Increased max-width
+        sx={{
+          width: "100%",
+          maxWidth: { sm: "700px", md: "1000px", lg: "1400px", xl: "1600px" }, // Increased max-width
         }}
       >
         <Button
@@ -375,14 +376,14 @@ export function ResourcePage() {
           component={Link}
           to={-1}
           startIcon={<ArrowBackIcon />}
-          sx={{ width: 'fit-content', backgroundColor: "#fff" }}
+          sx={{ width: "fit-content", backgroundColor: "#fff" }}
         >
           Back
         </Button>
-        <Grid 
-          container 
+        <Grid
+          container
           spacing={4}
-          sx={{ 
+          sx={{
             minHeight: "100%",
           }}
         >
