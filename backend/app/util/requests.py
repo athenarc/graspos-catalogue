@@ -13,7 +13,7 @@ def get_zenodo_data(source):
     request = None
     try:
         request = requests.get(str(target_source))
-        print(target_source)
+      
     except requests.exceptions.RequestException as e:
         return {
             "status": 404,
