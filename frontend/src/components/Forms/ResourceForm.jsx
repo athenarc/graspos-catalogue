@@ -183,16 +183,16 @@ export default function ResourceForm() {
                   <Stack direction="column" spacing={2} sx={{ width: "100%" }}>
                     <Typography variant="h6">Resource Details</Typography>
                     <FormControl fullWidth sx={{ mb: 2 }}>
-                      <InputLabel>Resource Type</InputLabel>
+                      <InputLabel>Resource type</InputLabel>
                       <Select
                         disabled={!zenodoData}
                         value={resourceType}
-                        label="Resource Type"
+                        label="Resource type"
                         onChange={(e) => setResourceType(e.target.value)}
                       >
                         <MenuItem value="dataset">Dataset</MenuItem>
                         <MenuItem value="tool">Tool</MenuItem>
-                        <MenuItem value="document">Document</MenuItem>
+                        <MenuItem value="document">Template or Guideline</MenuItem>
                       </Select>
                     </FormControl>
 

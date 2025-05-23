@@ -54,8 +54,8 @@ function ResourcesTabs({
           <Tab
             label={
               resourcesFetched?.Documents?.results !== "undefined"
-                ? `Documents (${resourcesFetched?.Documents?.results})`
-                : "Documents"
+                ? `Templates & Guidelines (${resourcesFetched?.Documents?.results})`
+                : "Templates & Guidelines"
             }
           />
           <Tab
