@@ -17,6 +17,7 @@ router = APIRouter(prefix="/api/v1/tool", tags=["Tool"])
 @router.get("", status_code=200, response_model=list[Tool])
 async def get_all_datasets(user: Optional[User] = Depends(current_user),
                            license: Optional[List[str]] = Query(None),
+                           scope: Optional[List[str]] = Query(None),
                            tag: Optional[List[str]] = Query(None),
                            graspos: Optional[bool] = Query(None),
                            sort_field: Optional[str] = Query(None),
@@ -44,6 +45,11 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
     if license:
         search["$and"] = search.get("$and", [])
         search["$and"].append({"zenodo.metadata.license.id": {"$in": license}})
+        
+    # Scope filtering
+    if scope:
+        search["$and"] = search.get("$and", [])
+        search["$and"].append({"scope.id": {"$in": scope}})
 
     if graspos:
         search["$and"] = search.get("$and", [])
