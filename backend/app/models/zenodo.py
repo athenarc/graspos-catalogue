@@ -4,8 +4,6 @@ from pydantic import BaseModel
 import pymongo
 from pymongo import IndexModel
 
-
-# ZenodoMetadata remains the same
 class ZenodoMetadata(BaseModel):
     title: str | None = None
     doi: str | None = None
@@ -46,9 +44,9 @@ class Zenodo(BaseModel):
     stats: object | None = None
     state: str | None = None
     submitted: bool | None = None
+    created_at: datetime | None = datetime.now()
+    modified_at: datetime | None = datetime.now()
 
-
-# ZenodoView remains unchanged
 class ZenodoView(BaseModel):
     source: str | None = None
 
@@ -61,14 +59,6 @@ class Zenodo(Document, Zenodo, ZenodoView):
 
     class Settings:
         name = "zenodo"
-        # Full-text index defined correctly using pymongo.TEXT
-        # indexes = [
-        #     "metadata_title_description_index", 
-        #     [
-        #         ("metadata.title", pymongo.TEXT),
-        #         ("metadata.description", pymongo.TEXT),
-        #     ],
-        # ]
         indexes = [
             IndexModel(
                 [("metadata.title", pymongo.TEXT), ("metadata.description", pymongo.TEXT)],  # Compound text index
