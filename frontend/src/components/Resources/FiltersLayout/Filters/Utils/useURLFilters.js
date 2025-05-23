@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 const getDefaultFilters = () => ({
   licenses: {},
   tags: [],
+  scopes: {},
   graspos: false,
   sortField: "views",
   sortDirection: "desc",
@@ -42,6 +43,10 @@ export function useURLFilters(resourceMap) {
     // Parse filters from URL
     searchParams.getAll("license").forEach((value) => {
       newFilters.licenses[value] = true;
+    });
+
+    searchParams.getAll("scope").forEach((value) => {
+      newFilters.scopes[value] = true;
     });
 
     searchParams.getAll("tag").forEach((value) => {
@@ -90,6 +95,10 @@ export function useURLFilters(resourceMap) {
       if (value) searchParams.append("license", key);
     });
 
+    Object.entries(newFilters.scopes || {}).forEach(([key, value]) => {
+      if (value) searchParams.append("scope", key);
+    });
+
     newFilters.tags?.forEach((value) => {
       searchParams.append("tag", value);
     });
@@ -135,6 +144,7 @@ export function useURLFilters(resourceMap) {
     const urlEmptyFilters = emptyFilters;
     urlEmptyFilters.text = filters.text;
     urlEmptyFilters.graspos = filters.graspos;
+    urlEmptyFilters.scopes = filters.scopes;
     setFilters(urlEmptyFilters);
     updateURL(emptyFilters, newValue);
   };
