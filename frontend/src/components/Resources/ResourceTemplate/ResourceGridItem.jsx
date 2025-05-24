@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 
 import {
@@ -20,6 +20,9 @@ import {
   ListItemText,
   Box,
   Avatar,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import DOMPurify from "dompurify";
 
@@ -30,16 +33,11 @@ import {
   useDeleteDocument,
   useUpdateDocument,
 } from "../../../queries/document";
-
-import { styled } from "@mui/material/styles";
-import { tooltipClasses } from "@mui/material/Tooltip";
-import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ClearIcon from "@mui/icons-material/Clear";
 import Check from "@mui/icons-material/Check";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import ConfirmationModal from "../../Forms/ConfirmationModal";
 import DownloadIcon from "@mui/icons-material/Download";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -56,7 +54,10 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import HistoryIcon from "@mui/icons-material/History"; // Add this import
 import AssignmentIcon from "@mui/icons-material/Assignment"; // Add this import
-import { use } from "react";
+import EditIcon from "@mui/icons-material/Edit";
+import { useScopes } from "../../../queries/scope";
+
+import SaveIcon from "@mui/icons-material/Save";
 
 export function ResourceItemKeywords({ resource }) {
   const keywords = resource?.zenodo?.metadata?.keywords || [];
@@ -114,13 +115,28 @@ function ResourceItemCommunities({ resource }) {
 export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  // New state for scopes modal
+  const [editScopesOpen, setEditScopesOpen] = useState(false);
+  const scopesQuery = useScopes();
+
+  // Track selected scopes for editing
+  const [selectedScopes, setSelectedScopes] = useState([]);
+
   const updateZenodo = useUpdateZenodo();
   const [queryState, setQueryState] = useState(false);
 
-  // Initialize update hooks at component level
+  // Update hooks
   const updateDocument = useUpdateDocument(resource?._id);
   const updateDataset = useUpdateDataset(resource?._id);
   const updateTool = useUpdateTool(resource?._id);
+
+  // Initialize selected scopes when modal opens or resource changes
+  useEffect(() => {
+    if (resource?.scopes) {
+      setSelectedScopes(resource.scopes.map((s) => s._id || s.id)); // fallback on id
+    }
+  }, [resource]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -142,7 +158,6 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
 
   const handleUpdate = (approved) => {
     setQueryState(true);
-    // Use the pre-initialized hooks
     const updateQuery =
       type === "Document"
         ? updateDocument
@@ -173,6 +188,49 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
   const handleConfirmDelete = () => {
     handleDelete(resource?._id);
     setConfirmDelete(false);
+  };
+
+  // New handlers for scopes modal
+  const handleOpenEditScopes = () => {
+    setEditScopesOpen(true);
+    handleClose();
+  };
+
+  const handleCloseEditScopes = () => {
+    setEditScopesOpen(false);
+  };
+
+  const handleToggleScope = (scopeId) => {
+    setSelectedScopes((prev) =>
+      prev.includes(scopeId)
+        ? prev.filter((id) => id !== scopeId)
+        : [...prev, scopeId]
+    );
+  };
+
+  const handleSaveScopes = () => {
+    setQueryState(true);
+
+    const updateQuery =
+      type === "Document"
+        ? updateDocument
+        : type === "Dataset"
+        ? updateDataset
+        : updateTool;
+
+    updateQuery.mutate(
+      { scopes: selectedScopes },
+      {
+        onSuccess: () => {
+          setQueryState(false);
+          setEditScopesOpen(false);
+        },
+        onError: () => {
+          setQueryState(false);
+          // optionally show error feedback
+        },
+      }
+    );
   };
 
   return (
@@ -213,14 +271,36 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
                 title={
                   !user || (!user?.super_user && resource?.owner !== user?.id)
                     ? "You don't have permission to perform this action"
+                    : ""
+                }
+              >
+                <span>
+                  {/* Wrapper needed for disabled elements */}
+                  <MenuItem
+                    onClick={handleOpenEditScopes}
+                    disabled={
+                      !user ||
+                      updateZenodo.isPending ||
+                      (!user?.super_user && resource?.owner !== user?.id)
+                    }
+                  >
+                    <ListItemIcon>
+                      <EditIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Edit scopes</ListItemText>
+                  </MenuItem>
+                </span>
+              </Tooltip>
+              <Tooltip
+                title={
+                  !user || (!user?.super_user && resource?.owner !== user?.id)
+                    ? "You don't have permission to perform this action"
                     : updateZenodo.isPending
                     ? "Update in progress..."
                     : ""
                 }
               >
                 <span>
-                  {" "}
-                  {/* Wrapper needed for disabled elements */}
                   <MenuItem
                     onClick={() =>
                       handleUpdateZenodo({
@@ -241,6 +321,7 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
                   </MenuItem>
                 </span>
               </Tooltip>
+
               <Tooltip
                 title={
                   !user || (!user?.super_user && resource?.owner !== user?.id)
@@ -249,8 +330,6 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
                 }
               >
                 <span>
-                  {" "}
-                  {/* Wrapper needed for disabled elements */}
                   <MenuItem
                     onClick={handleDeleteClick}
                     disabled={
@@ -271,7 +350,7 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
         )}
       </Menu>
 
-      {/* Updated Delete Confirmation Dialog to match Zenodo form style */}
+      {/* Delete confirmation modal (existing) */}
       <Dialog
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}
@@ -288,7 +367,7 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
           Delete {type.toLowerCase()}
           <IconButton
             aria-label="close"
-            onClick={() => setConfirmDelete(false)} // Changed this line
+            onClick={() => setConfirmDelete(false)}
             sx={(theme) => ({
               position: "absolute",
               right: 8,
@@ -348,12 +427,7 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
           <Button
             onClick={() => setConfirmDelete(false)}
             variant="outlined"
-            sx={{
-              mr: 1,
-              px: 3,
-              textTransform: "none",
-              fontWeight: 500,
-            }}
+            sx={{ borderColor: "rgba(0, 0, 0, 0.1)", color: "text.secondary" }}
           >
             Cancel
           </Button>
@@ -375,10 +449,109 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* New Edit Scopes Modal */}
+      <Dialog
+        open={editScopesOpen}
+        onClose={handleCloseEditScopes}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle
+          sx={{
+            bgcolor: "#20477B",
+            color: "white",
+            textAlign: "center",
+          }}
+        >
+          Edit Scopes
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseEditScopes}
+            sx={(theme) => ({
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: theme.palette.grey[500],
+            })}
+          >
+            <CloseIcon sx={{ color: "white" }} />
+          </IconButton>
+        </DialogTitle>
+        <Divider />
+        <DialogContent dividers>
+          {!scopesQuery.isLoading && scopesQuery.data ? (
+            <FormGroup>
+              <Grid2 container spacing={2}>
+                {scopesQuery?.data?.data?.map((scope) => (
+                  <Grid2 item xs={12} sm={6} md={4} key={scope._id}>
+                    <Card
+                      variant="outlined"
+                      sx={{ borderColor: scope.bg_color ?? "#1976d2" }}
+                    >
+                      <CardContent>
+                        <Box
+                          display="flex"
+                          justifyContent="space-between"
+                          alignItems="start"
+                        >
+                          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                            {scope.name}
+                          </Typography>
+                          <Checkbox
+                            checked={selectedScopes.includes(scope._id)}
+                            onChange={() => handleToggleScope(scope._id)}
+                            sx={{
+                              color: scope.bg_color ?? "#1976d2",
+                              p: 0,
+                            }}
+                          />
+                        </Box>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mt: 1 }}
+                        >
+                          {scope.description}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid2>
+                ))}
+              </Grid2>
+            </FormGroup>
+          ) : (
+            <Typography>Loading scopes...</Typography>
+          )}
+        </DialogContent>
+
+        <DialogActions
+          sx={{
+            px: 3,
+            py: 2,
+            bgcolor: "#f8f9fa",
+            borderTop: "1px solid",
+            borderColor: "divider",
+          }}
+        >
+          <Button onClick={handleCloseEditScopes} variant="outlined">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSaveScopes}
+            variant="contained"
+            loading={queryState}
+            loadingPosition="end"
+            endIcon={<SaveIcon />}
+            sx={{ backgroundColor: "#20477B" }}
+          >
+            {queryState ? "Saving..." : "Save"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
-
 export function ResourceItemScopes({ resource }) {
   return (
     <Stack direction="row" alignItems="flex-start">
@@ -395,7 +568,6 @@ export function ResourceItemScopes({ resource }) {
             }}
           >
             {scope?.name?.toUpperCase()[0]}
-          
           </Avatar>
         </Tooltip>
       ))}
