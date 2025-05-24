@@ -608,7 +608,7 @@ export default function ResourceGridItem({ resource, type, user }) {
             user={user}
             handleDelete={handleDelete}
           />
-          <ResourceItemScopes resource={resource} type={type} user={user} />
+          <ResourceItemScopes resource={resource}/>
           <ResourceItemContent resource={resource} />
         </CardContent>
         <CardContent
