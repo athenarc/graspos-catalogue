@@ -15,7 +15,6 @@ from beanie import PydanticObjectId
 router = APIRouter(prefix="/api/v1/document", tags=["Documents"])
 
 
-
 @router.get("", status_code=200, response_model=list[Documents])
 async def get_all_documents(
         user: Optional[User] = Depends(current_user),
@@ -46,7 +45,7 @@ async def get_all_documents(
     # Scope filter - convert to ObjectId if necessary
     if scope:
         scope_ids = [PydanticObjectId(s) for s in scope]
-        filters.append({"scope.id": {"$in": scope_ids}})
+        filters.append({"scopes._id": {"$in": scope_ids}})
 
     # Tag filter
     if tag:
@@ -109,7 +108,6 @@ async def get_all_documents(
     else:
         documents = await Documents.find(query_filter,
                                          fetch_links=True).to_list()
-
     return documents
 
 

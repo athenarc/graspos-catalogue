@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const getDefaultFilters = () => ({
   licenses: {},
@@ -34,17 +34,13 @@ export function useURLFilters(resourceMap) {
   const navigate = useNavigate();
 
   const isFirstLoad = useRef(true);
-
-  const shouldSyncFilters = useMemo(() => {
-    return location.pathname === "/" || location.pathname === "/resources";
-  }, [location.pathname]);
+  const [textState, setTextState] = useState("");
 
   useEffect(() => {
-    if (!shouldSyncFilters) return;
-
     const searchParams = new URLSearchParams(location.search);
     const newFilters = getDefaultFilters();
 
+    // Parse filters from URL
     searchParams.getAll("license").forEach((value) => {
       newFilters.licenses[value] = true;
     });
@@ -68,13 +64,16 @@ export function useURLFilters(resourceMap) {
       endDate: endDate ? new Date(endDate) : null,
     };
 
+    // Parse selected tab
     const tab = searchParams.get("tab");
     const resourceIndex = resourceMap[tab];
 
+    // Update selected resource only if different
     if (resourceIndex !== undefined && resourceIndex !== selectedResource) {
       setSelectedResource(resourceIndex);
     }
 
+    // Update filters only if different
     const newFiltersJSON = JSON.stringify(newFilters);
     const currentFiltersJSON = JSON.stringify(filters);
 
@@ -83,70 +82,77 @@ export function useURLFilters(resourceMap) {
       setFilters(newFilters);
     }
 
+    // Prevent updating URL on initial load
     isFirstLoad.current = false;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.search, shouldSyncFilters]);
+  }, [location.search]);
 
-  useEffect(() => {
-    if (!shouldSyncFilters || isFirstLoad.current) return;
+  const updateURL = (newFilters, selectedTab) => {
+    if (isFirstLoad.current) return; // prevent router change on first load
 
     const searchParams = new URLSearchParams();
 
-    Object.entries(filters.licenses || {}).forEach(([key, value]) => {
+    Object.entries(newFilters.licenses || {}).forEach(([key, value]) => {
       if (value) searchParams.append("license", key);
     });
 
-    Object.entries(filters.scopes || {}).forEach(([key, value]) => {
+    Object.entries(newFilters.scopes || {}).forEach(([key, value]) => {
       if (value) searchParams.append("scope", key);
     });
 
-    filters.tags?.forEach((value) => {
+    newFilters.tags?.forEach((value) => {
       searchParams.append("tag", value);
     });
 
-    searchParams.set("graspos", filters.graspos);
-    searchParams.set("sort_field", filters.sortField);
-    searchParams.set("sort_direction", filters.sortDirection);
+    searchParams.set("graspos", newFilters.graspos);
+    searchParams.set("sort_field", newFilters.sortField);
+    searchParams.set("sort_direction", newFilters.sortDirection);
 
-    if (filters.dateRange?.startDate) {
+    if (newFilters.dateRange?.startDate) {
       searchParams.set(
         "start",
-        formatDateToLocalString(filters.dateRange.startDate)
+        formatDateToLocalString(newFilters.dateRange.startDate)
       );
     }
-
-    if (filters.dateRange?.endDate) {
+    if (newFilters.dateRange?.endDate) {
       searchParams.set(
         "end",
-        formatDateToLocalString(filters.dateRange.endDate)
+        formatDateToLocalString(newFilters.dateRange.endDate)
       );
     }
 
     const resourceName = Object.keys(resourceMap).find(
-      (key) => resourceMap[key] === selectedResource
+      (key) => resourceMap[key] === selectedTab
     );
     if (resourceName) {
       searchParams.set("tab", resourceName);
     }
 
     navigate({ search: searchParams.toString() }, { replace: true });
-  }, [filters, selectedResource, navigate, resourceMap, shouldSyncFilters]);
+  };
 
   const handleChangeFilters = (updatedFilter) => {
-    setFilters((prev) => ({ ...prev, ...updatedFilter }));
+    setFilters((prev) => {
+      const next = { ...prev, ...updatedFilter };
+      updateURL(next, selectedResource);
+      return next;
+    });
   };
 
   const handleSetSelectedResource = (event, newValue) => {
     setSelectedResource(newValue);
     const emptyFilters = getDefaultFilters();
-    emptyFilters.text = filters.text;
-    emptyFilters.graspos = filters.graspos;
-    emptyFilters.scopes = filters.scopes;
-    setFilters(emptyFilters);
+    const urlEmptyFilters = emptyFilters;
+    urlEmptyFilters.text = filters.text;
+    urlEmptyFilters.graspos = filters.graspos;
+    urlEmptyFilters.scopes = filters.scopes;
+    setFilters(urlEmptyFilters);
+    updateURL(emptyFilters, newValue);
   };
 
   const handleResetFilters = () => {
-    setFilters(getDefaultFilters());
+    const reset = getDefaultFilters();
+    setFilters(reset);
+    updateURL(reset, selectedResource);
   };
 
   return {
