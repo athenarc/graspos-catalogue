@@ -49,13 +49,10 @@ async def get_all_tools(
         filters.append({"zenodo.metadata.license.id": {"$in": license}})
 
     # Scope filter - convert strings to ObjectId if needed
+    # Scope filter - convert to ObjectId if necessary
     if scope:
-        try:
-            scope_ids = [PydanticObjectId(s) for s in scope]
-        except Exception:
-            # fallback if scope ids are not ObjectId strings
-            scope_ids = scope
-        filters.append({"scope.id": {"$in": scope_ids}})
+        scope_ids = [PydanticObjectId(s) for s in scope]
+        filters.append({"scopes._id": {"$in": scope_ids}})
 
     # GraspOS communities filter
     if graspos:

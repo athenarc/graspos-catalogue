@@ -7,9 +7,6 @@ import { Box } from "@mui/material";
 export default function ResourcesGrid({
   user,
   selectedResource,
-  resourceFilter,
-  filters,
-  setResourcesFetched,
   datasets,
   documents,
   tools,
@@ -17,32 +14,10 @@ export default function ResourcesGrid({
   return (
     <Box sx={{ p: 2, pt: 0 }}>
       <Grid container spacing={2}>
-        {selectedResource == 0 && (
-          <Datasets
-            datasets={datasets}
-            user={user}
-            filter={resourceFilter}
-            filters={filters}
-            setResourcesFetched={setResourcesFetched}
-          />
-        )}
-        {selectedResource == 1 && (
-          <Tools
-            tools={tools}
-            user={user}
-            filter={resourceFilter}
-            filters={filters}
-            setResourcesFetched={setResourcesFetched}
-          />
-        )}
+        {selectedResource == 0 && <Datasets datasets={datasets} user={user} />}
+        {selectedResource == 1 && <Tools tools={tools} user={user} />}
         {selectedResource == 2 && (
-          <Documents
-            documents={documents}
-            user={user}
-            filter={resourceFilter}
-            filters={filters}
-            setResourcesFetched={setResourcesFetched}
-          />
+          <Documents documents={documents} user={user} />
         )}
       </Grid>
     </Box>

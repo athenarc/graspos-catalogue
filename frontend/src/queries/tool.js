@@ -40,7 +40,7 @@ export function useTools(filters = {}) {
               });
             }
             if (subValue === true) {
-              params.append(key.replace("licenses", "license"), subKey); // Append the subKey as a value if it's true
+              params.append(key.replace(key, key.replace(/s+$/, "")), subKey); // Append the subKey as a value if it's true
             }
           });
         } else if (typeof value === "boolean" || value) {
