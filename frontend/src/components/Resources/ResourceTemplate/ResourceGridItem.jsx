@@ -24,7 +24,7 @@ import {
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
-import DOMPurify from "dompurify";
+import DOMPurify from 'isomorphic-dompurify';
 
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 
