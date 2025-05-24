@@ -63,9 +63,9 @@ function ResourcesTabs({
             disabled
             sx={{
               opacity: 0.7,
-              '&.Mui-disabled': {
-                color: 'text.secondary'
-              }
+              "&.Mui-disabled": {
+                color: "text.secondary",
+              },
             }}
           />
         </Tabs>
@@ -81,12 +81,6 @@ export default function ResourcesGridLayout({ user }) {
     Documents: 2,
   };
   const [resourcesFetched, setResourcesFetched] = useState(0);
-  const [resourceFilter, setResourceFilter] = useState({
-    Datasets: { results: 0 },
-    Documents: { results: 0 },
-    Tools: { results: 0 },
-  });
-
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const {
@@ -152,9 +146,6 @@ export default function ResourcesGridLayout({ user }) {
           <ResourcesGrid
             user={user}
             selectedResource={selectedResource}
-            resourceFilter={resourceFilter}
-            filters={filters}
-            setResourcesFetched={setResourcesFetched}
             datasets={datasets}
             documents={documents}
             tools={tools}
