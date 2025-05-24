@@ -6,12 +6,14 @@ from pydantic import BaseModel
 from beanie import PydanticObjectId, Link
 from datetime import datetime
 from models.zenodo import Zenodo
-
+from models.scope import Scope
+from typing import List
 
 class Tool(BaseModel):
     doi: str | None = None
     source: str | None = None
     zenodo: Link[Zenodo] | None = None
+    scopes: List[Link[Scope]] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None
@@ -21,12 +23,14 @@ class Tool(BaseModel):
 class ToolPatch(BaseModel):
     approved: bool | None = None
     owner: PydanticObjectId | None = None
+    scopes: List[Link[Scope]] | None = None
 
 
 class ToolView(BaseModel):
     doi: str | None = None
     source: str | None = None
     zenodo: Link[Zenodo] | None = None
+    scopes: List[Link[Scope]] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None

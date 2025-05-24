@@ -73,12 +73,11 @@ export default function ResourcesFiltersDrawer({
               pt: 2,
               pb: 0,
               fontWeight: 600,
-              textTransform: "uppercase",
               textAlign: "center",
               color: "text.secondary",
             }}
           >
-            Filters
+            Exploration paths
           </Typography>
 
           <Divider sx={{ m: 0, pb: 0 }} />

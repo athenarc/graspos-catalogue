@@ -5,9 +5,9 @@ from datetime import datetime
 from pydantic import BaseModel
 from beanie import PydanticObjectId, Link
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from models.zenodo import Zenodo
-
+from models.scope import Scope
 
 class Documents(BaseModel):
     source: str
@@ -15,6 +15,7 @@ class Documents(BaseModel):
     url: str | None = None
     created: Optional[datetime] = None
     zenodo: Link[Zenodo] | None = None
+    scopes: List[Link[Scope]] | None = None
     date_last_updated: Optional[datetime] = None
     metadata_last_updated: Optional[datetime] = None
     created_at: datetime | None = datetime.now()
@@ -28,16 +29,26 @@ class DocumentsPatch(BaseModel):
     format: str | None = None
     url: str | None = None
     created: Optional[datetime] | None = None
-    zenodo: Link[Zenodo] | None = None
+    scopes: List[Link[Scope]] | None = None
     date_last_updated: Optional[datetime] | None = None
     metadata_last_updated: Optional[datetime] | None = None
-    created_at: datetime | None = datetime.now()
-    modified_at: datetime | None = datetime.now()
     approved: bool | None = None
     owner: PydanticObjectId | None = None
 
 
-class Documents(Document, DocumentsPatch):
+class DocumentView(BaseModel):
+    source: str | None = None
+    format: str | None = None
+    organization: str | None = None
+    visibility: str | None = None
+    zenodo: Link[Zenodo] | None = None
+    scopes: List[Link[Scope]] | None = None
+    created_at: datetime | None = datetime.now()
+    modified_at: datetime | None = datetime.now()
+    approved: bool | None = None
+    owner: PydanticObjectId | None = None
+    
+class Documents(Document, DocumentView):
 
     class Settings:
         name = "documents"

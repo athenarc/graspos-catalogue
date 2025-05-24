@@ -6,6 +6,9 @@ from pydantic import BaseModel
 from beanie import PydanticObjectId, Link
 from datetime import datetime
 from models.zenodo import Zenodo
+from models.scope import Scope
+from typing import List
+
 
 
 class Dataset(BaseModel):
@@ -18,6 +21,7 @@ class Dataset(BaseModel):
     contact_person: str | None = None
     contact_person_email: str | None = None
     zenodo: Link[Zenodo] | None = None
+    scopes: List[Link[Scope]] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None
@@ -26,6 +30,7 @@ class Dataset(BaseModel):
 
 class DatasetPatch(BaseModel):
     source: str | None = None
+    scopes: List[Link[Scope]] | None = None
     created: datetime | None = None
     modified: datetime | None = None
     updated: datetime | None = None
@@ -43,6 +48,7 @@ class DatasetView(BaseModel):
     contact_person: str | None = None
     contact_person_email: str | None = None
     zenodo: Link[Zenodo] | None = None
+    scopes: List[Link[Scope]] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None
