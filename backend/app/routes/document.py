@@ -108,7 +108,6 @@ async def get_all_documents(
     else:
         documents = await Documents.find(query_filter,
                                          fetch_links=True).to_list()
-    print(query_filter)
     return documents
 
 
