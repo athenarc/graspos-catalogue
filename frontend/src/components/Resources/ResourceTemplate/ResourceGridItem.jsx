@@ -382,22 +382,23 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
 export function ResourceItemScopes({ resource }) {
   return (
     <Stack direction="row" alignItems="flex-start">
-      {resource?.scopes?.length > 0 &&
-        resource?.scopes?.map((scope) => (
-          <Tooltip title={scope?.description}>
-            <Avatar
-              sx={{
-                width: 18,
-                height: 18,
-                fontSize: 12,
-                mr: 1,
-                backgroundColor: scope.bg_color ?? "#EB611F",
-              }}
-            >
-              {scope?.name?.toUpperCase()[0]}
-            </Avatar>
-          </Tooltip>
-        ))}
+      {resource?.scopes?.map((scope) => (
+        <Tooltip title={scope?.description} key={scope?.id}>
+          <Avatar
+            key={scope?.id}
+            sx={{
+              width: 18,
+              height: 18,
+              fontSize: 12,
+              mr: 1,
+              backgroundColor: scope.bg_color ?? "#EB611F",
+            }}
+          >
+            {scope?.name?.toUpperCase()[0]}
+          
+          </Avatar>
+        </Tooltip>
+      ))}
     </Stack>
   );
 }
@@ -608,7 +609,7 @@ export default function ResourceGridItem({ resource, type, user }) {
             user={user}
             handleDelete={handleDelete}
           />
-          <ResourceItemScopes resource={resource}/>
+          <ResourceItemScopes resource={resource} />
           <ResourceItemContent resource={resource} />
         </CardContent>
         <CardContent
