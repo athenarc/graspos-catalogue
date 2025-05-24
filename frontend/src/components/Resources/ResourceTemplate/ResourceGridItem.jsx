@@ -697,21 +697,16 @@ export function ResourceItemContent({ resource }) {
     <>
       <Stack direction={"row"} spacing={2} sx={{ pb: 1.5 }}>
         <Typography
-          variant="subtitle"
+          variant="subtitle1"
           sx={{
-            variant: "paragraph",
             overflow: "hidden",
             textOverflow: "ellipsis",
             display: "-webkit-box",
             WebkitLineClamp: "3",
             WebkitBoxOrient: "vertical",
-            [`& .tooltip`]: {
-              maxWidth: 2000,
-            },
           }}
-        >
-          <Box dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
-        </Typography>
+          dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+        />
       </Stack>
 
       <Stack

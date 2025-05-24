@@ -122,12 +122,11 @@ export function ResourceBasicInformation({ resource }) {
 
       {resource.isLoading && <CircularProgress size="3rem" />}
       {resource && (
-        <Box
-          component={Typography}
+        <Typography
+          variant="body2"
           sx={{
-            fontFamily: "inherit",
             margin: 0,
-            fontSize: "0.875rem",
+            fontFamily: "inherit",
           }}
           dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
         />
