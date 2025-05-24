@@ -35,13 +35,10 @@ export function useURLFilters(resourceMap) {
 
   const isFirstLoad = useRef(true);
 
-  // ✅ Only sync on resource overview pages
   const shouldSyncFilters = useMemo(() => {
     return location.pathname === "/" || location.pathname === "/resources";
-    // Add more allowed paths if needed
   }, [location.pathname]);
 
-  // Parse URL into filters and selectedResource
   useEffect(() => {
     if (!shouldSyncFilters) return;
 
@@ -90,7 +87,6 @@ export function useURLFilters(resourceMap) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search, shouldSyncFilters]);
 
-  // Sync filters to URL
   useEffect(() => {
     if (!shouldSyncFilters || isFirstLoad.current) return;
 
