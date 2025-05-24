@@ -105,7 +105,6 @@ export function ResourceBasicInformation({ resource }) {
                 resource?.data?.data?.zenodo?.metadata?.publication_date
               )}
             </Typography>
-            
           </Stack>
           {resource?.data?.data?.zenodo?.metadata?.version && (
             <Stack direction="row" spacing={1} alignItems="center">
@@ -123,15 +122,15 @@ export function ResourceBasicInformation({ resource }) {
 
       {resource.isLoading && <CircularProgress size="3rem" />}
       {resource && (
-        <Typography
+        <Box
+          component={Typography}
           sx={{
             fontFamily: "inherit",
             margin: 0,
             fontSize: "0.875rem",
           }}
-        >
-          <Box dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
-        </Typography>
+          dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+        />
       )}
     </Stack>
   );
