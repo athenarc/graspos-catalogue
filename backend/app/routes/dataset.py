@@ -10,48 +10,52 @@ from util.current_user import current_user, current_user_mandatory
 from util.requests import get_zenodo_data
 from typing import List, Optional
 from datetime import datetime
+from bson import DBRef, ObjectId
 
 router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
+from fastapi import HTTPException
 
-@router.get("", status_code=200, response_model=list[Dataset])
-async def get_all_datasets(user: Optional[User] = Depends(current_user),
-                           license: Optional[List[str]] = Query(None),
-                           tag: Optional[List[str]] = Query(None),
-                           graspos: Optional[bool] = Query(None),
-                           sort_field: Optional[str] = Query(None),
-                           sort_direction: Optional[str] = Query(None),
-                           start: Optional[str] = Query(None),
-                           end: Optional[str] = Query(None),
-                           text: Optional[str] = Query(None)) -> list[Dataset]:
 
-    search = {}
-    
-    # User-specific filtering
+@router.get("", status_code=200, response_model=List[Dataset])
+async def get_all_datasets(
+        user: Optional[User] = Depends(current_user),
+        license: Optional[List[str]] = Query(None),
+        scope: Optional[List[str]] = Query(None),
+        tag: Optional[List[str]] = Query(None),
+        graspos: Optional[bool] = Query(None),
+        sort_field: Optional[str] = Query(None),
+        sort_direction: Optional[str] = Query(None),
+        start: Optional[str] = Query(None),
+        end: Optional[str] = Query(None),
+        text: Optional[str] = Query(None),
+) -> List[Dataset]:
+
+    filters = []
+
+    # User filter
     if user:
-        if user.super_user:
-            datasets = await Dataset.find_all(fetch_links=True).to_list()
+        if not user.super_user:
+            filters.append({"$or": [{"approved": True}, {"owner": user.id}]})
+    else:
+        filters.append({"approved": True})
 
-        else:
-            search["$or"] = [{"approved": True}]
-            search["$or"].append({"owner": user.id})
-    else: 
-        search["$or"] = [{"approved": True}]
-        
     # License filtering
     if license:
-        search["$and"] = search.get("$and", [])
-        search["$and"].append({"zenodo.metadata.license.id": {"$in": license}})
+        filters.append({"zenodo.metadata.license.id": {"$in": license}})
 
-    # Keyword filtering
+    # Scope filtering
+    if scope:
+        scope_ids = [PydanticObjectId(s) for s in scope]
+        filters.append({"scopes._id": {"$in": scope_ids}})
+
+    # Tag filtering
     if tag:
-        search["$and"] = search.get("$and", [])
-        search["$and"].append({"zenodo.metadata.keywords": {"$in": tag}})
+        filters.append({"zenodo.metadata.keywords": {"$in": tag}})
 
-    # GraspOS Verified filtering
+    # GraspOS verified filtering
     if graspos:
-        search["$and"] = search.get("$and", [])
-        search["$and"].append({
+        filters.append({
             "zenodo.metadata.communities.id": {
                 "$in": ["graspos-tools", "graspos-datasets"]
             }
@@ -59,25 +63,20 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
 
     # Date range filtering
     if start:
-        start_date = datetime.fromisoformat(
-            start)  # Parse the ISO date string to a datetime object
-        # Append $gte filter to existing filter, if any
-        search["$and"] = search.get("$and", [])
-        search["$and"].append(
+        start_date = datetime.fromisoformat(start)
+        filters.append(
             {"zenodo.metadata.publication_date": {
                 "$gte": start_date
             }})
 
     if end:
-        end_date = datetime.fromisoformat(
-            end)  # Parse the ISO date string to a datetime object
-        # Append $lte filter to existing filter, if any
-        search["$and"] = search.get("$and", [])
-        search["$and"].append(
+        end_date = datetime.fromisoformat(end)
+        filters.append(
             {"zenodo.metadata.publication_date": {
                 "$lte": end_date
             }})
 
+    # Text search filter handling
     if text:
         zenodo_search_results = await Zenodo.find({
             "$text": {
@@ -85,25 +84,33 @@ async def get_all_datasets(user: Optional[User] = Depends(current_user),
             }
         }).to_list()
 
-        # Extract the IDs of matching Zenodo documents
-        zenodo_ids = [
-            PydanticObjectId(zenodo.id) for zenodo in zenodo_search_results
-        ]  # Ensure IDs are strings
+        zenodo_ids = [PydanticObjectId(z.id) for z in zenodo_search_results]
+        if zenodo_ids:
+            filters.append({"zenodo.id": {"$in": zenodo_ids}})
+        else:
+            return []
 
-        search["$and"] = search.get("$and", [])
-        search["$and"].append({"zenodo._id": {"$in": zenodo_ids}}, )
+    # Combine filters with $and if multiple
+    if filters:
+        if len(filters) == 1:
+            query_filter = filters[0]
+        else:
+            query_filter = {"$and": filters}
+    else:
+        query_filter = {}
 
-    # Sorting
+    # Sorting and querying datasets
     if sort_field and sort_direction:
-        zenodo_sort_field = "zenodo.stats." + sort_field
+        zenodo_sort_field = f"zenodo.stats.{sort_field}"
         if sort_field == "dates":
             zenodo_sort_field = "zenodo.metadata.publication_date"
-        sort_order = 1 if sort_direction.lower() == 'asc' else -1
-        datasets = await Dataset.find(search, fetch_links=True).sort([
+        sort_order = 1 if sort_direction.lower() == "asc" else -1
+
+        datasets = await Dataset.find(query_filter, fetch_links=True).sort([
             (zenodo_sort_field, sort_order)
         ]).to_list()
     else:
-        datasets = await Dataset.find(search, fetch_links=True).to_list()
+        datasets = await Dataset.find(query_filter, fetch_links=True).to_list()
 
     return datasets
 
@@ -129,6 +136,7 @@ async def create_dataset(dataset: Dataset,
     dataset.owner = user.id
     if user.super_user:
         dataset.approved = True
+
     await dataset.create()
     return dataset
 
