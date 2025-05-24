@@ -12,6 +12,9 @@ import {
   FormControl,
   Divider,
   Typography,
+  FormControlLabel,
+  FormGroup,
+  Checkbox,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
@@ -29,6 +32,7 @@ import DatasetFormFields from "./DatasetFormFields.jsx";
 import DocumentFormFields from "./DocumentsFormFields.jsx";
 import ToolFormFields from "./ToolFormFields.jsx";
 import { useZenodo } from "../../queries/zenodo.js";
+import { useScopes } from "../../queries/scope.js";
 
 export default function ResourceForm() {
   const [message, setMessage] = useState("");
@@ -53,6 +57,21 @@ export default function ResourceForm() {
   const createDocument = useCreateDocument();
 
   const zenodo = useZenodo();
+  const scopesQuery = useScopes();
+  const [selectedScopes, setSelectedScopes] = useState([]);
+
+  // Sync to form
+  useEffect(() => {
+    setValue("scopes", selectedScopes);
+  }, [selectedScopes, setValue]);
+
+  const handleToggleScope = (scopeId) => {
+    setSelectedScopes((prev) =>
+      prev.includes(scopeId)
+        ? prev.filter((id) => id !== scopeId)
+        : [...prev, scopeId]
+    );
+  };
 
   useEffect(() => {
     if (zenodoData && zenodoData.source) {
@@ -181,6 +200,27 @@ export default function ResourceForm() {
                 <>
                   <Divider orientation="vertical" flexItem />
                   <Stack direction="column" spacing={2} sx={{ width: "100%" }}>
+                    <Typography variant="h6">Resource Scope</Typography>
+
+                    {/* Scope Checkboxes */}
+                    <Stack direction="column" spacing={1} sx={{ mt: 2 }}>
+                      <Typography variant="subtitle1">Scopes</Typography>
+                      <FormGroup row>
+                        {scopesQuery?.data?.data?.map((scope) => (
+                          <FormControlLabel
+                            key={scope._id}
+                            control={
+                              <Checkbox
+                                checked={selectedScopes.includes(scope._id)}
+                                onChange={() => handleToggleScope(scope._id)}
+                                sx={{ color: scope.bg_color ?? "#1976d2" }}
+                              />
+                            }
+                            label={scope.name}
+                          />
+                        ))}
+                      </FormGroup>
+                    </Stack>
                     <Typography variant="h6">Resource Details</Typography>
                     <FormControl fullWidth sx={{ mb: 2 }}>
                       <InputLabel>Resource Type</InputLabel>
@@ -197,7 +237,11 @@ export default function ResourceForm() {
                     </FormControl>
 
                     {resourceType === "dataset" && (
-                      <DatasetFormFields register={register} errors={errors} />
+                      <DatasetFormFields
+                        register={register}
+                        errors={errors}
+                        setValue={setValue}
+                      />
                     )}
                     {resourceType === "document" && (
                       <DocumentFormFields register={register} errors={errors} />

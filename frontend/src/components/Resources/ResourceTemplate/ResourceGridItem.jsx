@@ -19,6 +19,7 @@ import {
   ListItemIcon,
   ListItemText,
   Box,
+  Avatar,
 } from "@mui/material";
 import DOMPurify from "dompurify";
 
@@ -55,6 +56,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import HistoryIcon from "@mui/icons-material/History"; // Add this import
 import AssignmentIcon from "@mui/icons-material/Assignment"; // Add this import
+import { use } from "react";
 
 export function ResourceItemKeywords({ resource }) {
   const keywords = resource?.zenodo?.metadata?.keywords || [];
@@ -377,6 +379,29 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
   );
 }
 
+export function ResourceItemScopes({ resource }) {
+  return (
+    <Stack direction="row" alignItems="flex-start">
+      {resource?.scopes?.length > 0 &&
+        resource?.scopes?.map((scope) => (
+          <Tooltip title={scope?.description}>
+            <Avatar
+              sx={{
+                width: 18,
+                height: 18,
+                fontSize: 12,
+                mr: 1,
+                backgroundColor: scope.bg_color ?? "#EB611F",
+              }}
+            >
+              {scope?.name?.toUpperCase()[0]}
+            </Avatar>
+          </Tooltip>
+        ))}
+    </Stack>
+  );
+}
+
 export function ResourceItemHeader({ resource, type, user, handleDelete }) {
   return (
     <Stack
@@ -405,7 +430,6 @@ export function ResourceItemHeader({ resource, type, user, handleDelete }) {
         </Stack>
       </Stack>
 
-      {/* Top right actions area */}
       <Stack
         direction="row"
         spacing={1}
@@ -441,7 +465,6 @@ export function ResourceItemFooter({ resource }) {
 
   return (
     <Stack direction="row" justifyContent="space-between" alignItems="center">
-      {/* Left side - publication date, version and license */}
       <Stack direction="row" spacing={2} alignItems="center">
         <Tooltip title="Publication date">
           <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
@@ -473,7 +496,6 @@ export function ResourceItemFooter({ resource }) {
         )}
       </Stack>
 
-      {/* Right side - stats only */}
       <Stack direction="row" spacing={2} alignItems="center">
         <Stack direction="row" spacing={2} alignItems="center">
           <Tooltip title="Downloads on Zenodo">
@@ -493,14 +515,6 @@ export function ResourceItemFooter({ resource }) {
     </Stack>
   );
 }
-
-const NoMaxWidthTooltip = styled(({ className, ...props }) => (
-  <Tooltip {...props} classes={{ popper: className }} />
-))({
-  [`& .${tooltipClasses.tooltip}`]: {
-    maxWidth: 1000,
-  },
-});
 
 export function ResourceItemContent({ resource }) {
   const sanitizedHtml = DOMPurify.sanitize(
@@ -594,6 +608,7 @@ export default function ResourceGridItem({ resource, type, user }) {
             user={user}
             handleDelete={handleDelete}
           />
+          <ResourceItemScopes resource={resource} type={type} user={user} />
           <ResourceItemContent resource={resource} />
         </CardContent>
         <CardContent

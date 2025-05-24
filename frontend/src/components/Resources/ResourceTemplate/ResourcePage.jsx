@@ -19,7 +19,7 @@ import { Dataset } from "../Datasets/Datasets";
 import { Document } from "../Documents/Documents";
 import { Tool } from "../Tools/Tools";
 import orcidLogo from "../../../assets/orcid.logo.icon.svg";
-import { ResourceItemFooter } from "./ResourceGridItem";
+import { ResourceItemFooter, ResourceItemScopes } from "./ResourceGridItem";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"; // Added import
 import LaunchIcon from "@mui/icons-material/Launch"; // Added import
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
@@ -94,6 +94,7 @@ export function ResourceBasicInformation({ resource }) {
             />
           </Link>
         </Typography>
+
         <Stack direction="row" spacing={2} alignItems="center">
           <Stack direction="row" spacing={1} alignItems="center">
             <Tooltip title="Publication date">
@@ -104,6 +105,7 @@ export function ResourceBasicInformation({ resource }) {
                 resource?.data?.data?.zenodo?.metadata?.publication_date
               )}
             </Typography>
+            
           </Stack>
           {resource?.data?.data?.zenodo?.metadata?.version && (
             <Stack direction="row" spacing={1} alignItems="center">
@@ -115,6 +117,7 @@ export function ResourceBasicInformation({ resource }) {
               </Typography>
             </Stack>
           )}
+          <ResourceItemScopes resource={resource?.data?.data} />
         </Stack>
       </Stack>
 
