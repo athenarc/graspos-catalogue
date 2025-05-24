@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 
 const getDefaultFilters = () => ({
   licenses: {},
@@ -30,28 +30,32 @@ const formatDateToLocalString = (date) => {
 export function useURLFilters(resourceMap) {
   const [filters, setFilters] = useState(getDefaultFilters());
   const [selectedResource, setSelectedResource] = useState(0);
-
   const location = useLocation();
   const navigate = useNavigate();
 
   const isFirstLoad = useRef(true);
 
-  // When URL changes, parse it and update filters + selectedResource
+  // ✅ Only sync on resource overview pages
+  const shouldSyncFilters = useMemo(() => {
+    return location.pathname === "/" || location.pathname === "/resources";
+    // Add more allowed paths if needed
+  }, [location.pathname]);
+
+  // Parse URL into filters and selectedResource
   useEffect(() => {
+    if (!shouldSyncFilters) return;
+
     const searchParams = new URLSearchParams(location.search);
     const newFilters = getDefaultFilters();
 
-    // Parse licenses
     searchParams.getAll("license").forEach((value) => {
       newFilters.licenses[value] = true;
     });
 
-    // Parse scopes
     searchParams.getAll("scope").forEach((value) => {
       newFilters.scopes[value] = true;
     });
 
-    // Parse tags
     searchParams.getAll("tag").forEach((value) => {
       newFilters.tags.push(value);
     });
@@ -67,16 +71,13 @@ export function useURLFilters(resourceMap) {
       endDate: endDate ? new Date(endDate) : null,
     };
 
-    // Parse selected tab
     const tab = searchParams.get("tab");
     const resourceIndex = resourceMap[tab];
 
-    // Only update selectedResource if different
     if (resourceIndex !== undefined && resourceIndex !== selectedResource) {
       setSelectedResource(resourceIndex);
     }
 
-    // Only update filters if changed (but keep current text)
     const newFiltersJSON = JSON.stringify(newFilters);
     const currentFiltersJSON = JSON.stringify(filters);
 
@@ -86,12 +87,12 @@ export function useURLFilters(resourceMap) {
     }
 
     isFirstLoad.current = false;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.search]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search, shouldSyncFilters]);
 
-  // Update URL whenever filters or selectedResource change (but not on first load)
+  // Sync filters to URL
   useEffect(() => {
-    if (isFirstLoad.current) return;
+    if (!shouldSyncFilters || isFirstLoad.current) return;
 
     const searchParams = new URLSearchParams();
 
@@ -117,6 +118,7 @@ export function useURLFilters(resourceMap) {
         formatDateToLocalString(filters.dateRange.startDate)
       );
     }
+
     if (filters.dateRange?.endDate) {
       searchParams.set(
         "end",
@@ -132,16 +134,14 @@ export function useURLFilters(resourceMap) {
     }
 
     navigate({ search: searchParams.toString() }, { replace: true });
-  }, [filters, selectedResource, navigate, resourceMap]);
+  }, [filters, selectedResource, navigate, resourceMap, shouldSyncFilters]);
 
-  // Handlers just update state, URL update handled in effect
   const handleChangeFilters = (updatedFilter) => {
     setFilters((prev) => ({ ...prev, ...updatedFilter }));
   };
 
   const handleSetSelectedResource = (event, newValue) => {
     setSelectedResource(newValue);
-    // Reset filters except keep text, graspos, scopes
     const emptyFilters = getDefaultFilters();
     emptyFilters.text = filters.text;
     emptyFilters.graspos = filters.graspos;
