@@ -32,61 +32,67 @@ export function useURLFilters(resourceMap) {
   const [selectedResource, setSelectedResource] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
-
   const isFirstLoad = useRef(true);
 
   const shouldSyncFilters = useMemo(() => {
-    return location.pathname === "/" || location.pathname === "/resources";
+    const detailPagePattern = /^\/(datasets|tools|documents)\/[^/]+$/;
+    return !detailPagePattern.test(location.pathname);
   }, [location.pathname]);
 
+  // Parse URL into filters + selected tab
   useEffect(() => {
-    if (!shouldSyncFilters) return;
+    if (!shouldSyncFilters || isFirstLoad.current || location.pathname !== "/")
+      return;
 
-    const searchParams = new URLSearchParams(location.search);
-    const newFilters = getDefaultFilters();
+    const searchParams = new URLSearchParams();
 
-    searchParams.getAll("license").forEach((value) => {
-      newFilters.licenses[value] = true;
+    Object.entries(filters.licenses || {}).forEach(([key, value]) => {
+      if (value) searchParams.append("license", key);
     });
 
-    searchParams.getAll("scope").forEach((value) => {
-      newFilters.scopes[value] = true;
+    Object.entries(filters.scopes || {}).forEach(([key, value]) => {
+      if (value) searchParams.append("scope", key);
     });
 
-    searchParams.getAll("tag").forEach((value) => {
-      newFilters.tags.push(value);
+    filters.tags?.forEach((value) => {
+      searchParams.append("tag", value);
     });
 
-    newFilters.graspos = searchParams.get("graspos") === "true";
-    newFilters.sortField = searchParams.get("sort_field") || "views";
-    newFilters.sortDirection = searchParams.get("sort_direction") || "asc";
+    searchParams.set("graspos", filters.graspos);
+    searchParams.set("sort_field", filters.sortField);
+    searchParams.set("sort_direction", filters.sortDirection);
 
-    const startDate = searchParams.get("start");
-    const endDate = searchParams.get("end");
-    newFilters.dateRange = {
-      startDate: startDate ? new Date(startDate) : null,
-      endDate: endDate ? new Date(endDate) : null,
-    };
-
-    const tab = searchParams.get("tab");
-    const resourceIndex = resourceMap[tab];
-
-    if (resourceIndex !== undefined && resourceIndex !== selectedResource) {
-      setSelectedResource(resourceIndex);
+    if (filters.dateRange?.startDate) {
+      searchParams.set(
+        "start",
+        formatDateToLocalString(filters.dateRange.startDate)
+      );
+    }
+    if (filters.dateRange?.endDate) {
+      searchParams.set(
+        "end",
+        formatDateToLocalString(filters.dateRange.endDate)
+      );
     }
 
-    const newFiltersJSON = JSON.stringify(newFilters);
-    const currentFiltersJSON = JSON.stringify(filters);
-
-    if (newFiltersJSON !== currentFiltersJSON) {
-      newFilters.text = filters.text;
-      setFilters(newFilters);
+    const resourceName = Object.keys(resourceMap).find(
+      (key) => resourceMap[key] === selectedResource
+    );
+    if (resourceName) {
+      searchParams.set("tab", resourceName);
     }
 
-    isFirstLoad.current = false;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.search, shouldSyncFilters]);
+    navigate({ search: searchParams.toString() }, { replace: true });
+  }, [
+    filters,
+    selectedResource,
+    navigate,
+    resourceMap,
+    shouldSyncFilters,
+    location.pathname,
+  ]);
 
+  // Sync filters to URL when state changes
   useEffect(() => {
     if (!shouldSyncFilters || isFirstLoad.current) return;
 
@@ -114,7 +120,6 @@ export function useURLFilters(resourceMap) {
         formatDateToLocalString(filters.dateRange.startDate)
       );
     }
-
     if (filters.dateRange?.endDate) {
       searchParams.set(
         "end",
