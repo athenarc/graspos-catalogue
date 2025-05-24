@@ -36,7 +36,19 @@ class DocumentsPatch(BaseModel):
     owner: PydanticObjectId | None = None
 
 
-class Documents(Document, DocumentsPatch):
+class DocumentView(BaseModel):
+    source: str | None = None
+    format: str | None = None
+    organization: str | None = None
+    visibility: str | None = None
+    zenodo: Link[Zenodo] | None = None
+    scopes: List[Link[Scope]] | None = None
+    created_at: datetime | None = datetime.now()
+    modified_at: datetime | None = datetime.now()
+    approved: bool | None = None
+    owner: PydanticObjectId | None = None
+    
+class Documents(Document, DocumentView):
 
     class Settings:
         name = "documents"

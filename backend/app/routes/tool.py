@@ -15,96 +15,104 @@ router = APIRouter(prefix="/api/v1/tool", tags=["Tool"])
 
 
 @router.get("", status_code=200, response_model=list[Tool])
-async def get_all_datasets(user: Optional[User] = Depends(current_user),
-                           license: Optional[List[str]] = Query(None),
-                           scope: Optional[List[str]] = Query(None),
-                           tag: Optional[List[str]] = Query(None),
-                           graspos: Optional[bool] = Query(None),
-                           sort_field: Optional[str] = Query(None),
-                           sort_direction: Optional[str] = Query(None),
-                           start: Optional[str] = Query(None),
-                           end: Optional[str] = Query(None),
-                           text: Optional[str] = Query(None)) -> list[Tool]:
-    search = {}
+async def get_all_tools(
+        user: Optional[User] = Depends(current_user),
+        license: Optional[List[str]] = Query(None),
+        scope: Optional[List[str]] = Query(None),
+        tag: Optional[List[str]] = Query(None),
+        graspos: Optional[bool] = Query(None),
+        sort_field: Optional[str] = Query(None),
+        sort_direction: Optional[str] = Query(None),
+        start: Optional[str] = Query(None),
+        end: Optional[str] = Query(None),
+        text: Optional[str] = Query(None),
+) -> list[Tool]:
 
+    filters = []
+
+    # User access filter
     if user:
-        if user.super_user:
-            datasets = await Tool.find_all(fetch_links=True).to_list()
-
+        if not user.super_user:
+            filters.append({"$or": [{"approved": True}, {"owner": user.id}]})
         else:
-            search["$or"] = [{"approved": True}]
-            search["$or"].append({"owner": user.id})
-    else: 
-        search["$or"] = [{"approved": True}]
+            # super_user: no filters, fetch all
+            pass
+    else:
+        filters.append({"approved": True})
 
-    # Keyword filtering
+    # Tag filter
     if tag:
-        search["$and"] = search.get("$and", [])
-        search["$and"].append({"zenodo.metadata.keywords": {"$in": tag}})
+        filters.append({"zenodo.metadata.keywords": {"$in": tag}})
 
+    # License filter
     if license:
-        search["$and"] = search.get("$and", [])
-        search["$and"].append({"zenodo.metadata.license.id": {"$in": license}})
-        
-    # Scope filtering
-    if scope:
-        search["$and"] = search.get("$and", [])
-        search["$and"].append({"scope.id": {"$in": scope}})
+        filters.append({"zenodo.metadata.license.id": {"$in": license}})
 
+    # Scope filter - convert strings to ObjectId if needed
+    if scope:
+        try:
+            scope_ids = [PydanticObjectId(s) for s in scope]
+        except Exception:
+            # fallback if scope ids are not ObjectId strings
+            scope_ids = scope
+        filters.append({"scope.id": {"$in": scope_ids}})
+
+    # GraspOS communities filter
     if graspos:
-        search["$and"] = search.get("$and", [])
-        search["$and"].append({
+        filters.append({
             "zenodo.metadata.communities.id": {
                 "$in": ["graspos-tools", "graspos-datasets"]
             }
         })
 
-    # Date range filtering
+    # Date range filters
     if start:
-        start_date = datetime.fromisoformat(
-            start)  # Parse the ISO date string to a datetime object
-        # Append $gte filter to existing filter, if any
-        search["$and"] = search.get("$and", [])
-        search["$and"].append(
+        start_date = datetime.fromisoformat(start)
+        filters.append(
             {"zenodo.metadata.publication_date": {
                 "$gte": start_date
             }})
 
     if end:
-        end_date = datetime.fromisoformat(
-            end)  # Parse the ISO date string to a datetime object
-        # Append $lte filter to existing filter, if any
-        search["$and"] = search.get("$and", [])
-        search["$and"].append(
+        end_date = datetime.fromisoformat(end)
+        filters.append(
             {"zenodo.metadata.publication_date": {
                 "$lte": end_date
             }})
 
+    # Full text search on Zenodo
     if text:
         zenodo_search_results = await Zenodo.find({
             "$text": {
                 "$search": text
             }
         }).to_list()
+        zenodo_ids = [PydanticObjectId(z.id) for z in zenodo_search_results]
+        if zenodo_ids:
+            filters.append({"zenodo._id": {"$in": zenodo_ids}})
+        else:
+            # No results match text search → return empty list early
+            return []
 
-        # Extract the IDs of matching Zenodo documents
-        zenodo_ids = [
-            PydanticObjectId(zenodo.id) for zenodo in zenodo_search_results
-        ]  # Ensure IDs are strings
+    # Compose final query filter
+    if len(filters) == 1:
+        query_filter = filters[0]
+    elif filters:
+        query_filter = {"$and": filters}
+    else:
+        query_filter = {}
 
-        search["$and"] = search.get("$and", [])
-        search["$and"].append({"zenodo._id": {"$in": zenodo_ids}}, )
-
+    # Sorting
     if sort_field and sort_direction:
         zenodo_sort_field = "zenodo.stats." + sort_field
         if sort_field == "dates":
             zenodo_sort_field = "zenodo.metadata.publication_date"
-        sort_order = 1 if sort_direction.lower() == 'asc' else -1
-        tools = await Tool.find(search, fetch_links=True).sort([
+        sort_order = 1 if sort_direction.lower() == "asc" else -1
+        tools = await Tool.find(query_filter, fetch_links=True).sort([
             (zenodo_sort_field, sort_order)
         ]).to_list()
     else:
-        tools = await Tool.find(search, fetch_links=True).to_list()
+        tools = await Tool.find(query_filter, fetch_links=True).to_list()
 
     return tools
 
