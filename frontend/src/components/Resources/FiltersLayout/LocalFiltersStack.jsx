@@ -72,7 +72,7 @@ export default function LocalFiltersStack({
             }}
             startIcon={<FilterAltIcon />}
           >
-            More Filters
+            Filters
           </Button>
         </Box>
 
