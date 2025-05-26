@@ -208,25 +208,55 @@ async def delete_dataset(
             detail="An unexpected error occurred while deleting the dataset"
         )
 
-
-@router.patch("/{dataset_id}", status_code=200)
+@router.patch("/{dataset_id}", status_code=status.HTTP_200_OK)
 async def update_dataset(
     update: DatasetPatch,
     dataset_id: PydanticObjectId,
     user: User = Depends(current_user_mandatory)
 ) -> DatasetPatch:
+    """
+    Update an existing dataset by ID.
+    If `approved=False`, delete the dataset and its linked Zenodo and Update documents.
+    Otherwise, update the dataset with the provided fields.
+    """
+    logger.info(f"User {user.id} requested update on dataset {dataset_id}")
 
-    dataset = await Dataset.get(dataset_id)
+    dataset = await Dataset.find_one(Dataset.id == dataset_id, fetch_links=True)
 
     if not dataset:
-        return HTTPException(status_code=404, detail="Dataset does not exist")
+        logger.warning(f"Dataset {dataset_id} not found for update by user {user.id}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Dataset not found"
+        )
 
-    fields = update.model_dump(exclude_unset=True)
+    try:
+        fields = update.model_dump(exclude_unset=True)
 
-    if "approved" in fields and not fields["approved"]:
-        await dataset.delete(link_rule=DeleteRules.DELETE_LINKS)
-    else:
+        if "approved" in fields and not fields["approved"]:
+            logger.info(f"Dataset {dataset_id} marked as unapproved. Deleting dataset and linked Zenodo and updates.")
+
+            if dataset.zenodo:
+                logger.info(f"Deleting linked Zenodo {dataset.zenodo.id} and related updates.")
+                await Update.find(zenodo_id=dataset.zenodo.id).delete()
+                await Zenodo.find(Zenodo.id == dataset.zenodo.id).delete()
+
+            await dataset.delete(link_rule=DeleteRules.DO_NOTHING)
+
+            logger.info(f"Dataset {dataset_id} and linked Zenodo/Updates deleted successfully.")
+            return {"message": "Dataset and linked Zenodo/Updates deleted"}
+
+        logger.info(f"Updating dataset {dataset_id} with fields: {fields}")
         dataset = Dataset.model_copy(dataset, update=fields)
         await dataset.save()
 
-    return dataset
+        logger.info(f"Dataset {dataset_id} updated successfully by user {user.id}")
+        return dataset
+
+    except Exception:
+        logger.exception(f"Error updating dataset {dataset_id} for user {user.id}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while updating the dataset"
+        )
+
