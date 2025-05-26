@@ -95,7 +95,7 @@ export default function ZenodoForm({
       )}
 
       {zenodoData && (
-        <Card component="Stack" p={2} sx={cardStyles}>
+        <Card p={2} sx={cardStyles}>
           <Stack direction="column" spacing={1}>
             <Typography
               component="span"
