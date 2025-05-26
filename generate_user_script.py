@@ -2,6 +2,7 @@ import os
 import bcrypt
 from dotenv import load_dotenv, set_key
 from datetime import datetime
+from iso3166 import countries
 
 ENV_FILE = ".env"
 load_dotenv(ENV_FILE)
@@ -15,11 +16,10 @@ if not username or not password_plain:
 
 salt = bcrypt.gensalt(rounds=salt_rounds)
 hashed_password = bcrypt.hashpw(password_plain.encode("utf-8"), salt).decode("utf-8")
-
 now_str = datetime.now().isoformat()
 
-scope_insert = """
-db.scope.insertMany([
+# Scope insert
+scope_insert = """db.scope.insertMany([
   {
     name: "Start",
     description: "Begin evaluation by stating your organization's values, mission, and goals. Avoid relying solely on what is easy to measure (e.g., citations or rankings) and be mindful of the 'Streetlight Effect'. Align assessment criteria with institutional purpose, societal impact, and academic freedom.",
@@ -55,9 +55,22 @@ db.scope.insertMany([
     created_at: new Date(),
     modified_at: new Date()
   }
-]);
-"""
+]);"""
 
+# Geographical coverage insert
+geo_items = []
+for c in countries:
+    geo_items.append(f"""{{
+    code: "{c.alpha2}",
+    label: "{c.name}",
+    flag: "https://flagcdn.com/{c.alpha2.lower()}.svg",
+    created_at: new Date(),
+    modified_at: new Date()
+}}""")
+
+geo_insert = "db.geographical_coverage.insertMany([\n" + ",\n".join(geo_items) + "\n]);"
+
+# Final script
 js_script = f"""
 db = db.getSiblingDB("graspos");
 
@@ -70,20 +83,21 @@ db.User.insertOne({{
   organization: "",
   disabled: false,
   password: "{hashed_password}",
-  email_confirmed_at: "{now_str}",
+  email_confirmed_at: new Date("{now_str}"),
   orcid: ""
 }});
 
-{scope_insert.strip()}
+{scope_insert}
+
+{geo_insert}
 """
 
+# Write to file
 output_js_path = "./mongodb/docker-entrypoint-initdb.d/create_user.generated.js"
 os.makedirs(os.path.dirname(output_js_path), exist_ok=True)
-with open(output_js_path, "w") as f:
+with open(output_js_path, "w", encoding="utf-8") as f:
     f.write(js_script.strip())
 
-print(f"Mongo initialization script ready: {output_js_path}")
-
-salt_str = salt.decode("utf-8")
-set_key(ENV_FILE, "SALT", salt_str)
-print(f"Added salt in .env as SALT")
+# Store salt
+set_key(ENV_FILE, "SALT", salt.decode("utf-8"))
+print("✅ Mongo init script created with geo coverage and scopes.")

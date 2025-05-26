@@ -19,7 +19,7 @@ class Documents(BaseModel):
     scopes: List[Link[Scope]] | None = None
     date_last_updated: Optional[datetime] = None
     metadata_last_updated: Optional[datetime] = None
-    geographical_coverage: Optional[List[GeographicalCoverage]] = None
+    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None
@@ -32,7 +32,7 @@ class DocumentsPatch(BaseModel):
     url: str | None = None
     created: Optional[datetime] | None = None
     scopes: List[Link[Scope]] | None = None
-    geographical_coverage: Optional[List[GeographicalCoverage]] = None
+    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
     date_last_updated: Optional[datetime] | None = None
     metadata_last_updated: Optional[datetime] | None = None
     approved: bool | None = None
@@ -46,7 +46,7 @@ class DocumentView(BaseModel):
     visibility: str | None = None
     zenodo: Link[Zenodo] | None = None
     scopes: List[Link[Scope]] | None = None
-    geographical_coverage: Optional[List[GeographicalCoverage]] = None
+    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None
