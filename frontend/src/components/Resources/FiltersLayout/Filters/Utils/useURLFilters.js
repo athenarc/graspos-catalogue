@@ -5,6 +5,7 @@ const getDefaultFilters = () => ({
   licenses: {},
   tags: [],
   scopes: {},
+  geographical_coverage: {},
   graspos: false,
   sortField: "unique_views",
   sortDirection: "desc",
@@ -52,6 +53,10 @@ export function useURLFilters(resourceMap) {
       newFilters.scopes[value] = true;
     });
 
+    searchParams.getAll("geographical_coverage").forEach((value) => {
+      newFilters.geographical_coverage[value] = true;
+    });
+
     searchParams.getAll("tag").forEach((value) => {
       newFilters.tags.push(value);
     });
@@ -67,16 +72,13 @@ export function useURLFilters(resourceMap) {
       endDate: endDate ? new Date(endDate) : null,
     };
 
-    // Parse selected tab
     const tab = searchParams.get("tab");
     const resourceIndex = resourceMap[tab];
 
-    // Update selected resource only if different
     if (resourceIndex !== undefined && resourceIndex !== selectedResource) {
       setSelectedResource(resourceIndex);
     }
 
-    // Update filters only if different
     const newFiltersJSON = JSON.stringify(newFilters);
     const currentFiltersJSON = JSON.stringify(filters);
 
@@ -85,12 +87,11 @@ export function useURLFilters(resourceMap) {
       setFilters(newFilters);
     }
 
-    // Prevent updating URL on initial load
     isFirstLoad.current = false;
   }, [location.search]);
 
   const updateURL = (newFilters, selectedTab) => {
-    if (isFirstLoad.current) return; // prevent router change on first load
+    if (isFirstLoad.current) return;
 
     const searchParams = new URLSearchParams();
 
@@ -102,25 +103,22 @@ export function useURLFilters(resourceMap) {
       if (value) searchParams.append("scope", key);
     });
 
+    Object.entries(newFilters.geographical_coverage || {}).forEach(([key, value]) => {
+      if (value) searchParams.append("geographical_coverage", key);
+    });
+
     newFilters.tags?.forEach((value) => {
       searchParams.append("tag", value);
     });
 
-    // searchParams.set("graspos", newFilters.graspos);
     searchParams.set("sort_field", newFilters.sortField);
     searchParams.set("sort_direction", newFilters.sortDirection);
 
     if (newFilters.dateRange?.startDate) {
-      searchParams.set(
-        "start",
-        formatDateToLocalString(newFilters.dateRange.startDate)
-      );
+      searchParams.set("start", formatDateToLocalString(newFilters.dateRange.startDate));
     }
     if (newFilters.dateRange?.endDate) {
-      searchParams.set(
-        "end",
-        formatDateToLocalString(newFilters.dateRange.endDate)
-      );
+      searchParams.set("end", formatDateToLocalString(newFilters.dateRange.endDate));
     }
 
     const resourceName = Object.keys(resourceMap).find(
@@ -144,11 +142,10 @@ export function useURLFilters(resourceMap) {
   const handleSetSelectedResource = (event, newValue) => {
     setSelectedResource(newValue);
     const emptyFilters = getDefaultFilters();
-    const urlEmptyFilters = emptyFilters;
-    urlEmptyFilters.text = filters.text;
-    // urlEmptyFilters.graspos = filters.graspos;
-    urlEmptyFilters.scopes = filters.scopes;
-    setFilters(urlEmptyFilters);
+    emptyFilters.text = filters.text;
+    emptyFilters.scopes = filters.scopes;
+    emptyFilters.geographical_coverage = filters.geographical_coverage;
+    setFilters(emptyFilters);
     updateURL(emptyFilters, newValue);
   };
 
