@@ -101,7 +101,7 @@ export default function LocalFiltersStack({
             textAlign: "center",
           }}
         >
-          More Filters
+          Filters
           <IconButton
             aria-label="close"
             onClick={handleCloseModal}
