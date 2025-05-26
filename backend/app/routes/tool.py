@@ -162,11 +162,10 @@ async def get_tool(tool_id: PydanticObjectId) -> Tool:
 
     return tool
 
+
 @router.delete("/{tool_id}", status_code=status.HTTP_200_OK)
-async def delete_tool(
-    tool_id: PydanticObjectId,
-    user: User = Depends(current_user_mandatory)
-):
+async def delete_tool(tool_id: PydanticObjectId,
+                      user: User = Depends(current_user_mandatory)):
     """
     Delete a tool by its ID, along with its related Zenodo record and updates.
     Does not cascade delete unrelated links.
@@ -177,50 +176,82 @@ async def delete_tool(
 
     if not tool:
         logger.warning(f"Dataset {tool_id} not found for user {user.id}")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Dataset not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Dataset not found")
 
     try:
         # Delete linked Zenodo and associated updates
         if tool.zenodo:
-            logger.info(f"Deleting linked Zenodo {tool.zenodo.id} and related updates")
+            logger.info(
+                f"Deleting linked Zenodo {tool.zenodo.id} and related updates")
             await Update.find(zenodo_id=tool.zenodo.id).delete()
             await Zenodo.find(Zenodo.id == tool.zenodo.id).delete()
 
         # Delete tool without deleting other linked objects
         await tool.delete(link_rule=DeleteRules.DO_NOTHING)
 
-        logger.info(f"Dataset {tool_id} deleted successfully by user {user.id}")
+        logger.info(
+            f"Dataset {tool_id} deleted successfully by user {user.id}")
         return {"message": "Dataset deleted successfully"}
 
     except Exception as e:
         logger.exception(f"Error deleting tool {tool_id} for user {user.id}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An unexpected error occurred while deleting the tool"
-        )
+            detail="An unexpected error occurred while deleting the tool")
 
 
-@router.patch("/{tool_id}", status_code=200)
+@router.patch("/{tool_id}", status_code=status.HTTP_200_OK)
 async def update_tool(
     update: ToolPatch,
     tool_id: PydanticObjectId,
     user: User = Depends(current_user_mandatory)
 ) -> ToolPatch:
+    """
+    Update an existing tool by ID.
+    If `approved=False`, delete the tool and its linked Zenodo and Update tools.
+    Otherwise, update the tool with the provided fields.
+    """
+    logger.info(f"User {user.id} requested update on tool {tool_id}")
 
-    tool = await Tool.get(tool_id)
+    tool = await Tool.find_one(Tool.id == tool_id, fetch_links=True)
 
     if not tool:
-        return HTTPException(status_code=404, detail="Tool does not exist")
+        logger.warning(
+            f"Tool {tool_id} not found for update by user {user.id}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Tool not found")
 
-    fields = update.model_dump(exclude_unset=True)
+    try:
+        fields = update.model_dump(exclude_unset=True)
 
-    if "approved" in fields and not fields["approved"]:
-        await tool.delete(link_rule=DeleteRules.DELETE_LINKS)
-    else:
+        if "approved" in fields and not fields["approved"]:
+            logger.info(
+                f"Tool {tool_id} marked as unapproved. Deleting tool and linked Zenodo and updates."
+            )
+
+            if tool.zenodo:
+                logger.info(
+                    f"Deleting linked Zenodo {tool.zenodo.id} and related updates."
+                )
+                await Update.find(zenodo_id=tool.zenodo.id).delete()
+                await Zenodo.find(Zenodo.id == tool.zenodo.id).delete()
+
+            await tool.delete(link_rule=DeleteRules.DO_NOTHING)
+
+            logger.info(
+                f"Tool {tool_id} and linked Zenodo/Updates deleted successfully."
+            )
+            return {"message": "Tool and linked Zenodo/Updates deleted"}
+
+        logger.info(f"Updating tool {tool_id} with fields: {fields}")
         tool = Tool.model_copy(tool, update=fields)
         await tool.save()
 
-    return tool
+        logger.info(f"Tool {tool_id} updated successfully by user {user.id}")
+        return tool
+
+    except Exception:
+        logger.exception(f"Error updating tool {tool_id} for user {user.id}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail="An error occurred while updating the tool")

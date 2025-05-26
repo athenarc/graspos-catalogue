@@ -169,65 +169,101 @@ async def get_document(document_id: PydanticObjectId) -> Documents:
 
 
 @router.delete("/{document_id}", status_code=status.HTTP_200_OK)
-async def delete_document(
-    document_id: PydanticObjectId,
-    user: User = Depends(current_user_mandatory)
-):
+async def delete_document(document_id: PydanticObjectId,
+                          user: User = Depends(current_user_mandatory)):
     """
     Delete a document by its ID, along with its related Zenodo record and updates.
     Does not cascade delete unrelated links.
     """
     logger.info(f"User {user.id} requested deletion of document {document_id}")
 
-    document = await Documents.find_one(Documents.id == document_id, fetch_links=True)
+    document = await Documents.find_one(Documents.id == document_id,
+                                        fetch_links=True)
 
     if not document:
-        logger.warning(f"Dataset {document_id} not found for user {user.id}")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Dataset not found"
-        )
+        logger.warning(f"Document {document_id} not found for user {user.id}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Document not found")
 
     try:
         # Delete linked Zenodo and associated updates
         if document.zenodo:
-            logger.info(f"Deleting linked Zenodo {document.zenodo.id} and related updates")
+            logger.info(
+                f"Deleting linked Zenodo {document.zenodo.id} and related updates"
+            )
             await Update.find(zenodo_id=document.zenodo.id).delete()
             await Zenodo.find(Zenodo.id == document.zenodo.id).delete()
 
         # Delete document without deleting other linked objects
         await document.delete(link_rule=DeleteRules.DO_NOTHING)
 
-        logger.info(f"Dataset {document_id} deleted successfully by user {user.id}")
-        return {"message": "Dataset deleted successfully"}
+        logger.info(
+            f"Document {document_id} deleted successfully by user {user.id}")
+        return {"message": "Document deleted successfully"}
 
     except Exception as e:
-        logger.exception(f"Error deleting document {document_id} for user {user.id}")
+        logger.exception(
+            f"Error deleting document {document_id} for user {user.id}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An unexpected error occurred while deleting the document"
-        )
+            detail="An unexpected error occurred while deleting the document")
 
 
-@router.patch("/{document_id}", status_code=200)
+@router.patch("/{document_id}", status_code=status.HTTP_200_OK)
 async def update_document(
     update: DocumentsPatch,
     document_id: PydanticObjectId,
     user: User = Depends(current_user_mandatory)
 ) -> DocumentsPatch:
+    """
+    Update an existing document by ID.
+    If `approved=False`, delete the document and its linked Zenodo and Update documents.
+    Otherwise, update the document with the provided fields.
+    """
+    logger.info(f"User {user.id} requested update on document {document_id}")
 
-    document = await Documents.get(document_id)
+    document = await Documents.find_one(Documents.id == document_id,
+                                        fetch_links=True)
 
     if not document:
-        return HTTPException(status_code=404,
-                             detail="Documents does not exist")
+        logger.warning(
+            f"Document {document_id} not found for update by user {user.id}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Document not found")
 
-    fields = update.model_dump(exclude_unset=True)
+    try:
+        fields = update.model_dump(exclude_unset=True)
 
-    if "approved" in fields and not fields["approved"]:
-        await document.delete(link_rule=DeleteRules.DELETE_LINKS)
-    else:
+        if "approved" in fields and not fields["approved"]:
+            logger.info(
+                f"Document {document_id} marked as unapproved. Deleting document and linked Zenodo and updates."
+            )
+
+            if document.zenodo:
+                logger.info(
+                    f"Deleting linked Zenodo {document.zenodo.id} and related updates."
+                )
+                await Update.find(zenodo_id=document.zenodo.id).delete()
+                await Zenodo.find(Zenodo.id == document.zenodo.id).delete()
+
+            await document.delete(link_rule=DeleteRules.DO_NOTHING)
+
+            logger.info(
+                f"Document {document_id} and linked Zenodo/Updates deleted successfully."
+            )
+            return {"message": "Document and linked Zenodo/Updates deleted"}
+
+        logger.info(f"Updating document {document_id} with fields: {fields}")
         document = Documents.model_copy(document, update=fields)
         await document.save()
 
-    return document
+        logger.info(
+            f"Document {document_id} updated successfully by user {user.id}")
+        return document
+
+    except Exception:
+        logger.exception(
+            f"Error updating document {document_id} for user {user.id}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while updating the document")
