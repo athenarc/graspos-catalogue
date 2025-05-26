@@ -8,10 +8,12 @@ import {
   Card,
   Avatar,
   Tooltip,
+  Stack,
 } from "@mui/material";
 
 import { useScopes } from "../../../../queries/scope";
 import { useEffect, useState } from "react";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 export default function ScopeFacetFilter({ selectedFilters, onFilterChange }) {
   const { data: scopeData } = useScopes();
@@ -51,12 +53,21 @@ export default function ScopeFacetFilter({ selectedFilters, onFilterChange }) {
 
   return (
     <Card>
-      <Typography
-        variant="h6"
-        sx={{ pl: 1, backgroundColor: "lightblue", color: "white" }}
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ px: 1, backgroundColor: "lightblue", color: "white" }}
       >
-        Scopes
-      </Typography>
+        <Typography variant="h6">By scope stages</Typography>
+        <Tooltip
+          title="SCOPE Framework for Research Evaluation | INORMS
+The SCOPE framework for research evaluation is a five-stage model for evaluating responsibly. It is a practical step-by-step process designed to help research managers, or anyone involved in conducting research evaluations, in planning new evaluations as well as check existing evaluations."
+        >
+          <HelpOutlineIcon />
+        </Tooltip>
+      </Stack>
+
       <Divider />
       <List sx={{ px: 2, py: 1 }}>
         {scopeData?.data?.length > 0 ? (
