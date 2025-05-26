@@ -17,7 +17,7 @@ export default function SortFilter({ filters, onFilterChange }) {
       <InputLabel id="sort-filter-label">Sort by</InputLabel>
       <Select
         labelId="sort-filter-label"
-        label="Sort Results By"
+        label="Sort by"
         value={getValue()}
         onChange={handleChange}
       >
