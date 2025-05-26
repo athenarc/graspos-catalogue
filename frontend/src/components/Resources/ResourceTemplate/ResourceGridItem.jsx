@@ -675,13 +675,13 @@ export function ResourceItemFooter({ resource }) {
             <DownloadIcon sx={{ fontSize: "1.1rem" }} />
           </Tooltip>
           <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-            {resource?.zenodo?.stats?.downloads}
+            {resource?.zenodo?.stats?.unique_downloads}
           </Typography>
           <Tooltip title="Views on Zenodo">
             <VisibilityIcon sx={{ fontSize: "1.1rem" }} />
           </Tooltip>
           <Typography variant="body2" sx={{ fontSize: "0.95rem", mr: 2 }}>
-            {resource?.zenodo?.stats?.views}
+            {resource?.zenodo?.stats?.unique_views}
           </Typography>
         </Stack>
       </Stack>

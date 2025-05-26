@@ -285,7 +285,7 @@ export function ResourceStatistics({ resource }) {
     <Card sx={cardStyles}>
       <CardHeader
         sx={{ pb: 1 }}
-        title={<Typography variant="h5">User Statistics</Typography>}
+        title={<Typography variant="h5">Usage Statistics</Typography>}
       />
       <CardContent
         sx={{
@@ -309,7 +309,7 @@ export function ResourceStatistics({ resource }) {
             >
               <Stack alignItems="center" spacing={1}>
                 <Typography variant="h4" fontWeight="500" color="primary.main">
-                  {resource?.data?.data?.zenodo?.stats?.downloads ?? 0}
+                  {resource?.data?.data?.zenodo?.stats?.unique_downloads ?? 0}
                 </Typography>
                 <Stack direction="row" spacing={1} alignItems="center">
                   <DownloadIcon
@@ -330,7 +330,7 @@ export function ResourceStatistics({ resource }) {
             >
               <Stack alignItems="center" spacing={1}>
                 <Typography variant="h4" fontWeight="500" color="primary.main">
-                  {resource?.data?.data?.zenodo?.stats?.views ?? 0}
+                  {resource?.data?.data?.zenodo?.stats?.unique_views ?? 0}
                 </Typography>
                 <Stack direction="row" spacing={1} alignItems="center">
                   <VisibilityIcon

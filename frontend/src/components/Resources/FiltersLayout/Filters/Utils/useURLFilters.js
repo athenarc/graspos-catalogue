@@ -6,7 +6,7 @@ const getDefaultFilters = () => ({
   tags: [],
   scopes: {},
   graspos: false,
-  sortField: "views",
+  sortField: "unique_views",
   sortDirection: "desc",
   dateRange: {
     startDate: null,

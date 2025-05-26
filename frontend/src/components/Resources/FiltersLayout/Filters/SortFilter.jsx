@@ -21,10 +21,10 @@ export default function SortFilter({ filters, onFilterChange }) {
         value={getValue()}
         onChange={handleChange}
       >
-        <MenuItem value="views|desc">Views ↓</MenuItem>
-        <MenuItem value="views|asc">Views ↑</MenuItem>
-        <MenuItem value="downloads|desc">Downloads ↓</MenuItem>
-        <MenuItem value="downloads|asc">Downloads ↑</MenuItem>
+        <MenuItem value="unique_views|desc">Views ↓</MenuItem>
+        <MenuItem value="unique_views|asc">Views ↑</MenuItem>
+        <MenuItem value="unique_downloads|desc">Downloads ↓</MenuItem>
+        <MenuItem value="unique_downloads|asc">Downloads ↑</MenuItem>
         <MenuItem value="dates|desc">Publication date ↓</MenuItem>
         <MenuItem value="dates|asc">Publication date ↑</MenuItem>
       </Select>
