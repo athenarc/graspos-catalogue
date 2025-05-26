@@ -63,6 +63,7 @@ export default function TagAutoCompleteFilter({
   return (
     <Autocomplete
       multiple
+      fullWidth
       options={tagOptions}
       value={selectedTags}
       onChange={handleChange}
@@ -75,7 +76,6 @@ export default function TagAutoCompleteFilter({
       renderInput={(params) => (
         <TextField {...params} variant="outlined" placeholder="Select tags" />
       )}
-      sx={{ width: { xs: "100%", lg: "60%" } }}
     />
   );
 }

@@ -1,88 +1,157 @@
-import { Stack } from "@mui/material";
+import {
+  Stack,
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+} from "@mui/material";
+import { useState } from "react";
 import SortFilter from "./Filters/SortFilter";
 import LicenseAutocompleteFilter from "./Filters/LicenseMultiAutocompleteFilter";
 import DateFilter from "./Filters/DatePickerFilter";
 import TagAutoCompleteFilter from "./Filters/TagAutocompleteFilter";
+import GrasposVerifiedFilter from "./Filters/GrasposFilterSwitch";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import CloseIcon from "@mui/icons-material/Close";
 
 export default function LocalFiltersStack({
   filters,
   selectedResource,
   handleChangeFilters,
-  user,
-  isMobile,
 }) {
+  const [filtersModalOpen, setFiltersModalOpen] = useState(false);
+
+  const handleOpenModal = () => setFiltersModalOpen(true);
+  const handleCloseModal = () => setFiltersModalOpen(false);
+
   return (
-    <Stack direction="column" gap={2} justifyContent="center" sx={{ p: 4 }}>
+    <>
       <Stack
-        direction="row"
-        gap={2}
-        flexWrap={{ xs: "wrap", md: "nowrap" }}
-        sx={{
-          display: { xs: isMobile ? "none" : "flex", md: "flex" },
-        }}
-      >
-        <DateFilter
-          selectedFilters={filters}
-          onFilterChange={handleChangeFilters}
-        />
-        <SortFilter filters={filters} onFilterChange={handleChangeFilters} />
-      </Stack>
-
-      <Stack
-        direction="row"
-        gap={2}
-        flexWrap={{ xs: "wrap", md: "nowrap" }}
-        sx={{
-          display: { xs: isMobile ? "none" : "flex", md: "flex" },
-        }}
-      >
-        <LicenseAutocompleteFilter
-          selectedFilters={filters}
-          selectedResource={selectedResource}
-          onFilterChange={handleChangeFilters}
-        />
-        <TagAutoCompleteFilter
-          selectedFilters={filters}
-          selectedResource={selectedResource}
-          onFilterChange={handleChangeFilters}
-        />
-      </Stack>
-
-      <Stack
-        direction="row"
-        gap={2}
-        justifyContent="end"
-        sx={{
-          display: { xs: isMobile ? "none" : "flex", md: "flex" },
-        }}
-      ></Stack>
-
-      <Stack
-        direction="row"
-        gap={2}
-        flexWrap="wrap"
+        direction={{ xs: "column", sm: "row" }}
         alignItems="center"
-        justifyContent="end"
+        spacing={2}
         sx={{
-          display: { xs: isMobile ? "flex" : "none", md: "none" },
+          p: 1,
+          mx: 3,
+          mb: 0,
+          mt: 1,
         }}
       >
-        <DateFilter
-          selectedFilters={filters}
-          onFilterChange={handleChangeFilters}
-        />
-        <SortFilter filters={filters} onFilterChange={handleChangeFilters} />
-        <LicenseAutocompleteFilter
-          selectedFilters={filters}
-          selectedResource={selectedResource}
-          onFilterChange={handleChangeFilters}
-        />
-        <TagAutoCompleteFilter
-          selectedFilters={filters}
-          selectedResource={selectedResource}
-          onFilterChange={handleChangeFilters}
-        />
+        <Box
+          sx={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "flex-start",
+            marginLeft: "0 !important;",
+          }}
+        >
+          <GrasposVerifiedFilter
+            selectedFilters={filters}
+            onFilterChange={handleChangeFilters}
+          />
+        </Box>
+
+        <Box
+          sx={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "center",
+            marginLeft: "0 !important;",
+          }}
+        >
+          <Button
+            variant="outlined"
+            onClick={handleOpenModal}
+            sx={{
+              textTransform: "none",
+              borderRadius: 2,
+              minWidth: "120px",
+            }}
+            startIcon={<FilterAltIcon />}
+          >
+            More Filters
+          </Button>
+        </Box>
+
+        <Box
+          sx={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "flex-end",
+            marginLeft: "0 !important;",
+          }}
+        >
+          <SortFilter filters={filters} onFilterChange={handleChangeFilters} />
+        </Box>
       </Stack>
-    </Stack>
+
+      <Dialog
+        open={filtersModalOpen}
+        onClose={handleCloseModal}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle
+          sx={{
+            bgcolor: "#20477B",
+            color: "white",
+            textAlign: "center",
+          }}
+        >
+          More Filters
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseModal}
+            sx={(theme) => ({
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: theme.palette.grey[500],
+            })}
+          >
+            <CloseIcon sx={{ color: "white" }} />
+          </IconButton>
+        </DialogTitle>
+
+        <DialogContent dividers>
+          <Stack direction="column" gap={2}>
+            <DateFilter
+              selectedFilters={filters}
+              onFilterChange={handleChangeFilters}
+            />
+            <LicenseAutocompleteFilter
+              selectedFilters={filters}
+              selectedResource={selectedResource}
+              onFilterChange={handleChangeFilters}
+            />
+            <TagAutoCompleteFilter
+              selectedFilters={filters}
+              selectedResource={selectedResource}
+              onFilterChange={handleChangeFilters}
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions
+          sx={{
+            px: 3,
+            py: 2,
+            bgcolor: "#f8f9fa",
+            borderTop: "1px solid",
+            borderColor: "divider",
+          }}
+        >
+          <Button
+            onClick={handleCloseModal}
+            variant="outlined"
+            sx={{ borderColor: "rgba(0, 0, 0, 0.1)", color: "text.secondary" }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }

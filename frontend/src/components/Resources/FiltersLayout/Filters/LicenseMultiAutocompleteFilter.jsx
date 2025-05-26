@@ -73,6 +73,7 @@ export default function LicenseAutocompleteFilter({
   return (
     <Autocomplete
       multiple
+      fullWidth
       options={licenseOptions}
       value={selectedLicenses}
       onChange={handleChange}
@@ -89,7 +90,6 @@ export default function LicenseAutocompleteFilter({
           placeholder="Select licenses"
         />
       )}
-      sx={{ width: { xs: "100%", lg: "60%" } }}
     />
   );
 }

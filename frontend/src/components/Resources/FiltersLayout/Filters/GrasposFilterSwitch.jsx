@@ -10,23 +10,21 @@ export default function GrasposVerifiedFilter({
   };
 
   return (
-    <Card>
-      <Stack direction="row" justifyContent="start" alignItems="center">
-        <FormControlLabel
-          control={
-            <Switch
-              checked={!!selectedFilters.graspos}
-              onChange={handleSwitch}
-              color="primary"
-            />
-          }
-          label="GraspOS Verified"
-          sx={{ p: 2, mr: 0 }}
-        />
-        <Tooltip title="By toggling on resources that are only part of GraspOS communities will be displayed">
-          <InfoOutlinedIcon fontSize="small" />
-        </Tooltip>
-      </Stack>
-    </Card>
+    <Stack direction="row" justifyContent="start" alignItems="center">
+      <FormControlLabel
+        control={
+          <Switch
+            checked={!!selectedFilters.graspos}
+            onChange={handleSwitch}
+            color="primary"
+          />
+        }
+        label="GraspOS Verified"
+        sx={{ mr: 1 }}
+      />
+      <Tooltip title="By toggling on resources that are only part of GraspOS communities will be displayed">
+        <InfoOutlinedIcon fontSize="small" />
+      </Tooltip>
+    </Stack>
   );
 }
