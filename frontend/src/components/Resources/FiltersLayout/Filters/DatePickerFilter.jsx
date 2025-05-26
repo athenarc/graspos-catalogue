@@ -38,14 +38,12 @@ export default function DateFilter({ selectedFilters, onFilterChange }) {
         value={startDate}
         onChange={(newValue) => handleDateRangeChange(newValue, endDate)}
         disableFuture
-        sx={{ width: { xs: "100%", lg: "50%" } }}
       />
       <DatePicker
         label="End date"
         value={endDate}
         onChange={(newValue) => handleDateRangeChange(startDate, newValue)}
         disableFuture
-        sx={{ width: { xs: "100%", lg: "50%" } }}
       />
     </LocalizationProvider>
   );
