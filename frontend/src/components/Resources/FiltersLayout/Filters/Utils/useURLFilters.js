@@ -106,7 +106,7 @@ export function useURLFilters(resourceMap) {
       searchParams.append("tag", value);
     });
 
-    searchParams.set("graspos", newFilters.graspos);
+    // searchParams.set("graspos", newFilters.graspos);
     searchParams.set("sort_field", newFilters.sortField);
     searchParams.set("sort_direction", newFilters.sortDirection);
 
@@ -146,7 +146,7 @@ export function useURLFilters(resourceMap) {
     const emptyFilters = getDefaultFilters();
     const urlEmptyFilters = emptyFilters;
     urlEmptyFilters.text = filters.text;
-    urlEmptyFilters.graspos = filters.graspos;
+    // urlEmptyFilters.graspos = filters.graspos;
     urlEmptyFilters.scopes = filters.scopes;
     setFilters(urlEmptyFilters);
     updateURL(emptyFilters, newValue);
