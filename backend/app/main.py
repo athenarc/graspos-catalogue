@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from routes import user, auth, mail, register, dataset, document, tool, zenodo, update, scope
+from routes import user, auth, mail, register, dataset, document, tool, zenodo, update, scope, country
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 from models.dataset import Dataset
@@ -51,6 +51,7 @@ app.include_router(user.router)
 app.include_router(auth.router)
 app.include_router(mail.router)
 app.include_router(register.router)
+app.include_router(country.router)
 
 app.add_middleware(
     CORSMiddleware,
