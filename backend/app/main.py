@@ -13,7 +13,7 @@ from models.scope import Scope
 from db import db
 from config import CONFIG
 from fastapi.middleware.cors import CORSMiddleware
-
+import app.logger
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

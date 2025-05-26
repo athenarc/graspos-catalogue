@@ -1,6 +1,6 @@
 """Documents router."""
 
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, status
 from models.document import Documents, DocumentsPatch
 from models.user import User
 from models.zenodo import Zenodo
@@ -11,7 +11,9 @@ from util.requests import get_zenodo_data
 from typing import List, Optional
 from datetime import datetime
 from beanie import PydanticObjectId
+import logging
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/document", tags=["Documents"])
 
 
@@ -166,19 +168,45 @@ async def get_document(document_id: PydanticObjectId) -> Documents:
     return document
 
 
-@router.delete("/{document_id}", status_code=204)
-async def delete_document(document_id: PydanticObjectId,
-                          user: User = Depends(current_user_mandatory)):
-    document_to_delete = await Documents.get(document_id, fetch_links=True)
+@router.delete("/{document_id}", status_code=status.HTTP_200_OK)
+async def delete_document(
+    document_id: PydanticObjectId,
+    user: User = Depends(current_user_mandatory)
+):
+    """
+    Delete a document by its ID, along with its related Zenodo record and updates.
+    Does not cascade delete unrelated links.
+    """
+    logger.info(f"User {user.id} requested deletion of document {document_id}")
 
-    if not document_to_delete:
+    document = await Documents.find_one(Documents.id == document_id, fetch_links=True)
 
-        return HTTPException(status_code=404,
-                             detail="Documents does not exist")
+    if not document:
+        logger.warning(f"Dataset {document_id} not found for user {user.id}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Dataset not found"
+        )
 
-    await document_to_delete.delete(link_rule=DeleteRules.DELETE_LINKS)
-    await Update.find(zenodo_id=document_to_delete.zenodo.id).delete()
-    return {"message": "Document successfully deleted"}
+    try:
+        # Delete linked Zenodo and associated updates
+        if document.zenodo:
+            logger.info(f"Deleting linked Zenodo {document.zenodo.id} and related updates")
+            await Update.find(zenodo_id=document.zenodo.id).delete()
+            await Zenodo.find(Zenodo.id == document.zenodo.id).delete()
+
+        # Delete document without deleting other linked objects
+        await document.delete(link_rule=DeleteRules.DO_NOTHING)
+
+        logger.info(f"Dataset {document_id} deleted successfully by user {user.id}")
+        return {"message": "Dataset deleted successfully"}
+
+    except Exception as e:
+        logger.exception(f"Error deleting document {document_id} for user {user.id}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred while deleting the document"
+        )
 
 
 @router.patch("/{document_id}", status_code=200)

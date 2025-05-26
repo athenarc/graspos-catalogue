@@ -1,6 +1,6 @@
 """Tool router."""
 
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, status
 from models.tool import Tool, ToolPatch
 from models.user import User
 from models.zenodo import Zenodo
@@ -10,7 +10,9 @@ from util.current_user import current_user, current_user_mandatory
 from util.requests import get_zenodo_data
 from typing import List, Optional
 from datetime import datetime
+import logging
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/tool", tags=["Tool"])
 
 
@@ -160,20 +162,45 @@ async def get_tool(tool_id: PydanticObjectId) -> Tool:
 
     return tool
 
+@router.delete("/{tool_id}", status_code=status.HTTP_200_OK)
+async def delete_tool(
+    tool_id: PydanticObjectId,
+    user: User = Depends(current_user_mandatory)
+):
+    """
+    Delete a tool by its ID, along with its related Zenodo record and updates.
+    Does not cascade delete unrelated links.
+    """
+    logger.info(f"User {user.id} requested deletion of tool {tool_id}")
 
-@router.delete("/{tool_id}", status_code=204)
-async def delete_tool(tool_id: PydanticObjectId,
-                      user: User = Depends(current_user_mandatory)):
+    tool = await Tool.find_one(Tool.id == tool_id, fetch_links=True)
 
-    tool_to_delete = await Tool.get(tool_id, fetch_links=True)
+    if not tool:
+        logger.warning(f"Dataset {tool_id} not found for user {user.id}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Dataset not found"
+        )
 
-    if not tool_to_delete:
+    try:
+        # Delete linked Zenodo and associated updates
+        if tool.zenodo:
+            logger.info(f"Deleting linked Zenodo {tool.zenodo.id} and related updates")
+            await Update.find(zenodo_id=tool.zenodo.id).delete()
+            await Zenodo.find(Zenodo.id == tool.zenodo.id).delete()
 
-        return HTTPException(status_code=404, detail="Tool does not exist")
+        # Delete tool without deleting other linked objects
+        await tool.delete(link_rule=DeleteRules.DO_NOTHING)
 
-    await tool_to_delete.delete(link_rule=DeleteRules.DELETE_LINKS)
-    await Update.find(zenodo_id=tool_to_delete.zenodo.id).delete()
-    return {"message": "Tool successfully deleted"}
+        logger.info(f"Dataset {tool_id} deleted successfully by user {user.id}")
+        return {"message": "Dataset deleted successfully"}
+
+    except Exception as e:
+        logger.exception(f"Error deleting tool {tool_id} for user {user.id}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred while deleting the tool"
+        )
 
 
 @router.patch("/{tool_id}", status_code=200)
