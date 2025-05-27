@@ -8,6 +8,7 @@ import { useDatasets } from "../../queries/dataset";
 import { useTools } from "../../queries/tool";
 import { useDocuments } from "../../queries/document";
 import LocalFiltersStack from "./FiltersLayout/LocalFiltersStack";
+import { useService, useServices } from "../../queries/service";
 
 function ResourcesTabs({
   selectedResource,
@@ -59,14 +60,11 @@ function ResourcesTabs({
             }
           />
           <Tab
-            label="Services"
-            disabled
-            sx={{
-              opacity: 0.7,
-              "&.Mui-disabled": {
-                color: "text.secondary",
-              },
-            }}
+            label={
+              resourcesFetched?.Services?.results !== "undefined"
+                ? `Services (${resourcesFetched?.Services?.results})`
+                : "Services"
+            }
           />
         </Tabs>
       </Stack>
@@ -78,11 +76,13 @@ export default function ResourcesGridLayout({ user }) {
     Datasets: 0,
     Tools: 1,
     Documents: 2,
+    Services: 3,
   };
   const [resourcesFetched, setResourcesFetched] = useState({
     Datasets: { results: 0 },
     Tools: { results: 0 },
     Documents: { results: 0 },
+    Services: { results: 0 },
   });
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -97,18 +97,21 @@ export default function ResourcesGridLayout({ user }) {
   const datasets = useDatasets(filters);
   const tools = useTools(filters);
   const documents = useDocuments(filters);
+  const services = useServices(filters);
   useEffect(() => {
     const newFetched = {
       Datasets: { results: datasets?.data?.length ?? 0 },
       Tools: { results: tools?.data?.length ?? 0 },
       Documents: { results: documents?.data?.length ?? 0 },
+      Services: { results: services?.data?.length ?? 0 },
     };
 
     setResourcesFetched((prev) => {
       if (
         prev.Datasets.results === newFetched.Datasets.results &&
         prev.Tools.results === newFetched.Tools.results &&
-        prev.Documents.results === newFetched.Documents.results
+        prev.Documents.results === newFetched.Documents.results &&
+        prev.Services.results === newFetched.Services.results
       ) {
         return prev;
       }
@@ -162,6 +165,7 @@ export default function ResourcesGridLayout({ user }) {
             datasets={datasets}
             documents={documents}
             tools={tools}
+            services={services}
           />
         </Box>
       </Box>

@@ -33,6 +33,7 @@ function AppRoutes() {
           <Route path="datasets/:resourceId" element={<ResourcePage />} />
           <Route path="tools/:resourceId" element={<ResourcePage />} />
           <Route path="documents/:resourceId" element={<ResourcePage />} />
+          <Route path="services/:resourceId" element={<ResourcePage />} />
           <Route path="login" element={<LoginForm />} />
           <Route path="profile" element={<div />} />
           <Route path="register" element={<RegisterForm />} />

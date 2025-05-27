@@ -1,28 +1,21 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import CloseIcon from "@mui/icons-material/Close";
 
 import {
   Grid2 as Grid,
   Card,
   CardContent,
-  CircularProgress,
   Typography,
   Stack,
   Tooltip,
   IconButton,
   Grid2,
   Chip,
-  Divider,
   Menu,
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Box,
   Avatar,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
   AvatarGroup,
 } from "@mui/material";
 import DOMPurify from "isomorphic-dompurify";
@@ -44,21 +37,20 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useDeleteTool, useUpdateTool } from "../../../queries/tool";
 
-import VerifiedIcon from "@mui/icons-material/Verified"; // Add this import
+import VerifiedIcon from "@mui/icons-material/Verified";
 
 import { useUpdateZenodo } from "../../../queries/zenodo";
 
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import Button from "@mui/material/Button";
-import HistoryIcon from "@mui/icons-material/History"; // Add this import
-import AssignmentIcon from "@mui/icons-material/Assignment"; // Add this import
+import HistoryIcon from "@mui/icons-material/History";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 import EditIcon from "@mui/icons-material/Edit";
 import { useScopes } from "../../../queries/scope";
 
-import SaveIcon from "@mui/icons-material/Save";
+import EditResourceDialog from "../../Forms/EditResourceDialog";
+import DeleteConfirmationDialog from "../../Forms/DeleteConfirmationDialog";
+import { useDeleteService, useUpdateService } from "../../../queries/service";
+import { useCountries } from "../../../queries/countries";
+import { useAssessments } from "../../../queries/assessment";
 
 export function ResourceItemKeywords({ resource }) {
   const keywords = resource?.zenodo?.metadata?.keywords || [];
@@ -112,60 +104,57 @@ function ResourceItemCommunities({ resource }) {
       )
   );
 }
-
-export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
+export function ResourceActionsMenu({ resource, type, user }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
-
-  // New state for scopes modal
   const [editScopesOpen, setEditScopesOpen] = useState(false);
-  const scopesQuery = useScopes();
-
-  // Track selected scopes for editing
   const [selectedScopes, setSelectedScopes] = useState([]);
-
-  const updateZenodo = useUpdateZenodo();
   const [queryState, setQueryState] = useState(false);
 
-  // Update hooks
+  const scopesQuery = useScopes();
+  const countriesQuery = useCountries();
+  const assessmentsQuery = useAssessments();
+  const updateZenodo = useUpdateZenodo();
+
   const updateDocument = useUpdateDocument(resource?._id);
   const updateDataset = useUpdateDataset(resource?._id);
   const updateTool = useUpdateTool(resource?._id);
+  const updateService = useUpdateService(resource?._id);
 
-  // Initialize selected scopes when modal opens or resource changes
+  const deleteDocument = useDeleteDocument();
+  const deleteDataset = useDeleteDataset();
+  const deleteTool = useDeleteTool();
+  const deleteService = useDeleteService();
+
+  const deleteMutation =
+    type === "Document"
+      ? deleteDocument
+      : type === "Dataset"
+      ? deleteDataset
+      : type === "Tool"
+      ? deleteTool
+      : deleteService;
+
+  const updateQuery =
+    type === "Document"
+      ? updateDocument
+      : type === "Dataset"
+      ? updateDataset
+      : type === "Tool"
+      ? updateTool
+      : updateService;
+
   useEffect(() => {
     if (resource?.scopes) {
-      setSelectedScopes(resource.scopes.map((s) => s._id || s.id)); // fallback on id
+      setSelectedScopes(resource.scopes.map((s) => s._id || s.id));
     }
   }, [resource]);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleUpdateZenodo = (data) => {
-    updateZenodo.mutate(
-      { data },
-      {
-        onSuccess: () => handleClose(),
-        onError: () => handleClose(),
-      }
-    );
-  };
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
 
   const handleUpdate = (approved) => {
     setQueryState(true);
-    const updateQuery =
-      type === "Document"
-        ? updateDocument
-        : type === "Dataset"
-        ? updateDataset
-        : updateTool;
-
     updateQuery.mutate(
       { approved },
       {
@@ -181,25 +170,28 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
     );
   };
 
+  const handleUpdateZenodo = (data) => {
+    updateZenodo.mutate(data, {
+      onSuccess: () => handleClose(),
+      onError: () => handleClose(),
+    });
+  };
+
   const handleDeleteClick = () => {
     setConfirmDelete(true);
     handleClose();
   };
 
   const handleConfirmDelete = () => {
-    handleDelete(resource?._id);
-    setConfirmDelete(false);
+    deleteMutation.mutate({ id: resource?._id });
   };
 
-  // New handlers for scopes modal
   const handleOpenEditScopes = () => {
     setEditScopesOpen(true);
     handleClose();
   };
 
-  const handleCloseEditScopes = () => {
-    setEditScopesOpen(false);
-  };
+  const handleCloseEditScopes = () => setEditScopesOpen(false);
 
   const handleToggleScope = (scopeId) => {
     setSelectedScopes((prev) =>
@@ -209,43 +201,13 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
     );
   };
 
-  const handleSaveScopes = () => {
-    setQueryState(true);
-
-    const updateQuery =
-      type === "Document"
-        ? updateDocument
-        : type === "Dataset"
-        ? updateDataset
-        : updateTool;
-
-    updateQuery.mutate(
-      { scopes: selectedScopes },
-      {
-        onSuccess: () => {
-          setQueryState(false);
-          setEditScopesOpen(false);
-        },
-        onError: () => {
-          setQueryState(false);
-          // optionally show error feedback
-        },
-      }
-    );
+  const handleSaveScopes = (updatedValues) => {
+    updateQuery.mutate(updatedValues);
   };
 
   return (
     <>
-      <IconButton
-        onClick={handleClick}
-        size="small"
-        sx={{
-          backgroundColor: "rgba(255,255,255,0.8)",
-          "&:hover": {
-            backgroundColor: "rgba(255,255,255,0.9)",
-          },
-        }}
-      >
+      <IconButton onClick={handleClick} size="small">
         <MoreVertIcon fontSize="small" />
       </IconButton>
 
@@ -270,34 +232,32 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
             <>
               <Tooltip
                 title={
-                  !user || (!user?.super_user && resource?.owner !== user?.id)
-                    ? "You don't have permission to perform this action"
+                  !user.super_user && resource.owner !== user.id
+                    ? "You don't have permission"
                     : ""
                 }
               >
                 <span>
-                  {/* Wrapper needed for disabled elements */}
                   <MenuItem
                     onClick={handleOpenEditScopes}
                     disabled={
                       !user ||
                       updateZenodo.isPending ||
-                      (!user?.super_user && resource?.owner !== user?.id)
+                      (!user.super_user && resource.owner !== user.id)
                     }
                   >
                     <ListItemIcon>
                       <EditIcon fontSize="small" />
                     </ListItemIcon>
-                    <ListItemText>Edit scopes</ListItemText>
+                    <ListItemText>Edit</ListItemText>
                   </MenuItem>
                 </span>
               </Tooltip>
+
               <Tooltip
                 title={
-                  !user || (!user?.super_user && resource?.owner !== user?.id)
-                    ? "You don't have permission to perform this action"
-                    : updateZenodo.isPending
-                    ? "Update in progress..."
+                  !user.super_user && resource.owner !== user.id
+                    ? "You don't have permission"
                     : ""
                 }
               >
@@ -312,7 +272,7 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
                     disabled={
                       !user ||
                       updateZenodo.isPending ||
-                      (!user?.super_user && resource?.owner !== user?.id)
+                      (!user.super_user && resource.owner !== user.id)
                     }
                   >
                     <ListItemIcon>
@@ -325,8 +285,8 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
 
               <Tooltip
                 title={
-                  !user || (!user?.super_user && resource?.owner !== user?.id)
-                    ? "You don't have permission to perform this action"
+                  !user.super_user && resource.owner !== user.id
+                    ? "You don't have permission"
                     : ""
                 }
               >
@@ -336,7 +296,7 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
                     disabled={
                       !user ||
                       updateZenodo.isPending ||
-                      (!user?.super_user && resource?.owner !== user?.id)
+                      (!user.super_user && resource.owner !== user.id)
                     }
                   >
                     <ListItemIcon>
@@ -351,205 +311,26 @@ export function ResourceActionsMenu({ resource, type, user, handleDelete }) {
         )}
       </Menu>
 
-      {/* Delete confirmation modal (existing) */}
-      <Dialog
+      <DeleteConfirmationDialog
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle
-          sx={{
-            bgcolor: "#20477B",
-            color: "white",
-            textAlign: "center",
-          }}
-        >
-          Delete {type.toLowerCase()}
-          <IconButton
-            aria-label="close"
-            onClick={() => setConfirmDelete(false)}
-            sx={(theme) => ({
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: theme.palette.grey[500],
-            })}
-          >
-            <CloseIcon sx={{ color: "white" }} />
-          </IconButton>
-        </DialogTitle>
-        <Divider />
-        <DialogContent sx={{ px: 3, pb: 3, pt: 3 }}>
-          <Stack spacing={4}>
-            <Typography sx={{ mt: 5 }}>
-              Are you sure you want to delete this {type.toLowerCase()}?
-            </Typography>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ fontStyle: "italic" }}
-            >
-              Title: {resource?.zenodo?.title}
-            </Typography>
-            <Box
-              sx={{
-                bgcolor: "#fff3f3",
-                border: "1px solid #ffcdd2",
-                borderRadius: 1,
-                p: 2,
-              }}
-            >
-              <Typography
-                color="error"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                  fontWeight: 500,
-                }}
-              >
-                <DeleteIcon color="error" fontSize="small" />
-                This action cannot be undone. The resource will be permanently
-                removed.
-              </Typography>
-            </Box>
-          </Stack>
-        </DialogContent>
-        <DialogActions
-          sx={{
-            px: 3,
-            py: 2,
-            bgcolor: "#f8f9fa",
-            borderTop: "1px solid",
-            borderColor: "divider",
-          }}
-        >
-          <Button
-            onClick={() => setConfirmDelete(false)}
-            variant="outlined"
-            sx={{ borderColor: "rgba(0, 0, 0, 0.1)", color: "text.secondary" }}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleConfirmDelete}
-            color="error"
-            variant="contained"
-            autoFocus
-            sx={{
-              px: 3,
-              textTransform: "none",
-              fontWeight: 500,
-              "&:hover": {
-                bgcolor: "error.dark",
-              },
-            }}
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onConfirm={handleConfirmDelete}
+        type={type}
+        resource={resource}
+        mutation={deleteMutation}
+      />
 
-      {/* New Edit Scopes Modal */}
-      <Dialog
+      <EditResourceDialog
         open={editScopesOpen}
         onClose={handleCloseEditScopes}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle
-          sx={{
-            bgcolor: "#20477B",
-            color: "white",
-            textAlign: "center",
-          }}
-        >
-          Edit Scopes
-          <IconButton
-            aria-label="close"
-            onClick={handleCloseEditScopes}
-            sx={(theme) => ({
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: theme.palette.grey[500],
-            })}
-          >
-            <CloseIcon sx={{ color: "white" }} />
-          </IconButton>
-        </DialogTitle>
-        <Divider />
-        <DialogContent dividers>
-          {!scopesQuery.isLoading && scopesQuery.data ? (
-            <FormGroup>
-              <Grid2 container spacing={2}>
-                {scopesQuery?.data?.data?.map((scope) => (
-                  <Grid2 item xs={12} sm={6} md={4} key={scope._id}>
-                    <Card
-                      variant="outlined"
-                      sx={{ borderColor: scope.bg_color ?? "#1976d2" }}
-                    >
-                      <CardContent>
-                        <Box
-                          display="flex"
-                          justifyContent="space-between"
-                          alignItems="start"
-                        >
-                          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                            {scope.name}
-                          </Typography>
-                          <Checkbox
-                            checked={selectedScopes.includes(scope._id)}
-                            onChange={() => handleToggleScope(scope._id)}
-                            sx={{
-                              color: scope.bg_color ?? "#1976d2",
-                              p: 0,
-                            }}
-                          />
-                        </Box>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ mt: 1 }}
-                        >
-                          {scope.description}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid2>
-                ))}
-              </Grid2>
-            </FormGroup>
-          ) : (
-            <Typography>Loading scopes...</Typography>
-          )}
-        </DialogContent>
-
-        <DialogActions
-          sx={{
-            px: 3,
-            py: 2,
-            bgcolor: "#f8f9fa",
-            borderTop: "1px solid",
-            borderColor: "divider",
-          }}
-        >
-          <Button onClick={handleCloseEditScopes} variant="outlined">
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSaveScopes}
-            variant="contained"
-            loading={queryState}
-            loadingPosition="end"
-            endIcon={<SaveIcon />}
-            sx={{ backgroundColor: "#20477B" }}
-          >
-            {queryState ? "Saving..." : "Save"}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        scopesQuery={scopesQuery}
+        countriesQuery={countriesQuery}
+        assessmentsQuery={assessmentsQuery}
+        selectedScopes={selectedScopes}
+        onToggleScope={handleToggleScope}
+        mutation={updateQuery}
+        onSave={handleSaveScopes}
+      />
     </>
   );
 }
@@ -576,7 +357,7 @@ export function ResourceItemScopes({ resource }) {
   );
 }
 
-export function ResourceItemHeader({ resource, type, user, handleDelete }) {
+export function ResourceItemHeader({ resource, type, user }) {
   return (
     <Stack
       direction="row"
@@ -616,12 +397,7 @@ export function ResourceItemHeader({ resource, type, user, handleDelete }) {
         }}
       >
         {user && (
-          <ResourceActionsMenu
-            resource={resource}
-            type={type}
-            user={user}
-            handleDelete={handleDelete}
-          />
+          <ResourceActionsMenu resource={resource} type={type} user={user} />
         )}
       </Stack>
     </Stack>
@@ -746,29 +522,6 @@ export function ResourceItemContent({ resource }) {
 }
 
 export default function ResourceGridItem({ resource, type, user }) {
-  const deleteDatasest = useDeleteDataset();
-  const deleteDocument = useDeleteDocument();
-  const deleteTool = useDeleteTool();
-
-  let query = null;
-
-  function handleDelete(id) {
-    if (type === "Document") {
-      query = deleteDocument;
-    } else if (type === "Dataset") {
-      query = deleteDatasest;
-    } else {
-      query = deleteTool;
-    }
-    query.mutate(
-      { id },
-      {
-        onSuccess: (data) => {},
-        onError: (e) => {},
-      }
-    );
-  }
-
   return (
     <Grid key={resource?._id} size={{ xs: 12 }}>
       <Card
@@ -791,12 +544,7 @@ export default function ResourceGridItem({ resource, type, user }) {
         }}
       >
         <CardContent sx={{ pb: 0 }}>
-          <ResourceItemHeader
-            resource={resource}
-            type={type}
-            user={user}
-            handleDelete={handleDelete}
-          />
+          <ResourceItemHeader resource={resource} type={type} user={user} />
           <ResourceItemScopes resource={resource} />
           <ResourceItemContent resource={resource} />
         </CardContent>
