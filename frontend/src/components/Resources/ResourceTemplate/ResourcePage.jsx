@@ -467,6 +467,82 @@ export function ResourceStatistics({ resource }) {
   );
 }
 
+export function ResourceGeographicCoverage({ resource }) {
+  const [detailsToggle, setDetailsToggle] = useState(false);
+
+  if (resource.isLoading) {
+    return (
+      <Card sx={cardStyles}>
+        <CardHeader
+          sx={{ pb: 1 }}
+          title={<Typography variant="h5">Geographical Coverage</Typography>}
+        />
+        <CardContent sx={{ textAlign: "center", pt: 4 }}>
+          <CircularProgress size="3rem" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!resource.data || resource.data.length === 0) {
+    return (
+      <Card sx={cardStyles}>
+        <CardHeader
+          sx={{ pb: 1 }}
+          title={<Typography variant="h5">Geographical Coverage</Typography>}
+        />
+        <CardContent sx={{ pt: 2 }}>
+          <Typography>No geographical coverage data available.</Typography>
+        </CardContent>
+      </Card>
+    );
+  }
+  console.log(resource?.data?.data);
+  // Show first 5 by default, toggle to show all
+  const displayedCoverage = detailsToggle
+    ? resource
+    : resource?.data?.data?.geographical_coverage?.slice(0, 5);
+
+  return (
+    <Card sx={cardStyles}>
+      <CardHeader
+        sx={{ pb: 1 }}
+        title={<Typography variant="h5">Geographical Coverage</Typography>}
+      />
+      <CardContent sx={{ pt: 1 }}>
+        <Stack
+          direction="column"
+          spacing={1}
+          divider={<Divider orientation="vertical" flexItem />}
+          sx={{ overflowX: "auto", pb: 1, alignItems: "flex-start" }}
+        >
+          {displayedCoverage.map((geo) => (
+            <Chip
+              key={geo.id}
+              label={`${geo.label}`}
+              avatar={<Avatar src={geo.flag} alt={geo.label} />}
+              variant="outlined"
+              sx={{ whiteSpace: "nowrap", border: "none !important" }}
+            />
+          ))}
+        </Stack>
+
+        {resource.data.length > 5 && (
+          <Button
+            onClick={() => setDetailsToggle(!detailsToggle)}
+            size="small"
+            sx={{ mt: 1 }}
+          >
+            {detailsToggle
+              ? "Show Less"
+              : `Show More (${resource.data.length - 5})`}
+          </Button>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 export function ResourcePage() {
   const { resourceId } = useParams();
   const location = useLocation();

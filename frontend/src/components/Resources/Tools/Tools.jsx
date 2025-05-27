@@ -42,6 +42,7 @@ export function Tool({ resourceId }) {
           <ResourceTags resource={tool} />
           <ResourceLicense resource={tool} />
           <ResourceStatistics resource={tool} />
+          <ResourceGeographicCoverage resource={tool} />
         </Stack>
       </Grid>
     </>
