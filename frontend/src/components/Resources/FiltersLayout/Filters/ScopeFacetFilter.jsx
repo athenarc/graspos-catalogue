@@ -84,7 +84,14 @@ The SCOPE framework for research evaluation is a five-stage model for evaluating
                 disableRipple
                 sx={{ p: 1 }}
               />
-              <ListItemText primary={scope.name} sx={{ mr: 1 }} />
+              <ListItemText
+                primary={scope.name}
+                sx={{ mr: 1 }}
+                primaryTypographyProps={{
+                  noWrap: true,
+                  sx: { fontSize: "0.875rem" },
+                }}
+              />
               <Tooltip title={scope.description}>
                 <Avatar
                   sx={{
