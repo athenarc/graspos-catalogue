@@ -21,7 +21,7 @@ hashed_password = bcrypt.hashpw(password_plain.encode("utf-8"),
 now_str = datetime.now().isoformat()
 
 # Scope insert
-scope_insert = """db.scope.insertMany([
+scope_insert = """db.scopes.insertMany([
   {
     name: "Start",
     description: "Begin evaluation by stating your organization's values, mission, and goals. Avoid relying solely on what is easy to measure (e.g., citations or rankings) and be mindful of the 'Streetlight Effect'. Align assessment criteria with institutional purpose, societal impact, and academic freedom.",
@@ -59,7 +59,7 @@ scope_insert = """db.scope.insertMany([
   }
 ]);"""
 
-assessment_subject = """db.assessment.insertMany([
+assessment_subject = """db.assessments.insertMany([
   {
     name: "Researcher",
     description: "Assessment of individual researchers using various values and criteria.",
@@ -117,7 +117,7 @@ for c in countries:
                                 for k, v in item.items()) + "\n}"
     geo_items.append(js_obj)
 
-geo_insert = "db.geographical_coverage.insertMany([\n" + ",\n".join(
+geo_insert = "db.geographical_coverages.insertMany([\n" + ",\n".join(
     geo_items) + "\n]);"
 
 # Final script
@@ -140,6 +140,8 @@ db.User.insertOne({{
 {scope_insert}
 
 {geo_insert}
+
+{assessment_subject}
 """
 
 # Write to file

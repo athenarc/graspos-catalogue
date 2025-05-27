@@ -34,7 +34,7 @@ class AssessmentPatch(BaseModel):
 class Assessment(Document, Assessment, AssessmentView, AssessmentCreate, AssessmentPatch):
 
     class Settings:
-        name = "assessment"
+        name = "assessments"
 
     class Config:
         json_schema_extra = {

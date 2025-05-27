@@ -36,7 +36,7 @@ class ScopePatch(BaseModel):
 class Scope(Document, Scope, ScopeView, ScopeCreate, ScopePatch):
 
     class Settings:
-        name = "scope"
+        name = "scopes"
 
     class Config:
         json_schema_extra = {
