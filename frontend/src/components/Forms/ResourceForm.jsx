@@ -38,12 +38,11 @@ import ToolFormFields from "./ToolFormFields.jsx";
 import { useZenodo } from "../../queries/zenodo.js";
 import { useScopes } from "../../queries/scope.js";
 import { useCountries } from "../../queries/countries.js";
+import { useAssessments } from "../../queries/assessment.js";
 
 export default function ResourceForm() {
   const [message, setMessage] = useState("");
   const [zenodoData, setZenodoData] = useState(null);
-  const [showScopes, setShowScopes] = useState(true);
-  const [showDetails, setShowDetails] = useState(true);
   const [resourceType, setResourceType] = useState("dataset");
   const { user } = useAuth();
   const countries = useCountries();
@@ -67,17 +66,30 @@ export default function ResourceForm() {
   const zenodo = useZenodo();
   const scopesQuery = useScopes();
   const [selectedScopes, setSelectedScopes] = useState([]);
+  const assessmentData = useAssessments();
+  const [selectedAssessments, setSelectedAssessments] = useState([]);
 
-  // Sync selected scopes
   useEffect(() => {
     setValue("scopes", selectedScopes);
   }, [selectedScopes, setValue]);
+
+  useEffect(() => {
+    setValue("assessments", selectedAssessments);
+  }, [selectedAssessments, setValue]);
 
   const handleToggleScope = (scopeId) => {
     setSelectedScopes((prev) =>
       prev.includes(scopeId)
         ? prev.filter((id) => id !== scopeId)
         : [...prev, scopeId]
+    );
+  };
+
+  const handleToggleAssessment = (assessmentId) => {
+    setSelectedAssessments((prev) =>
+      prev.includes(assessmentId)
+        ? prev.filter((id) => id !== assessmentId)
+        : [...prev, assessmentId]
     );
   };
 
@@ -220,17 +232,19 @@ export default function ResourceForm() {
                     <Stack direction="column" spacing={1} sx={{ mt: 2 }}>
                       <FormGroup row>
                         {scopesQuery?.data?.data?.map((scope) => (
-                          <FormControlLabel
-                            key={scope._id}
-                            control={
-                              <Checkbox
-                                checked={selectedScopes.includes(scope._id)}
-                                onChange={() => handleToggleScope(scope._id)}
-                                sx={{ color: scope.bg_color ?? "#1976d2" }}
-                              />
-                            }
-                            label={scope.name}
-                          />
+                          <Tooltip key={scope._id} title={scope?.description}>
+                            <FormControlLabel
+                              key={scope._id}
+                              control={
+                                <Checkbox
+                                  checked={selectedScopes.includes(scope._id)}
+                                  onChange={() => handleToggleScope(scope._id)}
+                                  sx={{ color: scope.bg_color ?? "#1976d2" }}
+                                />
+                              }
+                              label={scope.name}
+                            />
+                          </Tooltip>
                         ))}
                       </FormGroup>
                     </Stack>
@@ -243,9 +257,7 @@ export default function ResourceForm() {
                         <InfoIcon fontSize="small" />
                       </Tooltip>
                     </Stack>
-
                     {/* Geographical Coverage */}
-
                     <Controller
                       name="geographical_coverage"
                       control={control}
@@ -283,7 +295,39 @@ export default function ResourceForm() {
                         />
                       )}
                     />
-
+                    <Stack direction="row" alignItems="center">
+                      <Typography variant="h6" sx={{ mr: 0.5 }}>
+                        Assessment Stages
+                      </Typography>
+                      <Tooltip title="">
+                        <InfoIcon fontSize="small" />
+                      </Tooltip>
+                    </Stack>
+                    <Stack direction="column" spacing={1} sx={{ mt: 2 }}>
+                      <FormGroup row>
+                        {assessmentData?.data?.data?.map((assessment) => (
+                          <Tooltip
+                            key={assessment._id}
+                            title={assessment?.description}
+                          >
+                            <FormControlLabel
+                              key={assessment._id}
+                              control={
+                                <Checkbox
+                                  checked={selectedAssessments.includes(
+                                    assessment._id
+                                  )}
+                                  onChange={() =>
+                                    handleToggleAssessment(assessment._id)
+                                  }
+                                />
+                              }
+                              label={assessment.name}
+                            />
+                          </Tooltip>
+                        ))}
+                      </FormGroup>
+                    </Stack>
                     <Typography variant="h6" sx={{ mt: 3 }}>
                       Resource Details
                     </Typography>

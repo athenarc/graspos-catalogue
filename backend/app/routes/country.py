@@ -64,6 +64,8 @@ async def get_geographical_coverage_with_count():
                 label=country.label,
                 flag=country.flag,
                 resource_count=count,
+                lat=country.lat,
+                lng=country.lng
             ))
 
     data.sort(key=lambda x: x.resource_count, reverse=True)
