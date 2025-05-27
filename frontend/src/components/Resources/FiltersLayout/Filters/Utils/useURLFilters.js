@@ -62,8 +62,8 @@ export function useURLFilters(resourceMap) {
     });
 
     newFilters.graspos = searchParams.get("graspos") === "true";
-    newFilters.sortField = searchParams.get("sort_field") || "views";
-    newFilters.sortDirection = searchParams.get("sort_direction") || "asc";
+    newFilters.sortField = searchParams.get("sort_field") || "unique_views";
+    newFilters.sortDirection = searchParams.get("sort_direction") || "desc";
 
     const startDate = searchParams.get("start");
     const endDate = searchParams.get("end");
