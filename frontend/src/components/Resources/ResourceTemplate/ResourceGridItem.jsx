@@ -1,28 +1,21 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import CloseIcon from "@mui/icons-material/Close";
 
 import {
   Grid2 as Grid,
   Card,
   CardContent,
-  CircularProgress,
   Typography,
   Stack,
   Tooltip,
   IconButton,
   Grid2,
   Chip,
-  Divider,
   Menu,
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Box,
   Avatar,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
   AvatarGroup,
 } from "@mui/material";
 import DOMPurify from "isomorphic-dompurify";
@@ -44,24 +37,20 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useDeleteTool, useUpdateTool } from "../../../queries/tool";
 
-import VerifiedIcon from "@mui/icons-material/Verified"; // Add this import
+import VerifiedIcon from "@mui/icons-material/Verified";
 
 import { useUpdateZenodo } from "../../../queries/zenodo";
 
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import Button from "@mui/material/Button";
-import HistoryIcon from "@mui/icons-material/History"; // Add this import
-import AssignmentIcon from "@mui/icons-material/Assignment"; // Add this import
+import HistoryIcon from "@mui/icons-material/History";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 import EditIcon from "@mui/icons-material/Edit";
 import { useScopes } from "../../../queries/scope";
 
-import SaveIcon from "@mui/icons-material/Save";
 import EditResourceDialog from "../../Forms/EditResourceDialog";
 import DeleteConfirmationDialog from "../../Forms/DeleteConfirmationDialog";
 import { useDeleteService, useUpdateService } from "../../../queries/service";
+import { useCountries } from "../../../queries/countries";
+import { useAssessments } from "../../../queries/assessment";
 
 export function ResourceItemKeywords({ resource }) {
   const keywords = resource?.zenodo?.metadata?.keywords || [];
@@ -115,7 +104,6 @@ function ResourceItemCommunities({ resource }) {
       )
   );
 }
-
 export function ResourceActionsMenu({ resource, type, user }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -124,9 +112,10 @@ export function ResourceActionsMenu({ resource, type, user }) {
   const [queryState, setQueryState] = useState(false);
 
   const scopesQuery = useScopes();
+  const countriesQuery = useCountries();
+  const assessmentsQuery = useAssessments();
   const updateZenodo = useUpdateZenodo();
 
-  // Mutations
   const updateDocument = useUpdateDocument(resource?._id);
   const updateDataset = useUpdateDataset(resource?._id);
   const updateTool = useUpdateTool(resource?._id);
@@ -212,22 +201,13 @@ export function ResourceActionsMenu({ resource, type, user }) {
     );
   };
 
-  const handleSaveScopes = () => {
-    updateQuery.mutate({ scopes: selectedScopes });
+  const handleSaveScopes = (updatedValues) => {
+    updateQuery.mutate(updatedValues);
   };
 
   return (
     <>
-      <IconButton
-        onClick={handleClick}
-        size="small"
-        sx={{
-          backgroundColor: "rgba(255,255,255,0.8)",
-          "&:hover": {
-            backgroundColor: "rgba(255,255,255,0.9)",
-          },
-        }}
-      >
+      <IconButton onClick={handleClick} size="small">
         <MoreVertIcon fontSize="small" />
       </IconButton>
 
@@ -252,7 +232,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
             <>
               <Tooltip
                 title={
-                  !user?.super_user && resource?.owner !== user?.id
+                  !user.super_user && resource.owner !== user.id
                     ? "You don't have permission"
                     : ""
                 }
@@ -263,7 +243,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
                     disabled={
                       !user ||
                       updateZenodo.isPending ||
-                      (!user?.super_user && resource?.owner !== user?.id)
+                      (!user.super_user && resource.owner !== user.id)
                     }
                   >
                     <ListItemIcon>
@@ -276,7 +256,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
 
               <Tooltip
                 title={
-                  !user?.super_user && resource?.owner !== user?.id
+                  !user.super_user && resource.owner !== user.id
                     ? "You don't have permission"
                     : ""
                 }
@@ -292,7 +272,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
                     disabled={
                       !user ||
                       updateZenodo.isPending ||
-                      (!user?.super_user && resource?.owner !== user?.id)
+                      (!user.super_user && resource.owner !== user.id)
                     }
                   >
                     <ListItemIcon>
@@ -305,7 +285,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
 
               <Tooltip
                 title={
-                  !user?.super_user && resource?.owner !== user?.id
+                  !user.super_user && resource.owner !== user.id
                     ? "You don't have permission"
                     : ""
                 }
@@ -316,7 +296,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
                     disabled={
                       !user ||
                       updateZenodo.isPending ||
-                      (!user?.super_user && resource?.owner !== user?.id)
+                      (!user.super_user && resource.owner !== user.id)
                     }
                   >
                     <ListItemIcon>
@@ -344,6 +324,8 @@ export function ResourceActionsMenu({ resource, type, user }) {
         open={editScopesOpen}
         onClose={handleCloseEditScopes}
         scopesQuery={scopesQuery}
+        countriesQuery={countriesQuery}
+        assessmentsQuery={assessmentsQuery}
         selectedScopes={selectedScopes}
         onToggleScope={handleToggleScope}
         mutation={updateQuery}
@@ -352,7 +334,6 @@ export function ResourceActionsMenu({ resource, type, user }) {
     </>
   );
 }
-
 export function ResourceItemScopes({ resource }) {
   return (
     <Stack direction="row" alignItems="flex-start">

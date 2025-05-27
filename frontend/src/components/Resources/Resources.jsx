@@ -21,9 +21,7 @@ export default function ResourcesGrid({
         {selectedResource == 2 && (
           <Documents documents={documents} user={user} />
         )}
-        {selectedResource == 3 && (
-          <Services services={services} user={user} />
-        )}
+        {selectedResource == 3 && <Services services={services} user={user} />}
       </Grid>
     </Box>
   );
