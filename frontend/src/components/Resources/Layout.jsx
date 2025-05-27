@@ -80,7 +80,11 @@ export default function ResourcesGridLayout({ user }) {
     Tools: 1,
     Documents: 2,
   };
-  const [resourcesFetched, setResourcesFetched] = useState(0);
+  const [resourcesFetched, setResourcesFetched] = useState({
+    Datasets: { results: 0 },
+    Tools: { results: 0 },
+    Documents: { results: 0 },
+  });
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const {
@@ -95,12 +99,22 @@ export default function ResourcesGridLayout({ user }) {
   const tools = useTools(filters);
   const documents = useDocuments(filters);
   useEffect(() => {
-    setResourcesFetched((prev) => ({
-      ...prev,
+    const newFetched = {
       Datasets: { results: datasets?.data?.length ?? 0 },
       Tools: { results: tools?.data?.length ?? 0 },
       Documents: { results: documents?.data?.length ?? 0 },
-    }));
+    };
+
+    setResourcesFetched((prev) => {
+      if (
+        prev.Datasets.results === newFetched.Datasets.results &&
+        prev.Tools.results === newFetched.Tools.results &&
+        prev.Documents.results === newFetched.Documents.results
+      ) {
+        return prev;
+      }
+      return newFetched;
+    });
   }, [datasets?.data, tools?.data, documents?.data]);
 
   return (

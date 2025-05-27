@@ -1,7 +1,6 @@
 import {
   Divider,
   Typography,
-  List,
   ListItem,
   ListItemText,
   Checkbox,
@@ -10,9 +9,13 @@ import {
   TextField,
   Stack,
   CardContent,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCountries } from "../../../../queries/countries";
+import { FixedSizeList } from "react-window";
+import ClearIcon from "@mui/icons-material/Clear";
 
 export default function GeographicalCoverageFacetFilter({
   selectedFilters,
@@ -37,11 +40,8 @@ export default function GeographicalCoverageFacetFilter({
       return acc;
     }, {});
 
-    if (JSON.stringify(validSelectedGeo) !== JSON.stringify(selectedGeo)) {
-      setSelectedGeo(validSelectedGeo);
-      onFilterChange({ geographical_coverage: validSelectedGeo });
-    }
-  }, [selectedFilters, geoData, selectedGeo, onFilterChange]);
+    setSelectedGeo(validSelectedGeo);
+  }, [selectedFilters, geoData]);
 
   const handleToggle = (geoId) => {
     const updatedGeo = {
@@ -52,9 +52,50 @@ export default function GeographicalCoverageFacetFilter({
     onFilterChange({ geographical_coverage: updatedGeo });
   };
 
-  const filteredGeo = geoData?.data?.filter((geo) =>
-    geo.label.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredGeo = useMemo(() => {
+    return (
+      geoData?.data?.filter((geo) =>
+        geo.label.toLowerCase().includes(searchTerm.toLowerCase())
+      ) || []
+    );
+  }, [geoData, searchTerm]);
+
+  const Row = ({ index, style }) => {
+    const geo = filteredGeo[index];
+    return (
+      <ListItem
+        key={geo._id}
+        style={style}
+        sx={{ p: 0 }}
+        disableGutters
+        onClick={() => handleToggle(geo._id)}
+      >
+        <Checkbox
+          edge="start"
+          checked={!!selectedGeo[geo._id]}
+          tabIndex={-1}
+          disableRipple
+          onChange={() => handleToggle(geo._id)}
+          sx={{ p: 1, pl: 1.1 }}
+        />
+        <ListItemText
+          primary={geo.label}
+          sx={{
+            mr: 1,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+          title={geo.label} // tooltip on hover
+        />
+        <Avatar
+          src={geo.flag}
+          alt={geo.label}
+          sx={{ width: 18, height: 18, flexShrink: 0 }}
+        />
+      </ListItem>
+    );
+  };
 
   return (
     <Card>
@@ -68,6 +109,7 @@ export default function GeographicalCoverageFacetFilter({
       </Stack>
 
       <Divider />
+
       <TextField
         placeholder="Search countries..."
         variant="outlined"
@@ -75,41 +117,30 @@ export default function GeographicalCoverageFacetFilter({
         sx={{ p: 2, pb: 0 }}
         onChange={(e) => setSearchTerm(e.target.value)}
         value={searchTerm}
-      />
-      <CardContent
-        sx={{
-          p: 2,
-          maxHeight: 200,
-          overflowY: "auto",
+        InputProps={{
+          endAdornment: searchTerm && (
+            <InputAdornment position="end">
+              <IconButton onClick={() => setSearchTerm("")} size="small">
+                <ClearIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
         }}
-      >
-        <List>
-          {filteredGeo?.length > 0 ? (
-            filteredGeo.map((geo) => (
-              <ListItem
-                key={geo._id}
-                onClick={() => handleToggle(geo._id)}
-                sx={{ p: 0 }}
-              >
-                <Checkbox
-                  edge="start"
-                  checked={!!selectedGeo[geo._id]}
-                  tabIndex={-1}
-                  disableRipple
-                  sx={{ p: 1 }}
-                />
-                <ListItemText primary={geo.label} sx={{ mr: 1 }} />
-                <Avatar
-                  src={geo.flag}
-                  alt={geo.label}
-                  sx={{ width: 18, height: 18 }}
-                />
-              </ListItem>
-            ))
-          ) : (
-            <Typography sx={{ p: 2 }}>No countries available</Typography>
-          )}
-        </List>
+      />
+
+      <CardContent sx={{ p: 2, maxHeight: 200, overflow: "hidden" }}>
+        {filteredGeo.length > 0 ? (
+          <FixedSizeList
+            height={160}
+            width="100%"
+            itemSize={48}
+            itemCount={filteredGeo.length}
+          >
+            {Row}
+          </FixedSizeList>
+        ) : (
+          <Typography sx={{ p: 2 }}>No countries available</Typography>
+        )}
       </CardContent>
 
       <Divider />
