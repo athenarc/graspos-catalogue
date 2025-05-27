@@ -13,6 +13,13 @@ import {
   Card,
   CardHeader,
   CardContent,
+  TableBody,
+  Table,
+  TableCell,
+  TableRow,
+  TableHead,
+  TableContainer,
+  Paper,
 } from "@mui/material";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { Dataset } from "../Datasets/Datasets";
@@ -27,6 +34,9 @@ import HistoryIcon from "@mui/icons-material/History";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DownloadIcon from "@mui/icons-material/Download";
 import DOMPurify from "dompurify";
+import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
+import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
+import { useState } from "react";
 
 // Common card styles without transition and hover effect
 const cardStyles = {
@@ -281,11 +291,15 @@ export function ResourceLicense({ resource }) {
 }
 
 export function ResourceStatistics({ resource }) {
+  const [detailsToggle, setDetailsToggle] = useState(false);
+  function handleDetailsToggle() {
+    setDetailsToggle(!detailsToggle);
+  }
   return (
     <Card sx={cardStyles}>
       <CardHeader
         sx={{ pb: 1 }}
-        title={<Typography variant="h5">User Statistics</Typography>}
+        title={<Typography variant="h5">Usage Statistics</Typography>}
       />
       <CardContent
         sx={{
@@ -295,54 +309,234 @@ export function ResourceStatistics({ resource }) {
       >
         {resource.isLoading && <CircularProgress size="3rem" />}
         {resource && (
-          <Stack
-            direction="row"
-            spacing={2}
-            divider={<Divider orientation="vertical" flexItem />}
-            sx={{ width: "100%" }}
-          >
+          <>
             <Stack
               direction="row"
-              alignItems="center"
-              justifyContent="center"
-              sx={{ width: "50%", py: 2 }}
+              spacing={2}
+              divider={<Divider orientation="vertical" flexItem />}
+              sx={{ width: "100%" }}
             >
-              <Stack alignItems="center" spacing={1}>
-                <Typography variant="h4" fontWeight="500" color="primary.main">
-                  {resource?.data?.data?.zenodo?.stats?.downloads ?? 0}
-                </Typography>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <DownloadIcon
-                    sx={{ fontSize: "1.1rem", color: "text.secondary" }}
-                  />
-                  <Typography variant="body2" color="text.secondary">
-                    downloads
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="center"
+                sx={{ width: "50%", py: 2 }}
+              >
+                <Stack alignItems="center" spacing={1}>
+                  <Typography
+                    variant="h4"
+                    fontWeight="500"
+                    color="primary.main"
+                  >
+                    {resource?.data?.data?.zenodo?.stats?.unique_views ?? 0}
                   </Typography>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <VisibilityIcon
+                      sx={{ fontSize: "1.1rem", color: "text.secondary" }}
+                    />
+                    <Typography variant="body2" color="text.secondary">
+                      views
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </Stack>
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="center"
+                sx={{ width: "50%", py: 2 }}
+              >
+                <Stack alignItems="center" spacing={1}>
+                  <Typography
+                    variant="h4"
+                    fontWeight="500"
+                    color="primary.main"
+                  >
+                    {resource?.data?.data?.zenodo?.stats?.unique_downloads ?? 0}
+                  </Typography>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <DownloadIcon
+                      sx={{ fontSize: "1.1rem", color: "text.secondary" }}
+                    />
+                    <Typography variant="body2" color="text.secondary">
+                      downloads
+                    </Typography>
+                  </Stack>
                 </Stack>
               </Stack>
             </Stack>
 
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="center"
-              sx={{ width: "50%", py: 2 }}
-            >
-              <Stack alignItems="center" spacing={1}>
-                <Typography variant="h4" fontWeight="500" color="primary.main">
-                  {resource?.data?.data?.zenodo?.stats?.views ?? 0}
-                </Typography>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <VisibilityIcon
-                    sx={{ fontSize: "1.1rem", color: "text.secondary" }}
-                  />
-                  <Typography variant="body2" color="text.secondary">
-                    views
-                  </Typography>
-                </Stack>
-              </Stack>
+            <Stack direction="row" justifyContent={"center"}>
+              <Button
+                onClick={handleDetailsToggle}
+                startIcon={
+                  !detailsToggle ? (
+                    <KeyboardDoubleArrowDownIcon />
+                  ) : (
+                    <KeyboardDoubleArrowUpIcon />
+                  )
+                }
+              >
+                {!detailsToggle && "Show more"}
+                {detailsToggle && "Show less"}
+              </Button>
             </Stack>
-          </Stack>
+
+            {detailsToggle && (
+              <Stack direction="row" justifyContent="center" sx={{ mt: 3 }}>
+                <TableContainer sx={{ maxWidth: 500 }}>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell
+                          sx={{
+                            color: "primary.text",
+                            fontWeight: 600,
+                          }}
+                        ></TableCell>
+                        <TableCell
+                          sx={{
+                            color: "primary.text",
+                            fontWeight: 600,
+                          }}
+                        >
+                          This Version
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            color: "primary.text",
+                            fontWeight: 600,
+                          }}
+                        >
+                          All Versions
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      <TableRow hover>
+                        <TableCell>
+                          <Tooltip title="Views">
+                            <VisibilityIcon
+                              sx={{ fontSize: 20, color: "text.secondary" }}
+                            />
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2">
+                            {resource?.data?.data?.zenodo?.stats
+                              ?.version_unique_views ?? 0}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2">
+                            {resource?.data?.data?.zenodo?.stats
+                              ?.unique_views ?? 0}
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow hover>
+                        <TableCell>
+                          <Tooltip title="Downloads">
+                            <DownloadIcon
+                              sx={{ fontSize: 20, color: "text.secondary" }}
+                            />
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2">
+                            {resource?.data?.data?.zenodo?.stats
+                              ?.version_unique_downloads ?? 0}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2">
+                            {resource?.data?.data?.zenodo?.stats
+                              ?.unique_downloads ?? 0}
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Stack>
+            )}
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function ResourceGeographicCoverage({ resource }) {
+  const [detailsToggle, setDetailsToggle] = useState(false);
+
+  if (resource.isLoading) {
+    return (
+      <Card sx={cardStyles}>
+        <CardHeader
+          sx={{ pb: 1 }}
+          title={<Typography variant="h5">Geographical Coverage</Typography>}
+        />
+        <CardContent sx={{ textAlign: "center", pt: 4 }}>
+          <CircularProgress size="3rem" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!resource.data || resource.data.length === 0) {
+    return (
+      <Card sx={cardStyles}>
+        <CardHeader
+          sx={{ pb: 1 }}
+          title={<Typography variant="h5">Geographical Coverage</Typography>}
+        />
+        <CardContent sx={{ pt: 2 }}>
+          <Typography>No geographical coverage data available.</Typography>
+        </CardContent>
+      </Card>
+    );
+  }
+  console.log(resource?.data?.data);
+  // Show first 5 by default, toggle to show all
+  const displayedCoverage = detailsToggle
+    ? resource
+    : resource?.data?.data?.geographical_coverage?.slice(0, 5);
+
+  return (
+    <Card sx={cardStyles}>
+      <CardHeader
+        sx={{ pb: 1 }}
+        title={<Typography variant="h5">Geographical Coverage</Typography>}
+      />
+      <CardContent sx={{ pt: 1 }}>
+        <Stack
+          direction="column"
+          spacing={1}
+          divider={<Divider orientation="vertical" flexItem />}
+          sx={{ overflowX: "auto", pb: 1, alignItems: "flex-start" }}
+        >
+          {displayedCoverage.map((geo) => (
+            <Chip
+              key={geo.id}
+              label={`${geo.label}`}
+              avatar={<Avatar src={geo.flag} alt={geo.label} />}
+              variant="outlined"
+              sx={{ whiteSpace: "nowrap", border: "none !important" }}
+            />
+          ))}
+        </Stack>
+
+        {resource.data.length > 5 && (
+          <Button
+            onClick={() => setDetailsToggle(!detailsToggle)}
+            size="small"
+            sx={{ mt: 1 }}
+          >
+            {detailsToggle
+              ? "Show Less"
+              : `Show More (${resource.data.length - 5})`}
+          </Button>
         )}
       </CardContent>
     </Card>

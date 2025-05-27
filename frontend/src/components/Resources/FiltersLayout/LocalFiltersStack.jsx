@@ -72,7 +72,7 @@ export default function LocalFiltersStack({
             }}
             startIcon={<FilterAltIcon />}
           >
-            More Filters
+            Filters
           </Button>
         </Box>
 
@@ -101,7 +101,7 @@ export default function LocalFiltersStack({
             textAlign: "center",
           }}
         >
-          More Filters
+          Filters
           <IconButton
             aria-label="close"
             onClick={handleCloseModal}

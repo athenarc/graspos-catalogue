@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from routes import user, auth, mail, register, dataset, document, tool, zenodo, update, scope
+from routes import user, auth, mail, register, dataset, document, tool, zenodo, update, scope, country
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 from models.dataset import Dataset
@@ -10,10 +10,12 @@ from models.user import User
 from models.update import Update
 from models.zenodo import Zenodo
 from models.scope import Scope
+from models.shared import GeographicalCoverage
 from db import db
 from config import CONFIG
 from fastapi.middleware.cors import CORSMiddleware
 import app.logger
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -21,7 +23,8 @@ async def lifespan(app: FastAPI):
     app.db = AsyncIOMotorClient(CONFIG.mongodb_uri).graspos
     await init_beanie(app.db,
                       document_models=[
-                          Dataset, User, Documents, Tool, Zenodo, Update, Scope
+                          Dataset, User, Documents, Tool, Zenodo, Update,
+                          Scope, GeographicalCoverage
                       ])
     print("Startup complete")
     yield
@@ -48,6 +51,7 @@ app.include_router(user.router)
 app.include_router(auth.router)
 app.include_router(mail.router)
 app.include_router(register.router)
+app.include_router(country.router)
 
 app.add_middleware(
     CORSMiddleware,

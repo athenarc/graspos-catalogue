@@ -23,8 +23,9 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
+  AvatarGroup,
 } from "@mui/material";
-import DOMPurify from 'isomorphic-dompurify';
+import DOMPurify from "isomorphic-dompurify";
 
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 
@@ -667,21 +668,41 @@ export function ResourceItemFooter({ resource }) {
             </Typography>
           </Stack>
         )}
-      </Stack>
 
+        {/* Add AvatarGroup here */}
+        {resource?.geographical_coverage && (
+          <AvatarGroup max={5} sx={{ ml: 2 }}>
+            {Object.entries(resource.geographical_coverage).map(
+              ([geoId, geo]) => (
+                <Tooltip key={geoId} title={geo.label || geoId}>
+                  <Avatar
+                    alt={geo.label || geoId}
+                    src={geo.flag}
+                    sx={{
+                      width: "1.1rem",
+                      height: "1.1rem",
+                      fontSize: "0.75rem",
+                    }}
+                  />
+                </Tooltip>
+              )
+            )}
+          </AvatarGroup>
+        )}
+      </Stack>
       <Stack direction="row" spacing={2} alignItems="center">
         <Stack direction="row" spacing={2} alignItems="center">
           <Tooltip title="Downloads on Zenodo">
             <DownloadIcon sx={{ fontSize: "1.1rem" }} />
           </Tooltip>
           <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-            {resource?.zenodo?.stats?.downloads}
+            {resource?.zenodo?.stats?.unique_downloads}
           </Typography>
           <Tooltip title="Views on Zenodo">
             <VisibilityIcon sx={{ fontSize: "1.1rem" }} />
           </Tooltip>
           <Typography variant="body2" sx={{ fontSize: "0.95rem", mr: 2 }}>
-            {resource?.zenodo?.stats?.views}
+            {resource?.zenodo?.stats?.unique_views}
           </Typography>
         </Stack>
       </Stack>

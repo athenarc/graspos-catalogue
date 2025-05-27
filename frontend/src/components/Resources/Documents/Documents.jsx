@@ -51,6 +51,7 @@ export function Document({ resourceId }) {
           <ResourceTags resource={document} />
           <ResourceLicense resource={document} />
           <ResourceStatistics resource={document} />
+          <ResourceGeographicCoverage resource={document} />
         </Stack>
       </Grid>
     </>

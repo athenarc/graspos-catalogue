@@ -8,6 +8,7 @@ import {
   ResourceLicense,
   ResourceTags,
   ResourceStatistics,
+  ResourceGeographicCoverage,
 } from "../ResourceTemplate/ResourcePage";
 
 export function Datasets({ datasets, user }) {
@@ -51,6 +52,7 @@ export function Dataset({ resourceId }) {
           <ResourceTags resource={dataset} />
           <ResourceLicense resource={dataset} />
           <ResourceStatistics resource={dataset} />
+          <ResourceGeographicCoverage resource={dataset} />
         </Stack>
       </Grid>
     </>

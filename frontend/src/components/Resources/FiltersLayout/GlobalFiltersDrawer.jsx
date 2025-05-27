@@ -94,7 +94,7 @@ export default function ResourcesFiltersDrawer({
               onResetFilters(false);
             }}
           >
-            Reset Filters
+            Reset
           </Button>
         </Box>
       </Drawer>

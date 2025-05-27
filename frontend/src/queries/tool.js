@@ -12,6 +12,7 @@ export function useCreateTool() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["tools"]);
+      queryClient.invalidateQueries(["countries-coverage-with-count"]);
     },
   });
 }
@@ -120,6 +121,7 @@ export function useDeleteTool() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["tools"]);
+      queryClient.invalidateQueries(["countries-coverage-with-count"]);
     },
   });
 }
@@ -135,6 +137,7 @@ export function useUpdateTool(id) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["tools"]);
+      queryClient.invalidateQueries(["countries-coverage-with-count"]);
     },
   });
 }

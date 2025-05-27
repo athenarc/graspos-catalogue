@@ -14,17 +14,17 @@ export default function SortFilter({ filters, onFilterChange }) {
       variant="outlined"
       sx={{ width: { xs: "100%", lg: "60%" } }}
     >
-      <InputLabel id="sort-filter-label">Sort results by</InputLabel>
+      <InputLabel id="sort-filter-label">Sort by</InputLabel>
       <Select
         labelId="sort-filter-label"
-        label="Sort Results By"
+        label="Sort by"
         value={getValue()}
         onChange={handleChange}
       >
-        <MenuItem value="views|desc">Views ↓</MenuItem>
-        <MenuItem value="views|asc">Views ↑</MenuItem>
-        <MenuItem value="downloads|desc">Downloads ↓</MenuItem>
-        <MenuItem value="downloads|asc">Downloads ↑</MenuItem>
+        <MenuItem value="unique_views|desc">Views ↓</MenuItem>
+        <MenuItem value="unique_views|asc">Views ↑</MenuItem>
+        <MenuItem value="unique_downloads|desc">Downloads ↓</MenuItem>
+        <MenuItem value="unique_downloads|asc">Downloads ↑</MenuItem>
         <MenuItem value="dates|desc">Publication date ↓</MenuItem>
         <MenuItem value="dates|asc">Publication date ↑</MenuItem>
       </Select>
