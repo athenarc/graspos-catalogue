@@ -17,12 +17,13 @@ import FlagIcon from "@mui/icons-material/Flag";
 import PersonIcon from "@mui/icons-material/Person";
 import GroupIcon from "@mui/icons-material/Group";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import { FilterVariants } from "../../../Skeleton";
 
 export default function AssessmentFacetFilter({
   selectedFilters,
   onFilterChange,
 }) {
-  const { data: assessmentData } = useAssessments();
+  const { data: assessmentData, isLoading } = useAssessments();
   const [selectedAssessments, setSelectedAssessments] = useState(
     selectedFilters?.assessments || {}
   );
@@ -60,6 +61,19 @@ export default function AssessmentFacetFilter({
     onFilterChange({ assessments: updatedAssessments });
   };
 
+  const renderIcon = (name) => {
+    switch (name) {
+      case "Researcher":
+        return <PersonIcon fontSize="small" />;
+      case "Researcher team/group":
+        return <GroupIcon fontSize="small" />;
+      case "Research organization":
+        return <AccountBalanceIcon fontSize="small" />;
+      default:
+        return <FlagIcon fontSize="small" color="text.primary" />;
+    }
+  };
+
   return (
     <Card>
       <Stack
@@ -78,8 +92,10 @@ The SCOPE framework for research evaluation is a five-stage model for evaluating
       </Stack>
 
       <Divider />
-      <List sx={{ px: 2, py: 1 }}>
-        {assessmentData?.data?.length > 0 ? (
+      <List sx={{ px: 2 }}>
+        {isLoading ? (
+          <FilterVariants count={5} />
+        ) : assessmentData?.data?.length > 0 ? (
           assessmentData.data.map((assessment) => (
             <ListItem
               key={assessment._id}
@@ -102,15 +118,7 @@ The SCOPE framework for research evaluation is a five-stage model for evaluating
                 }}
               />
               <Tooltip title={assessment.description}>
-                {assessment?.name === "Researcher" ? (
-                  <PersonIcon fontSize="small" />
-                ) : assessment?.name === "Researcher team/group" ? (
-                  <GroupIcon fontSize="small" />
-                ) : assessment?.name === "Research organization" ? (
-                  <AccountBalanceIcon fontSize="small" />
-                ) : (
-                  <FlagIcon fontSize="small" color="text.primary" />
-                )}
+                {renderIcon(assessment.name)}
               </Tooltip>
             </ListItem>
           ))

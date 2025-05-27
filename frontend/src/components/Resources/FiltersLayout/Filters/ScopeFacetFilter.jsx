@@ -14,9 +14,10 @@ import {
 import { useScopes } from "../../../../queries/scope";
 import { useEffect, useState } from "react";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import { FilterVariants } from "../../../Skeleton";
 
 export default function ScopeFacetFilter({ selectedFilters, onFilterChange }) {
-  const { data: scopeData } = useScopes();
+  const { data: scopeData, isLoading } = useScopes();
   const [selectedScopes, setSelectedScopes] = useState(
     selectedFilters?.scopes || {}
   );
@@ -70,7 +71,9 @@ The SCOPE framework for research evaluation is a five-stage model for evaluating
 
       <Divider />
       <List sx={{ px: 2, py: 1 }}>
-        {scopeData?.data?.length > 0 ? (
+        {isLoading ? (
+          <FilterVariants count={5} />
+        ) : scopeData?.data?.length > 0 ? (
           scopeData.data.map((scope) => (
             <ListItem
               key={scope._id}

@@ -16,12 +16,13 @@ import { useMemo, useState } from "react";
 import { useCountriesWithCount } from "../../../../queries/countries";
 import { FixedSizeList } from "react-window";
 import ClearIcon from "@mui/icons-material/Clear";
+import { FilterVariants } from "../../../Skeleton";
 
 export default function GeographicalCoverageFacetFilter({
   selectedFilters,
   onFilterChange,
 }) {
-  const { data: geoData } = useCountriesWithCount();
+  const { data: geoData, isLoading } = useCountriesWithCount();
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleToggle = (geoId) => {
@@ -47,17 +48,16 @@ export default function GeographicalCoverageFacetFilter({
       <ListItem
         key={geo?.id}
         style={style}
-        sx={{ p: 0, display: "flex", alignItems: "center" }}
+        sx={{ p: 0, m: 0, display: "flex", alignItems: "center" }}
         disableGutters
         onClick={() => handleToggle(geo?.id)}
       >
         <Checkbox
           edge="start"
           checked={!!selectedFilters?.geographical_coverage?.[geo?.id]}
-          tabIndex={-1}
           disableRipple
           onChange={() => handleToggle(geo?.id)}
-          sx={{ p: 1, pl: 1.1 }}
+          sx={{ pr: 0.5 }}
         />
 
         <div
@@ -129,11 +129,13 @@ export default function GeographicalCoverageFacetFilter({
       />
 
       <CardContent sx={{ p: 2, maxHeight: 200, overflow: "hidden" }}>
-        {filteredGeo.length > 0 ? (
+        {isLoading ? (
+          <FilterVariants count={5} displayExtraVariant />
+        ) : filteredGeo.length > 0 ? (
           <FixedSizeList
             height={160}
             width="100%"
-            itemSize={48}
+            itemSize={40}
             itemCount={filteredGeo.length}
           >
             {Row}
