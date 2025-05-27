@@ -66,7 +66,7 @@ export default function GeographicalCoverageFacetFilter({
       <ListItem
         key={geo?.id}
         style={style}
-        sx={{ p: 0 }}
+        sx={{ p: 0, display: "flex", alignItems: "center" }}
         disableGutters
         onClick={() => handleToggle(geo?.id)}
       >
@@ -78,16 +78,36 @@ export default function GeographicalCoverageFacetFilter({
           onChange={() => handleToggle(geo?.id)}
           sx={{ p: 1, pl: 1.1 }}
         />
-        <ListItemText
-          primary={geo?.label + " (" + geo?.resource_count + ")"}
-          sx={{
-            mr: 1,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
+
+        {/* Container for label and count */}
+        <div
+          style={{
+            flexGrow: 1,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            minWidth: 0, // important for ellipsis
+            marginRight: 8,
           }}
-          title={geo?.label}
-        />
+        >
+          <ListItemText
+            primary={geo?.label}
+            primaryTypographyProps={{
+              noWrap: true,
+              title: geo?.label,
+              sx: { fontSize: "0.875rem" },
+            }}
+            sx={{ m: 0 }}
+          />
+          <Typography
+            variant="body2"
+            sx={{ flexShrink: 0, ml: 1, whiteSpace: "nowrap" }}
+            title={`Resource count: ${geo?.resource_count}`}
+          >
+            ({geo?.resource_count})
+          </Typography>
+        </div>
+
         <Avatar
           src={geo?.flag}
           alt={geo?.label}
