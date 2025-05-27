@@ -7,13 +7,15 @@ from beanie import PydanticObjectId, Link
 from datetime import datetime
 from models.zenodo import Zenodo
 from models.scope import Scope
-from typing import List
+from typing import List, Optional 
+from models.shared import GeographicalCoverage
 
 class Tool(BaseModel):
     doi: str | None = None
     source: str | None = None
     zenodo: Link[Zenodo] | None = None
     scopes: List[Link[Scope]] | None = None
+    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None
@@ -24,6 +26,7 @@ class ToolPatch(BaseModel):
     approved: bool | None = None
     owner: PydanticObjectId | None = None
     scopes: List[Link[Scope]] | None = None
+    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
 
 
 class ToolView(BaseModel):
@@ -31,6 +34,7 @@ class ToolView(BaseModel):
     source: str | None = None
     zenodo: Link[Zenodo] | None = None
     scopes: List[Link[Scope]] | None = None
+    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None

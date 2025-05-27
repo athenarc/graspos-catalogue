@@ -15,11 +15,15 @@ import {
   FormControlLabel,
   FormGroup,
   Checkbox,
+  Tooltip,
+  TextField,
+  Autocomplete,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
+import InfoIcon from "@mui/icons-material/Info";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useEffect, useState } from "react";
 
 import Notification from "../Notification.jsx";
@@ -33,13 +37,16 @@ import DocumentFormFields from "./DocumentsFormFields.jsx";
 import ToolFormFields from "./ToolFormFields.jsx";
 import { useZenodo } from "../../queries/zenodo.js";
 import { useScopes } from "../../queries/scope.js";
+import { useCountries } from "../../queries/countries.js";
 
 export default function ResourceForm() {
   const [message, setMessage] = useState("");
   const [zenodoData, setZenodoData] = useState(null);
+  const [showScopes, setShowScopes] = useState(true);
+  const [showDetails, setShowDetails] = useState(true);
   const [resourceType, setResourceType] = useState("dataset");
   const { user } = useAuth();
-
+  const countries = useCountries();
   const {
     register,
     handleSubmit,
@@ -47,6 +54,7 @@ export default function ResourceForm() {
     setValue,
     reset,
     watch,
+    control,
     formState: { errors },
   } = useForm({ mode: "onBlur" });
 
@@ -60,7 +68,7 @@ export default function ResourceForm() {
   const scopesQuery = useScopes();
   const [selectedScopes, setSelectedScopes] = useState([]);
 
-  // Sync to form
+  // Sync selected scopes
   useEffect(() => {
     setValue("scopes", selectedScopes);
   }, [selectedScopes, setValue]);
@@ -200,11 +208,16 @@ export default function ResourceForm() {
                 <>
                   <Divider orientation="vertical" flexItem />
                   <Stack direction="column" spacing={2} sx={{ width: "100%" }}>
-                    <Typography variant="h6">Resource Scope</Typography>
+                    <Stack direction="row" alignItems="center">
+                      <Typography variant="h6" sx={{ mr: 0.5 }}>
+                        Resource Scope
+                      </Typography>
+                      <Tooltip title="SCOPE Framework for Research Evaluation">
+                        <InfoIcon fontSize="small" />
+                      </Tooltip>
+                    </Stack>
 
-                    {/* Scope Checkboxes */}
                     <Stack direction="column" spacing={1} sx={{ mt: 2 }}>
-                      <Typography variant="subtitle1">Scopes</Typography>
                       <FormGroup row>
                         {scopesQuery?.data?.data?.map((scope) => (
                           <FormControlLabel
@@ -221,7 +234,59 @@ export default function ResourceForm() {
                         ))}
                       </FormGroup>
                     </Stack>
-                    <Typography variant="h6">Resource Details</Typography>
+
+                    <Stack direction="row" alignItems="center">
+                      <Typography variant="h6" sx={{ mr: 0.5 }}>
+                        Geographical Coverage
+                      </Typography>
+                      <Tooltip title="Select applicable countries or regions.">
+                        <InfoIcon fontSize="small" />
+                      </Tooltip>
+                    </Stack>
+
+                    {/* Geographical Coverage */}
+
+                    <Controller
+                      name="geographical_coverage"
+                      control={control}
+                      defaultValue={[]} // Ensure it's always controlled from the start
+                      render={({ field }) => (
+                        <Autocomplete
+                          {...field}
+                          multiple
+                          options={countries?.data?.data}
+                          getOptionLabel={(option) => option.label}
+                          value={field.value ?? []} // Fix: always pass an array
+                          onChange={(_, value) => field.onChange(value)}
+                          renderOption={(props, option) => {
+                            const { key, ...rest } = props; // Destructure key out
+                            return (
+                              <li key={key} {...rest}>
+                                <img
+                                  loading="lazy"
+                                  width="20"
+                                  src={option.flag}
+                                  alt=""
+                                  style={{ marginRight: 10 }}
+                                />
+                                {option.label} ({option.code})
+                              </li>
+                            );
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Select countries"
+                              placeholder="Start typing..."
+                            />
+                          )}
+                        />
+                      )}
+                    />
+
+                    <Typography variant="h6" sx={{ mt: 3 }}>
+                      Resource Details
+                    </Typography>
                     <FormControl fullWidth sx={{ mb: 2 }}>
                       <InputLabel>Resource type</InputLabel>
                       <Select
@@ -232,7 +297,9 @@ export default function ResourceForm() {
                       >
                         <MenuItem value="dataset">Dataset</MenuItem>
                         <MenuItem value="tool">Tool</MenuItem>
-                        <MenuItem value="document">Template or Guideline</MenuItem>
+                        <MenuItem value="document">
+                          Template or Guideline
+                        </MenuItem>
                       </Select>
                     </FormControl>
 

@@ -12,6 +12,7 @@ export function useCreateDataset() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["datasets"]);
+      queryClient.invalidateQueries(["countries-coverage-with-count"]);
     },
   });
 }
@@ -120,6 +121,7 @@ export function useDeleteDataset() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["datasets"]);
+      queryClient.invalidateQueries(["countries-coverage-with-count"]);
     },
   });
 }
@@ -135,6 +137,7 @@ export function useUpdateDataset(id) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["datasets"]);
+      queryClient.invalidateQueries(["countries-coverage-with-count"]);
     },
   });
 }

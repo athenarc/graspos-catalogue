@@ -12,6 +12,7 @@ export function useCreateDocument() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["documents"]);
+      queryClient.invalidateQueries(["countries-coverage-with-count"]);
     },
   });
 }
@@ -119,6 +120,7 @@ export function useDeleteDocument() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["documents"]);
+      queryClient.invalidateQueries(["countries-coverage-with-count"]);
     },
   });
 }
@@ -134,6 +136,7 @@ export function useUpdateDocument(id) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["documents"]);
+      queryClient.invalidateQueries(["countries-coverage-with-count"]);
     },
   });
 }

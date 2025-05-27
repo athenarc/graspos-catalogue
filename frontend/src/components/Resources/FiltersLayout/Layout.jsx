@@ -1,14 +1,16 @@
 import { Stack } from "@mui/material";
 import ResourcesFiltersDrawer from "./GlobalFiltersDrawer";
 import ScopeFacetFilter from "./Filters/ScopeFacetFilter";
+import GeographicalCoverageFacetFilter from "./Filters/GeographicalCoverageFacetFilter";
 
-function ResourceFilters({
-  handleChangeFilters,
-  selectedFilters,
-}) {
+function ResourceFilters({ handleChangeFilters, selectedFilters }) {
   return (
     <Stack direction="column" spacing={2} sx={{ flexGrow: 1, px: 2 }}>
       <ScopeFacetFilter
+        selectedFilters={selectedFilters}
+        onFilterChange={handleChangeFilters}
+      />
+      <GeographicalCoverageFacetFilter
         selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />

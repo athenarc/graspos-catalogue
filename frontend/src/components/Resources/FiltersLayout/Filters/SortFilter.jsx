@@ -14,10 +14,10 @@ export default function SortFilter({ filters, onFilterChange }) {
       variant="outlined"
       sx={{ width: { xs: "100%", lg: "60%" } }}
     >
-      <InputLabel id="sort-filter-label">Sort results by</InputLabel>
+      <InputLabel id="sort-filter-label">Sort by</InputLabel>
       <Select
         labelId="sort-filter-label"
-        label="Sort Results By"
+        label="Sort by"
         value={getValue()}
         onChange={handleChange}
       >
