@@ -19,16 +19,16 @@ import {
   TableRow,
   TableHead,
   TableContainer,
-  Paper,
 } from "@mui/material";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { Dataset } from "../Datasets/Datasets";
 import { Document } from "../Documents/Documents";
 import { Tool } from "../Tools/Tools";
+import { Service } from "../Services/Services";
 import orcidLogo from "../../../assets/orcid.logo.icon.svg";
-import { ResourceItemFooter, ResourceItemScopes } from "./ResourceGridItem";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack"; // Added import
-import LaunchIcon from "@mui/icons-material/Launch"; // Added import
+import { ResourceItemScopes } from "./ResourceGridItem";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import LaunchIcon from "@mui/icons-material/Launch";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import HistoryIcon from "@mui/icons-material/History";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -497,8 +497,6 @@ export function ResourceGeographicCoverage({ resource }) {
       </Card>
     );
   }
-  console.log(resource?.data?.data);
-  // Show first 5 by default, toggle to show all
   const displayedCoverage = detailsToggle
     ? resource
     : resource?.data?.data?.geographical_coverage?.slice(0, 5);
@@ -590,6 +588,9 @@ export function ResourcePage() {
           )}
           {location.pathname.includes("tools") && (
             <Tool resourceId={resourceId} />
+          )}
+          {location.pathname.includes("services") && (
+            <Service resourceId={resourceId} />
           )}
         </Grid>
       </Stack>

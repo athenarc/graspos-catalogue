@@ -39,6 +39,8 @@ import { useZenodo } from "../../queries/zenodo.js";
 import { useScopes } from "../../queries/scope.js";
 import { useCountries } from "../../queries/countries.js";
 import { useAssessments } from "../../queries/assessment.js";
+import ServiceFormFields from "./ServiceFormFields.jsx";
+import { useCreateService } from "../../queries/service.js";
 
 export default function ResourceForm() {
   const [message, setMessage] = useState("");
@@ -62,6 +64,7 @@ export default function ResourceForm() {
   const createDataset = useCreateDataset();
   const createTool = useCreateTool();
   const createDocument = useCreateDocument();
+  const createService = useCreateService();
 
   const zenodo = useZenodo();
   const scopesQuery = useScopes();
@@ -104,6 +107,7 @@ export default function ResourceForm() {
   const getMutation = () => {
     if (resourceType === "tool") return createTool;
     if (resourceType === "document") return createDocument;
+    if (resourceType === "service") return createService;
     return createDataset;
   };
 
@@ -344,6 +348,7 @@ export default function ResourceForm() {
                         <MenuItem value="document">
                           Template or Guideline
                         </MenuItem>
+                        <MenuItem value="service">Service</MenuItem>
                       </Select>
                     </FormControl>
 
@@ -359,6 +364,9 @@ export default function ResourceForm() {
                     )}
                     {resourceType === "tool" && (
                       <ToolFormFields register={register} errors={errors} />
+                    )}
+                    {resourceType === "service" && (
+                      <ServiceFormFields register={register} errors={errors} />
                     )}
                   </Stack>
                 </>

@@ -61,6 +61,7 @@ import { useScopes } from "../../../queries/scope";
 import SaveIcon from "@mui/icons-material/Save";
 import EditResourceDialog from "../../Forms/EditResourceDialog";
 import DeleteConfirmationDialog from "../../Forms/DeleteConfirmationDialog";
+import { useDeleteService, useUpdateService } from "../../../queries/service";
 
 export function ResourceItemKeywords({ resource }) {
   const keywords = resource?.zenodo?.metadata?.keywords || [];
@@ -129,24 +130,30 @@ export function ResourceActionsMenu({ resource, type, user }) {
   const updateDocument = useUpdateDocument(resource?._id);
   const updateDataset = useUpdateDataset(resource?._id);
   const updateTool = useUpdateTool(resource?._id);
+  const updateService = useUpdateService(resource?._id);
 
   const deleteDocument = useDeleteDocument();
   const deleteDataset = useDeleteDataset();
   const deleteTool = useDeleteTool();
+  const deleteService = useDeleteService();
 
   const deleteMutation =
     type === "Document"
       ? deleteDocument
       : type === "Dataset"
       ? deleteDataset
-      : deleteTool;
+      : type === "Tool"
+      ? deleteTool
+      : deleteService;
 
   const updateQuery =
     type === "Document"
       ? updateDocument
       : type === "Dataset"
       ? updateDataset
-      : updateTool;
+      : type === "Tool"
+      ? updateTool
+      : updateService;
 
   useEffect(() => {
     if (resource?.scopes) {
