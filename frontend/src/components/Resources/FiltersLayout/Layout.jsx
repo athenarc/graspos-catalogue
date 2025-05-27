@@ -2,6 +2,7 @@ import { Stack } from "@mui/material";
 import ResourcesFiltersDrawer from "./GlobalFiltersDrawer";
 import ScopeFacetFilter from "./Filters/ScopeFacetFilter";
 import GeographicalCoverageFacetFilter from "./Filters/GeographicalCoverageFacetFilter";
+import AssessmentFacetFilter from "./Filters/AssessmentSubjectFilter";
 
 function ResourceFilters({ handleChangeFilters, selectedFilters }) {
   return (
@@ -11,6 +12,10 @@ function ResourceFilters({ handleChangeFilters, selectedFilters }) {
         onFilterChange={handleChangeFilters}
       />
       <GeographicalCoverageFacetFilter
+        selectedFilters={selectedFilters}
+        onFilterChange={handleChangeFilters}
+      />
+      <AssessmentFacetFilter
         selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />

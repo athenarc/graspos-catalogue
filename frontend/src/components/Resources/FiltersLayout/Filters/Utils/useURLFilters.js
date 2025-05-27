@@ -5,6 +5,7 @@ const getDefaultFilters = () => ({
   licenses: {},
   tags: [],
   scopes: {},
+  assessments: {},
   geographical_coverage: {},
   graspos: false,
   sortField: "unique_views",
@@ -51,6 +52,10 @@ export function useURLFilters(resourceMap) {
 
     searchParams.getAll("scope").forEach((value) => {
       newFilters.scopes[value] = true;
+    });
+
+    searchParams.getAll("assessment").forEach((value) => {
+      newFilters.assessments[value] = true;
     });
 
     searchParams.getAll("geographical_coverage").forEach((value) => {
@@ -103,9 +108,15 @@ export function useURLFilters(resourceMap) {
       if (value) searchParams.append("scope", key);
     });
 
-    Object.entries(newFilters.geographical_coverage || {}).forEach(([key, value]) => {
-      if (value) searchParams.append("geographical_coverage", key);
+    Object.entries(newFilters.assessments || {}).forEach(([key, value]) => {
+      if (value) searchParams.append("assessment", key);
     });
+
+    Object.entries(newFilters.geographical_coverage || {}).forEach(
+      ([key, value]) => {
+        if (value) searchParams.append("geographical_coverage", key);
+      }
+    );
 
     newFilters.tags?.forEach((value) => {
       searchParams.append("tag", value);
@@ -115,10 +126,16 @@ export function useURLFilters(resourceMap) {
     searchParams.set("sort_direction", newFilters.sortDirection);
 
     if (newFilters.dateRange?.startDate) {
-      searchParams.set("start", formatDateToLocalString(newFilters.dateRange.startDate));
+      searchParams.set(
+        "start",
+        formatDateToLocalString(newFilters.dateRange.startDate)
+      );
     }
     if (newFilters.dateRange?.endDate) {
-      searchParams.set("end", formatDateToLocalString(newFilters.dateRange.endDate));
+      searchParams.set(
+        "end",
+        formatDateToLocalString(newFilters.dateRange.endDate)
+      );
     }
 
     const resourceName = Object.keys(resourceMap).find(
@@ -145,6 +162,7 @@ export function useURLFilters(resourceMap) {
     emptyFilters.text = filters.text;
     emptyFilters.scopes = filters.scopes;
     emptyFilters.geographical_coverage = filters.geographical_coverage;
+    emptyFilters.assessments = filters.assessments;
     setFilters(emptyFilters);
     updateURL(emptyFilters, newValue);
   };
