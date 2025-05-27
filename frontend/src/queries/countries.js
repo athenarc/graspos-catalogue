@@ -1,18 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "./interceptor";
 
-export function useCountries(field) {
+export function useCountries() {
   return useQuery({
-    queryKey: ["countries", field],
+    queryKey: ["countries"],
     retry: false,
     queryFn: () => axiosInstance.get(`country`).then((res) => res),
   });
 }
 
-export function useCountriesWithCount(field) {
+export function useCountriesWithCount() {
   return useQuery({
-    queryKey: ["countries", field],
+    queryKey: ["countries-coverage-with-count"],
     retry: false,
-    queryFn: () => axiosInstance.get(`country/geographical-coverage-with-count`).then((res) => res),
+    queryFn: () =>
+      axiosInstance
+        .get(`country/geographical-coverage-with-count`)
+        .then((res) => res),
   });
 }
