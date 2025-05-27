@@ -13,7 +13,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { useCountries } from "../../../../queries/countries";
+import { useCountriesWithCount } from "../../../../queries/countries";
 import { FixedSizeList } from "react-window";
 import ClearIcon from "@mui/icons-material/Clear";
 
@@ -21,7 +21,7 @@ export default function GeographicalCoverageFacetFilter({
   selectedFilters,
   onFilterChange,
 }) {
-  const { data: geoData } = useCountries();
+  const { data: geoData } = useCountriesWithCount();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedGeo, setSelectedGeo] = useState(
     selectedFilters?.geographical_coverage || {}
@@ -33,7 +33,7 @@ export default function GeographicalCoverageFacetFilter({
     const validSelectedGeo = Object.keys(
       selectedFilters?.geographical_coverage || {}
     ).reduce((acc, geoId) => {
-      const geoExists = geoData.data.some((geo) => geo._id === geoId);
+      const geoExists = geoData.data.some((geo) => geo.id === geoId);
       if (geoExists) {
         acc[geoId] = selectedFilters.geographical_coverage[geoId];
       }
@@ -64,33 +64,33 @@ export default function GeographicalCoverageFacetFilter({
     const geo = filteredGeo[index];
     return (
       <ListItem
-        key={geo._id}
+        key={geo?.id}
         style={style}
         sx={{ p: 0 }}
         disableGutters
-        onClick={() => handleToggle(geo._id)}
+        onClick={() => handleToggle(geo?.id)}
       >
         <Checkbox
           edge="start"
-          checked={!!selectedGeo[geo._id]}
+          checked={!!selectedGeo[geo?.id]}
           tabIndex={-1}
           disableRipple
-          onChange={() => handleToggle(geo._id)}
+          onChange={() => handleToggle(geo?.id)}
           sx={{ p: 1, pl: 1.1 }}
         />
         <ListItemText
-          primary={geo.label}
+          primary={geo?.label + " (" + geo?.resource_count + ")"}
           sx={{
             mr: 1,
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
           }}
-          title={geo.label} // tooltip on hover
+          title={geo?.label}
         />
         <Avatar
-          src={geo.flag}
-          alt={geo.label}
+          src={geo?.flag}
+          alt={geo?.label}
           sx={{ width: 18, height: 18, flexShrink: 0 }}
         />
       </ListItem>
