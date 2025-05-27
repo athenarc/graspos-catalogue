@@ -22,6 +22,7 @@ async def get_all_documents(
         user: Optional[User] = Depends(current_user),
         license: Optional[List[str]] = Query(None),
         scope: Optional[List[str]] = Query(None),
+        assessment: Optional[List[str]] = Query(None),
         geographical_coverage: Optional[List[str]] = Query(None),
         tag: Optional[List[str]] = Query(None),
         graspos: Optional[bool] = Query(None),
@@ -49,6 +50,11 @@ async def get_all_documents(
     if scope:
         scope_ids = [PydanticObjectId(s) for s in scope]
         filters.append({"scopes._id": {"$in": scope_ids}})
+
+    # Assessment filtering
+    if assessment:
+        assessment_ids = [PydanticObjectId(s) for s in assessment]
+        filters.append({"assessments._id": {"$in": assessment_ids}})
 
     # Geographical Coverage filtering
     if geographical_coverage:
