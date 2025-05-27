@@ -1,5 +1,4 @@
-import os
-import bcrypt
+import os, bcrypt, json
 from dotenv import load_dotenv, set_key
 from datetime import datetime
 from iso3166 import countries
@@ -60,7 +59,36 @@ scope_insert = """db.scope.insertMany([
   }
 ]);"""
 
-import json
+assessment_subject = """db.assessment.insertMany([
+  {
+    name: "Researcher",
+    description: "Assessment of individual researchers using various values and criteria.",
+    bg_color: "#EB611F",
+    created_at: new Date(),
+    modified_at: new Date()
+  },
+  {
+    name: "Researcher team/group",
+    description: "Assessment of researcher teams or groups using various values and criteria.",
+    bg_color: "#77AEA5",
+    created_at: new Date(),
+    modified_at: new Date()
+  },
+  {
+    name: "Research organization",
+    description: "Assessment of research performing organizations (e.g., universities, research centers) using various values and criteria.",
+    bg_color: "#7C9497",
+    created_at: new Date(),
+    modified_at: new Date()
+  },
+  {
+    name: "Country",
+    description: "Assessment of the full body of research conducted by researchers from specific countries using various values and criteria.",
+    bg_color: "#9B907E",
+    created_at: new Date(),
+    modified_at: new Date()
+  }
+]);"""
 
 # Load centroid data
 with open("country_centroids.json", encoding="utf-8") as f:
