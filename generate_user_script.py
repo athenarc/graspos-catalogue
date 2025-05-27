@@ -1,5 +1,4 @@
-import os
-import bcrypt
+import os, bcrypt, json
 from dotenv import load_dotenv, set_key
 from datetime import datetime
 from iso3166 import countries
@@ -12,14 +11,17 @@ password_plain = os.getenv("MONGO_SUPER_USER_PASSWORD", "super_user")
 salt_rounds = int(os.getenv("BCRYPT_SALT_ROUNDS", 12))
 
 if not username or not password_plain:
-    raise ValueError("MONGO_SUPER_USER or MONGO_SUPER_USER_PASSWORD are not defined in .env")
+    raise ValueError(
+        "MONGO_SUPER_USER or MONGO_SUPER_USER_PASSWORD are not defined in .env"
+    )
 
 salt = bcrypt.gensalt(rounds=salt_rounds)
-hashed_password = bcrypt.hashpw(password_plain.encode("utf-8"), salt).decode("utf-8")
+hashed_password = bcrypt.hashpw(password_plain.encode("utf-8"),
+                                salt).decode("utf-8")
 now_str = datetime.now().isoformat()
 
 # Scope insert
-scope_insert = """db.scope.insertMany([
+scope_insert = """db.scopes.insertMany([
   {
     name: "Start",
     description: "Begin evaluation by stating your organization's values, mission, and goals. Avoid relying solely on what is easy to measure (e.g., citations or rankings) and be mindful of the 'Streetlight Effect'. Align assessment criteria with institutional purpose, societal impact, and academic freedom.",
@@ -57,18 +59,66 @@ scope_insert = """db.scope.insertMany([
   }
 ]);"""
 
+assessment_subject = """db.assessments.insertMany([
+  {
+    name: "Researcher",
+    description: "Assessment of individual researchers using various values and criteria.",
+    bg_color: "#EB611F",
+    created_at: new Date(),
+    modified_at: new Date()
+  },
+  {
+    name: "Researcher team/group",
+    description: "Assessment of researcher teams or groups using various values and criteria.",
+    bg_color: "#77AEA5",
+    created_at: new Date(),
+    modified_at: new Date()
+  },
+  {
+    name: "Research organization",
+    description: "Assessment of research performing organizations (e.g., universities, research centers) using various values and criteria.",
+    bg_color: "#7C9497",
+    created_at: new Date(),
+    modified_at: new Date()
+  },
+  {
+    name: "Country",
+    description: "Assessment of the full body of research conducted by researchers from specific countries using various values and criteria.",
+    bg_color: "#9B907E",
+    created_at: new Date(),
+    modified_at: new Date()
+  }
+]);"""
+
+# Load centroid data
+with open("country_centroids.json", encoding="utf-8") as f:
+    centroid_map = json.load(f)
+
 # Geographical coverage insert
 geo_items = []
 for c in countries:
-    geo_items.append(f"""{{
-    code: "{c.alpha2}",
-    label: "{c.name}",
-    flag: "https://flagcdn.com/{c.alpha2.lower()}.svg",
-    created_at: new Date(),
-    modified_at: new Date()
-}}""")
+    code = c.alpha2
+    coords = centroid_map.get(code)
+    lat, lng = coords if coords and len(coords) == 2 else (None, None)
 
-geo_insert = "db.geographical_coverage.insertMany([\n" + ",\n".join(geo_items) + "\n]);"
+    item = {
+        "code": code,
+        "label": c.name,
+        "flag": f"https://flagcdn.com/{code.lower()}.svg",
+        "created_at": "new Date()",
+        "modified_at": "new Date()"
+    }
+    if lat is not None and lng is not None:
+        item["lat"] = lat
+        item["lng"] = lng
+
+    js_obj = "{\n" + ",\n".join(f'  {k}: {v}' if isinstance(v, (
+        int, float)) or v == "new Date()" else f'  {k}: "{v}"'
+                                for k, v in item.items()) + "\n}"
+    geo_items.append(js_obj)
+
+geo_insert = "db.geographical_coverages.insertMany([\n" + ",\n".join(
+    geo_items) + "\n]);"
 
 # Final script
 js_script = f"""
@@ -90,10 +140,12 @@ db.User.insertOne({{
 {scope_insert}
 
 {geo_insert}
+
+{assessment_subject}
 """
 
 # Write to file
-output_js_path = "./mongodb/docker-entrypoint-initdb.d/create_user.generated.js"
+output_js_path = "./mongodb/docker-entrypoint-initdb.d/create_user.generated_centroids.js"
 os.makedirs(os.path.dirname(output_js_path), exist_ok=True)
 with open(output_js_path, "w", encoding="utf-8") as f:
     f.write(js_script.strip())

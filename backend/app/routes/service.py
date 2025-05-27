@@ -1,7 +1,7 @@
-"""Documents router."""
+"""Service router."""
 
 from fastapi import APIRouter, HTTPException, Depends, Query, status
-from models.document import Documents, DocumentsPatch
+from models.service import Service, ServicePatch
 from models.user import User
 from models.zenodo import Zenodo
 from models.update import Update
@@ -14,11 +14,11 @@ from beanie import PydanticObjectId
 import logging
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api/v1/document", tags=["Documents"])
+router = APIRouter(prefix="/api/v1/service", tags=["Service"])
 
 
-@router.get("", status_code=200, response_model=list[Documents])
-async def get_all_documents(
+@router.get("", status_code=200, response_model=list[Service])
+async def get_all_services(
         user: Optional[User] = Depends(current_user),
         license: Optional[List[str]] = Query(None),
         scope: Optional[List[str]] = Query(None),
@@ -31,7 +31,7 @@ async def get_all_documents(
         start: Optional[str] = Query(None),
         end: Optional[str] = Query(None),
         text: Optional[str] = Query(None),
-) -> list[Documents]:
+) -> list[Service]:
 
     filters = []
 
@@ -58,8 +58,13 @@ async def get_all_documents(
 
     # Geographical Coverage filtering
     if geographical_coverage:
-        geographical_coverage_ids = [PydanticObjectId(s) for s in geographical_coverage]
-        filters.append({"geographical_coverage._id": {"$in": geographical_coverage_ids}})
+        geographical_coverage_ids = [
+            PydanticObjectId(s) for s in geographical_coverage
+        ]
+        filters.append(
+            {"geographical_coverage._id": {
+                "$in": geographical_coverage_ids
+            }})
 
     # Tag filter
     if tag:
@@ -116,166 +121,163 @@ async def get_all_documents(
         if sort_field == "dates":
             zenodo_sort_field = "zenodo.metadata.publication_date"
         sort_order = 1 if sort_direction.lower() == "asc" else -1
-        documents = await Documents.find(query_filter, fetch_links=True).sort([
+        services = await Service.find(query_filter, fetch_links=True).sort([
             (zenodo_sort_field, sort_order)
         ]).to_list()
     else:
-        documents = await Documents.find(query_filter,
-                                         fetch_links=True).to_list()
-    return documents
+        services = await Service.find(query_filter, fetch_links=True).to_list()
+    return services
 
 
 @router.post("/create", status_code=201)
-async def create_document(
-    document: Documents, user: User = Depends(current_user_mandatory)
-) -> Documents:
+async def create_service(
+    service: Service, user: User = Depends(current_user_mandatory)) -> Service:
     zenodo = None
 
     try:
-        zenodo = Zenodo(source=document.source)
+        zenodo = Zenodo(source=service.source)
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error))
 
-    data = get_zenodo_data(document.source)
+    data = get_zenodo_data(service.source)
     if data["status"] != 200:
         raise HTTPException(status_code=data["status"], detail=data["detail"])
 
     zenodo = Zenodo(**data["zenodo_object"])
     await zenodo.create()
-    document.zenodo = zenodo
-    document.owner = user.id
+    service.zenodo = zenodo
+    service.owner = user.id
     if user.super_user:
-        document.approved = True
-    await document.create()
-    return document
+        service.approved = True
+    await service.create()
+    return service
 
 
 @router.get("/fields/unique")
 async def get_unique_metadata_values(field: str = Query(
     ..., description="Field name inside zenodo.metadata")):
     """
-    Return unique values from the given field in Zenodo metadata across all documents.
+    Return unique values from the given field in Zenodo metadata across all services.
     """
     try:
-        unique_values = await Documents.get_unique_field_values_from_zenodo(
-            field)
+        unique_values = await Service.get_unique_field_values_from_zenodo(field
+                                                                          )
         return {f"unique_{field}": unique_values}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/{document_id}",
+@router.get("/{service_id}",
             responses={404: {
-                "detail": "Documents does not exist"
+                "detail": "Service does not exist"
             }})
-async def get_document(document_id: PydanticObjectId) -> Documents:
+async def get_service(service_id: PydanticObjectId) -> Service:
 
-    document = await Documents.get(document_id, fetch_links=True)
+    service = await Service.get(service_id, fetch_links=True)
 
-    if not document:
+    if not service:
 
-        return HTTPException(status_code=404,
-                             detail="Documents does not exist")
+        return HTTPException(status_code=404, detail="Service does not exist")
 
-    return document
+    return service
 
 
-@router.delete("/{document_id}", status_code=status.HTTP_200_OK)
-async def delete_document(document_id: PydanticObjectId,
-                          user: User = Depends(current_user_mandatory)):
+@router.delete("/{service_id}", status_code=status.HTTP_200_OK)
+async def delete_service(service_id: PydanticObjectId,
+                         user: User = Depends(current_user_mandatory)):
     """
-    Delete a document by its ID, along with its related Zenodo record and updates.
+    Delete a service by its ID, along with its related Zenodo record and updates.
     Does not cascade delete unrelated links.
     """
-    logger.info(f"User {user.id} requested deletion of document {document_id}")
+    logger.info(f"User {user.id} requested deletion of service {service_id}")
 
-    document = await Documents.find_one(Documents.id == document_id,
-                                        fetch_links=True)
+    service = await Service.find_one(Service.id == service_id,
+                                     fetch_links=True)
 
-    if not document:
-        logger.warning(f"Document {document_id} not found for user {user.id}")
+    if not service:
+        logger.warning(f"Service {service_id} not found for user {user.id}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Document not found")
+                            detail="Service not found")
 
     try:
         # Delete linked Zenodo and associated updates
-        if document.zenodo:
+        if service.zenodo:
             logger.info(
-                f"Deleting linked Zenodo {document.zenodo.id} and related updates"
+                f"Deleting linked Zenodo {service.zenodo.id} and related updates"
             )
-            await Update.find(zenodo_id=document.zenodo.id).delete()
-            await Zenodo.find(Zenodo.id == document.zenodo.id).delete()
+            await Update.find(zenodo_id=service.zenodo.id).delete()
+            await Zenodo.find(Zenodo.id == service.zenodo.id).delete()
 
-        # Delete document without deleting other linked objects
-        await document.delete(link_rule=DeleteRules.DO_NOTHING)
+        # Delete service without deleting other linked objects
+        await service.delete(link_rule=DeleteRules.DO_NOTHING)
 
         logger.info(
-            f"Document {document_id} deleted successfully by user {user.id}")
-        return {"message": "Document deleted successfully"}
+            f"Service {service_id} deleted successfully by user {user.id}")
+        return {"message": "Service deleted successfully"}
 
     except Exception as e:
         logger.exception(
-            f"Error deleting document {document_id} for user {user.id}")
+            f"Error deleting service {service_id} for user {user.id}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An unexpected error occurred while deleting the document")
+            detail="An unexpected error occurred while deleting the service")
 
 
-@router.patch("/{document_id}", status_code=status.HTTP_200_OK)
-async def update_document(
-    update: DocumentsPatch,
-    document_id: PydanticObjectId,
+@router.patch("/{service_id}", status_code=status.HTTP_200_OK)
+async def update_service(
+    update: ServicePatch,
+    service_id: PydanticObjectId,
     user: User = Depends(current_user_mandatory)
-) -> DocumentsPatch:
+) -> ServicePatch:
     """
-    Update an existing document by ID.
-    If `approved=False`, delete the document and its linked Zenodo and Update documents.
-    Otherwise, update the document with the provided fields.
+    Update an existing service by ID.
+    If `approved=False`, delete the service and its linked Zenodo and Update services.
+    Otherwise, update the service with the provided fields.
     """
-    logger.info(f"User {user.id} requested update on document {document_id}")
+    logger.info(f"User {user.id} requested update on service {service_id}")
 
-    document = await Documents.find_one(Documents.id == document_id,
-                                        fetch_links=True)
+    service = await Service.find_one(Service.id == service_id,
+                                     fetch_links=True)
 
-    if not document:
+    if not service:
         logger.warning(
-            f"Document {document_id} not found for update by user {user.id}")
+            f"Service {service_id} not found for update by user {user.id}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Document not found")
+                            detail="Service not found")
 
     try:
         fields = update.model_dump(exclude_unset=True)
 
         if "approved" in fields and not fields["approved"]:
             logger.info(
-                f"Document {document_id} marked as unapproved. Deleting document and linked Zenodo and updates."
+                f"Service {service_id} marked as unapproved. Deleting service and linked Zenodo and updates."
             )
 
-            if document.zenodo:
+            if service.zenodo:
                 logger.info(
-                    f"Deleting linked Zenodo {document.zenodo.id} and related updates."
+                    f"Deleting linked Zenodo {service.zenodo.id} and related updates."
                 )
-                await Update.find(zenodo_id=document.zenodo.id).delete()
-                await Zenodo.find(Zenodo.id == document.zenodo.id).delete()
+                await Update.find(zenodo_id=service.zenodo.id).delete()
+                await Zenodo.find(Zenodo.id == service.zenodo.id).delete()
 
-            await document.delete(link_rule=DeleteRules.DO_NOTHING)
+            await service.delete(link_rule=DeleteRules.DO_NOTHING)
 
             logger.info(
-                f"Document {document_id} and linked Zenodo/Updates deleted successfully."
+                f"Service {service_id} and linked Zenodo/Updates deleted successfully."
             )
-            return {"message": "Document and linked Zenodo/Updates deleted"}
+            return {"message": "Service and linked Zenodo/Updates deleted"}
 
-        logger.info(f"Updating document {document_id} with fields: {fields}")
-        document = Documents.model_copy(document, update=fields)
-        await document.save()
+        logger.info(f"Updating service {service_id} with fields: {fields}")
+        service = Service.model_copy(service, update=fields)
+        await service.save()
 
         logger.info(
-            f"Document {document_id} updated successfully by user {user.id}")
-        return document
+            f"Service {service_id} updated successfully by user {user.id}")
+        return service
 
     except Exception:
         logger.exception(
-            f"Error updating document {document_id} for user {user.id}")
+            f"Error updating service {service_id} for user {user.id}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An error occurred while updating the document")
+            detail="An error occurred while updating the service")

@@ -3,6 +3,7 @@ import { Datasets } from "./Datasets/Datasets";
 import { Documents } from "./Documents/Documents";
 import { Tools } from "./Tools/Tools";
 import { Box } from "@mui/material";
+import { Services } from "./Services/Services";
 
 export default function ResourcesGrid({
   user,
@@ -10,6 +11,7 @@ export default function ResourcesGrid({
   datasets,
   documents,
   tools,
+  services,
 }) {
   return (
     <Box sx={{ p: 2, pt: 0 }}>
@@ -19,6 +21,7 @@ export default function ResourcesGrid({
         {selectedResource == 2 && (
           <Documents documents={documents} user={user} />
         )}
+        {selectedResource == 3 && <Services services={services} user={user} />}
       </Grid>
     </Box>
   );

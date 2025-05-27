@@ -11,6 +11,7 @@ export function useLogin() {
       queryClient.invalidateQueries(["datasets"]);
       queryClient.invalidateQueries(["documents"]);
       queryClient.invalidateQueries(["tools"]);
+      queryClient.invalidateQueries(["services"]);
     },
   });
 }

@@ -1,11 +1,9 @@
-from beanie import Document, PydanticObjectId
+from beanie import Document
 from datetime import datetime
 from pydantic import BaseModel, Field
-import pymongo
-from pymongo import IndexModel
 
 
-class Scope(BaseModel):
+class Assessment(BaseModel):
     name: str
     description: str | None = None
     bg_color: str | None = Field(
@@ -16,27 +14,27 @@ class Scope(BaseModel):
     modified_at: datetime | None = datetime.now()
 
 
-class ScopeView(BaseModel):
+class AssessmentView(BaseModel):
     name: str
     description: str | None = None
     bg_color: str | None = None
 
 
-class ScopeCreate(BaseModel):
+class AssessmentCreate(BaseModel):
     name: str
     description: str | None = None
     bg_color: str | None = None
 
 
-class ScopePatch(BaseModel):
+class AssessmentPatch(BaseModel):
     description: str | None = None
     bg_color: str | None = None
 
 
-class Scope(Document, Scope, ScopeView, ScopeCreate, ScopePatch):
+class Assessment(Document, Assessment, AssessmentView, AssessmentCreate, AssessmentPatch):
 
     class Settings:
-        name = "scopes"
+        name = "assessments"
 
     class Config:
         json_schema_extra = {

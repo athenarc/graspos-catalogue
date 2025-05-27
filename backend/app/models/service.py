@@ -1,4 +1,4 @@
-"""Dataset models."""
+"""Service models."""
 
 from beanie import Document
 from datetime import datetime
@@ -7,20 +7,14 @@ from beanie import PydanticObjectId, Link
 from datetime import datetime
 from models.zenodo import Zenodo
 from models.scope import Scope
-from models.assessment import Assessment
 from typing import List, Optional
 from models.shared import GeographicalCoverage
+from models.assessment import Assessment
 
 
-class Dataset(BaseModel):
+class Service(BaseModel):
+    doi: str | None = None
     source: str | None = None
-    organization: str | None = None
-    visibility: str | None = None
-    api_url: str | None = None
-    api_url_instructions: str | None = None
-    documentation_url: str | None = None
-    contact_person: str | None = None
-    contact_person_email: str | None = None
     zenodo: Link[Zenodo] | None = None
     scopes: List[Link[Scope]] | None = None
     geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
@@ -31,27 +25,17 @@ class Dataset(BaseModel):
     owner: PydanticObjectId | None = None
 
 
-class DatasetPatch(BaseModel):
-    source: str | None = None
+class ServicePatch(BaseModel):
+    approved: bool | None = None
+    owner: PydanticObjectId | None = None
     scopes: List[Link[Scope]] | None = None
     geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
     assessments: List[Link[Assessment]] | None = None
-    created: datetime | None = None
-    modified: datetime | None = None
-    updated: datetime | None = None
-    approved: bool | None = None
-    owner: PydanticObjectId | None = None
 
 
-class DatasetView(BaseModel):
+class ServiceView(BaseModel):
+    doi: str | None = None
     source: str | None = None
-    organization: str | None = None
-    visibility: str | None = None
-    api_url: str | None = None
-    api_url_instructions: str | None = None
-    documentation_url: str | None = None
-    contact_person: str | None = None
-    contact_person_email: str | None = None
     zenodo: Link[Zenodo] | None = None
     scopes: List[Link[Scope]] | None = None
     geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
@@ -62,10 +46,10 @@ class DatasetView(BaseModel):
     owner: PydanticObjectId | None = None
 
 
-class Dataset(Document, DatasetView):
+class Service(Document, ServiceView):
 
     class Settings:
-        name = "datasets"
+        name = "services"
 
     class Config:
         json_schema_extra = {
@@ -95,18 +79,18 @@ class Dataset(Document, DatasetView):
     async def get_unique_field_values_from_zenodo(cls,
                                                   field_name: str) -> list:
         """
-        Return all unique values for a given metadata field from linked Zenodo datasets.
+        Return all unique values for a given metadata field from linked Zenodo services.
 
         :param field_name: The field name in zenodo.metadata to extract unique values from.
         :return: A list of unique field values (dicts or scalars).
         """
-        datasets = await cls.find_all().to_list()
+        services = await cls.find_all().to_list()
         unique_values = set()
 
-        for dataset in datasets:
-            if dataset.zenodo is not None:
-                await dataset.fetch_link("zenodo")
-                zenodo = dataset.zenodo
+        for service in services:
+            if service.zenodo is not None:
+                await service.fetch_link("zenodo")
+                zenodo = service.zenodo
                 metadata = zenodo.metadata
 
                 if metadata:
