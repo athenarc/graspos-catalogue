@@ -6,7 +6,6 @@ import {
   ListItemText,
   Checkbox,
   Card,
-  Avatar,
   Tooltip,
   Stack,
 } from "@mui/material";
@@ -110,7 +109,7 @@ The SCOPE framework for research evaluation is a five-stage model for evaluating
                 ) : assessment?.name === "Research organization" ? (
                   <AccountBalanceIcon fontSize="small" />
                 ) : (
-                  <FlagIcon fontSize="small" color="text.primary"/>
+                  <FlagIcon fontSize="small" color="text.primary" />
                 )}
               </Tooltip>
             </ListItem>

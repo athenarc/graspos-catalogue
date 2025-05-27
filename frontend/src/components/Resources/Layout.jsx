@@ -73,7 +73,6 @@ function ResourcesTabs({
     </Box>
   );
 }
-
 export default function ResourcesGridLayout({ user }) {
   const resourceMap = {
     Datasets: 0,

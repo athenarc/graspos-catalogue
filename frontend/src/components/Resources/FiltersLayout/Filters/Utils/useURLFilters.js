@@ -35,33 +35,33 @@ const formatDateToLocalString = (date) => {
 export function useURLFilters(resourceMap) {
   const [filters, setFilters] = useState(getDefaultFilters());
   const [selectedResource, setSelectedResource] = useState(0);
+  const [shouldUpdateURL, setShouldUpdateURL] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-
   const isFirstLoad = useRef(true);
-  const [textState, setTextState] = useState("");
 
+  const latestFiltersRef = useRef(filters);
+  useEffect(() => {
+    latestFiltersRef.current = filters;
+  }, [filters]);
+
+  // Parse URL on load or when location.search changes
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const newFilters = getDefaultFilters();
 
-    // Parse filters from URL
     searchParams.getAll("license").forEach((value) => {
       newFilters.licenses[value] = true;
     });
-
     searchParams.getAll("scope").forEach((value) => {
       newFilters.scopes[value] = true;
     });
-
     searchParams.getAll("assessment").forEach((value) => {
       newFilters.assessments[value] = true;
     });
-
     searchParams.getAll("geographical_coverage").forEach((value) => {
       newFilters.geographical_coverage[value] = true;
     });
-
     searchParams.getAll("tag").forEach((value) => {
       newFilters.tags.push(value);
     });
@@ -79,7 +79,6 @@ export function useURLFilters(resourceMap) {
 
     const tab = searchParams.get("tab");
     const resourceIndex = resourceMap[tab];
-
     if (resourceIndex !== undefined && resourceIndex !== selectedResource) {
       setSelectedResource(resourceIndex);
     }
@@ -95,82 +94,79 @@ export function useURLFilters(resourceMap) {
     isFirstLoad.current = false;
   }, [location.search]);
 
-  const updateURL = (newFilters, selectedTab) => {
-    if (isFirstLoad.current) return;
+  // Handle URL update in effect
+  useEffect(() => {
+    if (!isFirstLoad.current && shouldUpdateURL) {
+      const searchParams = new URLSearchParams();
 
-    const searchParams = new URLSearchParams();
+      Object.entries(filters.licenses || {}).forEach(([key, value]) => {
+        if (value) searchParams.append("license", key);
+      });
+      Object.entries(filters.scopes || {}).forEach(([key, value]) => {
+        if (value) searchParams.append("scope", key);
+      });
+      Object.entries(filters.assessments || {}).forEach(([key, value]) => {
+        if (value) searchParams.append("assessment", key);
+      });
+      Object.entries(filters.geographical_coverage || {}).forEach(
+        ([key, value]) => {
+          if (value) searchParams.append("geographical_coverage", key);
+        }
+      );
+      filters.tags?.forEach((tag) => {
+        searchParams.append("tag", tag);
+      });
 
-    Object.entries(newFilters.licenses || {}).forEach(([key, value]) => {
-      if (value) searchParams.append("license", key);
-    });
+      searchParams.set("sort_field", filters.sortField);
+      searchParams.set("sort_direction", filters.sortDirection);
 
-    Object.entries(newFilters.scopes || {}).forEach(([key, value]) => {
-      if (value) searchParams.append("scope", key);
-    });
-
-    Object.entries(newFilters.assessments || {}).forEach(([key, value]) => {
-      if (value) searchParams.append("assessment", key);
-    });
-
-    Object.entries(newFilters.geographical_coverage || {}).forEach(
-      ([key, value]) => {
-        if (value) searchParams.append("geographical_coverage", key);
+      if (filters.dateRange?.startDate) {
+        searchParams.set(
+          "start",
+          formatDateToLocalString(filters.dateRange.startDate)
+        );
       }
-    );
+      if (filters.dateRange?.endDate) {
+        searchParams.set(
+          "end",
+          formatDateToLocalString(filters.dateRange.endDate)
+        );
+      }
 
-    newFilters.tags?.forEach((value) => {
-      searchParams.append("tag", value);
-    });
-
-    searchParams.set("sort_field", newFilters.sortField);
-    searchParams.set("sort_direction", newFilters.sortDirection);
-
-    if (newFilters.dateRange?.startDate) {
-      searchParams.set(
-        "start",
-        formatDateToLocalString(newFilters.dateRange.startDate)
+      const resourceName = Object.keys(resourceMap).find(
+        (key) => resourceMap[key] === selectedResource
       );
-    }
-    if (newFilters.dateRange?.endDate) {
-      searchParams.set(
-        "end",
-        formatDateToLocalString(newFilters.dateRange.endDate)
-      );
-    }
+      if (resourceName) {
+        searchParams.set("tab", resourceName);
+      }
 
-    const resourceName = Object.keys(resourceMap).find(
-      (key) => resourceMap[key] === selectedTab
-    );
-    if (resourceName) {
-      searchParams.set("tab", resourceName);
+      navigate({ search: searchParams.toString() }, { replace: true });
+      setShouldUpdateURL(false);
     }
-
-    navigate({ search: searchParams.toString() }, { replace: true });
-  };
+  }, [filters, selectedResource, shouldUpdateURL, navigate, resourceMap]);
 
   const handleChangeFilters = (updatedFilter) => {
-    setFilters((prev) => {
-      const next = { ...prev, ...updatedFilter };
-      updateURL(next, selectedResource);
-      return next;
-    });
+    setFilters((prev) => ({ ...prev, ...updatedFilter }));
+    setShouldUpdateURL(true);
   };
 
   const handleSetSelectedResource = (event, newValue) => {
     setSelectedResource(newValue);
-    const emptyFilters = getDefaultFilters();
-    emptyFilters.text = filters.text;
-    emptyFilters.scopes = filters.scopes;
-    emptyFilters.geographical_coverage = filters.geographical_coverage;
-    emptyFilters.assessments = filters.assessments;
-    setFilters(emptyFilters);
-    updateURL(emptyFilters, newValue);
+
+    const reset = getDefaultFilters();
+    reset.text = filters.text;
+    reset.scopes = filters.scopes;
+    reset.geographical_coverage = filters.geographical_coverage;
+    reset.assessments = filters.assessments;
+
+    setFilters(reset);
+    setShouldUpdateURL(true);
   };
 
   const handleResetFilters = () => {
     const reset = getDefaultFilters();
     setFilters(reset);
-    updateURL(reset, selectedResource);
+    setShouldUpdateURL(true);
   };
 
   return {

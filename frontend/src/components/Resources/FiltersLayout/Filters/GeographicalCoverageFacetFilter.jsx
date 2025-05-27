@@ -12,7 +12,7 @@ import {
   InputAdornment,
   IconButton,
 } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useCountriesWithCount } from "../../../../queries/countries";
 import { FixedSizeList } from "react-window";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -23,33 +23,14 @@ export default function GeographicalCoverageFacetFilter({
 }) {
   const { data: geoData } = useCountriesWithCount();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedGeo, setSelectedGeo] = useState(
-    selectedFilters?.geographical_coverage || {}
-  );
-
-  useEffect(() => {
-    if (!geoData?.data) return;
-
-    const validSelectedGeo = Object.keys(
-      selectedFilters?.geographical_coverage || {}
-    ).reduce((acc, geoId) => {
-      const geoExists = geoData.data.some((geo) => geo.id === geoId);
-      if (geoExists) {
-        acc[geoId] = selectedFilters.geographical_coverage[geoId];
-      }
-      return acc;
-    }, {});
-
-    setSelectedGeo(validSelectedGeo);
-  }, [selectedFilters, geoData]);
 
   const handleToggle = (geoId) => {
-    const updatedGeo = {
-      ...selectedGeo,
-      [geoId]: !selectedGeo[geoId],
+    const currentSelection = selectedFilters?.geographical_coverage || {};
+    const updatedSelection = {
+      ...currentSelection,
+      [geoId]: !currentSelection[geoId],
     };
-    setSelectedGeo(updatedGeo);
-    onFilterChange({ geographical_coverage: updatedGeo });
+    onFilterChange({ geographical_coverage: updatedSelection });
   };
 
   const filteredGeo = useMemo(() => {
@@ -72,21 +53,20 @@ export default function GeographicalCoverageFacetFilter({
       >
         <Checkbox
           edge="start"
-          checked={!!selectedGeo[geo?.id]}
+          checked={!!selectedFilters?.geographical_coverage?.[geo?.id]}
           tabIndex={-1}
           disableRipple
           onChange={() => handleToggle(geo?.id)}
           sx={{ p: 1, pl: 1.1 }}
         />
 
-        {/* Container for label and count */}
         <div
           style={{
             flexGrow: 1,
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            minWidth: 0, // important for ellipsis
+            minWidth: 0,
             marginRight: 8,
           }}
         >
