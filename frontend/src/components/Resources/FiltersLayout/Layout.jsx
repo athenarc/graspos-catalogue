@@ -11,11 +11,11 @@ function ResourceFilters({ handleChangeFilters, selectedFilters }) {
         selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />
-      <GeographicalCoverageFacetFilter
+      <AssessmentFacetFilter
         selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />
-      <AssessmentFacetFilter
+      <GeographicalCoverageFacetFilter
         selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />

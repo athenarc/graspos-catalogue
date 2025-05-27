@@ -82,7 +82,7 @@ export default function AssessmentFacetFilter({
         alignItems="center"
         sx={{ px: 1, backgroundColor: "lightblue", color: "white" }}
       >
-        <Typography variant="h6">By assessment stages</Typography>
+        <Typography variant="h6">By assessment subjects</Typography>
         <Tooltip
           title="SCOPE Framework for Research Evaluation | INORMS
 The SCOPE framework for research evaluation is a five-stage model for evaluating responsibly. It is a practical step-by-step process designed to help research managers, or anyone involved in conducting research evaluations, in planning new evaluations as well as check existing evaluations."
