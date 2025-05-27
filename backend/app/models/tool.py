@@ -9,6 +9,7 @@ from models.zenodo import Zenodo
 from models.scope import Scope
 from typing import List, Optional 
 from models.shared import GeographicalCoverage
+from models.assessment import Assessment
 
 class Tool(BaseModel):
     doi: str | None = None
@@ -16,6 +17,7 @@ class Tool(BaseModel):
     zenodo: Link[Zenodo] | None = None
     scopes: List[Link[Scope]] | None = None
     geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
+    assessments: List[Link[Assessment]] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None
@@ -27,6 +29,7 @@ class ToolPatch(BaseModel):
     owner: PydanticObjectId | None = None
     scopes: List[Link[Scope]] | None = None
     geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
+    assessments: List[Link[Assessment]] | None = None
 
 
 class ToolView(BaseModel):
@@ -35,6 +38,7 @@ class ToolView(BaseModel):
     zenodo: Link[Zenodo] | None = None
     scopes: List[Link[Scope]] | None = None
     geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
+    assessments: List[Link[Assessment]] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
     approved: bool | None = None
