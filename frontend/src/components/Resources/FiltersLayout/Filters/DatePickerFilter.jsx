@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { enGB } from "date-fns/locale";
-import { Box, Button, Divider, Typography } from "@mui/material";
+import { Box, Typography, Divider } from "@mui/material";
 import { isValid, isAfter } from "date-fns";
 
 export default function DateFilter({ selectedFilters, onFilterChange }) {
@@ -18,7 +18,8 @@ export default function DateFilter({ selectedFilters, onFilterChange }) {
   const [startDateError, setStartDateError] = useState("");
   const [endDateError, setEndDateError] = useState("");
 
-  const handleApply = () => {
+  // Validate and update filter on date change
+  useEffect(() => {
     setStartDateError("");
     setEndDateError("");
 
@@ -26,42 +27,29 @@ export default function DateFilter({ selectedFilters, onFilterChange }) {
     let hasError = false;
 
     if (startDate && (!isValid(startDate) || isAfter(startDate, now))) {
-      setStartDateError("Start date must be a valid date not in the future.");
+      setStartDateError("Start date must be valid and not in the future.");
       hasError = true;
     }
 
     if (endDate && (!isValid(endDate) || isAfter(endDate, now))) {
-      setEndDateError("End date must be a valid date not in the future.");
+      setEndDateError("End date must be valid and not in the future.");
       hasError = true;
     }
 
     if (startDate && endDate && startDate > endDate) {
-      setEndDateError("Start date cannot be after end date.");
+      setEndDateError("End date cannot be before start date.");
       hasError = true;
     }
 
-    if (hasError) return;
-
-    onFilterChange({
-      dateRange: {
-        startDate: startDate ? startDate.toISOString() : null,
-        endDate: endDate ? endDate.toISOString() : null,
-      },
-    });
-  };
-  const handleReset = () => {
-    setStartDate(null);
-    setEndDate(null);
-    setStartDateError("");
-    setEndDateError("");
-
-    onFilterChange({
-      dateRange: {
-        startDate: null,
-        endDate: null,
-      },
-    });
-  };
+    if (!hasError) {
+      onFilterChange({
+        dateRange: {
+          startDate: startDate ? startDate.toISOString() : null,
+          endDate: endDate ? endDate.toISOString() : null,
+        },
+      });
+    }
+  }, [startDate, endDate, onFilterChange]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enGB}>
@@ -96,15 +84,6 @@ export default function DateFilter({ selectedFilters, onFilterChange }) {
             },
           }}
         />
-
-        <Box display="flex" justifyContent="flex-end" gap={2} mt={2}>
-          <Button onClick={handleReset} variant="outlined">
-            Reset
-          </Button>
-          <Button onClick={handleApply} variant="contained">
-            Apply
-          </Button>
-        </Box>
       </Box>
     </LocalizationProvider>
   );
