@@ -265,17 +265,17 @@ export default function ResourceForm() {
                     <Controller
                       name="geographical_coverage"
                       control={control}
-                      defaultValue={[]} // Ensure it's always controlled from the start
+                      defaultValue={[]}
                       render={({ field }) => (
                         <Autocomplete
                           {...field}
                           multiple
                           options={countries?.data?.data}
                           getOptionLabel={(option) => option.label}
-                          value={field.value ?? []} // Fix: always pass an array
+                          value={field.value ?? []}
                           onChange={(_, value) => field.onChange(value)}
                           renderOption={(props, option) => {
-                            const { key, ...rest } = props; // Destructure key out
+                            const { key, ...rest } = props;
                             return (
                               <li key={key} {...rest}>
                                 <img

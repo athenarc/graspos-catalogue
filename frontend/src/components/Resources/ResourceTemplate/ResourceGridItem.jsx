@@ -18,7 +18,6 @@ import {
   Avatar,
   AvatarGroup,
 } from "@mui/material";
-import DOMPurify from "isomorphic-dompurify";
 
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 
@@ -51,6 +50,7 @@ import DeleteConfirmationDialog from "../../Forms/DeleteConfirmationDialog";
 import { useDeleteService, useUpdateService } from "../../../queries/service";
 import { useCountries } from "../../../queries/countries";
 import { useAssessments } from "../../../queries/assessment";
+import { formatDate, stripHtml } from "../../utils";
 
 export function ResourceItemKeywords({ resource }) {
   const keywords = resource?.zenodo?.metadata?.keywords || [];
@@ -336,7 +336,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
 }
 export function ResourceItemScopes({ resource }) {
   return (
-    <Stack direction="row" alignItems="flex-start">
+    <Stack direction="row" alignItems="flex-start" sx={{ pb: 2 }}>
       {resource?.scopes?.map((scope) => (
         <Tooltip title={scope?.description} key={scope?.id}>
           <Avatar
@@ -405,63 +405,84 @@ export function ResourceItemHeader({ resource, type, user }) {
 }
 
 export function ResourceItemFooter({ resource }) {
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  };
+  const MAX_AVATARS = 5;
+  const SIZE = "1.1rem";
+  const FONT_SIZE = "0.75rem";
 
+  const geoEntries = Object.entries(resource.geographical_coverage || {});
+  const visibleGeos = geoEntries.slice(0, MAX_AVATARS);
+  const hiddenGeos = geoEntries.slice(MAX_AVATARS);
   return (
     <Stack direction="row" justifyContent="space-between" alignItems="center">
       <Stack direction="row" spacing={2} alignItems="center">
         <Tooltip title="Publication date">
           <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
         </Tooltip>
-        {resource?.zenodo?.metadata?.publication_date && (
+        <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
+          {formatDate(resource?.zenodo?.metadata?.publication_date)}
+        </Typography>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Tooltip title="Version">
+            <HistoryIcon sx={{ fontSize: "1.1rem" }} />
+          </Tooltip>
           <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-            {formatDate(resource.zenodo.metadata.publication_date)}
+            {resource.zenodo.metadata.version ?? "N/A"}
           </Typography>
-        )}
-        {resource?.zenodo?.metadata?.version && (
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Tooltip title="Version">
-              <HistoryIcon sx={{ fontSize: "1.1rem" }} />
-            </Tooltip>
-            <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-              {resource.zenodo.metadata.version}
-            </Typography>
-          </Stack>
-        )}
-        {resource?.zenodo?.metadata?.license?.id && (
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Tooltip title="License">
-              <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
-            </Tooltip>
-            <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-              {resource.zenodo.metadata.license.id}
-            </Typography>
-          </Stack>
-        )}
+        </Stack>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Tooltip title="License">
+            <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
+          </Tooltip>
+          <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
+            {resource.zenodo.metadata.license.id ?? "N/A"}
+          </Typography>
+        </Stack>
 
-        {/* Add AvatarGroup here */}
         {resource?.geographical_coverage && (
-          <AvatarGroup max={5} sx={{ ml: 2 }}>
-            {Object.entries(resource.geographical_coverage).map(
-              ([geoId, geo]) => (
-                <Tooltip key={geoId} title={geo.label || geoId}>
-                  <Avatar
-                    alt={geo.label || geoId}
-                    src={geo.flag}
-                    sx={{
-                      width: "1.1rem",
-                      height: "1.1rem",
-                      fontSize: "0.75rem",
-                    }}
-                  />
-                </Tooltip>
-              )
+          <AvatarGroup
+            sx={{ ml: 2 }}
+            slotProps={{
+              additionalAvatar: {
+                sx: {
+                  width: SIZE,
+                  height: SIZE,
+                  fontSize: FONT_SIZE,
+                },
+              },
+            }}
+          >
+            {visibleGeos.map(([geoId, geo]) => (
+              <Tooltip key={geoId} title={geo.label || geoId}>
+                <Avatar
+                  alt={geo.label || geoId}
+                  src={geo.flag}
+                  sx={{
+                    width: SIZE,
+                    height: SIZE,
+                    fontSize: FONT_SIZE,
+                  }}
+                />
+              </Tooltip>
+            ))}
+
+            {hiddenGeos.length > 0 && (
+              <Tooltip
+                title={hiddenGeos.map(([, geo]) => geo?.label || "").join(", ")}
+              >
+                <Avatar
+                  sx={{
+                    width: SIZE,
+                    height: SIZE,
+                    fontSize: FONT_SIZE,
+                    ml: "-8px",
+                    bgcolor: "grey.400",
+                    zIndex: 1,
+                    pointerEvents: "auto",
+                  }}
+                >
+                  +{hiddenGeos?.length}
+                </Avatar>
+              </Tooltip>
             )}
           </AvatarGroup>
         )}
@@ -472,13 +493,13 @@ export function ResourceItemFooter({ resource }) {
             <DownloadIcon sx={{ fontSize: "1.1rem" }} />
           </Tooltip>
           <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-            {resource?.zenodo?.stats?.unique_downloads}
+            {resource?.zenodo?.stats?.unique_downloads ?? "N/A"}
           </Typography>
           <Tooltip title="Views on Zenodo">
             <VisibilityIcon sx={{ fontSize: "1.1rem" }} />
           </Tooltip>
           <Typography variant="body2" sx={{ fontSize: "0.95rem", mr: 2 }}>
-            {resource?.zenodo?.stats?.unique_views}
+            {resource?.zenodo?.stats?.unique_views ?? "N/A"}
           </Typography>
         </Stack>
       </Stack>
@@ -487,9 +508,6 @@ export function ResourceItemFooter({ resource }) {
 }
 
 export function ResourceItemContent({ resource }) {
-  const sanitizedHtml = DOMPurify.sanitize(
-    resource?.zenodo?.metadata?.description
-  );
   return (
     <>
       <Stack direction={"row"} spacing={2} sx={{ pb: 1.5 }}>
@@ -502,8 +520,9 @@ export function ResourceItemContent({ resource }) {
             WebkitLineClamp: "3",
             WebkitBoxOrient: "vertical",
           }}
-          dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
-        />
+        >
+          {stripHtml(resource?.zenodo?.metadata?.description)}
+        </Typography>
       </Stack>
 
       <Stack
