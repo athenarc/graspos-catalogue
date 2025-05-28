@@ -146,7 +146,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
 
   useEffect(() => {
     if (resource?.scopes) {
-      setSelectedScopes(resource.scopes.map((s) => s._id || s.id));
+      setSelectedScopes(resource?.scopes.map((s) => s._id || s.id));
     }
   }, [resource]);
 
@@ -232,7 +232,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
             <>
               <Tooltip
                 title={
-                  !user.super_user && resource.owner !== user.id
+                  !user.super_user && resource?.owner !== user.id
                     ? "You don't have permission"
                     : ""
                 }
@@ -243,7 +243,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
                     disabled={
                       !user ||
                       updateZenodo.isPending ||
-                      (!user.super_user && resource.owner !== user.id)
+                      (!user.super_user && resource?.owner !== user.id)
                     }
                   >
                     <ListItemIcon>
@@ -256,7 +256,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
 
               <Tooltip
                 title={
-                  !user.super_user && resource.owner !== user.id
+                  !user.super_user && resource?.owner !== user.id
                     ? "You don't have permission"
                     : ""
                 }
@@ -272,7 +272,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
                     disabled={
                       !user ||
                       updateZenodo.isPending ||
-                      (!user.super_user && resource.owner !== user.id)
+                      (!user.super_user && resource?.owner !== user.id)
                     }
                   >
                     <ListItemIcon>
@@ -285,7 +285,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
 
               <Tooltip
                 title={
-                  !user.super_user && resource.owner !== user.id
+                  !user.super_user && resource?.owner !== user.id
                     ? "You don't have permission"
                     : ""
                 }
@@ -296,7 +296,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
                     disabled={
                       !user ||
                       updateZenodo.isPending ||
-                      (!user.super_user && resource.owner !== user.id)
+                      (!user.super_user && resource?.owner !== user.id)
                     }
                   >
                     <ListItemIcon>
@@ -409,7 +409,7 @@ export function ResourceItemFooter({ resource }) {
   const SIZE = "1.1rem";
   const FONT_SIZE = "0.75rem";
 
-  const geoEntries = Object.entries(resource.geographical_coverage || {});
+  const geoEntries = Object.entries(resource?.geographical_coverage || {});
   const visibleGeos = geoEntries.slice(0, MAX_AVATARS);
   const hiddenGeos = geoEntries.slice(MAX_AVATARS);
   return (
@@ -426,7 +426,7 @@ export function ResourceItemFooter({ resource }) {
             <HistoryIcon sx={{ fontSize: "1.1rem" }} />
           </Tooltip>
           <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-            {resource.zenodo.metadata.version ?? "N/A"}
+            {resource?.zenodo?.metadata?.version ?? "N/A"}
           </Typography>
         </Stack>
         <Stack direction="row" spacing={1} alignItems="center">
@@ -434,7 +434,7 @@ export function ResourceItemFooter({ resource }) {
             <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
           </Tooltip>
           <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-            {resource.zenodo.metadata.license.id ?? "N/A"}
+            {resource?.zenodo?.metadata?.license.id ?? "N/A"}
           </Typography>
         </Stack>
 
