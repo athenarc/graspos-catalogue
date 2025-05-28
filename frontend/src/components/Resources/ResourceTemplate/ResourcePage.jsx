@@ -524,7 +524,13 @@ export function ResourceGeographicCoverage({ resource }) {
                     {geo.label}
                   </Typography>
                 }
-                avatar={<Avatar src={geo.flag} alt={geo.label} />}
+                avatar={
+                  <Avatar src={geo.flag} alt={geo.label}>
+                    <span style={{ color: "white" }}>
+                      {geo?.label.toUpperCase()[0]}
+                    </span>
+                  </Avatar>
+                }
                 variant="outlined"
                 sx={{
                   width: "100%",

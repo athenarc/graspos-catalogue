@@ -51,6 +51,10 @@ import { useDeleteService, useUpdateService } from "../../../queries/service";
 import { useCountries } from "../../../queries/countries";
 import { useAssessments } from "../../../queries/assessment";
 import { formatDate, stripHtml } from "../../utils";
+import PersonIcon from "@mui/icons-material/Person";
+import GroupIcon from "@mui/icons-material/Group";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import FlagIcon from "@mui/icons-material/Flag";
 
 export function ResourceItemKeywords({ resource }) {
   const keywords = resource?.zenodo?.metadata?.keywords || [];
@@ -334,26 +338,88 @@ export function ResourceActionsMenu({ resource, type, user }) {
     </>
   );
 }
-export function ResourceItemScopes({ resource }) {
+export function ResourceItemAssessments({ resource }) {
+  const SIZE = 18;
+  const FONT_SIZE = 12;
+
+  const getAssessmentIcon = (name) => {
+    switch (name) {
+      case "Researcher":
+        return <PersonIcon fontSize="inherit" />;
+      case "Researcher team/group":
+        return <GroupIcon fontSize="inherit" />;
+      case "Research organization":
+        return <AccountBalanceIcon fontSize="inherit" />;
+      default:
+        return <FlagIcon fontSize="inherit" />;
+    }
+  };
+
   return (
-    <Stack direction="row" alignItems="flex-start" sx={{ pb: 2 }}>
-      {resource?.scopes?.map((scope) => (
-        <Tooltip title={scope?.description} key={scope?.id}>
+    <AvatarGroup
+      sx={{ ml: 0 }}
+      slotProps={{
+        additionalAvatar: {
+          sx: {
+            width: SIZE,
+            height: SIZE,
+            fontSize: FONT_SIZE,
+          },
+        },
+      }}
+    >
+      {resource?.assessments?.map((assessment) => (
+        <Tooltip key={assessment?.id} title={assessment?.description}>
           <Avatar
-            key={scope?.id}
+            alt={assessment?.name}
             sx={{
-              width: 18,
-              height: 18,
-              fontSize: 12,
-              mr: 1,
-              backgroundColor: scope.bg_color ?? "#EB611F",
+              width: SIZE,
+              height: SIZE,
+              fontSize: FONT_SIZE,
+              bgcolor: "grey.200",
+              color: "text.primary",
+            }}
+          >
+            {getAssessmentIcon(assessment?.name)}
+          </Avatar>
+        </Tooltip>
+      ))}
+    </AvatarGroup>
+  );
+}
+
+export function ResourceItemScopes({ resource }) {
+  const SIZE = 18;
+  const FONT_SIZE = 12;
+  return (
+    <AvatarGroup
+      sx={{ ml: 0 }}
+      slotProps={{
+        additionalAvatar: {
+          sx: {
+            width: SIZE,
+            height: SIZE,
+            fontSize: FONT_SIZE,
+          },
+        },
+      }}
+    >
+      {resource?.scopes?.map((scope) => (
+        <Tooltip key={scope?.id} title={scope?.description}>
+          <Avatar
+            alt={scope?.name}
+            sx={{
+              width: SIZE,
+              height: SIZE,
+              fontSize: FONT_SIZE,
+              bgcolor: scope.bg_color ?? "#EB611F",
             }}
           >
             {scope?.name?.toUpperCase()[0]}
           </Avatar>
         </Tooltip>
       ))}
-    </Stack>
+    </AvatarGroup>
   );
 }
 
@@ -437,7 +503,8 @@ export function ResourceItemFooter({ resource }) {
             {resource?.zenodo?.metadata?.license.id ?? "N/A"}
           </Typography>
         </Stack>
-
+        <ResourceItemAssessments resource={resource} />
+        <ResourceItemScopes resource={resource} />
         {resource?.geographical_coverage && (
           <AvatarGroup
             sx={{ ml: 2 }}
@@ -461,7 +528,9 @@ export function ResourceItemFooter({ resource }) {
                     height: SIZE,
                     fontSize: FONT_SIZE,
                   }}
-                />
+                >
+                  {geo?.label.toUpperCase()[0]}
+                </Avatar>
               </Tooltip>
             ))}
 
@@ -564,7 +633,7 @@ export default function ResourceGridItem({ resource, type, user }) {
       >
         <CardContent sx={{ pb: 0 }}>
           <ResourceItemHeader resource={resource} type={type} user={user} />
-          <ResourceItemScopes resource={resource} />
+          {/* <ResourceItemScopes resource={resource} /> */}
           <ResourceItemContent resource={resource} />
         </CardContent>
         <CardContent

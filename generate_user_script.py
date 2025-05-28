@@ -96,6 +96,15 @@ with open("country_centroids.json", encoding="utf-8") as f:
 
 # Geographical coverage insert
 geo_items = []
+geo_items.append({
+    "code": "WW",
+    "label": "Worldwide",
+    "flag": "",
+    "created_at": "new Date()",
+    "modified_at": "new Date()",
+    "lat": 0,
+    "lng": 0
+})
 for c in countries:
     code = c.alpha2
     coords = centroid_map.get(code)

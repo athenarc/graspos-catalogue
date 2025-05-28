@@ -91,8 +91,10 @@ export default function GeographicalCoverageFacetFilter({
         <Avatar
           src={geo?.flag}
           alt={geo?.label}
-          sx={{ width: 18, height: 18, flexShrink: 0 }}
-        />
+          sx={{ width: 18, height: 18, fontSize: 12 }}
+        >
+          {geo?.label == "WorldWide" ? "WW" : geo?.label?.toUpperCase()[0]}
+        </Avatar>
       </ListItem>
     );
   };
