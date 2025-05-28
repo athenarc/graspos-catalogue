@@ -3,6 +3,7 @@ import { useDatasetUniqueFieldValues } from "../../../../queries/dataset";
 import { useDocumentUniqueFieldValues } from "../../../../queries/document";
 import { useToolUniqueFieldValues } from "../../../../queries/tool";
 import { useEffect, useState } from "react";
+import { useServiceUniqueFieldValues } from "../../../../queries/service";
 
 export default function TagAutoCompleteFilter({
   selectedResource,
@@ -20,16 +21,26 @@ export default function TagAutoCompleteFilter({
     useDocumentUniqueFieldValues("keywords", selectedResource === 2);
   const { data: toolKeywordsData, isLoading: isToolLoading } =
     useToolUniqueFieldValues("keywords", selectedResource === 1);
+  const { data: serviceKeywordsData, isLoading: isServiceLoading } =
+    useServiceUniqueFieldValues("keywords", selectedResource === 3);
 
   useEffect(() => {
-    if (isDatasetLoading || isDocumentLoading || isToolLoading) return;
+    if (
+      isDatasetLoading ||
+      isDocumentLoading ||
+      isToolLoading ||
+      isServiceLoading
+    )
+      return;
 
     const resourceKeywords =
       selectedResource === 0
         ? datasetUniqueFieldValues?.data?.unique_keywords
         : selectedResource === 2
         ? documentKeywordsData?.data?.unique_keywords
-        : toolKeywordsData?.data?.unique_keywords;
+        : selectedResource === 1
+        ? toolKeywordsData?.data?.unique_keywords
+        : serviceKeywordsData?.data?.unique_keywords;
 
     setTagOptions(resourceKeywords || []);
   }, [
@@ -37,9 +48,11 @@ export default function TagAutoCompleteFilter({
     datasetUniqueFieldValues,
     documentKeywordsData,
     toolKeywordsData,
+    serviceKeywordsData,
     isDatasetLoading,
     isDocumentLoading,
     isToolLoading,
+    isServiceLoading,
   ]);
 
   useEffect(() => {
