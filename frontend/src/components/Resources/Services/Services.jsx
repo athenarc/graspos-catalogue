@@ -8,7 +8,8 @@ import {
   ResourceLicense,
   ResourceTags,
   ResourceStatistics,
-  ResourceGeographicCoverage
+  ResourceGeographicCoverage,
+  ResourceTRL,
 } from "../ResourceTemplate/ResourcePage";
 
 export function Services({ services, user }) {
@@ -22,7 +23,7 @@ export function Services({ services, user }) {
           <ResourceGridItem
             key={service._id}
             resource={service}
-            type={"Service"}
+            type={"service"}
             user={user}
           />
         ))}
@@ -35,13 +36,13 @@ export function Service({ resourceId }) {
   return (
     <>
       <Grid size={{ xs: 12, lg: 8 }}>
-        <ResourceBasicInformation resource={service} />
+        <ResourceBasicInformation resource={service} type={"service"} />
       </Grid>
       <Grid size={{ xs: 12, lg: 4 }}>
         <Stack direction="column" spacing={2}>
-          <ResourceAuthors resource={service} />
+          <ResourceAuthors resource={service} type={"service"} />
           <ResourceTags resource={service} />
-          <ResourceLicense resource={service} />
+          <ResourceTRL resource={service} />
           <ResourceStatistics resource={service} />
           <ResourceGeographicCoverage resource={service} />
         </Stack>
