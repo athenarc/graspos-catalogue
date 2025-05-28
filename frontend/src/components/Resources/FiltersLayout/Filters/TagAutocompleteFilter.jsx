@@ -1,4 +1,12 @@
-import { Autocomplete, TextField, Chip } from "@mui/material";
+import {
+  Autocomplete,
+  TextField,
+  Chip,
+  Paper,
+  Stack,
+  Divider,
+  Typography,
+} from "@mui/material";
 import { useDatasetUniqueFieldValues } from "../../../../queries/dataset";
 import { useDocumentUniqueFieldValues } from "../../../../queries/document";
 import { useToolUniqueFieldValues } from "../../../../queries/tool";
@@ -74,21 +82,27 @@ export default function TagAutoCompleteFilter({
   };
 
   return (
-    <Autocomplete
-      multiple
-      fullWidth
-      options={tagOptions}
-      value={selectedTags}
-      onChange={handleChange}
-      getOptionLabel={(option) => option}
-      renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip label={option} {...getTagProps({ index })} key={option} />
-        ))
-      }
-      renderInput={(params) => (
-        <TextField {...params} variant="outlined" placeholder="Select tags" />
-      )}
-    />
+    <Stack direction="column">
+      <Typography variant="h6" gutterBottom>
+        Tags
+      </Typography>
+      <Divider sx={{ mb: 2 }} />
+      <Autocomplete
+        multiple
+        fullWidth
+        options={tagOptions}
+        value={selectedTags}
+        onChange={handleChange}
+        getOptionLabel={(option) => option}
+        renderTags={(value, getTagProps) =>
+          value.map((option, index) => (
+            <Chip label={option} {...getTagProps({ index })} key={option} />
+          ))
+        }
+        renderInput={(params) => (
+          <TextField {...params} variant="outlined" placeholder="Select tags" />
+        )}
+      />
+    </Stack>
   );
 }

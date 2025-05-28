@@ -1,4 +1,12 @@
-import { Autocomplete, TextField, Chip } from "@mui/material";
+import {
+  Autocomplete,
+  TextField,
+  Chip,
+  Stack,
+  Paper,
+  Typography,
+  Divider,
+} from "@mui/material";
 import { useDatasetUniqueFieldValues } from "../../../../queries/dataset";
 import { useDocumentUniqueFieldValues } from "../../../../queries/document";
 import { useToolUniqueFieldValues } from "../../../../queries/tool";
@@ -84,25 +92,32 @@ export default function LicenseAutocompleteFilter({
   };
 
   return (
-    <Autocomplete
-      multiple
-      fullWidth
-      options={licenseOptions}
-      value={selectedLicenses}
-      onChange={handleChange}
-      getOptionLabel={(option) => option}
-      renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip label={option} {...getTagProps({ index })} key={option} />
-        ))
-      }
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="outlined"
-          placeholder="Select licenses"
-        />
-      )}
-    />
+    <Stack direction="column">
+      <Typography variant="h6" gutterBottom>
+        License
+      </Typography>
+      <Divider sx={{ mb: 2 }} />
+
+      <Autocomplete
+        multiple
+        fullWidth
+        options={licenseOptions}
+        value={selectedLicenses}
+        onChange={handleChange}
+        getOptionLabel={(option) => option}
+        renderTags={(value, getTagProps) =>
+          value.map((option, index) => (
+            <Chip label={option} {...getTagProps({ index })} key={option} />
+          ))
+        }
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            placeholder="Select licenses"
+          />
+        )}
+      />
+    </Stack>
   );
 }
