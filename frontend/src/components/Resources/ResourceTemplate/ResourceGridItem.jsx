@@ -654,27 +654,27 @@ export default function ResourceGridItem({ resource, type, user }) {
           color: "#555",
         }}
       >
-        <Box
-          sx={{
-            width: "30px",
-            minWidth: "30px",
-            backgroundColor: bg,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#fff",
-            writingMode: "sideways-lr",
-            textOrientation: "mixed",
-            fontSize: 18,
-            fontWeight: "bold",
-            borderTopLeftRadius: "5px",
-            borderBottomLeftRadius: "5px",
-          }}
-        >
-          {resource?.service_type?.toUpperCase()}
-        </Box>
-
-        {/* Card content column */}
+        {type === "service" && (
+          <Box
+            sx={{
+              width: "30px",
+              minWidth: "30px",
+              backgroundColor: bg,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#fff",
+              writingMode: "sideways-lr",
+              textOrientation: "mixed",
+              fontSize: 18,
+              fontWeight: "bold",
+              borderTopLeftRadius: "5px",
+              borderBottomLeftRadius: "5px",
+            }}
+          >
+            {resource?.service_type?.toUpperCase()}
+          </Box>
+        )}
         <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
           <CardContent sx={{ pb: 0 }}>
             <ResourceItemHeader resource={resource} type={type} user={user} />
