@@ -470,7 +470,7 @@ export function ResourceItemHeader({ resource, type, user }) {
   );
 }
 
-export function ResourceItemFooter({ resource }) {
+export function ResourceItemFooter({ resource, type }) {
   const MAX_AVATARS = 5;
   const SIZE = "1.1rem";
   const FONT_SIZE = "0.75rem";
@@ -481,28 +481,42 @@ export function ResourceItemFooter({ resource }) {
   return (
     <Stack direction="row" justifyContent="space-between" alignItems="center">
       <Stack direction="row" spacing={2} alignItems="center">
-        <Tooltip title="Publication date">
-          <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
-        </Tooltip>
-        <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-          {formatDate(resource?.zenodo?.metadata?.publication_date)}
-        </Typography>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Tooltip title="Version">
-            <HistoryIcon sx={{ fontSize: "1.1rem" }} />
-          </Tooltip>
-          <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-            {resource?.zenodo?.metadata?.version ?? "N/A"}
-          </Typography>
-        </Stack>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Tooltip title="License">
-            <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
-          </Tooltip>
-          <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-            {resource?.zenodo?.metadata?.license.id ?? "N/A"}
-          </Typography>
-        </Stack>
+        {type !== "service" && (
+          <>
+            <Tooltip title="Publication date">
+              <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
+            </Tooltip>
+            <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
+              {formatDate(resource?.zenodo?.metadata?.publication_date)}
+            </Typography>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Tooltip title="Version">
+                <HistoryIcon sx={{ fontSize: "1.1rem" }} />
+              </Tooltip>
+              <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
+                {resource?.zenodo?.metadata?.version ?? "N/A"}
+              </Typography>
+            </Stack>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Tooltip title="License">
+                <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
+              </Tooltip>
+              <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
+                {resource?.zenodo?.metadata?.license?.id ?? "N/A"}
+              </Typography>
+            </Stack>
+          </>
+        )}
+        {type === "service" && (
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Tooltip title="TRL">
+              <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
+            </Tooltip>
+            <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
+              {resource?.tlr?.id + " - " + resource?.tlr?.description ?? "N/A"}
+            </Typography>
+          </Stack>
+        )}
         <ResourceItemAssessments resource={resource} />
         <ResourceItemScopes resource={resource} />
         {resource?.geographical_coverage && (
@@ -609,16 +623,25 @@ export function ResourceItemContent({ resource }) {
   );
 }
 
+import { Box } from "@mui/material";
+
 export default function ResourceGridItem({ resource, type, user }) {
+  const typeColors = {
+    data: { bg: "#B3E5FC", color: "#01579B" },
+    monitoring: { bg: "#C8E6C9", color: "#1B5E20" },
+    enrichment: { bg: "#F8BBD0", color: "#880E4F" },
+  };
+
+  const { bg, color } = typeColors[resource?.service_type] || {
+    bg: "#E0E0E0",
+    color: "#424242",
+  };
   return (
     <Grid key={resource?._id} size={{ xs: 12 }}>
       <Card
         sx={{
           height: "100%",
-          lineHeight: 1.5,
-          flexDirection: "column",
           display: "flex",
-          justifyContent: "space-between",
           borderRadius: "5px",
           border: "1px solid",
           borderColor: !resource?.approved ? "#FFD700" : "#e0dfdf",
@@ -631,19 +654,42 @@ export default function ResourceGridItem({ resource, type, user }) {
           color: "#555",
         }}
       >
-        <CardContent sx={{ pb: 0 }}>
-          <ResourceItemHeader resource={resource} type={type} user={user} />
-          {/* <ResourceItemScopes resource={resource} /> */}
-          <ResourceItemContent resource={resource} />
-        </CardContent>
-        <CardContent
+        <Box
           sx={{
-            paddingBottom: "8px !important",
-            paddingTop: "0 !important",
+            width: "30px",
+            minWidth: "30px",
+            backgroundColor: bg,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#fff",
+            writingMode: "sideways-lr",
+            textOrientation: "mixed",
+            fontSize: 18,
+            fontWeight: "bold",
+            borderTopLeftRadius: "5px",
+            borderBottomLeftRadius: "5px",
           }}
         >
-          <ResourceItemFooter resource={resource} />
-        </CardContent>
+          {resource?.service_type?.toUpperCase()}
+        </Box>
+
+        {/* Card content column */}
+        <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
+          <CardContent sx={{ pb: 0 }}>
+            <ResourceItemHeader resource={resource} type={type} user={user} />
+            <ResourceItemContent resource={resource} />
+          </CardContent>
+          <CardContent
+            sx={{
+              paddingBottom: "8px !important",
+              paddingTop: "0 !important",
+              mt: "auto",
+            }}
+          >
+            <ResourceItemFooter resource={resource} type={type} />
+          </CardContent>
+        </Box>
       </Card>
     </Grid>
   );

@@ -50,16 +50,17 @@ const cardStyles = {
   color: "#555",
 };
 
-export function ResourceBasicInformation({ resource }) {
+export function ResourceBasicInformation({ resource, type }) {
+  const url =
+    type === "service"
+      ? resource?.data?.data?.zenodo?.source
+      : "https://zenodo.org/records/" + resource?.data?.data?.zenodo?.zenodo_id;
   return (
     <Stack spacing={3}>
       <Stack direction="column" spacing={2}>
         <Typography variant="h5" component="div">
           <Link
-            to={
-              "https://zenodo.org/records/" +
-              resource?.data?.data?.zenodo?.zenodo_id
-            }
+            to={url}
             target="_blank"
             style={{
               textDecoration: "none",
@@ -92,26 +93,31 @@ export function ResourceBasicInformation({ resource }) {
         </Typography>
 
         <Stack direction="row" spacing={2} alignItems="center">
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Tooltip title="Publication date">
-              <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
-            </Tooltip>
-            <Typography variant="body2" color="text.secondary">
-              {formatDate(
-                resource?.data?.data?.zenodo?.metadata?.publication_date
+          {type !== "service" && (
+            <>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Tooltip title="Publication date">
+                  <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
+                </Tooltip>
+                <Typography variant="body2" color="text.secondary">
+                  {formatDate(
+                    resource?.data?.data?.zenodo?.metadata?.publication_date
+                  )}
+                </Typography>
+              </Stack>
+              {resource?.data?.data?.zenodo?.metadata?.version && (
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Tooltip title="Version">
+                    <HistoryIcon sx={{ fontSize: "1.1rem" }} />
+                  </Tooltip>
+                  <Typography variant="body2" color="text.secondary">
+                    Version {resource?.data?.data?.zenodo?.metadata?.version}
+                  </Typography>
+                </Stack>
               )}
-            </Typography>
-          </Stack>
-          {resource?.data?.data?.zenodo?.metadata?.version && (
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Tooltip title="Version">
-                <HistoryIcon sx={{ fontSize: "1.1rem" }} />
-              </Tooltip>
-              <Typography variant="body2" color="text.secondary">
-                Version {resource?.data?.data?.zenodo?.metadata?.version}
-              </Typography>
-            </Stack>
+            </>
           )}
+
           <ResourceItemScopes resource={resource?.data?.data} />
         </Stack>
       </Stack>
@@ -135,13 +141,17 @@ export function ResourceBasicInformation({ resource }) {
   );
 }
 
-export function ResourceAuthors({ resource }) {
+export function ResourceAuthors({ resource, type = null }) {
   const authors = resource?.data?.data?.zenodo?.metadata?.creators || [];
   return (
     <Card sx={cardStyles}>
       <CardHeader
         sx={{ pb: 1 }}
-        title={<Typography variant="h5">Authors</Typography>}
+        title={
+          <Typography variant="h5">
+            {type == "service" ? "Contributors" : "Authors"}
+          </Typography>
+        }
       ></CardHeader>
       <CardContent
         sx={{
@@ -205,6 +215,38 @@ export function ResourceAuthors({ resource }) {
               </Stack>
             ))}
           </Stack>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function ResourceTRL({ resource }) {
+  return (
+    <Card sx={cardStyles}>
+      <CardHeader
+        sx={{ pb: 1 }}
+        title={<Typography variant="h5">TRL</Typography>}
+      ></CardHeader>
+      <CardContent
+        sx={{
+          textAlign: [resource.isLoading ? "center" : "left"],
+          pt: 1,
+        }}
+      >
+        {resource.isLoading && <CircularProgress size="3rem" />}
+        {resource?.data?.data?.tlr?.id ? (
+          <Typography>
+            {resource?.data?.data?.tlr?.id} -{" "}
+            {resource?.data?.data?.tlr?.description}
+          </Typography>
+        ) : (
+          <Typography
+            variant="body2"
+            sx={{ color: "text.secondary", fontStyle: "italic" }}
+          >
+            No TRL available
+          </Typography>
         )}
       </CardContent>
     </Card>
@@ -279,7 +321,7 @@ export function ResourceLicense({ resource }) {
             variant="body2"
             sx={{ color: "text.secondary", fontStyle: "italic" }}
           >
-            No tags available
+            No license available
           </Typography>
         )}
       </CardContent>

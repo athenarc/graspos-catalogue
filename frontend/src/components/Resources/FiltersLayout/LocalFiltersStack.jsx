@@ -93,7 +93,7 @@ export default function LocalFiltersStack({
         open={filtersModalOpen}
         onClose={handleCloseModal}
         fullWidth
-        maxWidth="md"
+        maxWidth={selectedResource !== 3 ? "md" : "sm"}
       >
         <DialogTitle
           sx={{
@@ -121,20 +121,27 @@ export default function LocalFiltersStack({
           dividers
           sx={{ display: "flex", gap: 3, alignItems: "stretch" }}
         >
-          <Box flex={1} display="flex" flexDirection="column">
-            <DateFilter
-              selectedFilters={filters}
-              onFilterChange={handleChangeFilters}
-            />
-          </Box>
-          <Divider orientation="vertical" flexItem />
+          {selectedResource !== 3 && (
+            <>
+              <Box flex={1} display="flex" flexDirection="column">
+                <DateFilter
+                  selectedFilters={filters}
+                  onFilterChange={handleChangeFilters}
+                />
+              </Box>
+              <Divider orientation="vertical" flexItem />
+            </>
+          )}
 
           <Box flex={1} display="flex" flexDirection="column" gap={2}>
-            <LicenseAutocompleteFilter
-              selectedFilters={filters}
-              selectedResource={selectedResource}
-              onFilterChange={handleChangeFilters}
-            />
+            {selectedResource !== 3 && (
+              <LicenseAutocompleteFilter
+                selectedFilters={filters}
+                selectedResource={selectedResource}
+                onFilterChange={handleChangeFilters}
+              />
+            )}
+
             <TagAutoCompleteFilter
               selectedFilters={filters}
               selectedResource={selectedResource}
