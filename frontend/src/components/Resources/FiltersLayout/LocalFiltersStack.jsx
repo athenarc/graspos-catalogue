@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
+  Divider,
 } from "@mui/material";
 import { useState } from "react";
 import SortFilter from "./Filters/SortFilter";
@@ -92,7 +93,7 @@ export default function LocalFiltersStack({
         open={filtersModalOpen}
         onClose={handleCloseModal}
         fullWidth
-        maxWidth="sm"
+        maxWidth="md"
       >
         <DialogTitle
           sx={{
@@ -116,12 +117,19 @@ export default function LocalFiltersStack({
           </IconButton>
         </DialogTitle>
 
-        <DialogContent dividers>
-          <Stack direction="column" gap={2}>
+        <DialogContent
+          dividers
+          sx={{ display: "flex", gap: 3, alignItems: "stretch" }}
+        >
+          <Box flex={1} display="flex" flexDirection="column">
             <DateFilter
               selectedFilters={filters}
               onFilterChange={handleChangeFilters}
             />
+          </Box>
+          <Divider orientation="vertical" flexItem />
+
+          <Box flex={1} display="flex" flexDirection="column" gap={2}>
             <LicenseAutocompleteFilter
               selectedFilters={filters}
               selectedResource={selectedResource}
@@ -132,8 +140,9 @@ export default function LocalFiltersStack({
               selectedResource={selectedResource}
               onFilterChange={handleChangeFilters}
             />
-          </Stack>
+          </Box>
         </DialogContent>
+
         <DialogActions
           sx={{
             px: 3,

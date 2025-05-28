@@ -1,8 +1,17 @@
-import { Autocomplete, TextField, Chip } from "@mui/material";
+import {
+  Autocomplete,
+  TextField,
+  Chip,
+  Paper,
+  Stack,
+  Divider,
+  Typography,
+} from "@mui/material";
 import { useDatasetUniqueFieldValues } from "../../../../queries/dataset";
 import { useDocumentUniqueFieldValues } from "../../../../queries/document";
 import { useToolUniqueFieldValues } from "../../../../queries/tool";
 import { useEffect, useState } from "react";
+import { useServiceUniqueFieldValues } from "../../../../queries/service";
 
 export default function TagAutoCompleteFilter({
   selectedResource,
@@ -20,16 +29,26 @@ export default function TagAutoCompleteFilter({
     useDocumentUniqueFieldValues("keywords", selectedResource === 2);
   const { data: toolKeywordsData, isLoading: isToolLoading } =
     useToolUniqueFieldValues("keywords", selectedResource === 1);
+  const { data: serviceKeywordsData, isLoading: isServiceLoading } =
+    useServiceUniqueFieldValues("keywords", selectedResource === 3);
 
   useEffect(() => {
-    if (isDatasetLoading || isDocumentLoading || isToolLoading) return;
+    if (
+      isDatasetLoading ||
+      isDocumentLoading ||
+      isToolLoading ||
+      isServiceLoading
+    )
+      return;
 
     const resourceKeywords =
       selectedResource === 0
         ? datasetUniqueFieldValues?.data?.unique_keywords
         : selectedResource === 2
         ? documentKeywordsData?.data?.unique_keywords
-        : toolKeywordsData?.data?.unique_keywords;
+        : selectedResource === 1
+        ? toolKeywordsData?.data?.unique_keywords
+        : serviceKeywordsData?.data?.unique_keywords;
 
     setTagOptions(resourceKeywords || []);
   }, [
@@ -37,9 +56,11 @@ export default function TagAutoCompleteFilter({
     datasetUniqueFieldValues,
     documentKeywordsData,
     toolKeywordsData,
+    serviceKeywordsData,
     isDatasetLoading,
     isDocumentLoading,
     isToolLoading,
+    isServiceLoading,
   ]);
 
   useEffect(() => {
@@ -61,21 +82,27 @@ export default function TagAutoCompleteFilter({
   };
 
   return (
-    <Autocomplete
-      multiple
-      fullWidth
-      options={tagOptions}
-      value={selectedTags}
-      onChange={handleChange}
-      getOptionLabel={(option) => option}
-      renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip label={option} {...getTagProps({ index })} key={option} />
-        ))
-      }
-      renderInput={(params) => (
-        <TextField {...params} variant="outlined" placeholder="Select tags" />
-      )}
-    />
+    <Stack direction="column">
+      <Typography variant="h6" gutterBottom>
+        Tags
+      </Typography>
+      <Divider sx={{ mb: 2 }} />
+      <Autocomplete
+        multiple
+        fullWidth
+        options={tagOptions}
+        value={selectedTags}
+        onChange={handleChange}
+        getOptionLabel={(option) => option}
+        renderTags={(value, getTagProps) =>
+          value.map((option, index) => (
+            <Chip label={option} {...getTagProps({ index })} key={option} />
+          ))
+        }
+        renderInput={(params) => (
+          <TextField {...params} variant="outlined" placeholder="Select tags" />
+        )}
+      />
+    </Stack>
   );
 }

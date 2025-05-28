@@ -117,7 +117,7 @@ export default function ResourcesGridLayout({ user }) {
       }
       return newFetched;
     });
-  }, [datasets?.data, tools?.data, documents?.data]);
+  }, [datasets?.data, tools?.data, documents?.data, services?.data]);
 
   return (
     <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
