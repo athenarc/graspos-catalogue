@@ -8,6 +8,7 @@ import {
   ResourceLicense,
   ResourceTags,
   ResourceStatistics,
+  ResourceGeographicCoverage,
 } from "../ResourceTemplate/ResourcePage";
 
 export function Documents({ documents, user }) {

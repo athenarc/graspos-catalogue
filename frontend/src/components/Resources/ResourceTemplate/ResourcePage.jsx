@@ -5,7 +5,6 @@ import {
   Chip,
   CircularProgress,
   Grid2 as Grid,
-  Grid2,
   Stack,
   Typography,
   Tooltip,
@@ -37,8 +36,8 @@ import DOMPurify from "dompurify";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 import { useState } from "react";
+import { sanitizeHtml, formatDate } from "../../utils";
 
-// Common card styles without transition and hover effect
 const cardStyles = {
   lineHeight: 1.5,
   flexDirection: "column",
@@ -52,19 +51,6 @@ const cardStyles = {
 };
 
 export function ResourceBasicInformation({ resource }) {
-  const sanitizedHtml = DOMPurify.sanitize(
-    resource?.data?.data?.zenodo?.metadata?.description
-  );
-  const formatDate = (dateString) => {
-    return dateString
-      ? new Date(dateString).toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        })
-      : "";
-  };
-
   return (
     <Stack spacing={3}>
       <Stack direction="column" spacing={2}>
@@ -138,7 +124,11 @@ export function ResourceBasicInformation({ resource }) {
             margin: 0,
             fontFamily: "inherit",
           }}
-          dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+          dangerouslySetInnerHTML={{
+            __html: sanitizeHtml(
+              resource?.data?.data?.zenodo?.metadata?.description
+            ),
+          }}
         />
       )}
     </Stack>
@@ -239,18 +229,18 @@ export function ResourceTags({ resource }) {
         {resource && (
           <Stack direction="column" justifyContent="center">
             {keywords?.length > 0 ? (
-              <Grid2 container spacing={1}>
+              <Grid container spacing={1}>
                 {keywords?.map((keyword) => (
-                  <Grid2 key={keyword}>
+                  <Grid key={keyword}>
                     <Chip
                       label={keyword}
                       color="primary"
                       variant="outlined"
                       size="small"
                     />
-                  </Grid2>
+                  </Grid>
                 ))}
-              </Grid2>
+              </Grid>
             ) : (
               <Typography
                 variant="body2"
@@ -280,9 +270,16 @@ export function ResourceLicense({ resource }) {
         }}
       >
         {resource.isLoading && <CircularProgress size="3rem" />}
-        {resource && (
+        {resource?.data?.data?.zenodo?.metadata?.license?.id ? (
           <Typography>
             {resource?.data?.data?.zenodo?.metadata?.license?.id}
+          </Typography>
+        ) : (
+          <Typography
+            variant="body2"
+            sx={{ color: "text.secondary", fontStyle: "italic" }}
+          >
+            No tags available
           </Typography>
         )}
       </CardContent>
@@ -328,7 +325,7 @@ export function ResourceStatistics({ resource }) {
                     fontWeight="500"
                     color="primary.main"
                   >
-                    {resource?.data?.data?.zenodo?.stats?.unique_views ?? 0}
+                    {resource?.data?.data?.zenodo?.stats?.unique_views ?? "N/A"}
                   </Typography>
                   <Stack direction="row" spacing={1} alignItems="center">
                     <VisibilityIcon
@@ -352,7 +349,8 @@ export function ResourceStatistics({ resource }) {
                     fontWeight="500"
                     color="primary.main"
                   >
-                    {resource?.data?.data?.zenodo?.stats?.unique_downloads ?? 0}
+                    {resource?.data?.data?.zenodo?.stats?.unique_downloads ??
+                      "N/A"}
                   </Typography>
                   <Stack direction="row" spacing={1} alignItems="center">
                     <DownloadIcon
@@ -424,13 +422,13 @@ export function ResourceStatistics({ resource }) {
                         <TableCell>
                           <Typography variant="body2">
                             {resource?.data?.data?.zenodo?.stats
-                              ?.version_unique_views ?? 0}
+                              ?.version_unique_views ?? "N/A"}
                           </Typography>
                         </TableCell>
                         <TableCell>
                           <Typography variant="body2">
                             {resource?.data?.data?.zenodo?.stats
-                              ?.unique_views ?? 0}
+                              ?.unique_views ?? "N/A"}
                           </Typography>
                         </TableCell>
                       </TableRow>
@@ -445,13 +443,13 @@ export function ResourceStatistics({ resource }) {
                         <TableCell>
                           <Typography variant="body2">
                             {resource?.data?.data?.zenodo?.stats
-                              ?.version_unique_downloads ?? 0}
+                              ?.version_unique_downloads ?? "N/A"}
                           </Typography>
                         </TableCell>
                         <TableCell>
                           <Typography variant="body2">
                             {resource?.data?.data?.zenodo?.stats
-                              ?.unique_downloads ?? 0}
+                              ?.unique_downloads ?? "N/A"}
                           </Typography>
                         </TableCell>
                       </TableRow>
@@ -469,8 +467,7 @@ export function ResourceStatistics({ resource }) {
 
 export function ResourceGeographicCoverage({ resource }) {
   const [detailsToggle, setDetailsToggle] = useState(false);
-
-  if (resource.isLoading) {
+  if (resource?.isLoading) {
     return (
       <Card sx={cardStyles}>
         <CardHeader
@@ -484,7 +481,7 @@ export function ResourceGeographicCoverage({ resource }) {
     );
   }
 
-  if (!resource.data || resource.data.length === 0) {
+  if (resource?.data?.data?.geographical_coverage.length === 0) {
     return (
       <Card sx={cardStyles}>
         <CardHeader
@@ -492,14 +489,19 @@ export function ResourceGeographicCoverage({ resource }) {
           title={<Typography variant="h5">Geographical Coverage</Typography>}
         />
         <CardContent sx={{ pt: 2 }}>
-          <Typography>No geographical coverage data available.</Typography>
+          <Typography
+            variant="body2"
+            sx={{ color: "text.secondary", fontStyle: "italic" }}
+          >
+            No geographical coverage data available
+          </Typography>
         </CardContent>
       </Card>
     );
   }
   const displayedCoverage = detailsToggle
     ? resource
-    : resource?.data?.data?.geographical_coverage?.slice(0, 5);
+    : resource?.data?.data?.geographical_coverage;
 
   return (
     <Card sx={cardStyles}>
@@ -508,34 +510,30 @@ export function ResourceGeographicCoverage({ resource }) {
         title={<Typography variant="h5">Geographical Coverage</Typography>}
       />
       <CardContent sx={{ pt: 1 }}>
-        <Stack
-          direction="column"
-          spacing={1}
-          divider={<Divider orientation="vertical" flexItem />}
-          sx={{ overflowX: "auto", pb: 1, alignItems: "flex-start" }}
-        >
-          {displayedCoverage.map((geo) => (
-            <Chip
-              key={geo.id}
-              label={`${geo.label}`}
-              avatar={<Avatar src={geo.flag} alt={geo.label} />}
-              variant="outlined"
-              sx={{ whiteSpace: "nowrap", border: "none !important" }}
-            />
+        <Grid container spacing={1} sx={{ pb: 1 }}>
+          {displayedCoverage?.map((geo) => (
+            <Grid item xs={3} key={geo.id}>
+              <Chip
+                label={
+                  <Typography
+                    noWrap
+                    sx={{ maxWidth: "100%", display: "block" }}
+                    title={geo.label}
+                    variant="subtitle2"
+                  >
+                    {geo.label}
+                  </Typography>
+                }
+                avatar={<Avatar src={geo.flag} alt={geo.label} />}
+                variant="outlined"
+                sx={{
+                  width: "100%",
+                  border: "none !important",
+                }}
+              />
+            </Grid>
           ))}
-        </Stack>
-
-        {resource.data.length > 5 && (
-          <Button
-            onClick={() => setDetailsToggle(!detailsToggle)}
-            size="small"
-            sx={{ mt: 1 }}
-          >
-            {detailsToggle
-              ? "Show Less"
-              : `Show More (${resource.data.length - 5})`}
-          </Button>
-        )}
+        </Grid>
       </CardContent>
     </Card>
   );
@@ -552,7 +550,7 @@ export function ResourcePage() {
         overflowY: "auto",
         display: "flex",
         justifyContent: "center",
-        px: { xs: 2, md: 4, lg: 6, xl: 8 }, // Reduced padding
+        px: { xs: 2, md: 4, lg: 6, xl: 8 },
         py: 2,
       }}
     >
@@ -560,7 +558,7 @@ export function ResourcePage() {
         spacing={2}
         sx={{
           width: "100%",
-          maxWidth: { sm: "700px", md: "1000px", lg: "1400px", xl: "1600px" }, // Increased max-width
+          maxWidth: { sm: "700px", md: "1000px", lg: "1400px", xl: "1600px" },
         }}
       >
         <Button
