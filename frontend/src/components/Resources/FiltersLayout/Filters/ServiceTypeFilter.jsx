@@ -15,9 +15,6 @@ export default function ServiceTypeAutocompleteFilter({
   onFilterChange,
 }) {
   const [serviceTypeOptions, setServiceTypeOptions] = useState([]);
-  const [selectedServiceTypes, setSelectedServiceTypes] = useState(
-    selectedFilters?.service_type || []
-  );
 
   const { data: serviceTypeData, isLoading } = useServiceUniqueFieldValues(
     "service_type",
@@ -31,21 +28,9 @@ export default function ServiceTypeAutocompleteFilter({
     }
   }, [selectedResource, serviceTypeData, isLoading]);
 
-  useEffect(() => {
-    if (selectedFilters?.service_type) {
-      const valid = selectedFilters.service_type.filter((type) =>
-        serviceTypeOptions.includes(type)
-      );
-
-      if (JSON.stringify(valid) !== JSON.stringify(selectedServiceTypes)) {
-        setSelectedServiceTypes(valid);
-        onFilterChange({ service_type: valid });
-      }
-    }
-  }, [selectedFilters, serviceTypeOptions]);
+  const selectedServiceTypes = selectedFilters?.service_type || [];
 
   const handleChange = (event, value) => {
-    setSelectedServiceTypes(value);
     onFilterChange({ service_type: value });
   };
 

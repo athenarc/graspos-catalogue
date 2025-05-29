@@ -55,11 +55,11 @@ export function Dataset({ resourceId }) {
           <ResourceAuthors resource={dataset} />
           <ResourceLicense resource={dataset} />
           <ResourceTags resource={dataset} />
+          <ResourceStatistics resource={dataset} />
+          <ResourceGeographicCoverage resource={dataset} />
           <ResourceContactInformation resource={dataset} />
           <ResourceApiUrlInstructions resource={dataset} />
           <ResourceDocumentationUrl resource={dataset} />
-          <ResourceStatistics resource={dataset} />
-          <ResourceGeographicCoverage resource={dataset} />
         </Stack>
       </Grid>
     </>
