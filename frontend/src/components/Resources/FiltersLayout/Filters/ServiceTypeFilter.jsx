@@ -18,7 +18,8 @@ export default function ServiceTypeAutocompleteFilter({
 
   const { data: serviceTypeData, isLoading } = useServiceUniqueFieldValues(
     "service_type",
-    selectedResource === 3
+    selectedResource === 3,
+    "local"
   );
 
   useEffect(() => {

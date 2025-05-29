@@ -91,14 +91,14 @@ export function useServices(filters = {}) {
     enabled: true, // Ensure this fires by default if filters change
   });
 }
-export function useServiceUniqueFieldValues(field, enabled) {
+export function useServiceUniqueFieldValues(field, enabled, scope = "zenodo") {
   return useQuery({
     queryKey: ["service-unique-field-values", field],
     enabled: enabled && !!field,
     retry: false,
     queryFn: () =>
       axiosInstance
-        .get(`/service/fields/unique`, { params: { field } })
+        .get(`/service/fields/unique`, { params: { field, scope } })
         .then((res) => res),
   });
 }

@@ -159,14 +159,18 @@ async def create_service(
 
 
 @router.get("/fields/unique")
-async def get_unique_metadata_values(field: str = Query(
-    ..., description="Field name inside zenodo.metadata")):
+async def get_unique_metadata_values(
+    field: str = Query(..., description="Field name inside zenodo.metadata"), 
+    scope: str = Query(..., description="Field name inside zenodo.metadata")):
     """
-    Return unique values from the given field in Zenodo metadata across all services.
+    Return unique values from the given field in Zenodo metadata or the service's metadata across all services.
     """
+
     try:
-        unique_values = await Service.get_unique_field_values(field
-                                                                          )
+        if scope == "local":
+            unique_values = await Service.get_unique_field_values(field)
+        else:
+            unique_values = await Service.get_unique_field_values_from_zenodo(field)
         return {f"unique_{field}": unique_values}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
