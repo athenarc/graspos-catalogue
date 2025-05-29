@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { Box, Stack, Tabs, Tab, useTheme, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Stack,
+  Tabs,
+  Tab,
+  useTheme,
+  useMediaQuery,
+  CircularProgress,
+} from "@mui/material";
 import ResourcesGrid from "./Resources";
 import { useURLFilters } from "./FiltersLayout/Filters/Utils/useURLFilters";
 import FiltersLayout from "./FiltersLayout/Layout";
@@ -16,7 +24,19 @@ function ResourcesTabs({
   filters,
   handleChangeFilters,
   resourcesFetched,
+  loadingStatus,
 }) {
+  const renderLabel = (name) => {
+    if (loadingStatus[name]) {
+      return (
+        <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          {name} <CircularProgress size={14} />
+        </span>
+      );
+    }
+    return `${name} (${resourcesFetched?.[name]?.results ?? 0})`;
+  };
+
   return (
     <Box
       sx={{
@@ -38,34 +58,10 @@ function ResourcesTabs({
           aria-label="resource tabs"
           centered
         >
-          <Tab
-            label={
-              typeof resourcesFetched?.Datasets?.results === "number"
-                ? `Datasets (${resourcesFetched?.Datasets?.results})`
-                : "Datasets"
-            }
-          />
-          <Tab
-            label={
-              typeof resourcesFetched?.Tools?.results === "number"
-                ? `Tools (${resourcesFetched?.Tools?.results})`
-                : "Tools"
-            }
-          />
-          <Tab
-            label={
-              typeof resourcesFetched?.Documents?.results === "number"
-                ? `Templates & Guidelines (${resourcesFetched?.Documents?.results})`
-                : "Templates & Guidelines"
-            }
-          />
-          <Tab
-            label={
-              typeof resourcesFetched?.Services?.results === "number"
-                ? `Services (${resourcesFetched?.Services?.results})`
-                : "Services"
-            }
-          />
+          <Tab label={renderLabel("Datasets")} />
+          <Tab label={renderLabel("Tools")} />
+          <Tab label={renderLabel("Documents")} />
+          <Tab label={renderLabel("Services")} />
         </Tabs>
       </Stack>
     </Box>
@@ -90,7 +86,6 @@ export default function ResourcesGridLayout({ user }) {
     }
   }, []);
 
-  // Updated useURLFilters to expose globalFilters, localFilters and shouldFetchAll
   const {
     filters,
     globalFilters,
@@ -101,14 +96,13 @@ export default function ResourcesGridLayout({ user }) {
     handleSetSelectedResource,
     handleResetFilters,
   } = useURLFilters(resourceMap);
-  console.log(shouldFetchAll);
-  // Fetch resources with combined filters only if shouldFetchAll or matching selectedResource
+
   const datasets = useDatasets(
     initialFetchDone
       ? shouldFetchAll || selectedResource === 0
         ? { ...globalFilters, ...(selectedResource === 0 ? localFilters : {}) }
         : null
-      : { ...globalFilters } // initial global fetch without localFilters
+      : { ...globalFilters }
   );
 
   const tools = useTools(
@@ -135,7 +129,6 @@ export default function ResourcesGridLayout({ user }) {
       : { ...globalFilters }
   );
 
-  // Track resource counts for tabs labels
   const [resourcesFetched, setResourcesFetched] = useState({
     Datasets: { results: 0 },
     Tools: { results: 0 },
@@ -143,14 +136,10 @@ export default function ResourcesGridLayout({ user }) {
     Services: { results: 0 },
   });
 
-  const prevGlobalFiltersRef = useRef(globalFilters);
-  const prevSelectedResourceRef = useRef(selectedResource);
-  const isInitialLoad = useRef(true);
   useEffect(() => {
     setResourcesFetched((prev) => {
       const newFetched = { ...prev };
 
-      // Update counts only for those with data loaded
       if (
         datasets?.data &&
         (shouldFetchAll || selectedResource === resourceMap.Datasets)
@@ -176,7 +165,6 @@ export default function ResourcesGridLayout({ user }) {
         newFetched.Services.results = services.data.length;
       }
 
-      // Only update state if counts changed
       if (
         prev.Datasets.results === newFetched.Datasets.results &&
         prev.Tools.results === newFetched.Tools.results &&
@@ -229,6 +217,12 @@ export default function ResourcesGridLayout({ user }) {
           filters={filters}
           handleChangeFilters={handleChangeFilters}
           resourcesFetched={resourcesFetched}
+          loadingStatus={{
+            Datasets: datasets.isLoading,
+            Tools: tools.isLoading,
+            Documents: documents.isLoading,
+            Services: services.isLoading,
+          }}
         />
 
         <LocalFiltersStack
