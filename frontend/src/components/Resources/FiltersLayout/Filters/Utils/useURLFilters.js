@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 const getDefaultFilters = () => ({
   licenses: {},
   tags: [],
+  service_type: [],
   scopes: {},
   assessments: {},
   geographical_coverage: {},
@@ -65,6 +66,9 @@ export function useURLFilters(resourceMap) {
     searchParams.getAll("tag").forEach((value) => {
       newFilters.tags.push(value);
     });
+    searchParams.getAll("service_type").forEach((value) => {
+      newFilters.service_type.push(value);
+    });
 
     newFilters.graspos = searchParams.get("graspos") === "true";
     newFilters.sortField = searchParams.get("sort_field") || "unique_views";
@@ -116,7 +120,9 @@ export function useURLFilters(resourceMap) {
       filters.tags?.forEach((tag) => {
         searchParams.append("tag", tag);
       });
-
+      filters.service_type?.forEach((service_type) => {
+        searchParams.append("service_type", service_type);
+      });
       searchParams.set("sort_field", filters.sortField);
       searchParams.set("sort_direction", filters.sortDirection);
 
