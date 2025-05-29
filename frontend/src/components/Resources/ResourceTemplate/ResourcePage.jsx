@@ -333,7 +333,7 @@ export function ResourceApiUrlInstructions({ resource }) {
     <Card sx={cardStyles}>
       <CardHeader
         sx={{ pb: 1 }}
-        title={<Typography variant="h5">API URL Instructions</Typography>}
+        title={<Typography variant="h5">API</Typography>}
       />
       <CardContent sx={{ pt: 1 }}>
         {isLoading ? (
@@ -388,7 +388,7 @@ export function ResourceDocumentationUrl({ resource }) {
     <Card sx={cardStyles}>
       <CardHeader
         sx={{ pb: 1 }}
-        title={<Typography variant="h5">Documentation URL</Typography>}
+        title={<Typography variant="h5">Documentation</Typography>}
       />
       <CardContent sx={{ pt: 1 }}>
         {isLoading ? (
