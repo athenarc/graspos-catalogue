@@ -517,6 +517,7 @@ export function ResourceItemFooter({ resource, type }) {
             </Typography>
           </Stack>
         )}
+
         <ResourceItemAssessments resource={resource} />
         <ResourceItemScopes resource={resource} />
         {resource?.geographical_coverage && (

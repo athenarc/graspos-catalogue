@@ -32,11 +32,14 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import HistoryIcon from "@mui/icons-material/History";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DownloadIcon from "@mui/icons-material/Download";
-import DOMPurify from "dompurify";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 import { useState } from "react";
 import { sanitizeHtml, formatDate } from "../../utils";
+import EmailIcon from "@mui/icons-material/Email";
+import PersonIcon from "@mui/icons-material/Person";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import Inventory2Icon from "@mui/icons-material/Inventory2";
 
 const cardStyles = {
   lineHeight: 1.5,
@@ -116,6 +119,29 @@ export function ResourceBasicInformation({ resource, type }) {
                 </Stack>
               )}
             </>
+          )}
+          {type === "dataset" && (
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Tooltip title="Visibility">
+                <VisibilityIcon sx={{ fontSize: "1.1rem" }} />
+              </Tooltip>
+              <Typography variant="body2" color="text.secondary">
+                {resource?.data?.data?.visibility ?? "N/A"}
+              </Typography>
+            </Stack>
+          )}
+          {type === "service" && (
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Tooltip title="Service Type">
+                <Inventory2Icon sx={{ fontSize: "1.1rem" }} />
+              </Tooltip>
+              <Typography variant="body2" color="text.secondary">
+                {resource?.data?.data?.service_type
+                  ? resource.data.data.service_type.charAt(0).toUpperCase() +
+                    resource.data.data.service_type.slice(1)
+                  : "N/A"}
+              </Typography>
+            </Stack>
           )}
 
           <ResourceItemScopes resource={resource?.data?.data} />
@@ -214,6 +240,181 @@ export function ResourceAuthors({ resource, type = null }) {
                 )}
               </Stack>
             ))}
+          </Stack>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+export function ResourceContactInformation({ resource }) {
+  const contactPerson = resource?.data?.data?.contact_person;
+  const contactPersonEmail = resource?.data?.data?.contact_person_email;
+  return (
+    <Card sx={cardStyles}>
+      <CardHeader
+        sx={{ pb: 1 }}
+        title={<Typography variant="h5">Contact Information</Typography>}
+      ></CardHeader>
+      <CardContent
+        sx={{
+          textAlign: [!resource.isLoading ? "center" : "left"],
+          pt: 1,
+        }}
+      >
+        <Stack direction="column" spacing={1}>
+          {resource.isLoading && <CircularProgress size="3rem" />}
+          {resource && contactPerson && (
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <PersonIcon sx={{ color: "text.secondary" }} />
+              <Typography variant="body1">{contactPerson}</Typography>
+            </Stack>
+          )}
+          {resource && contactPersonEmail && (
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <EmailIcon sx={{ color: "text.secondary" }} />
+              <Typography variant="body1">
+                <a
+                  href={`mailto:${contactPersonEmail}`}
+                  style={{ color: "inherit" }}
+                >
+                  {contactPersonEmail}
+                </a>
+              </Typography>
+            </Stack>
+          )}
+          {resource && !contactPerson && !contactPersonEmail && (
+            <Typography
+              variant="body2"
+              sx={{ color: "text.secondary", fontStyle: "italic" }}
+            >
+              No contact information available
+            </Typography>
+          )}
+        </Stack>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function ResourceOrganization({ resource }) {
+  const organization = resource?.data?.data?.organization;
+  return (
+    <Card sx={cardStyles}>
+      <CardHeader
+        sx={{ pb: 1 }}
+        title={<Typography variant="h5">Organization</Typography>}
+      />
+      <CardContent sx={{ pt: 1 }}>
+        {resource?.isLoading && <CircularProgress size="3rem" />}
+        {organization ? (
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <AccountBalanceIcon sx={{ color: "text.secondary" }} />
+            <Typography>{organization}</Typography>
+          </Stack>
+        ) : (
+          <Typography
+            variant="body2"
+            sx={{ color: "text.secondary", fontStyle: "italic" }}
+          >
+            No organization information available
+          </Typography>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function ResourceApiUrlInstructions({ resource }) {
+  const isLoading = resource?.isLoading;
+  const apiUrl = resource?.data?.data?.api_url;
+  const apiUrlInstructions = resource?.data?.data?.api_url_instructions;
+
+  return (
+    <Card sx={cardStyles}>
+      <CardHeader
+        sx={{ pb: 1 }}
+        title={<Typography variant="h5">API URL Instructions</Typography>}
+      />
+      <CardContent sx={{ pt: 1 }}>
+        {isLoading ? (
+          <CircularProgress size="3rem" />
+        ) : (
+          <Stack spacing={2}>
+            {apiUrl ? (
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <Link
+                  to={apiUrl}
+                  target="_blank"
+                  style={{ textDecoration: "none" }}
+                >
+                  <Typography variant="body1" color="primary.main">
+                    {apiUrl}
+                  </Typography>
+                </Link>
+              </Stack>
+            ) : (
+              <Typography
+                variant="body2"
+                sx={{ color: "text.secondary", fontStyle: "italic" }}
+              >
+                No API URL available
+              </Typography>
+            )}
+
+            <Divider />
+
+            {apiUrlInstructions ? (
+              <Typography variant="body1">{apiUrlInstructions}</Typography>
+            ) : (
+              <Typography
+                variant="body2"
+                sx={{ color: "text.secondary", fontStyle: "italic" }}
+              >
+                No instructions available for this API.
+              </Typography>
+            )}
+          </Stack>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function ResourceDocumentationUrl({ resource }) {
+  const isLoading = resource?.isLoading;
+  const documentationUrl = resource?.data?.data?.documentation_url;
+
+  return (
+    <Card sx={cardStyles}>
+      <CardHeader
+        sx={{ pb: 1 }}
+        title={<Typography variant="h5">Documentation URL</Typography>}
+      />
+      <CardContent sx={{ pt: 1 }}>
+        {isLoading ? (
+          <CircularProgress size="3rem" />
+        ) : (
+          <Stack spacing={2}>
+            {documentationUrl ? (
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <Link
+                  to={documentationUrl}
+                  target="_blank"
+                  style={{ textDecoration: "none" }}
+                >
+                  <Typography variant="body1" color="primary.main">
+                    {documentationUrl}
+                  </Typography>
+                </Link>
+              </Stack>
+            ) : (
+              <Typography
+                variant="body2"
+                sx={{ color: "text.secondary", fontStyle: "italic" }}
+              >
+                No documentation url available
+              </Typography>
+            )}
           </Stack>
         )}
       </CardContent>

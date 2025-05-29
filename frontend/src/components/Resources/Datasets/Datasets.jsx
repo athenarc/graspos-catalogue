@@ -9,6 +9,10 @@ import {
   ResourceTags,
   ResourceStatistics,
   ResourceGeographicCoverage,
+  ResourceContactInformation,
+  ResourceOrganization,
+  ResourceApiUrlInstructions,
+  ResourceDocumentationUrl,
 } from "../ResourceTemplate/ResourcePage";
 
 export function Datasets({ datasets, user }) {
@@ -35,7 +39,7 @@ export function Dataset({ resourceId }) {
   return (
     <>
       <Grid size={{ xs: 12, lg: 8 }}>
-        <ResourceBasicInformation resource={dataset} />
+        <ResourceBasicInformation resource={dataset} type="dataset" />
       </Grid>
       <Grid size={{ xs: 12, lg: 4 }}>
         <Stack
@@ -49,8 +53,11 @@ export function Dataset({ resourceId }) {
           }}
         >
           <ResourceAuthors resource={dataset} />
-          <ResourceTags resource={dataset} />
           <ResourceLicense resource={dataset} />
+          <ResourceTags resource={dataset} />
+          <ResourceContactInformation resource={dataset} />
+          <ResourceApiUrlInstructions resource={dataset} />
+          <ResourceDocumentationUrl resource={dataset} />
           <ResourceStatistics resource={dataset} />
           <ResourceGeographicCoverage resource={dataset} />
         </Stack>
