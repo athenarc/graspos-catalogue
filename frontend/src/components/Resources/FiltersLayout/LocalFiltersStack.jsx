@@ -17,6 +17,7 @@ import TagAutoCompleteFilter from "./Filters/TagAutocompleteFilter";
 import GrasposVerifiedFilter from "./Filters/GrasposFilterSwitch";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import CloseIcon from "@mui/icons-material/Close";
+import ServiceTypeAutocompleteFilter from "./Filters/ServiceTypeFilter";
 
 export default function LocalFiltersStack({
   filters,
@@ -136,6 +137,13 @@ export default function LocalFiltersStack({
           <Box flex={1} display="flex" flexDirection="column" gap={2}>
             {selectedResource !== 3 && (
               <LicenseAutocompleteFilter
+                selectedFilters={filters}
+                selectedResource={selectedResource}
+                onFilterChange={handleChangeFilters}
+              />
+            )}
+            {selectedResource === 3 && (
+              <ServiceTypeAutocompleteFilter
                 selectedFilters={filters}
                 selectedResource={selectedResource}
                 onFilterChange={handleChangeFilters}

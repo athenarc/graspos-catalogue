@@ -25,6 +25,7 @@ async def get_all_services(
         assessment: Optional[List[str]] = Query(None),
         geographical_coverage: Optional[List[str]] = Query(None),
         tag: Optional[List[str]] = Query(None),
+        service_type: Optional[List[str]] = Query(None),
         graspos: Optional[bool] = Query(None),
         sort_field: Optional[str] = Query(None),
         sort_direction: Optional[str] = Query(None),
@@ -69,7 +70,11 @@ async def get_all_services(
     # Tag filter
     if tag:
         filters.append({"zenodo.metadata.keywords": {"$in": tag}})
-
+    
+    # Service Type filter
+    if service_type:
+        filters.append({"service_type": {"$in": service_type}})
+        
     # GraspOS verified filter
     if graspos:
         filters.append({
@@ -160,7 +165,7 @@ async def get_unique_metadata_values(field: str = Query(
     Return unique values from the given field in Zenodo metadata across all services.
     """
     try:
-        unique_values = await Service.get_unique_field_values_from_zenodo(field
+        unique_values = await Service.get_unique_field_values(field
                                                                           )
         return {f"unique_{field}": unique_values}
     except Exception as e:
