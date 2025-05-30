@@ -27,14 +27,15 @@ function ResourcesTabs({
   loadingStatus,
 }) {
   const renderLabel = (name) => {
+    const displayName = name === "Documents" ? "Templates & Guidelines" : name;
     if (loadingStatus[name]) {
       return (
         <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          {name} <CircularProgress size={14} />
+          {displayName} <CircularProgress size={14} />
         </span>
       );
     }
-    const displayName = name === "Documents" ? "Templates & Guidelines" : name;
+    
     return `${displayName} (${resourcesFetched?.[name]?.results ?? 0})`;
   };
 
