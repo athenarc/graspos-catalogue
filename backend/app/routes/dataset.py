@@ -128,8 +128,7 @@ async def get_all_datasets(
     else:
         datasets = await Dataset.find(query_filter, fetch_links=True).to_list()
     datasets = await Dataset.find(query_filter, fetch_links=True).to_list()
-    print(query_filter)
-    print(datasets)
+
     return datasets
 
 
