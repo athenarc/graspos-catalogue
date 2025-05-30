@@ -138,52 +138,32 @@ export default function ResourcesGridLayout({ user }) {
 
   useEffect(() => {
     setResourcesFetched((prev) => {
-      const newFetched = { ...prev };
+      const newFetched = {
+        ...prev,
+        Datasets: datasets?.data
+          ? { results: datasets.data.length }
+          : prev.Datasets,
+        Tools: tools?.data ? { results: tools.data.length } : prev.Tools,
+        Documents: documents?.data
+          ? { results: documents.data.length }
+          : prev.Documents,
+        Services: services?.data
+          ? { results: services.data.length }
+          : prev.Services,
+      };
 
       if (
-        datasets?.data &&
-        (shouldFetchAll || selectedResource === resourceMap?.Datasets)
-      ) {
-        newFetched.Datasets.results = datasets?.data?.length;
-      }
-      if (
-        tools?.data &&
-        (shouldFetchAll || selectedResource === resourceMap?.Tools)
-      ) {
-        newFetched.Tools.results = tools?.data?.length;
-      }
-      if (
-        documents?.data &&
-        (shouldFetchAll || selectedResource === resourceMap?.Documents)
-      ) {
-        newFetched.Documents.results = documents?.data?.length;
-      }
-      if (
-        services?.data &&
-        (shouldFetchAll || selectedResource === resourceMap?.Services)
-      ) {
-        newFetched.Services.results = services?.data?.length;
-      }
-
-      if (
-        prev?.Datasets?.results === newFetched?.Datasets?.results &&
-        prev?.Tools?.results === newFetched?.Tools?.results &&
-        prev?.Documents?.results === newFetched?.Documents?.results &&
-        prev?.Services?.results === newFetched?.Services?.results
+        prev.Datasets.results === newFetched.Datasets.results &&
+        prev.Tools.results === newFetched.Tools.results &&
+        prev.Documents.results === newFetched.Documents.results &&
+        prev.Services.results === newFetched.Services.results
       ) {
         return prev;
       }
 
       return newFetched;
     });
-  }, [
-    datasets?.data,
-    tools?.data,
-    documents?.data,
-    services?.data,
-    selectedResource,
-    shouldFetchAll,
-  ]);
+  }, [datasets.data, tools.data, documents.data, services.data]);
 
   return (
     <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
