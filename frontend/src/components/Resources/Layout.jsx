@@ -34,7 +34,8 @@ function ResourcesTabs({
         </span>
       );
     }
-    return `${name} (${resourcesFetched?.[name]?.results ?? 0})`;
+    const displayName = name === "Documents" ? "Templates & Guidelines" : name;
+    return `${displayName} (${resourcesFetched?.[name]?.results ?? 0})`;
   };
 
   return (
