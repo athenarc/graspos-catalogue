@@ -35,7 +35,7 @@ function ResourcesTabs({
         </span>
       );
     }
-    
+
     return `${displayName} (${resourcesFetched?.[name]?.results ?? 0})`;
   };
 
