@@ -142,34 +142,34 @@ export default function ResourcesGridLayout({ user }) {
 
       if (
         datasets?.data &&
-        (shouldFetchAll || selectedResource === resourceMap.Datasets)
+        (shouldFetchAll || selectedResource === resourceMap?.Datasets)
       ) {
-        newFetched.Datasets.results = datasets.data.length;
+        newFetched.Datasets.results = datasets?.data?.length;
       }
       if (
         tools?.data &&
-        (shouldFetchAll || selectedResource === resourceMap.Tools)
+        (shouldFetchAll || selectedResource === resourceMap?.Tools)
       ) {
-        newFetched.Tools.results = tools.data.length;
+        newFetched.Tools.results = tools?.data?.length;
       }
       if (
         documents?.data &&
-        (shouldFetchAll || selectedResource === resourceMap.Documents)
+        (shouldFetchAll || selectedResource === resourceMap?.Documents)
       ) {
-        newFetched.Documents.results = documents.data.length;
+        newFetched.Documents.results = documents?.data?.length;
       }
       if (
         services?.data &&
-        (shouldFetchAll || selectedResource === resourceMap.Services)
+        (shouldFetchAll || selectedResource === resourceMap?.Services)
       ) {
-        newFetched.Services.results = services.data.length;
+        newFetched.Services.results = services?.data?.length;
       }
 
       if (
-        prev.Datasets.results === newFetched.Datasets.results &&
-        prev.Tools.results === newFetched.Tools.results &&
-        prev.Documents.results === newFetched.Documents.results &&
-        prev.Services.results === newFetched.Services.results
+        prev?.Datasets?.results === newFetched?.Datasets?.results &&
+        prev?.Tools?.results === newFetched?.Tools?.results &&
+        prev?.Documents?.results === newFetched?.Documents?.results &&
+        prev?.Services?.results === newFetched?.Services?.results
       ) {
         return prev;
       }
