@@ -11,6 +11,7 @@ from util.requests import get_zenodo_data
 from typing import List, Optional
 from datetime import datetime
 import logging
+from beanie.operators import In
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
@@ -92,18 +93,17 @@ async def get_all_datasets(
                 "$lte": end_date
             }})
 
-    # Text search filter handling
     if text:
         zenodo_search_results = await Zenodo.find({
             "$text": {
                 "$search": text
             }
         }).to_list()
-
         zenodo_ids = [PydanticObjectId(z.id) for z in zenodo_search_results]
         if zenodo_ids:
-            filters.append({"zenodo.id": {"$in": zenodo_ids}})
+            filters.append({"zenodo._id": {"$in": zenodo_ids}})
         else:
+            # If no matching Zenodo results, return empty early
             return []
 
     # Combine filters with $and if multiple
@@ -127,7 +127,9 @@ async def get_all_datasets(
         ]).to_list()
     else:
         datasets = await Dataset.find(query_filter, fetch_links=True).to_list()
-
+    datasets = await Dataset.find(query_filter, fetch_links=True).to_list()
+    print(query_filter)
+    print(datasets)
     return datasets
 
 
