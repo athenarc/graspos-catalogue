@@ -1,5 +1,13 @@
-import { useEffect, useState } from "react";
-import { Box, Stack, Tabs, Tab, useTheme, useMediaQuery } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import {
+  Box,
+  Stack,
+  Tabs,
+  Tab,
+  useTheme,
+  useMediaQuery,
+  CircularProgress,
+} from "@mui/material";
 import ResourcesGrid from "./Resources";
 import { useURLFilters } from "./FiltersLayout/Filters/Utils/useURLFilters";
 import FiltersLayout from "./FiltersLayout/Layout";
@@ -8,7 +16,7 @@ import { useDatasets } from "../../queries/dataset";
 import { useTools } from "../../queries/tool";
 import { useDocuments } from "../../queries/document";
 import LocalFiltersStack from "./FiltersLayout/LocalFiltersStack";
-import { useService, useServices } from "../../queries/service";
+import { useServices } from "../../queries/service";
 
 function ResourcesTabs({
   selectedResource,
@@ -16,7 +24,21 @@ function ResourcesTabs({
   filters,
   handleChangeFilters,
   resourcesFetched,
+  loadingStatus,
 }) {
+  const renderLabel = (name) => {
+    const displayName = name === "Documents" ? "Templates & Guidelines" : name;
+    if (loadingStatus[name]) {
+      return (
+        <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          {displayName} <CircularProgress size={14} />
+        </span>
+      );
+    }
+
+    return `${displayName} (${resourcesFetched?.[name]?.results ?? 0})`;
+  };
+
   return (
     <Box
       sx={{
@@ -38,39 +60,16 @@ function ResourcesTabs({
           aria-label="resource tabs"
           centered
         >
-          <Tab
-            label={
-              resourcesFetched?.Datasets?.results !== "undefined"
-                ? `Datasets (${resourcesFetched?.Datasets?.results})`
-                : "Datasets"
-            }
-          />
-          <Tab
-            label={
-              resourcesFetched?.Tools?.results !== "undefined"
-                ? `Tools (${resourcesFetched?.Tools?.results})`
-                : "Tools"
-            }
-          />
-          <Tab
-            label={
-              resourcesFetched?.Documents?.results !== "undefined"
-                ? `Templates & Guidelines (${resourcesFetched?.Documents?.results})`
-                : "Templates & Guidelines"
-            }
-          />
-          <Tab
-            label={
-              resourcesFetched?.Services?.results !== "undefined"
-                ? `Services (${resourcesFetched?.Services?.results})`
-                : "Services"
-            }
-          />
+          <Tab label={renderLabel("Datasets")} />
+          <Tab label={renderLabel("Tools")} />
+          <Tab label={renderLabel("Documents")} />
+          <Tab label={renderLabel("Services")} />
         </Tabs>
       </Stack>
     </Box>
   );
 }
+
 export default function ResourcesGridLayout({ user }) {
   const resourceMap = {
     Datasets: 0,
@@ -78,35 +77,83 @@ export default function ResourcesGridLayout({ user }) {
     Documents: 2,
     Services: 3,
   };
-  const [resourcesFetched, setResourcesFetched] = useState({
-    Datasets: { results: 0 },
-    Tools: { results: 0 },
-    Documents: { results: 0 },
-    Services: { results: 0 },
-  });
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [initialFetchDone, setInitialFetchDone] = useState(false);
+
+  useEffect(() => {
+    if (!initialFetchDone) {
+      setInitialFetchDone(true);
+    }
+  }, []);
+
   const {
     filters,
+    globalFilters,
+    localFilters,
+    shouldFetchAll,
     selectedResource,
     handleChangeFilters,
     handleSetSelectedResource,
     handleResetFilters,
   } = useURLFilters(resourceMap);
 
-  const datasets = useDatasets(filters);
-  const tools = useTools(filters);
-  const documents = useDocuments(filters);
-  const services = useServices(filters);
-  useEffect(() => {
-    const newFetched = {
-      Datasets: { results: datasets?.data?.length ?? 0 },
-      Tools: { results: tools?.data?.length ?? 0 },
-      Documents: { results: documents?.data?.length ?? 0 },
-      Services: { results: services?.data?.length ?? 0 },
-    };
+  const datasets = useDatasets(
+    initialFetchDone
+      ? shouldFetchAll || selectedResource === 0
+        ? { ...globalFilters, ...(selectedResource === 0 ? localFilters : {}) }
+        : null
+      : { ...globalFilters }
+  );
 
+  const tools = useTools(
+    initialFetchDone
+      ? shouldFetchAll || selectedResource === 1
+        ? { ...globalFilters, ...(selectedResource === 1 ? localFilters : {}) }
+        : null
+      : { ...globalFilters }
+  );
+
+  const documents = useDocuments(
+    initialFetchDone
+      ? shouldFetchAll || selectedResource === 2
+        ? { ...globalFilters, ...(selectedResource === 2 ? localFilters : {}) }
+        : null
+      : { ...globalFilters }
+  );
+
+  const services = useServices(
+    initialFetchDone
+      ? shouldFetchAll || selectedResource === 3
+        ? { ...globalFilters, ...(selectedResource === 3 ? localFilters : {}) }
+        : null
+      : { ...globalFilters }
+  );
+
+  const [resourcesFetched, setResourcesFetched] = useState({
+    Datasets: { results: 0 },
+    Tools: { results: 0 },
+    Documents: { results: 0 },
+    Services: { results: 0 },
+  });
+
+  useEffect(() => {
     setResourcesFetched((prev) => {
+      const newFetched = {
+        ...prev,
+        Datasets: datasets?.data
+          ? { results: datasets.data.length }
+          : prev.Datasets,
+        Tools: tools?.data ? { results: tools.data.length } : prev.Tools,
+        Documents: documents?.data
+          ? { results: documents.data.length }
+          : prev.Documents,
+        Services: services?.data
+          ? { results: services.data.length }
+          : prev.Services,
+      };
+
       if (
         prev.Datasets.results === newFetched.Datasets.results &&
         prev.Tools.results === newFetched.Tools.results &&
@@ -115,9 +162,10 @@ export default function ResourcesGridLayout({ user }) {
       ) {
         return prev;
       }
+
       return newFetched;
     });
-  }, [datasets?.data, tools?.data, documents?.data, services?.data]);
+  }, [datasets.data, tools.data, documents.data, services.data]);
 
   return (
     <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
@@ -136,6 +184,7 @@ export default function ResourcesGridLayout({ user }) {
           theme={theme}
         />
       </Box>
+
       <Box
         sx={{
           flexGrow: 1,
@@ -147,10 +196,17 @@ export default function ResourcesGridLayout({ user }) {
         <ResourcesTabs
           selectedResource={selectedResource}
           handleSetSelectedResource={handleSetSelectedResource}
-          selectedFilters={filters}
+          filters={filters}
           handleChangeFilters={handleChangeFilters}
           resourcesFetched={resourcesFetched}
+          loadingStatus={{
+            Datasets: datasets.isLoading,
+            Tools: tools.isLoading,
+            Documents: documents.isLoading,
+            Services: services.isLoading,
+          }}
         />
+
         <LocalFiltersStack
           user={user}
           selectedResource={selectedResource}
@@ -158,6 +214,7 @@ export default function ResourcesGridLayout({ user }) {
           handleChangeFilters={handleChangeFilters}
           isMobile={isMobile}
         />
+
         <Box sx={{ flexGrow: 1, overflowY: "auto", p: 2, pb: 12, pt: 1 }}>
           <ResourcesGrid
             user={user}

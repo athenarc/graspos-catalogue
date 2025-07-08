@@ -37,21 +37,21 @@ scope_insert = """db.scopes.insertMany([
     modified_at: new Date()
   },
   {
-    name: "Openness",
+    name: "Options",
     description: "Be open to reviewing and improving assessment practices. Regularly evaluate the fairness, relevance, and impact of evaluation methods. Welcome stakeholder feedback and update processes in response to emerging needs and responsible metrics initiatives.",
     bg_color: "#7C9497",
     created_at: new Date(),
     modified_at: new Date()
   },
   {
-    name: "Proportionality",
+    name: "Probe",
     description: "Use metrics and indicators in a proportionate and balanced manner. Avoid over-reliance on any single measure. Ensure that evaluation processes are not overly burdensome and that they match the importance of the decision being made.",
     bg_color: "#9B907E",
     created_at: new Date(),
     modified_at: new Date()
   },
   {
-    name: "Expertise",
+    name: "Evaluate",
     description: "Ensure assessments are conducted by individuals with appropriate disciplinary, methodological, and contextual knowledge. Promote diverse and trained evaluator panels. Recognize the importance of peer review, qualitative judgement, and lived experience.",
     bg_color: "#A7AD64",
     created_at: new Date(),
