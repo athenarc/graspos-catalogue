@@ -1,11 +1,12 @@
 from fastapi import APIRouter, HTTPException, Depends
 from beanie import PydanticObjectId
+from models.service import Service
 from models.openaire import OpenAIRE, OpenAIREMetadata
 from models.dataset import Dataset
 from models.user import User
 from util.current_user import current_user_mandatory
 import httpx
-from util.url_transformer import transform_url
+from util.url_transformer import transform_openaire_url
 
 
 router = APIRouter(prefix="/api/v1/openaire", tags=["OpenAIRE"])
@@ -20,7 +21,7 @@ async def get_all_openaire_records():
 async def fetch_openaire_from_url(dataset: Dataset):
     try:
         # Map the URL to the OpenAIRE API format
-        transformed_url = transform_url(dataset.source)
+        transformed_url = transform_openaire_url(dataset.source)
 
         # Fetch from the API
         async with httpx.AsyncClient() as client:
