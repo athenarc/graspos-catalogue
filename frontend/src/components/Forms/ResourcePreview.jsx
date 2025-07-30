@@ -1,17 +1,4 @@
-import {
-  InputBase,
-  Paper,
-  Tooltip,
-  Divider,
-  Stack,
-  IconButton,
-  CircularProgress,
-  Typography,
-  Card,
-  Box,
-} from "@mui/material";
-import RestartAltIcon from "@mui/icons-material/RestartAlt";
-import SearchIcon from "@mui/icons-material/Search";
+import { Tooltip, Stack, Typography, Card, Box } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History"; // Add this import
 import AssignmentIcon from "@mui/icons-material/Assignment"; // Add this import
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
@@ -29,72 +16,10 @@ const cardStyles = {
   p: 2,
 };
 
-export default function ZenodoForm({
-  register,
-  errors,
-  zenodoData,
-  onZenodoSearch,
-  handleReset,
-  isLoading,
-}) {
+export default function ResourcePreview({ data }) {
   return (
     <>
-      <Paper
-        sx={{
-          p: 0.5,
-          display: "flex",
-          alignItems: "center",
-          width: "100%",
-        }}
-      >
-        <InputBase
-          {...register("source", {
-            required: "Source cannot be empty",
-            pattern: {
-              value:
-                /(?:https:\/\/zenodo\.org\/records\/\d+|\d{2}\.\d{4}\/zenodo\.\d+)/,
-              message: "Not a valid Zenodo URL or DOI",
-            },
-          })}
-          sx={{ pl: 1, flex: 1 }}
-          placeholder="Zenodo source or DOI"
-          error={!!errors?.source}
-          inputProps={{ "aria-label": "Zenodo source or DOI" }}
-        />
-        <Tooltip title="Search Zenodo">
-          <IconButton
-            type="button"
-            onClick={onZenodoSearch}
-            sx={{ p: "10px", minWidth: "40px" }}
-            aria-label="search"
-            disabled={isLoading}
-            color="primary"
-          >
-            {isLoading ? <CircularProgress size={24} /> : <SearchIcon />}
-          </IconButton>
-        </Tooltip>
-
-        <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-
-        <Tooltip title="Reset search">
-          <IconButton
-            type="button"
-            onClick={handleReset}
-            sx={{ p: "10px", minWidth: "40px" }}
-            aria-label="reset"
-          >
-            <RestartAltIcon />
-          </IconButton>
-        </Tooltip>
-      </Paper>
-
-      {errors?.source && (
-        <div style={{ color: "red", fontSize: "0.8rem" }}>
-          {errors.source.message}
-        </div>
-      )}
-
-      {zenodoData && (
+      {data && (
         <Card p={2} sx={cardStyles}>
           <Stack direction="column" spacing={1}>
             <Typography
@@ -109,10 +34,10 @@ export default function ZenodoForm({
             </Typography>
             <Typography variant="subtitle">
               <Link
-                to={"https://zenodo.org/records/" + zenodoData?.zenodo_id}
+                to={"https://zenodo.org/records/" + data?.zenodo_id}
                 target="_blank"
               >
-                {zenodoData?.title}
+                {data?.title}
               </Link>
             </Typography>
             <Typography
@@ -130,12 +55,10 @@ export default function ZenodoForm({
                 },
               }}
             >
-              <Tooltip title={zenodoData?.metadata?.description}>
+              <Tooltip title={data?.metadata?.description}>
                 <Box
                   dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(
-                      zenodoData?.metadata?.description
-                    ),
+                    __html: DOMPurify.sanitize(data?.metadata?.description),
                   }}
                 />
               </Tooltip>
@@ -150,10 +73,10 @@ export default function ZenodoForm({
                 <Tooltip title="Publication date">
                   <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
                 </Tooltip>
-                {zenodoData?.metadata?.publication_date && (
+                {data?.metadata?.publication_date && (
                   <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
                     {new Date(
-                      zenodoData?.metadata?.publication_date
+                      data?.metadata?.publication_date
                     ).toLocaleDateString("en-GB", {
                       day: "numeric",
                       month: "long",
@@ -161,23 +84,23 @@ export default function ZenodoForm({
                     })}
                   </Typography>
                 )}
-                {zenodoData?.metadata?.version && (
+                {data?.metadata?.version && (
                   <Stack direction="row" spacing={1} alignItems="center">
                     <Tooltip title="Version">
                       <HistoryIcon sx={{ fontSize: "1.1rem" }} />
                     </Tooltip>
                     <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-                      {zenodoData?.metadata?.version}
+                      {data?.metadata?.version}
                     </Typography>
                   </Stack>
                 )}
-                {zenodoData?.metadata?.license?.id && (
+                {data?.metadata?.license?.id && (
                   <Stack direction="row" spacing={1} alignItems="center">
                     <Tooltip title="License">
                       <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
                     </Tooltip>
                     <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-                      {zenodoData?.metadata?.license?.id}
+                      {data?.metadata?.license?.id}
                     </Typography>
                   </Stack>
                 )}

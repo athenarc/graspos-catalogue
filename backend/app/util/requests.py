@@ -1,5 +1,37 @@
 import httpx
-from util.url_transformer import transform_zenodo_url 
+from util.url_transformer import transform_zenodo_url, transform_openaire_url
+
+
+async def get_openaire_data(source: str) -> dict:
+    """
+    Async function to fetch OpenAIRE metadata by record URL or DOI.
+    """
+    try:
+        async with httpx.AsyncClient() as client:
+            transformed_url = transform_openaire_url(source)
+            response = await client.get(transformed_url)
+            if response.status_code == 200:
+                data = response.json()
+
+                data["openaireId"] = data.get("id")
+                data["source"] = source.strip()
+                data["metadata"] = data
+                del data["id"]
+                return {"status": 200, "openaire_object": data}
+            else:
+                return {
+                    "status": response.status_code,
+                    "detail": "Failed to fetch OpenAIRE data.",
+                    "openaire_object": {}
+                }
+    except httpx.RequestError as e:
+        return {
+            "status": 503,
+            "detail": f"Request failed: {str(e)}",
+            "openaire_object": {}
+        }
+    re
+
 
 async def get_zenodo_data(source: str) -> dict:
     """
@@ -15,7 +47,8 @@ async def get_zenodo_data(source: str) -> dict:
         }
 
     try:
-        async with httpx.AsyncClient(follow_redirects=True, timeout=10.0) as client:
+        async with httpx.AsyncClient(follow_redirects=True,
+                                     timeout=10.0) as client:
             response = await client.get(api_url)
 
         if response.status_code == 200:
@@ -37,7 +70,10 @@ async def get_zenodo_data(source: str) -> dict:
             try:
                 error = response.json()
             except Exception:
-                error = {"status": response.status_code, "message": "Unknown error from Zenodo."}
+                error = {
+                    "status": response.status_code,
+                    "message": "Unknown error from Zenodo."
+                }
 
             return {
                 "status": error.get("status", response.status_code),
@@ -51,5 +87,6 @@ async def get_zenodo_data(source: str) -> dict:
             "detail": f"Request failed: {str(e)}",
             "zenodo_object": {}
         }
+
 
 # async def get_openaire_data():

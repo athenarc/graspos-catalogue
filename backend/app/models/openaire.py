@@ -5,6 +5,7 @@ from pydantic import BaseModel, EmailStr, HttpUrl
 import pymongo
 from pymongo import IndexModel
 
+
 class Contact(BaseModel):
     firstName: Optional[str] = None
     lastName: Optional[str] = None
@@ -65,8 +66,8 @@ class UseCaseExtra(BaseModel):
     useCaseImage: Optional[str] = None
 
 
-class OpenAIREMetadata(BaseModel):
-    id: str
+class OpenaireMetadata(BaseModel):
+    openaireId: str
     abbreviation: str
     name: str
     resourceOrganisation: str
@@ -151,11 +152,12 @@ class OpenAIREMetadata(BaseModel):
     mediakit: Optional[str] = None
     webinars: Optional[HttpUrl] = None
 
+
 class OpenAIREBase(BaseModel):
     source: str
     created: Optional[datetime] = datetime.now()
     modified: Optional[datetime] = datetime.now()
-    metadata: OpenAIREMetadata
+    metadata: OpenaireMetadata | None = None
 
 
 class OpenAIREView(BaseModel):
@@ -163,10 +165,11 @@ class OpenAIREView(BaseModel):
 
 
 class OpenAIREUpdate(BaseModel):
-    id: Optional[PydanticObjectId] = None
+    openaireId: Optional[PydanticObjectId] = None
 
 
 class OpenAIRE(Document, OpenAIREBase, OpenAIREView):
+
     class Settings:
         name = "openaire"
         indexes = [
@@ -189,11 +192,13 @@ class OpenAIRE(Document, OpenAIREBase, OpenAIREView):
     class Config:
         json_schema_extra = {
             "example": {
-                "source": "https://graspos-services.athenarc.gr/api/catalogue-resources/openaire.usage_statistics",
+                "source":
+                "https://graspos-services.athenarc.gr/api/catalogue-resources/openaire.usage_statistics",
                 "metadata": {
                     "id": "openaire.usage_statistics",
                     "name": "OpenAIRE UsageCounts",
-                    "description": "Tracks usage metrics for Open Access repositories.",
+                    "description":
+                    "Tracks usage metrics for Open Access repositories.",
                     "webpage": "https://usagecounts.openaire.eu/",
                 },
             }

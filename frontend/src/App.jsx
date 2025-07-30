@@ -14,7 +14,6 @@ import AppLayout from "./components/AppLayout";
 import LoginForm from "./components/Forms/LoginForm";
 import RegisterForm from "./components/Forms/RegisterForm";
 import ProfileForm from "./components/Forms/ProfileForm";
-import ZenodoForm from "./components/Forms/ZenodoForm";
 import UsersPanelForm from "./components/Forms/UsersForm";
 import UpdatesModal from "./components/ZenodoUpdatesModal";
 import { ResourcePage } from "./components/Resources/ResourceTemplate/ResourcePage";
@@ -38,7 +37,6 @@ function AppRoutes() {
           <Route path="profile" element={<div />} />
           <Route path="register" element={<RegisterForm />} />
           <Route path="users" element={<UsersPanelForm />} />
-          <Route path="zenodo/add" element={<ZenodoForm />} />
           <Route path="resource/add" element={<ResourceForm />} />
           <Route path="zenodo/updates" element={<UpdatesModal />} />
           <Route path="*" element={<Navigate to="/" />} />

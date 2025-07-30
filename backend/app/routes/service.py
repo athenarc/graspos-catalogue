@@ -8,7 +8,7 @@ from models.openaire import OpenAIRE
 from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
 from util.current_user import current_user, current_user_mandatory
-from util.requests import get_zenodo_data
+from util.requests import get_zenodo_data, get_openaire_data
 from typing import List, Optional
 from datetime import datetime
 from beanie import PydanticObjectId
@@ -144,6 +144,13 @@ async def create_service(
         openaire = OpenAIRE(source=service.source)
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error))
+    
+    data = await get_openaire_data(service.source)
+    if data["status"] != 200:
+        raise HTTPException(status_code=data["status"], detail=data["detail"])  
+    
+    openaire = OpenAIRE(**data["openaire_object"])
+    await openaire.create()    
     
     service.openaire = openaire
     service.owner = user.id
