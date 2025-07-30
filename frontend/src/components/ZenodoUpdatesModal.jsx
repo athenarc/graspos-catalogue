@@ -117,7 +117,7 @@ export default function UpdatesModal() {
           setMessage(data?.data?.detail);
         },
         onError: (error) => {
-          setMessage(error?.response?.data?.detail);
+          setMessage( error?.response?.data?.detail?.message || error?.response?.data?.detail || "An error occurred while updating Zenodo resources.");
         },
       }
     );

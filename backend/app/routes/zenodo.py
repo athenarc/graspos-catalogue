@@ -38,18 +38,17 @@ async def post_zenodo_records(dataset: Dataset) -> Zenodo:
     zenodo = await Zenodo.find_one(Zenodo.source == dataset.source)
 
     if zenodo:
-        raise HTTPException(status_code=409,
-                            detail=str("Resource already exists"))
+        raise HTTPException(status_code=409, detail="Resource already exists")
 
     try:
-
-        data = get_zenodo_data(dataset.source)
-        if data["status"] is not 200:
+        data = await get_zenodo_data(dataset.source)
+        if data["status"] != 200:
             raise HTTPException(status_code=data["status"],
                                 detail=data["detail"])
+
         zenodo = Zenodo(**data["zenodo_object"])
 
-    except ValueError as error:
+    except Exception as error:
         raise HTTPException(status_code=400, detail=str(error))
 
     return zenodo

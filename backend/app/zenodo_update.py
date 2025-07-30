@@ -36,7 +36,7 @@ async def main():
     zenodo_updates = []
     for zenodo in zenodo_records:
 
-        zenodo_dataset = get_zenodo_data(zenodo.source)
+        zenodo_dataset = await get_zenodo_data(zenodo.source)
         if zenodo.metadata.doi != zenodo_dataset["zenodo_object"]["metadata"][
                 "doi"]:
             zenodo_update = Zenodo(**zenodo_dataset["zenodo_object"])
