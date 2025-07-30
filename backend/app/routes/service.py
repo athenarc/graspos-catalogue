@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, Depends, Query, status
 from models.service import Service, ServicePatch
 from models.user import User
 from models.zenodo import Zenodo
+from models.openaire import OpenAIRE
 from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
 from util.current_user import current_user, current_user_mandatory
@@ -137,20 +138,14 @@ async def get_all_services(
 @router.post("/create", status_code=201)
 async def create_service(
     service: Service, user: User = Depends(current_user_mandatory)) -> Service:
-    zenodo = None
-
+    openaire = None
+    
     try:
-        zenodo = Zenodo(source=service.source)
+        openaire = OpenAIRE(source=service.source)
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error))
-
-    data = get_zenodo_data(service.source)
-    if data["status"] != 200:
-        raise HTTPException(status_code=data["status"], detail=data["detail"])
-
-    zenodo = Zenodo(**data["zenodo_object"])
-    await zenodo.create()
-    service.zenodo = zenodo
+    
+    service.openaire = openaire
     service.owner = user.id
     if user.super_user:
         service.approved = True

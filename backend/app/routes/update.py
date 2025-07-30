@@ -8,8 +8,6 @@ from models.dataset import Dataset
 from beanie import PydanticObjectId
 from jwt import access_security
 from util.current_user import current_user
-from util.requests import get_zenodo_data
-from util.update_zenodo import update_records
 
 router = APIRouter(prefix="/api/v1/update", tags=["Update"])
 
