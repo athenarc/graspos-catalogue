@@ -5,6 +5,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from beanie import PydanticObjectId, Link
 from datetime import datetime
+from models.openaire import OpenAIRE
 from models.zenodo import Zenodo
 from models.scope import Scope
 from typing import List, Optional
@@ -17,6 +18,7 @@ class Service(BaseModel):
     source: str | None = None
     service_type: str | None = None
     tlr: object | None = None
+    openaire: Link[OpenAIRE] | None = None
     zenodo: Link[Zenodo] | None = None
     scopes: List[Link[Scope]] | None = None
     geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
@@ -41,6 +43,7 @@ class ServiceView(BaseModel):
     doi: str | None = None
     source: str | None = None
     service_type: str | None = None
+    openaire: Link[OpenAIRE] | None = None
     tlr: object | None = None
     zenodo: Link[Zenodo] | None = None
     scopes: List[Link[Scope]] | None = None
