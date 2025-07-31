@@ -25,7 +25,7 @@ import { Document } from "../Documents/Documents";
 import { Tool } from "../Tools/Tools";
 import { Service } from "../Services/Services";
 import orcidLogo from "../../../assets/orcid.logo.icon.svg";
-import { ResourceItemScopes } from "./ResourceGridItem";
+import { ResourceItemScopes } from "./ResourceComponents/ResourceItemFooter";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LaunchIcon from "@mui/icons-material/Launch";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
