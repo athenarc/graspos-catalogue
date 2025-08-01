@@ -67,7 +67,7 @@ async def update_records(user_id=None, zenodo_id=None):
             zenodo_update["detail"] = str(e)
 
         zenodo_updates.append(zenodo_update)
-        
+
     if zenodo_updates:
         update = Update(updates=zenodo_updates,
                         source="Zenodo",
@@ -75,7 +75,6 @@ async def update_records(user_id=None, zenodo_id=None):
         try:
             await update.save()
         except Exception as e:
-            print(f"Error saving update record for user {user_id}: {e}")
             raise HTTPException(status_code=500,
                                 detail="Error saving update record")
 
