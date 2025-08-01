@@ -85,22 +85,22 @@ class Service(Document, ServiceView):
         }
 
     @classmethod
-    async def get_unique_field_values_from_zenodo(cls,
-                                                  field_name: str) -> list:
+    async def get_unique_field_values_from_openaire(cls,
+                                                    field_name: str) -> list:
         """
-        Return all unique values for a given metadata field from linked Zenodo services.
+        Return all unique values for a given metadata field from linked OpenAIRE services.
 
-        :param field_name: The field name in zenodo.metadata to extract unique values from.
+        :param field_name: The field name in openaire.metadata to extract unique values from.
         :return: A list of unique field values (dicts or scalars).
         """
         services = await cls.find_all().to_list()
         unique_values = set()
 
         for service in services:
-            if service.zenodo is not None:
-                await service.fetch_link("zenodo")
-                zenodo = service.zenodo
-                metadata = zenodo.metadata
+            if service.openaire is not None:
+                await service.fetch_link("openaire")
+                openaire = service.openaire
+                metadata = openaire.metadata
 
                 if metadata:
                     value = getattr(metadata, field_name, None)

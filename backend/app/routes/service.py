@@ -152,7 +152,7 @@ async def create_service(
     openaire = OpenAIRE(**data["openaire_object"])
     await openaire.create()    
     if openaire.metadata.trl:
-        service.tlr = openaire.metadata.trl
+        service.trl = openaire.metadata.trl
     if openaire.metadata.extras["portfolios"]:
         for portfolio in openaire.metadata.extras["portfolios"]:
             service.service_type = portfolio.replace("portfolios-", "")
