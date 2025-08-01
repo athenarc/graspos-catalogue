@@ -104,7 +104,7 @@ class Service(Document, ServiceView):
 
                 if metadata:
                     value = getattr(metadata, field_name, None)
-
+                    print(f"Processing field: {field_name}, value: {value}")
                     if isinstance(value, list):
                         for item in value:
                             if isinstance(item, dict):

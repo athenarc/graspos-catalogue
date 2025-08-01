@@ -30,7 +30,7 @@ export default function TagAutoCompleteFilter({
   const { data: toolKeywordsData, isLoading: isToolLoading } =
     useToolUniqueFieldValues("keywords", selectedResource === 1);
   const { data: serviceKeywordsData, isLoading: isServiceLoading } =
-    useServiceUniqueFieldValues("keywords", selectedResource === 3);
+    useServiceUniqueFieldValues("tags", selectedResource === 3);
 
   useEffect(() => {
     if (
@@ -48,7 +48,7 @@ export default function TagAutoCompleteFilter({
         ? documentKeywordsData?.data?.unique_keywords
         : selectedResource === 1
         ? toolKeywordsData?.data?.unique_keywords
-        : serviceKeywordsData?.data?.unique_keywords;
+        : serviceKeywordsData?.data?.unique_tags;
 
     setTagOptions(resourceKeywords || []);
   }, [
