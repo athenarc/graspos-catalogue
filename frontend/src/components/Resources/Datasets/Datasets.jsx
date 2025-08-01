@@ -1,7 +1,7 @@
 import { useDataset } from "../../../queries/dataset";
 import { RectangularVariants } from "../../Skeleton";
 import ResourceGridItem from "../ResourcesGrid/ResourceGridItem";
-import { Grid2 as Grid, Stack, useMediaQuery, useTheme } from "@mui/material";
+import { Grid2 as Grid, Stack } from "@mui/material";
 import {
   AuthorsCard,
   LicenseCard,
@@ -15,8 +15,6 @@ import {
 import { ResourceBasicInformation } from "../ResourcesGrid/ResourcePageComponents/ResourcePageBasicInformation";
 
 export function Datasets({ datasets, user }) {
-  const theme = useTheme();
-
   return (
     <>
       {datasets?.isLoading && <RectangularVariants count={2} />}

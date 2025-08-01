@@ -1,7 +1,7 @@
 import { useService } from "../../../queries/service";
 import { RectangularVariants } from "../../Skeleton";
 import ResourceGridItem from "../ResourcesGrid/ResourceGridItem";
-import { Grid2 as Grid, Stack, useTheme } from "@mui/material";
+import { Grid2 as Grid, Stack } from "@mui/material";
 import {
   ContributorsCard,
   TrlCard,
@@ -12,8 +12,6 @@ import {
 import { ResourceBasicInformation } from "../ResourcesGrid/ResourcePageComponents/ResourcePageBasicInformation";
 
 export function Services({ services, user }) {
-  const theme = useTheme();
-
   return (
     <>
       {services?.isLoading && <RectangularVariants count={2} />}
