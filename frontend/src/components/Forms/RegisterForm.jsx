@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
-import Notification from "../Notification";
+import Notification from "@helpers/Notification";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useRegister } from "../../queries/data";

@@ -23,7 +23,7 @@ import {
 
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
-import Notification from "../Notification";
+import Notification from "@helpers/Notification";
 import { useForm, Controller } from "react-hook-form";
 
 export default function EditResourceDialog({

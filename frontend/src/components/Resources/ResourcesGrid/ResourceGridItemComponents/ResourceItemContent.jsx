@@ -1,7 +1,7 @@
 import { Grid2 as Grid, Typography, Stack, Tooltip, Chip } from "@mui/material";
 
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import { stripHtml } from "../../../utils";
+import { stripHtml } from "../../../../utils/utils";
 
 export function ResourceItemKeywords({ resource }) {
   const keywords = resource?.zenodo?.metadata?.keywords || resource?.openaire?.metadata?.tags || [];

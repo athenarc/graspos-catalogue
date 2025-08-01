@@ -1,7 +1,7 @@
 import { Box, Button, Grid2 as Grid, Stack } from "@mui/material";
-import logo from "../assets/graspos_menu_logo.png";
+import logo from "@assets/graspos_menu_logo.png";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import UserDropDownMenu from "./UserDropDownMenu";
+import UserDropDownMenu from "../UserDropDownMenu";
 
 export default function MenuBar({ handleLogout, user }) {
   const navigate = useNavigate();

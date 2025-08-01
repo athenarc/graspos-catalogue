@@ -17,7 +17,7 @@ import FlagIcon from "@mui/icons-material/Flag";
 import PersonIcon from "@mui/icons-material/Person";
 import GroupIcon from "@mui/icons-material/Group";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import { FilterVariants } from "@components/Skeleton";
+import { FilterVariants } from "@helpers/Skeleton";
 
 export default function AssessmentFacetFilter({
   selectedFilters,

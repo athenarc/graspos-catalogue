@@ -19,7 +19,7 @@ import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import CloseIcon from "@mui/icons-material/Close";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
-import Notification from "./Notification";
+import Notification from "@helpers/Notification";
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
 import InfoIcon from "@mui/icons-material/Info";

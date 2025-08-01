@@ -6,7 +6,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import HistoryIcon from "@mui/icons-material/History";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 
-import { formatDate } from "../../../utils";
+import { formatDate } from "../../../../utils/utils";
 import PersonIcon from "@mui/icons-material/Person";
 import GroupIcon from "@mui/icons-material/Group";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";

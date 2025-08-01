@@ -5,7 +5,7 @@ import LaunchIcon from "@mui/icons-material/Launch";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import HistoryIcon from "@mui/icons-material/History";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { sanitizeHtml, formatDate } from "../../../utils";
+import { sanitizeHtml, formatDate } from "../../../../utils/utils";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 
 export function ResourcePageTitle({ resource, type }) {

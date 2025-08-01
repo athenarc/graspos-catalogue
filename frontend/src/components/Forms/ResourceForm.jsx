@@ -6,43 +6,22 @@ import {
   IconButton,
   DialogContent,
   Stack,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormControl,
-  Divider,
-  Typography,
-  FormControlLabel,
-  FormGroup,
-  Checkbox,
-  Tooltip,
-  TextField,
-  Autocomplete,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
-import InfoIcon from "@mui/icons-material/Info";
 import { useNavigate } from "react-router-dom";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-
-import Notification from "../Notification.jsx";
-import { useCreateDataset } from "../../queries/dataset.js";
-import { useCreateTool } from "../../queries/tool.js";
-import { useCreateDocument } from "../../queries/document.js";
+import Notification from "@helpers/Notification.jsx";
+import { useCreateDataset } from "@queries/dataset.js";
+import { useCreateTool } from "@queries/tool.js";
+import { useCreateDocument } from "@/queries/document.js";
 import ResourcePreview from "./ResourcePreview.jsx";
 import { useAuth } from "../AuthContext.jsx";
-import DatasetFormFields from "./DatasetFormFields.jsx";
-import DocumentFormFields from "./DocumentsFormFields.jsx";
-import ToolFormFields from "./ToolFormFields.jsx";
-import { useZenodo } from "../../queries/zenodo.js";
-import { useScopes } from "../../queries/scope.js";
-import { useCountries } from "../../queries/countries.js";
-import { useAssessments } from "../../queries/assessment.js";
-import ServiceFormFields from "./ServiceFormFields.jsx";
-import { useCreateService } from "../../queries/service.js";
+import { useZenodo } from "@queries/zenodo.js";
+import { useCreateService } from "@queries/service.js";
 import ResourcePathsForm from "./ResourcePathsForm.jsx";
-import { useOpenaire } from "../../queries/openaire.js";
+import { useOpenaire } from "@queries/openaire.js";
 import ResourceFormSearch from "./ResourceFormSearch.jsx";
 
 export default function ResourceForm() {

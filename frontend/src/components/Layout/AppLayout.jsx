@@ -1,4 +1,4 @@
-import { useAuth } from "./AuthContext";
+import { useAuth } from "../AuthContext";
 import BaseLayout from "./BaseLayout";
 
 export default function AppLayout() {

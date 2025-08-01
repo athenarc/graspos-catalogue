@@ -10,7 +10,7 @@ import "./App.css";
 
 import { QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./components/AuthContext";
-import AppLayout from "./components/AppLayout";
+import AppLayout from "./components/Layout/AppLayout";
 import LoginForm from "./components/Forms/LoginForm";
 import RegisterForm from "./components/Forms/RegisterForm";
 import ProfileForm from "./components/Forms/ProfileForm";

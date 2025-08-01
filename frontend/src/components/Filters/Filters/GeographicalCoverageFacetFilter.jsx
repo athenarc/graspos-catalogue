@@ -16,7 +16,7 @@ import { useMemo, useState } from "react";
 import { useCountriesWithCount } from "@queries/countries";
 import { FixedSizeList } from "react-window";
 import ClearIcon from "@mui/icons-material/Clear";
-import { FilterVariants } from "@components/Skeleton";
+import { FilterVariants } from "@helpers/Skeleton";
 
 export default function GeographicalCoverageFacetFilter({
   selectedFilters,

@@ -36,6 +36,8 @@ export default defineConfig(({ mode }) => {
         "@components": "/src/components",
         "@queries": "/src/queries",
         "@utils": "/src/utils",
+        "@assets": "/src/assets",
+        "@helpers": "/src/components/helpers",
       },
     },
   };
