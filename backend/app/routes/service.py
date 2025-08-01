@@ -151,7 +151,11 @@ async def create_service(
     
     openaire = OpenAIRE(**data["openaire_object"])
     await openaire.create()    
-    
+    if openaire.metadata.trl:
+        service.tlr = openaire.metadata.trl
+    if openaire.metadata.extras["portfolios"]:
+        for portfolio in openaire.metadata.extras["portfolios"]:
+            service.service_type = portfolio.replace("portfolios-", "")
     service.openaire = openaire
     service.owner = user.id
     if user.super_user:
@@ -211,13 +215,13 @@ async def delete_service(service_id: PydanticObjectId,
                             detail="Service not found")
 
     try:
-        # Delete linked Zenodo and associated updates
-        if service.zenodo:
+        # Delete linked OpenAIRE and associated updates
+        if service.openaire:
             logger.info(
-                f"Deleting linked Zenodo {service.zenodo.id} and related updates"
+                f"Deleting linked OpenAIRE {service.openaire.id} and related updates"
             )
-            await Update.find(zenodo_id=service.zenodo.id).delete()
-            await Zenodo.find(Zenodo.id == service.zenodo.id).delete()
+            await Update.find(openaire_id=service.openaire.id).delete()
+            await OpenAIRE.find(OpenAIRE.id == service.openaire.id).delete()
 
         # Delete service without deleting other linked objects
         await service.delete(link_rule=DeleteRules.DO_NOTHING)
