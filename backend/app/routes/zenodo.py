@@ -25,7 +25,7 @@ async def get_all_zenodo_records():
 async def update_all_zenodo_records(
     zenodo: Zenodo | None = None,
     user: User = Depends(current_user_mandatory)):
-
+ 
     if zenodo:
         return await update_records(user_id=user.id, zenodo_id=zenodo.id)
 

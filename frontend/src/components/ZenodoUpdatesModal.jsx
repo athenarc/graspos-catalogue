@@ -11,16 +11,20 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Tooltip,
 } from "@mui/material";
 import { useUpdates } from "../queries/update";
 import { useUpdateZenodo } from "../queries/zenodo";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import CloseIcon from "@mui/icons-material/Close";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Notification from "./Notification";
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
+import InfoIcon from "@mui/icons-material/Info";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
 
 function UpdateRecords({ update }) {
   const [open, setOpen] = useState(false);
@@ -28,7 +32,14 @@ function UpdateRecords({ update }) {
     <>
       <TableRow>
         <TableCell>{update?.user_id?.username ?? "System Update"}</TableCell>
-
+        <TableCell>
+          {update?.source === "Zenodo" && (
+            <Link to={"https://zenodo.org"} target="_blank">{update?.source}</Link>
+          )}
+          {update?.source === "Openaire" && (
+            <Link to={"https://www.openaire.eu/"} target="_blank">{update?.source}</Link>
+          )}
+        </TableCell>
         <TableCell>{update?.updates.length}</TableCell>
         <TableCell>
           {new Date(update?.created_at)
@@ -45,7 +56,7 @@ function UpdateRecords({ update }) {
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={4}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Table size="small" aria-label="nested table">
               <TableHead>
@@ -53,6 +64,7 @@ function UpdateRecords({ update }) {
                   <TableCell>Title</TableCell>
                   <TableCell>Previous version</TableCell>
                   <TableCell>New version</TableCell>
+                  <TableCell>Status</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -61,6 +73,23 @@ function UpdateRecords({ update }) {
                     <TableCell>{detail?.zenodo?.title}</TableCell>
                     <TableCell>{detail?.old_version}</TableCell>
                     <TableCell>{detail?.new_version}</TableCell>
+                    <TableCell align="center">
+                      {detail?.status?.toLowerCase() === "up to date" && (
+                        <Tooltip title="Resource is up to date">
+                          <CheckCircleIcon color="primary" fontSize="small" />
+                        </Tooltip>
+                      )}
+                      {detail?.status?.toLowerCase() === "error" && (
+                        <Tooltip title="Error updating resource">
+                          <ErrorIcon color="error" fontSize="small" />
+                        </Tooltip>
+                      )}
+                      {detail?.status?.toLowerCase() === "updated" && (
+                        <Tooltip title="Resource updated successfully">
+                          <CheckCircleIcon color="primary" fontSize="small" />
+                        </Tooltip>
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -77,8 +106,9 @@ function UpdatesTable({ updates }) {
     <Table sx={{ backgroundColor: "#FFF" }}>
       <TableHead>
         <TableRow>
-          <TableCell></TableCell>
-          <TableCell>Number of resources</TableCell>
+          <TableCell>User</TableCell>
+          <TableCell>Update Source</TableCell>
+          <TableCell>Resources Checked</TableCell>
           <TableCell>Timestamp</TableCell>
           <TableCell></TableCell>
         </TableRow>
@@ -117,7 +147,11 @@ export default function UpdatesModal() {
           setMessage(data?.data?.detail);
         },
         onError: (error) => {
-          setMessage( error?.response?.data?.detail?.message || error?.response?.data?.detail || "An error occurred while updating Zenodo resources.");
+          setMessage(
+            error?.response?.data?.detail?.message ||
+              error?.response?.data?.detail ||
+              "An error occurred while updating Zenodo resources."
+          );
         },
       }
     );
