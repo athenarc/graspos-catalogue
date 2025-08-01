@@ -3,13 +3,14 @@ import { RectangularVariants } from "../../Skeleton";
 import ResourceGridItem from "../ResourcesGrid/ResourceGridItem";
 import { Grid2 as Grid, Stack, useMediaQuery, useTheme } from "@mui/material";
 import {
-  ResourceAuthors,
-  ResourceBasicInformation,
-  ResourceLicense,
-  ResourceTags,
-  ResourceStatistics,
-  ResourceGeographicCoverage,
-} from "../ResourcesGrid/ResourcePage";
+  AuthorsCard,
+  LicenseCard,
+  TagsCard,
+  StatisticsCard,
+  GeographicCoverageCard,
+} from "../ResourcesGrid/ResourcePageComponents/ResourcePageCards";
+
+import { ResourceBasicInformation } from "../ResourcesGrid/ResourcePageComponents/ResourcePageBasicInformation";
 
 export function Documents({ documents, user }) {
   const theme = useTheme();
@@ -48,11 +49,11 @@ export function Document({ resourceId }) {
             margin: "0 auto",
           }}
         >
-          <ResourceAuthors resource={document} />
-          <ResourceTags resource={document} />
-          <ResourceLicense resource={document} />
-          <ResourceStatistics resource={document} />
-          <ResourceGeographicCoverage resource={document} />
+          <AuthorsCard resource={document} />
+          <TagsCard resource={document} />
+          <LicenseCard resource={document} />
+          <StatisticsCard resource={document} />
+          <GeographicCoverageCard resource={document} />
         </Stack>
       </Grid>
     </>

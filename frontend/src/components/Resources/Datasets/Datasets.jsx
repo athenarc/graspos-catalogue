@@ -3,17 +3,16 @@ import { RectangularVariants } from "../../Skeleton";
 import ResourceGridItem from "../ResourcesGrid/ResourceGridItem";
 import { Grid2 as Grid, Stack, useMediaQuery, useTheme } from "@mui/material";
 import {
-  ResourceAuthors,
-  ResourceBasicInformation,
-  ResourceLicense,
-  ResourceTags,
-  ResourceStatistics,
-  ResourceGeographicCoverage,
-  ResourceContactInformation,
-  ResourceOrganization,
-  ResourceApiUrlInstructions,
-  ResourceDocumentationUrl,
-} from "../ResourcesGrid/ResourcePage";
+  AuthorsCard,
+  LicenseCard,
+  TagsCard,
+  StatisticsCard,
+  GeographicCoverageCard,
+  ContactInformationCard,
+  ApiUrlInstructionsCard,
+  DocumentationUrlCard,
+} from "../ResourcesGrid/ResourcePageComponents/ResourcePageCards";
+import { ResourceBasicInformation } from "../ResourcesGrid/ResourcePageComponents/ResourcePageBasicInformation";
 
 export function Datasets({ datasets, user }) {
   const theme = useTheme();
@@ -39,7 +38,7 @@ export function Dataset({ resourceId }) {
   return (
     <>
       <Grid size={{ xs: 12, lg: 8 }}>
-        <ResourceBasicInformation resource={dataset} type="dataset" />
+        <ResourceBasicInformation resource={dataset} type={"dataset"} />
       </Grid>
       <Grid size={{ xs: 12, lg: 4 }}>
         <Stack
@@ -52,14 +51,14 @@ export function Dataset({ resourceId }) {
             margin: "0 auto",
           }}
         >
-          <ResourceAuthors resource={dataset} />
-          <ResourceLicense resource={dataset} />
-          <ResourceTags resource={dataset} />
-          <ResourceStatistics resource={dataset} />
-          <ResourceGeographicCoverage resource={dataset} />
-          <ResourceContactInformation resource={dataset} />
-          <ResourceApiUrlInstructions resource={dataset} />
-          <ResourceDocumentationUrl resource={dataset} />
+          <AuthorsCard resource={dataset} />
+          <LicenseCard resource={dataset} />
+          <TagsCard resource={dataset} />
+          <StatisticsCard resource={dataset} />
+          <GeographicCoverageCard resource={dataset} />
+          <ContactInformationCard resource={dataset} />
+          <ApiUrlInstructionsCard resource={dataset} />
+          <DocumentationUrlCard resource={dataset} />
         </Stack>
       </Grid>
     </>

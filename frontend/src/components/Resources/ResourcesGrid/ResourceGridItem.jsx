@@ -1,7 +1,7 @@
 import { Box, Grid2 as Grid, Card, CardContent } from "@mui/material";
-import ResourceItemHeader from "./ResourceComponents/ResourceItemHeader";
-import ResourceItemContent from "./ResourceComponents/ResourceItemContent";
-import ResourceItemFooter from "./ResourceComponents/ResourceItemFooter";
+import ResourceItemHeader from "./ResourceGridItemComponents/ResourceItemHeader";
+import ResourceItemContent from "./ResourceGridItemComponents/ResourceItemContent";
+import ResourceItemFooter from "./ResourceGridItemComponents/ResourceItemFooter";
 
 export default function ResourceGridItem({ resource, type, user }) {
   const typeColors = {
