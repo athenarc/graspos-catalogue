@@ -30,5 +30,13 @@ export default defineConfig(({ mode }) => {
       sourcemap: true,
     },
     plugins: [react()],
+    resolve: {
+      alias: {
+        "@": "/src",
+        "@components": "/src/components",
+        "@queries": "/src/queries",
+        "@utils": "/src/utils",
+      },
+    },
   };
 });
