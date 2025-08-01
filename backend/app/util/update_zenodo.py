@@ -4,7 +4,7 @@ from models.update import Update
 from .requests import get_zenodo_data
 
 
-async def update_records(user_id=None, zenodo_id=None):
+async def update_zenodo_records(user_id=None, zenodo_id=None):
     records = []
 
     if zenodo_id:

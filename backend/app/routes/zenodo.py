@@ -9,7 +9,7 @@ from beanie import PydanticObjectId
 from jwt import access_security
 from util.current_user import current_user, current_user_mandatory
 from util.requests import get_zenodo_data
-from util.update_zenodo import update_records
+from util.update_zenodo import update_zenodo_records
 
 router = APIRouter(prefix="/api/v1/zenodo", tags=["Zenodo"])
 
@@ -27,9 +27,9 @@ async def update_all_zenodo_records(
     user: User = Depends(current_user_mandatory)):
  
     if zenodo:
-        return await update_records(user_id=user.id, zenodo_id=zenodo.id)
+        return await update_zenodo_records(user_id=user.id, zenodo_id=zenodo.id)
 
-    return await update_records(user_id=user.id, zenodo_id=None)
+    return await update_zenodo_records(user_id=user.id, zenodo_id=None)
 
 
 @router.post("/search", status_code=200)

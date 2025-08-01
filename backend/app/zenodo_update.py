@@ -6,7 +6,7 @@ from util.requests import get_zenodo_data
 from beanie import init_beanie
 import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
-from util.update_zenodo import update_records
+from util.update_zenodo import update_zenodo_records
 
 
 async def init(mongodb_uri):
@@ -34,7 +34,7 @@ async def main():
     await init(mongodb_uri)
     try:
         logger.info("Starting Zenodo update process...")
-        await update_records()
+        await update_zenodo_records()
         logger.info("Zenodo update process completed successfully.")
     except Exception as e:
         logger.error(f"Error during Zenodo update process: {e}")
