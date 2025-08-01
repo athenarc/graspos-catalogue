@@ -8,6 +8,7 @@ import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 from util.update_zenodo import update_records
 
+
 async def init(mongodb_uri):
     db = AsyncIOMotorClient(mongodb_uri).graspos
     await init_beanie(db, document_models=[Zenodo, Update])
@@ -31,60 +32,11 @@ async def main():
     )
 
     await init(mongodb_uri)
-    await update_records()
-    # records = await Zenodo.find().to_list()
-
-    # zenodo_updates = []
-    # for record in records:
-    #     if not record.zenodo_id:
-    #         continue
-        
-    #     zenodo_update = {
-    #         "zenodo": record,
-    #         "old_version": int(record.zenodo_id),
-    #         "new_version": None,
-    #         "status": "not updated",
-    #         "detail": "No update performed"
-    #     }
-
-    #     try:
-    #         data = await get_zenodo_data(record.source)
-    #         if data["status"] != 200:
-    #             # If the data fetch fails, log the error and continue
-    #             zenodo_update["status"] = "Error"
-    #             zenodo_update["detail"] = data["detail"]
-    #             continue  # If a record fails to fetch, skip to the next one
-
-    #         new_zenodo = data["zenodo_object"]
-
-    #         if new_zenodo["zenodo_id"] != record.zenodo_id:
-
-    #             updated_model = Zenodo(**new_zenodo)
-    #             fields = updated_model.model_dump(exclude_unset=True)
-    #             updated_record = Zenodo.model_copy(record, update=fields)
-    #             await updated_record.save()
-
-    #             zenodo_update["zenodo"] = updated_record
-    #             zenodo_update["new_version"] = int(new_zenodo["zenodo_id"])
-    #             zenodo_update["status"] = "Updated"
-    #             zenodo_update["detail"] = "Record updated successfully"
-    #         else:
-    #             # If the record is unchanged, log that as well
-    #             zenodo_update["old_version"] = int(record.zenodo_id)
-    #             zenodo_update["status"] = "Up to date"
-    #             zenodo_update["detail"] = "Record is unchanged"
-
-    #     except Exception as e:
-    #         # If an error occurs during the update, log it
-    #         zenodo_update["status"] = "error"
-    #         zenodo_update["detail"] = str(e)
-
-    #     zenodo_updates.append(zenodo_update)
-
-    # if len(zenodo_updates) > 0:
-    #     update = Update(updates=zenodo_updates,
-    #                     source="Zenodo")
-    #     await update.save()
-
+    try:
+        logger.info("Starting Zenodo update process...")
+        await update_records()
+        logger.info("Zenodo update process completed successfully.")
+    except Exception as e:
+        logger.error(f"Error during Zenodo update process: {e}")
 
 asyncio.run(main())
