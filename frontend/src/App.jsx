@@ -16,7 +16,7 @@ import RegisterForm from "./components/Forms/RegisterForm";
 import ProfileForm from "./components/Forms/ProfileForm";
 import UsersPanelForm from "./components/Forms/UsersForm";
 import UpdatesModal from "./components/ZenodoUpdatesModal";
-import { ResourcePage } from "./components/Resources/ResourceTemplate/ResourcePage";
+import { ResourcePage } from "./components/Resources/ResourcesGrid/ResourcePage";
 import { queryClient } from "./queries/queryClient";
 import ResourceForm from "./components/Forms/ResourceForm";
 

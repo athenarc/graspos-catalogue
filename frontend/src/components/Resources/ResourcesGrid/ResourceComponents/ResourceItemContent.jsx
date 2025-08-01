@@ -4,7 +4,7 @@ import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import { stripHtml } from "../../../utils";
 
 export function ResourceItemKeywords({ resource }) {
-  const keywords = resource?.zenodo?.metadata?.keywords || [];
+  const keywords = resource?.zenodo?.metadata?.keywords || resource?.openaire?.metadata?.tags || [];
 
   return (
     <Stack direction="column" justifyContent="center">
@@ -33,6 +33,10 @@ export function ResourceItemKeywords({ resource }) {
 }
 
 export default function ResourceItemContent({ resource }) {
+  const description =
+    resource?.zenodo?.metadata?.description ||
+    resource?.openaire?.metadata?.description ||
+    "No description available";
   return (
     <>
       <Stack direction={"row"} spacing={2} sx={{ pb: 1.5 }}>
@@ -46,7 +50,7 @@ export default function ResourceItemContent({ resource }) {
             WebkitBoxOrient: "vertical",
           }}
         >
-          {stripHtml(resource?.zenodo?.metadata?.description)}
+          {stripHtml(description)}
         </Typography>
       </Stack>
 

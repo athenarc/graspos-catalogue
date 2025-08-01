@@ -105,6 +105,16 @@ export default function ResourceItemFooter({ resource, type }) {
   const geoEntries = Object.entries(resource?.geographical_coverage || {});
   const visibleGeos = geoEntries.slice(0, MAX_AVATARS);
   const hiddenGeos = geoEntries.slice(MAX_AVATARS);
+  const publication_date =
+    resource?.zenodo?.metadata?.publication_date || "N/A";
+  const version =
+    resource?.zenodo?.metadata?.version ||
+    resource?.openaire?.metadata?.version ||
+    "N/A";
+  const license =
+    resource?.zenodo?.metadata?.license?.id ||
+    resource?.openaire?.metadata?.license ||
+    "N/A";
   return (
     <Stack direction="row" justifyContent="space-between" alignItems="center">
       <Stack direction="row" spacing={2} alignItems="center">
@@ -114,14 +124,14 @@ export default function ResourceItemFooter({ resource, type }) {
               <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
             </Tooltip>
             <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-              {formatDate(resource?.zenodo?.metadata?.publication_date)}
+              {formatDate(publication_date)}
             </Typography>
             <Stack direction="row" spacing={1} alignItems="center">
               <Tooltip title="Version">
                 <HistoryIcon sx={{ fontSize: "1.1rem" }} />
               </Tooltip>
               <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-                {resource?.zenodo?.metadata?.version ?? "N/A"}
+                {version}
               </Typography>
             </Stack>
             <Stack direction="row" spacing={1} alignItems="center">
@@ -129,7 +139,7 @@ export default function ResourceItemFooter({ resource, type }) {
                 <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
               </Tooltip>
               <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-                {resource?.zenodo?.metadata?.license?.id ?? "N/A"}
+                {license}
               </Typography>
             </Stack>
           </>
@@ -141,6 +151,12 @@ export default function ResourceItemFooter({ resource, type }) {
             </Tooltip>
             <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
               {resource?.openaire?.metadata?.trl ?? "N/A"}
+            </Typography>
+            <Tooltip title="Version">
+              <HistoryIcon sx={{ fontSize: "1.1rem" }} />
+            </Tooltip>
+            <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
+              {version}
             </Typography>
           </Stack>
         )}

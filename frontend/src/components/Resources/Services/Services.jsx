@@ -1,6 +1,6 @@
 import { useService } from "../../../queries/service";
 import { RectangularVariants } from "../../Skeleton";
-import ResourceGridItem from "../ResourceTemplate/ResourceGridItem";
+import ResourceGridItem from "../ResourcesGrid/ResourceGridItem";
 import { Grid2 as Grid, Stack, useTheme } from "@mui/material";
 import {
   ResourceAuthors,
@@ -10,7 +10,7 @@ import {
   ResourceStatistics,
   ResourceGeographicCoverage,
   ResourceTRL,
-} from "../ResourceTemplate/ResourcePage";
+} from "../ResourcesGrid/ResourcePage";
 
 export function Services({ services, user }) {
   const theme = useTheme();

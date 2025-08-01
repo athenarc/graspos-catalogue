@@ -1,6 +1,6 @@
 import { useDocument } from "../../../queries/document";
 import { RectangularVariants } from "../../Skeleton";
-import ResourceGridItem from "../ResourceTemplate/ResourceGridItem";
+import ResourceGridItem from "../ResourcesGrid/ResourceGridItem";
 import { Grid2 as Grid, Stack, useMediaQuery, useTheme } from "@mui/material";
 import {
   ResourceAuthors,
@@ -9,7 +9,7 @@ import {
   ResourceTags,
   ResourceStatistics,
   ResourceGeographicCoverage,
-} from "../ResourceTemplate/ResourcePage";
+} from "../ResourcesGrid/ResourcePage";
 
 export function Documents({ documents, user }) {
   const theme = useTheme();

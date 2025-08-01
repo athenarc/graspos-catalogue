@@ -56,8 +56,16 @@ const cardStyles = {
 export function ResourceBasicInformation({ resource, type }) {
   const url =
     type === "service"
-      ? resource?.data?.data?.zenodo?.source
+      ? resource?.data?.data?.openaire?.source
       : "https://zenodo.org/records/" + resource?.data?.data?.zenodo?.zenodo_id;
+  const title =
+    resource?.data?.data?.title ||
+    resource?.data?.data?.openaire?.metadata?.name ||
+    "Title";
+  const version =
+    resource?.data?.data?.version ||
+    resource?.data?.data?.openaire?.metadata?.version ||
+    "N/A";
   return (
     <Stack spacing={3}>
       <Stack direction="column" spacing={2}>
@@ -84,7 +92,7 @@ export function ResourceBasicInformation({ resource, type }) {
                 },
               }}
             >
-              {resource?.data?.data?.zenodo?.title ?? "Title"}
+              {title}
             </Typography>
             <LaunchIcon
               sx={{
@@ -108,13 +116,13 @@ export function ResourceBasicInformation({ resource, type }) {
                   )}
                 </Typography>
               </Stack>
-              {resource?.data?.data?.zenodo?.metadata?.version && (
+              {version && (
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Tooltip title="Version">
                     <HistoryIcon sx={{ fontSize: "1.1rem" }} />
                   </Tooltip>
                   <Typography variant="body2" color="text.secondary">
-                    Version {resource?.data?.data?.zenodo?.metadata?.version}
+                    Version {version}
                   </Typography>
                 </Stack>
               )}
@@ -132,6 +140,7 @@ export function ResourceBasicInformation({ resource, type }) {
           )}
           {type === "service" && (
             <Stack direction="row" spacing={1} alignItems="center">
+              
               <Tooltip title="Service Type">
                 <Inventory2Icon sx={{ fontSize: "1.1rem" }} />
               </Tooltip>
@@ -169,6 +178,8 @@ export function ResourceBasicInformation({ resource, type }) {
 
 export function ResourceAuthors({ resource, type = null }) {
   const authors = resource?.data?.data?.zenodo?.metadata?.creators || [];
+  const contributors =
+    resource?.data?.data?.openaire?.metadata?.resourceOrganisation || "N/A";
   return (
     <Card sx={cardStyles}>
       <CardHeader
@@ -188,6 +199,16 @@ export function ResourceAuthors({ resource, type = null }) {
         {resource.isLoading && <CircularProgress size="3rem" />}
         {resource && (
           <Stack direction="column" spacing={1}>
+            {type === "service" && (
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Tooltip title="Service Type">
+                  <Inventory2Icon sx={{ fontSize: "1.1rem" }} />
+                </Tooltip>
+                <Typography variant="body2" color="text.secondary">
+                  {contributors.toUpperCase() || "N/A"}
+                </Typography>
+              </Stack>
+            )}
             {authors.map((author) => (
               <Stack direction="column" key={author?.name} spacing={0.5}>
                 <Stack direction="row" alignItems="center">
@@ -423,6 +444,7 @@ export function ResourceDocumentationUrl({ resource }) {
 }
 
 export function ResourceTRL({ resource }) {
+  const trl = resource?.data?.data?.openaire?.metadata?.trl || "";
   return (
     <Card sx={cardStyles}>
       <CardHeader
@@ -436,11 +458,8 @@ export function ResourceTRL({ resource }) {
         }}
       >
         {resource.isLoading && <CircularProgress size="3rem" />}
-        {resource?.data?.data?.tlr?.id ? (
-          <Typography>
-            {resource?.data?.data?.tlr?.id} -{" "}
-            {resource?.data?.data?.tlr?.description}
-          </Typography>
+        {trl ? (
+          <Typography>{trl}</Typography>
         ) : (
           <Typography
             variant="body2"

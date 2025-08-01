@@ -1,6 +1,6 @@
 import { useDataset } from "../../../queries/dataset";
 import { RectangularVariants } from "../../Skeleton";
-import ResourceGridItem from "../ResourceTemplate/ResourceGridItem";
+import ResourceGridItem from "../ResourcesGrid/ResourceGridItem";
 import { Grid2 as Grid, Stack, useMediaQuery, useTheme } from "@mui/material";
 import {
   ResourceAuthors,
@@ -13,7 +13,7 @@ import {
   ResourceOrganization,
   ResourceApiUrlInstructions,
   ResourceDocumentationUrl,
-} from "../ResourceTemplate/ResourcePage";
+} from "../ResourcesGrid/ResourcePage";
 
 export function Datasets({ datasets, user }) {
   const theme = useTheme();

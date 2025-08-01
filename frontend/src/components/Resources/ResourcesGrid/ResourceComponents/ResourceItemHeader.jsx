@@ -24,7 +24,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ClearIcon from "@mui/icons-material/Clear";
 import Check from "@mui/icons-material/Check";
 import RefreshIcon from "@mui/icons-material/Refresh";
-
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useDeleteTool, useUpdateTool } from "../../../../queries/tool";
 
@@ -276,7 +275,8 @@ export function ResourceActionsMenu({ resource, type, user }) {
 }
 
 export function ResourceItemCommunities({ resource }) {
-  return resource?.zenodo?.metadata?.communities?.map(
+    const communities = resource?.zenodo?.metadata?.communities || [];
+  return communities.map(
     (community) =>
       community.id.includes("graspos") && (
         <Tooltip
@@ -300,6 +300,8 @@ export function ResourceItemCommunities({ resource }) {
 }
 
 export default function ResourceItemHeader({ resource, type, user }) {
+  const title =
+    resource?.zenodo?.title || resource?.openaire?.metadata?.name || "Untitled";
   return (
     <Stack
       direction="row"
@@ -320,7 +322,7 @@ export default function ResourceItemHeader({ resource, type, user }) {
             }}
           >
             <Link to={"/" + type.toLowerCase() + "s/" + resource?._id}>
-              {resource?.zenodo?.title}
+              {title}
             </Link>
           </Typography>
           <ResourceItemCommunities resource={resource} />
