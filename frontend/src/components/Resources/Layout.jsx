@@ -9,13 +9,13 @@ import {
   CircularProgress,
 } from "@mui/material";
 import ResourcesGrid from "./Resources";
-import { useURLFilters } from "./FiltersLayout/Filters/Utils/useURLFilters";
-import FiltersLayout from "./FiltersLayout/Layout";
-import GlobalSearchBar from "./FiltersLayout/Filters/GlobalSearchBar";
+import { useURLFilters } from "../Filters/Filters/Utils/useURLFilters";
+import FiltersLayout from "../Filters/Layout";
+import GlobalSearchBar from "../Filters/Filters/GlobalSearchBar";
 import { useDatasets } from "../../queries/dataset";
 import { useTools } from "../../queries/tool";
 import { useDocuments } from "../../queries/document";
-import LocalFiltersStack from "./FiltersLayout/LocalFiltersStack";
+import LocalFiltersStack from "../Filters/LocalFiltersStack";
 import { useServices } from "../../queries/service";
 
 function ResourcesTabs({

@@ -10,14 +10,14 @@ import {
   Stack,
 } from "@mui/material";
 
-import { useAssessments } from "../../../../queries/assessment";
+import { useAssessments } from "@queries/assessment"; 
 import { useEffect, useState } from "react";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import FlagIcon from "@mui/icons-material/Flag";
 import PersonIcon from "@mui/icons-material/Person";
 import GroupIcon from "@mui/icons-material/Group";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import { FilterVariants } from "../../../Skeleton";
+import { FilterVariants } from "@components/Skeleton";
 
 export default function AssessmentFacetFilter({
   selectedFilters,

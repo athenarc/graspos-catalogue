@@ -7,7 +7,7 @@ import {
   Divider,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useServiceUniqueFieldValues } from "../../../../queries/service";
+import { useServiceUniqueFieldValues } from "@queries/service";
 
 export default function ServiceTypeAutocompleteFilter({
   selectedResource,

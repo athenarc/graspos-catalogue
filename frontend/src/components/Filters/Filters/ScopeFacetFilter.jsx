@@ -11,10 +11,10 @@ import {
   Stack,
 } from "@mui/material";
 
-import { useScopes } from "../../../../queries/scope";
+import { useScopes } from "@queries/scope"; 
 import { useEffect, useState } from "react";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import { FilterVariants } from "../../../Skeleton";
+import { FilterVariants } from "@components/Skeleton";
 
 export default function ScopeFacetFilter({ selectedFilters, onFilterChange }) {
   const { data: scopeData, isLoading } = useScopes();
