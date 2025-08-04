@@ -4,6 +4,7 @@ from beanie import Document
 from datetime import datetime
 from pydantic import BaseModel
 from beanie import Link
+from models.openaire import OpenAIRE
 from models.zenodo import Zenodo
 from models.user import User
 
@@ -11,8 +12,9 @@ from models.user import User
 class UpdatedZenodoItems(BaseModel):
 
     zenodo: Link[Zenodo] | None = None
-    old_version: int | None = None
-    new_version: int | None = None
+    openaire: Link[OpenAIRE] | None = None
+    old_version: str | None = None
+    new_version: str | None = None
     status: str | None = None
     detail: str | None = None
     

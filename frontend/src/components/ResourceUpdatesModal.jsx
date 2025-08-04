@@ -13,8 +13,7 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
-import { useUpdates } from "../queries/update";
-import { useUpdateZenodo } from "../queries/zenodo";
+import { useUpdates, useUpdateResources } from "../queries/update";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import CloseIcon from "@mui/icons-material/Close";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
@@ -22,7 +21,6 @@ import { Link, useNavigate } from "react-router-dom";
 import Notification from "@helpers/Notification";
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
-import InfoIcon from "@mui/icons-material/Info";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 
@@ -34,10 +32,14 @@ function UpdateRecords({ update }) {
         <TableCell>{update?.user_id?.username ?? "System Update"}</TableCell>
         <TableCell>
           {update?.source === "Zenodo" && (
-            <Link to={"https://zenodo.org"} target="_blank">{update?.source}</Link>
+            <Link to={"https://zenodo.org"} target="_blank">
+              {update?.source}
+            </Link>
           )}
-          {update?.source === "Openaire" && (
-            <Link to={"https://www.openaire.eu/"} target="_blank">{update?.source}</Link>
+          {update?.source === "OpenAIRE" && (
+            <Link to={"https://www.openaire.eu/"} target="_blank">
+              {update?.source}
+            </Link>
           )}
         </TableCell>
         <TableCell>{update?.updates.length}</TableCell>
@@ -70,7 +72,10 @@ function UpdateRecords({ update }) {
               <TableBody>
                 {update?.updates?.map((detail, index) => (
                   <TableRow key={index}>
-                    <TableCell>{detail?.zenodo?.title}</TableCell>
+                    <TableCell>
+                      {detail?.zenodo?.title ||
+                        detail?.openaire?.metadata?.name}
+                    </TableCell>
                     <TableCell>{detail?.old_version}</TableCell>
                     <TableCell>{detail?.new_version}</TableCell>
                     <TableCell align="center">
@@ -137,10 +142,10 @@ export default function UpdatesModal() {
     navigate(-1);
   }
   const updates = useUpdates();
-  const updateZenodo = useUpdateZenodo();
+  const updateResources = useUpdateResources();
 
   function handleZenodoUpdate() {
-    updateZenodo.mutate(
+    updateResources.mutate(
       {},
       {
         onSuccess: (data) => {
@@ -187,8 +192,8 @@ export default function UpdatesModal() {
         <DialogActions sx={{ p: 2, pt: 0 }}>
           <Button
             variant="contained"
-            disabled={updateZenodo?.isPending}
-            loading={updateZenodo?.isPending}
+            disabled={updateResources?.isPending}
+            loading={updateResources?.isPending}
             onClick={() => handleZenodoUpdate()}
             endIcon={<SystemUpdateAltIcon />}
             loadingPosition="end"
@@ -197,9 +202,9 @@ export default function UpdatesModal() {
             Update resources
           </Button>
         </DialogActions>
-        {(updateZenodo?.isSuccess || updateZenodo?.isError) && (
+        {(updateResources?.isSuccess || updateResources?.isError) && (
           <Notification
-            requestStatus={updateZenodo?.status}
+            requestStatus={updateResources?.status}
             message={message}
           />
         )}

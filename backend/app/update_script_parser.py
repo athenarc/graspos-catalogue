@@ -6,7 +6,7 @@ from util.requests import get_zenodo_data
 from beanie import init_beanie
 import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
-from util.update_records import update_zenodo_records
+from util.update_records import update_zenodo_records, update_openaire_records
 
 
 async def init(mongodb_uri):
@@ -38,5 +38,12 @@ async def main():
         logger.info("Zenodo update process completed successfully.")
     except Exception as e:
         logger.error(f"Error during Zenodo update process: {e}")
+
+    try:
+        logger.info("Starting OpenAIRE update process...")
+        await update_openaire_records()
+        logger.info("OpenAIRE update process completed successfully.")
+    except Exception as e:
+        logger.error(f"Error during OpenAIRE update process: {e}")
 
 asyncio.run(main())
