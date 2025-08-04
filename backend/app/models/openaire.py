@@ -94,6 +94,7 @@ class OpenaireMetadata(BaseModel):
     fundingBody: List[str]
     fundingPrograms: List[str]
     grantProjectNames: List[str]
+    communities: Optional[List[dict]] = None
 
     tagline: Optional[str] = None
     logo: Optional[HttpUrl] = None

@@ -283,7 +283,11 @@ export function ResourceActionsMenu({ resource, type, user }) {
 }
 
 export function ResourceItemCommunities({ resource }) {
-  const communities = resource?.zenodo?.metadata?.communities || [];
+  const communities =
+    resource?.zenodo?.metadata?.communities ||
+    resource?.openaire?.metadata?.communities ||
+    [];
+    console.log("Resource communities:", communities);
   return communities.map(
     (community) =>
       community.id.includes("graspos") && (

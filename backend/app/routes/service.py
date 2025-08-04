@@ -133,7 +133,9 @@ async def create_service(
         raise HTTPException(status_code=data["status"], detail=data["detail"])
 
     openaire = OpenAIRE(**data["openaire_object"])
+
     await openaire.create()
+
     if openaire.metadata.trl:
         service.trl = openaire.metadata.trl
     if openaire.metadata.extras["portfolios"]:

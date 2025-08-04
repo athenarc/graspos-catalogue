@@ -16,6 +16,9 @@ async def get_openaire_data(source: str) -> dict:
                 data["openaireId"] = data.get("id")
                 data["source"] = source.strip()
                 data["metadata"] = data
+                data["metadata"]["communities"] = [{
+                    "id": "graspos-services"
+                }] if "graspos" in source.lower() else []
                 del data["id"]
                 return {"status": 200, "openaire_object": data}
             else:
