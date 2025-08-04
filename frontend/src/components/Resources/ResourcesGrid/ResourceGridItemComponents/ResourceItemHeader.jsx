@@ -273,16 +273,10 @@ export function ResourceActionsMenu({ resource, type, user }) {
       />
 
       {(updateResources?.isSuccess ||
-        updateResources?.isError ||
-        updateQuery?.isSuccess ||
-        updateQuery?.isError ||
-        deleteMutation?.isSuccess ||
-        deleteMutation?.isError) && (
+        updateResources?.isError) && (
         <Notification
           requestStatus={
-            updateResources?.status ||
-            updateQuery?.status ||
-            deleteMutation?.status
+            updateResources?.status
           }
           message={message}
         />
