@@ -6,7 +6,7 @@ from util.requests import get_zenodo_data
 from beanie import init_beanie
 import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
-from util.update_zenodo import update_zenodo_records
+from util.update_records import update_zenodo_records
 
 
 async def init(mongodb_uri):
@@ -17,7 +17,7 @@ async def init(mongodb_uri):
 async def main():
 
     logger = logging.getLogger(__name__)
-    logging.basicConfig(filename='zenodo_update.log',
+    logging.basicConfig(filename='update_script_parser.log',
                         encoding='utf-8',
                         level=logging.DEBUG)
 

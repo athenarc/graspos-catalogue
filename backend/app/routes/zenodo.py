@@ -9,7 +9,7 @@ from beanie import PydanticObjectId
 from jwt import access_security
 from util.current_user import current_user, current_user_mandatory
 from util.requests import get_zenodo_data
-from util.update_zenodo import update_zenodo_records
+from util.update_records import update_zenodo_records
 
 router = APIRouter(prefix="/api/v1/zenodo", tags=["Zenodo"])
 
