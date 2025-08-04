@@ -17,6 +17,19 @@ const cardStyles = {
 };
 
 export default function ResourcePreview({ data }) {
+  console.log(data?.metadata?.license);
+  const name = data?.metadata?.name || data?.title || "";
+  const url = data?.source || `https://zenodo.org/records/${data?.zenodo_id}`;
+  const description = data?.metadata?.description || data?.description || "";
+  const publicationDate = data?.metadata?.publication_date
+    ? new Date(data?.metadata?.publication_date).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : ""; 
+  const version = data?.metadata?.version ;
+  const license = data?.metadata?.license ;
   return (
     <>
       {data && (
@@ -33,11 +46,8 @@ export default function ResourcePreview({ data }) {
               Preview
             </Typography>
             <Typography variant="subtitle">
-              <Link
-                to={"https://zenodo.org/records/" + data?.zenodo_id}
-                target="_blank"
-              >
-                {data?.title}
+              <Link to={url} target="_blank">
+                {name}
               </Link>
             </Typography>
             <Typography
@@ -55,10 +65,10 @@ export default function ResourcePreview({ data }) {
                 },
               }}
             >
-              <Tooltip title={data?.metadata?.description}>
+              <Tooltip title={description}>
                 <Box
                   dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(data?.metadata?.description),
+                    __html: DOMPurify.sanitize(description),
                   }}
                 />
               </Tooltip>
@@ -75,32 +85,26 @@ export default function ResourcePreview({ data }) {
                 </Tooltip>
                 {data?.metadata?.publication_date && (
                   <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-                    {new Date(
-                      data?.metadata?.publication_date
-                    ).toLocaleDateString("en-GB", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
+                    {publicationDate}
                   </Typography>
                 )}
-                {data?.metadata?.version && (
+                {version && (
                   <Stack direction="row" spacing={1} alignItems="center">
                     <Tooltip title="Version">
                       <HistoryIcon sx={{ fontSize: "1.1rem" }} />
                     </Tooltip>
                     <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-                      {data?.metadata?.version}
+                      {version}
                     </Typography>
                   </Stack>
                 )}
-                {data?.metadata?.license?.id && (
+                {license && (
                   <Stack direction="row" spacing={1} alignItems="center">
                     <Tooltip title="License">
                       <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
                     </Tooltip>
                     <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-                      {data?.metadata?.license?.id}
+                      {license?.id}
                     </Typography>
                   </Stack>
                 )}
