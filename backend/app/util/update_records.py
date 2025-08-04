@@ -82,7 +82,7 @@ async def update_openaire_records(
             raise HTTPException(status_code=500,
                                 detail="Error saving update record")
 
-    detail = (f"OpenAIRE record {openaire_id} updated successfully"
+    detail = (f"OpenAIRE record updated successfully"
               if openaire_id else "OpenAIRE records updated successfully")
 
     return {
@@ -166,7 +166,7 @@ async def update_zenodo_records(user_id=None, zenodo_id=None):
             raise HTTPException(status_code=500,
                                 detail="Error saving update record")
 
-    detail = (f"Zenodo record {zenodo_id} updated successfully"
+    detail = (f"Zenodo record updated successfully"
               if zenodo_id else "Zenodo records updated successfully")
 
     return {

@@ -12,36 +12,26 @@ import {
   ListItemText,
 } from "@mui/material";
 
-import {
-  useDeleteDataset,
-  useUpdateDataset,
-} from "../../../../queries/dataset";
-import {
-  useDeleteDocument,
-  useUpdateDocument,
-} from "../../../../queries/document";
+import { useDeleteDataset, useUpdateDataset } from "@queries/dataset";
+import { useDeleteDocument, useUpdateDocument } from "@queries/document";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ClearIcon from "@mui/icons-material/Clear";
 import Check from "@mui/icons-material/Check";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { useDeleteTool, useUpdateTool } from "../../../../queries/tool";
+import { useDeleteTool, useUpdateTool } from "@queries/tool";
 
 import VerifiedIcon from "@mui/icons-material/Verified";
-
-import { useUpdateZenodo } from "../../../../queries/zenodo";
-
+import Notification from "@helpers/Notification";
+import { useUpdateResources } from "@queries/update";
 import EditIcon from "@mui/icons-material/Edit";
-import { useScopes } from "../../../../queries/scope";
+import { useScopes } from "@queries/scope";
 
 import EditResourceDialog from "../../../Forms/EditResourceDialog";
 import DeleteConfirmationDialog from "../../../Forms/DeleteConfirmationDialog";
-import {
-  useDeleteService,
-  useUpdateService,
-} from "../../../../queries/service";
-import { useCountries } from "../../../../queries/countries";
-import { useAssessments } from "../../../../queries/assessment";
+import { useDeleteService, useUpdateService } from "@queries/service";
+import { useCountries } from "@queries/countries";
+import { useAssessments } from "@queries/assessment";
 
 export function ResourceActionsMenu({ resource, type, user }) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -49,11 +39,12 @@ export function ResourceActionsMenu({ resource, type, user }) {
   const [editScopesOpen, setEditScopesOpen] = useState(false);
   const [selectedScopes, setSelectedScopes] = useState([]);
   const [queryState, setQueryState] = useState(false);
+  const [message, setMessage] = useState("");
 
   const scopesQuery = useScopes();
   const countriesQuery = useCountries();
   const assessmentsQuery = useAssessments();
-  const updateZenodo = useUpdateZenodo();
+  const updateResources = useUpdateResources();
 
   const updateDocument = useUpdateDocument(resource?._id);
   const updateDataset = useUpdateDataset(resource?._id);
@@ -109,10 +100,17 @@ export function ResourceActionsMenu({ resource, type, user }) {
     );
   };
 
-  const handleUpdateZenodo = (data) => {
-    updateZenodo.mutate(data, {
-      onSuccess: () => handleClose(),
-      onError: () => handleClose(),
+  const handleUpdateResource = (data) => {
+    updateResources.mutate(data, {
+      onSuccess: (data) => {
+        console.log("Update successful:", data);
+        setMessage(data?.data?.detail);
+        handleClose;
+      },
+      onError: (error) => {
+        setMessage(error?.response?.data?.detail || "Update failed");
+        handleClose();
+      },
     });
   };
 
@@ -181,7 +179,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
                     onClick={handleOpenEditScopes}
                     disabled={
                       !user ||
-                      updateZenodo.isPending ||
+                      updateResources.isPending ||
                       (!user.super_user && resource?.owner !== user.id)
                     }
                   >
@@ -203,21 +201,24 @@ export function ResourceActionsMenu({ resource, type, user }) {
                 <span>
                   <MenuItem
                     onClick={() =>
-                      handleUpdateZenodo({
-                        id: resource?.zenodo?.id,
+                      handleUpdateResource({
+                        zenodo_id: resource?.zenodo?.id || null,
+                        openaire_id: resource?.openaire?.id || null,
                         source: resource?.zenodo?.source,
                       })
                     }
                     disabled={
                       !user ||
-                      updateZenodo.isPending ||
+                      updateResources.isPending ||
                       (!user.super_user && resource?.owner !== user.id)
                     }
                   >
                     <ListItemIcon>
                       <RefreshIcon fontSize="small" />
                     </ListItemIcon>
-                    <ListItemText>Update</ListItemText>
+                    <ListItemText>
+                      {updateResources.isPending ? "Updating" : "Update"}
+                    </ListItemText>
                   </MenuItem>
                 </span>
               </Tooltip>
@@ -234,7 +235,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
                     onClick={handleDeleteClick}
                     disabled={
                       !user ||
-                      updateZenodo.isPending ||
+                      updateResources.isPending ||
                       (!user.super_user && resource?.owner !== user.id)
                     }
                   >
@@ -270,12 +271,28 @@ export function ResourceActionsMenu({ resource, type, user }) {
         mutation={updateQuery}
         onSave={handleSaveScopes}
       />
+
+      {(updateResources?.isSuccess ||
+        updateResources?.isError ||
+        updateQuery?.isSuccess ||
+        updateQuery?.isError ||
+        deleteMutation?.isSuccess ||
+        deleteMutation?.isError) && (
+        <Notification
+          requestStatus={
+            updateResources?.status ||
+            updateQuery?.status ||
+            deleteMutation?.status
+          }
+          message={message}
+        />
+      )}
     </>
   );
 }
 
 export function ResourceItemCommunities({ resource }) {
-    const communities = resource?.zenodo?.metadata?.communities || [];
+  const communities = resource?.zenodo?.metadata?.communities || [];
   return communities.map(
     (community) =>
       community.id.includes("graspos") && (

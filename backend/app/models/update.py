@@ -1,6 +1,6 @@
 """Zenodo models."""
 
-from beanie import Document
+from beanie import Document, PydanticObjectId
 from datetime import datetime
 from pydantic import BaseModel
 from beanie import Link
@@ -26,8 +26,10 @@ class Update(BaseModel):
     created_at: datetime | None = datetime.now()
     source: str | None = None
     updates: list[UpdatedZenodoItems] | None = None
-    
 
+class UpdateRequest(BaseModel):
+    zenodo_id: PydanticObjectId | None = None
+    openaire_id: PydanticObjectId | None = None
 
 class Update(Document, Update):
 
