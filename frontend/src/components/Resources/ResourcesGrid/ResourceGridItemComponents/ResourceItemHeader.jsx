@@ -27,8 +27,8 @@ import { useUpdateResources } from "@queries/update";
 import EditIcon from "@mui/icons-material/Edit";
 import { useScopes } from "@queries/scope";
 
-import EditResourceDialog from "../../../Forms/EditResourceDialog";
-import DeleteConfirmationDialog from "../../../Forms/DeleteConfirmationDialog";
+import EditResourceDialog from "@components/Forms/EditResourceDialog";
+import DeleteConfirmationDialog from "@components/Forms/DeleteConfirmationDialog";
 import { useDeleteService, useUpdateService } from "@queries/service";
 import { useCountries } from "@queries/countries";
 import { useAssessments } from "@queries/assessment";
@@ -36,7 +36,7 @@ import { useAssessments } from "@queries/assessment";
 export function ResourceActionsMenu({ resource, type, user }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [editScopesOpen, setEditScopesOpen] = useState(false);
+  const [editResourceOpen, setEditResourceOpen] = useState(false);
   const [selectedScopes, setSelectedScopes] = useState([]);
   const [queryState, setQueryState] = useState(false);
   const [message, setMessage] = useState("");
@@ -65,7 +65,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
       ? deleteTool
       : deleteService;
 
-  const updateQuery =
+  const patchResourceQuery =
     type === "Document"
       ? updateDocument
       : type === "Dataset"
@@ -85,7 +85,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
 
   const handleUpdate = (approved) => {
     setQueryState(true);
-    updateQuery.mutate(
+    patchResourceQuery.mutate(
       { approved },
       {
         onSuccess: () => {
@@ -123,12 +123,12 @@ export function ResourceActionsMenu({ resource, type, user }) {
     deleteMutation.mutate({ id: resource?._id });
   };
 
-  const handleOpenEditScopes = () => {
-    setEditScopesOpen(true);
+  const handleOpenEditResource = () => {
+    setEditResourceOpen(true);
     handleClose();
   };
 
-  const handleCloseEditScopes = () => setEditScopesOpen(false);
+  const handleCloseEditResource = () => setEditResourceOpen(false);
 
   const handleToggleScope = (scopeId) => {
     setSelectedScopes((prev) =>
@@ -138,8 +138,8 @@ export function ResourceActionsMenu({ resource, type, user }) {
     );
   };
 
-  const handleSaveScopes = (updatedValues) => {
-    updateQuery.mutate(updatedValues);
+  const handlePatchResource = (updatedValues) => {
+    patchResourceQuery.mutate(updatedValues);
   };
 
   return (
@@ -176,7 +176,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
               >
                 <span>
                   <MenuItem
-                    onClick={handleOpenEditScopes}
+                    onClick={handleOpenEditResource}
                     disabled={
                       !user ||
                       updateResources.isPending ||
@@ -261,23 +261,20 @@ export function ResourceActionsMenu({ resource, type, user }) {
       />
 
       <EditResourceDialog
-        open={editScopesOpen}
-        onClose={handleCloseEditScopes}
+        open={editResourceOpen}
+        onClose={handleCloseEditResource}
         scopesQuery={scopesQuery}
         countriesQuery={countriesQuery}
         assessmentsQuery={assessmentsQuery}
         selectedScopes={selectedScopes}
         onToggleScope={handleToggleScope}
-        mutation={updateQuery}
-        onSave={handleSaveScopes}
+        mutation={patchResourceQuery}
+        onSave={handlePatchResource}
       />
 
-      {(updateResources?.isSuccess ||
-        updateResources?.isError) && (
+      {(updateResources?.isSuccess || updateResources?.isError) && (
         <Notification
-          requestStatus={
-            updateResources?.status
-          }
+          requestStatus={updateResources?.status}
           message={message}
         />
       )}

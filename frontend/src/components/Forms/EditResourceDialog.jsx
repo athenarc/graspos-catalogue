@@ -15,7 +15,7 @@ import {
   FormControlLabel,
   Autocomplete,
   TextField,
-  Grid,
+  Grid2 as Grid,
   Button,
   Tabs,
   Tab,
@@ -49,8 +49,8 @@ export default function EditResourceDialog({
   const [tabIndex, setTabIndex] = useState(0);
 
   let message = "";
-  if (isSuccess) message = "Scopes updated successfully!";
-  if (isError) message = error?.message || "Failed to update scopes.";
+  if (isSuccess) message = "Resource updated successfully!";
+  if (isError) message = error?.message || "Failed to update resource.";
 
   useEffect(() => {
     if (isSuccess) {
@@ -82,7 +82,7 @@ export default function EditResourceDialog({
         <DialogTitle
           sx={{ bgcolor: "#20477B", color: "white", textAlign: "center" }}
         >
-          Edit Scopes
+          Edit Resource
           <IconButton
             aria-label="close"
             onClick={handleClose}
