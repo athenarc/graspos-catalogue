@@ -180,17 +180,15 @@ class OpenAIRE(Document, OpenAIREBase, OpenAIREView):
                 [
                     ("metadata.name", pymongo.TEXT),
                     ("metadata.description", pymongo.TEXT),
-                    ("metadata.tagline", pymongo.TEXT),
                 ],
-                name="metadata_text_index",
+                name="openaire_metadata_title_description_text",
                 weights={
-                    "metadata.name": 3,
-                    "metadata.description": 2,
-                    "metadata.tagline": 1,
+                    "metadata.name": 1,
+                    "metadata.description": 1,
                 },
                 default_language="english",
             )
-        ]
+        ] 
 
     class Config:
         json_schema_extra = {
