@@ -27,6 +27,7 @@ async def get_all_services(
         geographical_coverage: Optional[List[str]] = Query(None),
         tag: Optional[List[str]] = Query(None),
         service_type: Optional[List[str]] = Query(None),
+        trl: Optional[List[str]] = Query(None),
         graspos: Optional[bool] = Query(None),
         sort_field: Optional[str] = Query(None),
         sort_direction: Optional[str] = Query(None),
@@ -71,6 +72,12 @@ async def get_all_services(
     # Service Type filter
     if service_type:
         filters.append({"service_type": {"$in": service_type}})
+
+    # TRL filter
+    if trl:
+        trl_european_descriptions = [str(s) for s in trl]
+        filters.append({"trl.european_description": {"$in": trl_european_descriptions}})
+        print("TRL Filter Applied:", filters[-1])
 
     # GraspOS verified filter
     if graspos:

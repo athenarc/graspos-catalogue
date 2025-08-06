@@ -5,6 +5,7 @@ const getDefaultFilters = () => ({
   licenses: {},
   tags: [],
   service_type: [],
+  trl: [],
   scopes: {},
   assessments: {},
   geographical_coverage: {},
@@ -34,6 +35,7 @@ const LOCAL_FILTER_KEYS = new Set([
   "sortField",
   "sortDirection",
   "dateRange",
+  "trl",
 ]);
 
 const normalizeToLocalMidnight = (date) => {
@@ -97,7 +99,9 @@ export function useURLFilters(resourceMap) {
     searchParams.getAll("service_type").forEach((value) => {
       newFilters.service_type.push(value);
     });
-
+    searchParams.getAll("trl").forEach((value) => {
+      newFilters.trl.push(value);
+    });
     newFilters.graspos = searchParams.get("graspos") === "true";
     newFilters.sortField = searchParams.get("sort_field") || "unique_views";
     newFilters.sortDirection = searchParams.get("sort_direction") || "desc";
@@ -139,23 +143,34 @@ export function useURLFilters(resourceMap) {
       Object.entries(filters.assessments || {}).forEach(([key, value]) => {
         if (value) searchParams.append("assessment", key);
       });
-      Object.entries(filters.geographical_coverage || {}).forEach(([key, value]) => {
-        if (value) searchParams.append("geographical_coverage", key);
-      });
+      Object.entries(filters.geographical_coverage || {}).forEach(
+        ([key, value]) => {
+          if (value) searchParams.append("geographical_coverage", key);
+        }
+      );
       filters.tags?.forEach((tag) => {
         searchParams.append("tag", tag);
       });
       filters.service_type?.forEach((service_type) => {
         searchParams.append("service_type", service_type);
       });
+      filters.trl?.forEach((trl) => {
+        searchParams.append("trl", trl);
+      });
       searchParams.set("sort_field", filters.sortField);
       searchParams.set("sort_direction", filters.sortDirection);
 
       if (filters.dateRange?.startDate) {
-        searchParams.set("start", formatDateToLocalString(filters.dateRange.startDate));
+        searchParams.set(
+          "start",
+          formatDateToLocalString(filters.dateRange.startDate)
+        );
       }
       if (filters.dateRange?.endDate) {
-        searchParams.set("end", formatDateToLocalString(filters.dateRange.endDate));
+        searchParams.set(
+          "end",
+          formatDateToLocalString(filters.dateRange.endDate)
+        );
       }
 
       const resourceName = Object.keys(resourceMap).find(

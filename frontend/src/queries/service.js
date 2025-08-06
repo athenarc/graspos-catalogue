@@ -32,7 +32,7 @@ export function useServices(filters = {}) {
         if (typeof value === "object" && value !== null) {
           // If the value is an object (like "licenses"), loop through its properties
           Object.entries(value).forEach(([subKey, subValue]) => {
-            if (key == "tags" || key == "service_type") {
+            if (key == "tags" || key == "service_type" || key == "trl") {
               value.forEach((arrayValue) => {
                 params.append(
                   key.replace(key, key.replace(/s+$/, "")),

@@ -13,6 +13,7 @@ from models.shared import GeographicalCoverage
 from models.assessment import Assessment
 from models.trl import TRLEntry
 
+
 class Service(BaseModel):
     doi: str | None = None
     source: str | None = None
@@ -104,7 +105,6 @@ class Service(Document, ServiceView):
 
                 if metadata:
                     value = getattr(metadata, field_name, None)
-                    print(f"Processing field: {field_name}, value: {value}")
                     if isinstance(value, list):
                         for item in value:
                             if isinstance(item, dict):
@@ -131,7 +131,7 @@ class Service(Document, ServiceView):
         :param field_name: The field name in the service document to extract unique values from.
         :return: A list of unique field values (dicts or scalars).
         """
-        services = await cls.find_all().to_list()
+        services = await cls.find_all(fetch_links=True).to_list()
         unique_values = set()
 
         for service in services:
@@ -145,8 +145,12 @@ class Service(Document, ServiceView):
                         unique_values.add(item)
             elif isinstance(value, dict):
                 unique_values.add(frozenset(value.items()))
+
             elif value is not None:
-                unique_values.add(value)
+                if field_name == "trl":
+                    unique_values.add(value.european_description)
+                else:
+                    unique_values.add(value)
 
         result = [
             dict(item) if isinstance(item, frozenset) else item
