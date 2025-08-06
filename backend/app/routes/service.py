@@ -76,14 +76,17 @@ async def get_all_services(
     # TRL filter
     if trl:
         trl_european_descriptions = [str(s) for s in trl]
-        filters.append({"trl.european_description": {"$in": trl_european_descriptions}})
+        filters.append(
+            {"trl.european_description": {
+                "$in": trl_european_descriptions
+            }})
         print("TRL Filter Applied:", filters[-1])
 
     # GraspOS verified filter
     if graspos:
         filters.append({
             "openaire.metadata.communities.id": {
-                "$in": ["graspos-tools", "graspos-datasets"]
+                "$in": ["graspos-services"]
             }
         })
 
