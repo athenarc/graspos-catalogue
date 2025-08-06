@@ -1,9 +1,11 @@
 from datetime import datetime
 from typing import Optional, List, Any
-from beanie import Document, PydanticObjectId
+from beanie import Document, Link, PydanticObjectId
 from pydantic import BaseModel, EmailStr, HttpUrl
 import pymongo
 from pymongo import IndexModel
+
+from models.trl import TRLEntry
 
 
 class Contact(BaseModel):
@@ -102,7 +104,7 @@ class OpenaireMetadata(BaseModel):
     useCases: Optional[Any] = None
     helpdeskEmail: Optional[EmailStr] = None
     securityContactEmail: Optional[EmailStr] = None
-    trl: Optional[str] = None
+    trl: Optional[Link[TRLEntry]] = None
     lifeCycleStatus: Optional[str] = None
     version: Optional[str] = None
     lastUpdate: Optional[str] = None

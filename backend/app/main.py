@@ -14,6 +14,7 @@ from models.assessment import Assessment
 from models.shared import GeographicalCoverage
 from models.service import Service
 from models.openaire import OpenAIRE
+from models.trl import TRLEntry
 from db import db
 from config import CONFIG
 from fastapi.middleware.cors import CORSMiddleware
@@ -27,7 +28,7 @@ async def lifespan(app: FastAPI):
     await init_beanie(app.db,
                       document_models=[
                           Dataset, User, Documents, Tool, Zenodo, Update,
-                          Scope, GeographicalCoverage, Assessment, Service, OpenAIRE
+                          Scope, GeographicalCoverage, Assessment, Service, OpenAIRE, TRLEntry
                       ])
     print("Startup complete")
     yield
