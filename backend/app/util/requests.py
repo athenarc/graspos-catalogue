@@ -1,5 +1,6 @@
-import httpx
+import httpx, re
 from util.url_transformer import transform_zenodo_url, transform_openaire_url
+from models.trl import TRLEntry
 
 
 async def get_openaire_data(source: str) -> dict:
@@ -19,7 +20,34 @@ async def get_openaire_data(source: str) -> dict:
                 data["metadata"]["communities"] = [{
                     "id": "graspos-services"
                 }] if "graspos" in source.lower() else []
+                trl_entry = None
+                if "trl" in data["metadata"]:
+                    print("TRL data found in OpenAIRE record:",
+                          data["metadata"]["trl"])
+
+                    trl_id_val = None
+
+                    if isinstance(data["metadata"]["trl"], str):
+                        trl_id_val = int(
+                            re.sub(r'\D', '', data["metadata"]["trl"]).strip())
+                    elif isinstance(data["metadata"]["trl"], int):
+                        trl_id_val = data["metadata"]["trl"]
+
+                    if trl_id_val:
+                        trl_entry = await TRLEntry.find_one(
+                            TRLEntry.trl_id == trl_id_val)
+                        print("trl_entry:", trl_entry)
+                        data["metadata"][
+                            "trl"] = trl_entry.id if trl_entry else None
+                    else:
+                        data["metadata"]["trl"] = None
+                else:
+                    print("No TRL data found in OpenAIRE record.")
+                    data["metadata"]["trl"] = None
+
+                # Αφαίρεση του "id" πριν αποθήκευση
                 del data["id"]
+
                 return {"status": 200, "openaire_object": data}
             else:
                 return {

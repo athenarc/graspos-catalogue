@@ -299,12 +299,12 @@ export function DocumentationUrlCard({ resource }) {
 }
 
 export function TrlCard({ resource }) {
-  const trl = resource?.data?.data?.openaire?.metadata?.trl || "";
+  const trl = resource?.data?.data?.trl || "";
   return (
     <Card sx={cardStyles}>
       <CardHeader
         sx={{ pb: 1 }}
-        title={<Typography variant="h5">TRL</Typography>}
+        title={<Typography variant="h5">Technology Readiness Level</Typography>}
       ></CardHeader>
       <CardContent
         sx={{
@@ -314,7 +314,14 @@ export function TrlCard({ resource }) {
       >
         {resource.isLoading && <CircularProgress size="3rem" />}
         {trl ? (
-          <Typography>{trl}</Typography>
+          <Typography>
+            <Link
+              target="_blank"
+              to={`https://en.wikipedia.org/wiki/Technology_readiness_level`}
+            >
+              {trl?.trl_id + " - " + trl?.european_description}
+            </Link>
+          </Typography>
         ) : (
           <Typography
             variant="body2"

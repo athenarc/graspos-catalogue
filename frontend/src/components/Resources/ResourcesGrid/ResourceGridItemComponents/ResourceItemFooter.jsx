@@ -150,7 +150,7 @@ export default function ResourceItemFooter({ resource, type }) {
               <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
             </Tooltip>
             <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-              {resource?.openaire?.metadata?.trl ?? "N/A"}
+              {resource?.trl?.trl_id ? resource?.trl?.trl_id + " - " + resource?.trl?.european_description : "N/A"}
             </Typography>
             <Tooltip title="Version">
               <HistoryIcon sx={{ fontSize: "1.1rem" }} />

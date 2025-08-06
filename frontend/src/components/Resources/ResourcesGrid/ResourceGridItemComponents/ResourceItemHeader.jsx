@@ -103,7 +103,6 @@ export function ResourceActionsMenu({ resource, type, user }) {
   const handleUpdateResource = (data) => {
     updateResources.mutate(data, {
       onSuccess: (data) => {
-        console.log("Update successful:", data);
         setMessage(data?.data?.detail);
         handleClose;
       },
@@ -287,7 +286,6 @@ export function ResourceItemCommunities({ resource }) {
     resource?.zenodo?.metadata?.communities ||
     resource?.openaire?.metadata?.communities ||
     [];
-    console.log("Resource communities:", communities);
   return communities.map(
     (community) =>
       community.id.includes("graspos") && (
