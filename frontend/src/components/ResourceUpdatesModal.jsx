@@ -149,7 +149,15 @@ export default function UpdatesModal() {
       {},
       {
         onSuccess: (data) => {
-          setMessage(data?.data?.detail);
+          let message = "Resources updated successfully.";
+          if (data?.data?.openaire) {
+            message = `${data?.data?.openaire?.detail}. ` || message;
+          }
+          setMessage(message);
+          if (data?.data?.zenodo) {
+            message += ` ${data?.data?.zenodo?.detail || ""}`;
+          }
+          setMessage(message);
         },
         onError: (error) => {
           setMessage(
