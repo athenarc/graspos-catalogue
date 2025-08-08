@@ -4,10 +4,11 @@ from fastapi import APIRouter, HTTPException, Depends, Query, status
 from models.service import Service, ServicePatch
 from models.user import User
 from models.zenodo import Zenodo
+from models.openaire import OpenAIRE
 from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
 from util.current_user import current_user, current_user_mandatory
-from util.requests import get_zenodo_data
+from util.requests import get_openaire_data
 from typing import List, Optional
 from datetime import datetime
 from beanie import PydanticObjectId
@@ -26,6 +27,7 @@ async def get_all_services(
         geographical_coverage: Optional[List[str]] = Query(None),
         tag: Optional[List[str]] = Query(None),
         service_type: Optional[List[str]] = Query(None),
+        trl: Optional[List[str]] = Query(None),
         graspos: Optional[bool] = Query(None),
         sort_field: Optional[str] = Query(None),
         sort_direction: Optional[str] = Query(None),
@@ -42,10 +44,6 @@ async def get_all_services(
             filters.append({"$or": [{"approved": True}, {"owner": user.id}]})
     else:
         filters.append({"approved": True})
-
-    # License filter
-    if license:
-        filters.append({"zenodo.metadata.license.id": {"$in": license}})
 
     # Scope filter - convert to ObjectId if necessary
     if scope:
@@ -69,47 +67,43 @@ async def get_all_services(
 
     # Tag filter
     if tag:
-        filters.append({"zenodo.metadata.keywords": {"$in": tag}})
-    
+        filters.append({"openaire.metadata.tags": {"$in": tag}})
+
     # Service Type filter
     if service_type:
         filters.append({"service_type": {"$in": service_type}})
-        
+
+    # TRL filter
+    if trl:
+        trl_european_descriptions = [str(s) for s in trl]
+        filters.append(
+            {"trl.european_description": {
+                "$in": trl_european_descriptions
+            }})
+        print("TRL Filter Applied:", filters[-1])
+
     # GraspOS verified filter
     if graspos:
         filters.append({
-            "zenodo.metadata.communities.id": {
-                "$in": ["graspos-tools", "graspos-datasets"]
+            "openaire.metadata.communities.id": {
+                "$in": ["graspos-services"]
             }
         })
 
-    # Date range filters
-    if start:
-        start_date = datetime.fromisoformat(start)
-        filters.append(
-            {"zenodo.metadata.publication_date": {
-                "$gte": start_date
-            }})
-
-    if end:
-        end_date = datetime.fromisoformat(end)
-        filters.append(
-            {"zenodo.metadata.publication_date": {
-                "$lte": end_date
-            }})
-
     # Full text search
     if text:
-        zenodo_search_results = await Zenodo.find({
+        openaire_search_results = await OpenAIRE.find({
             "$text": {
                 "$search": text
             }
         }).to_list()
-        zenodo_ids = [PydanticObjectId(z.id) for z in zenodo_search_results]
-        if zenodo_ids:
-            filters.append({"zenodo._id": {"$in": zenodo_ids}})
+        openaire_ids = [
+            PydanticObjectId(o.id) for o in openaire_search_results
+        ]
+        if openaire_ids:
+            filters.append({"openaire._id": {"$in": openaire_ids}})
         else:
-            # If no matching Zenodo results, return empty early
+            # If no matching OpenAIRE results, return empty early
             return []
 
     # Compose final filter
@@ -122,12 +116,12 @@ async def get_all_services(
 
     # Sorting logic
     if sort_field and sort_direction:
-        zenodo_sort_field = "zenodo.metadata.stats." + sort_field
+        openaire_sort_field = "openaire.metadata.stats." + sort_field
         if sort_field == "dates":
-            zenodo_sort_field = "zenodo.metadata.publication_date"
+            openaire_sort_field = "openaire.metadata.publication_date"
         sort_order = 1 if sort_direction.lower() == "asc" else -1
         services = await Service.find(query_filter, fetch_links=True).sort([
-            (zenodo_sort_field, sort_order)
+            (openaire_sort_field, sort_order)
         ]).to_list()
     else:
         services = await Service.find(query_filter, fetch_links=True).to_list()
@@ -137,20 +131,27 @@ async def get_all_services(
 @router.post("/create", status_code=201)
 async def create_service(
     service: Service, user: User = Depends(current_user_mandatory)) -> Service:
-    zenodo = None
+    openaire = None
 
     try:
-        zenodo = Zenodo(source=service.source)
+        openaire = OpenAIRE(source=service.source)
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error))
 
-    data = get_zenodo_data(service.source)
+    data = await get_openaire_data(service.source)
     if data["status"] != 200:
         raise HTTPException(status_code=data["status"], detail=data["detail"])
 
-    zenodo = Zenodo(**data["zenodo_object"])
-    await zenodo.create()
-    service.zenodo = zenodo
+    openaire = OpenAIRE(**data["openaire_object"])
+
+    await openaire.create()
+
+    if openaire.metadata.trl:
+        service.trl = openaire.metadata.trl
+    if openaire.metadata.extras["portfolios"]:
+        for portfolio in openaire.metadata.extras["portfolios"]:
+            service.service_type = portfolio.replace("portfolios-", "")
+    service.openaire = openaire
     service.owner = user.id
     if user.super_user:
         service.approved = True
@@ -160,8 +161,10 @@ async def create_service(
 
 @router.get("/fields/unique")
 async def get_unique_metadata_values(
-    field: str = Query(..., description="Field name inside zenodo.metadata"), 
-    scope: str = Query(..., description="Field name inside zenodo.metadata")):
+        field: str = Query(...,
+                           description="Field name inside zenodo.metadata"),
+        scope: str = Query(...,
+                           description="Field name inside zenodo.metadata")):
     """
     Return unique values from the given field in Zenodo metadata or the service's metadata across all services.
     """
@@ -170,7 +173,8 @@ async def get_unique_metadata_values(
         if scope == "local":
             unique_values = await Service.get_unique_field_values(field)
         else:
-            unique_values = await Service.get_unique_field_values_from_zenodo(field)
+            unique_values = await Service.get_unique_field_values_from_openaire(
+                field)
         return {f"unique_{field}": unique_values}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -209,13 +213,13 @@ async def delete_service(service_id: PydanticObjectId,
                             detail="Service not found")
 
     try:
-        # Delete linked Zenodo and associated updates
-        if service.zenodo:
+        # Delete linked OpenAIRE and associated updates
+        if service.openaire:
             logger.info(
-                f"Deleting linked Zenodo {service.zenodo.id} and related updates"
+                f"Deleting linked OpenAIRE {service.openaire.id} and related updates"
             )
-            await Update.find(zenodo_id=service.zenodo.id).delete()
-            await Zenodo.find(Zenodo.id == service.zenodo.id).delete()
+            await Update.find(openaire_id=service.openaire.id).delete()
+            await OpenAIRE.find(OpenAIRE.id == service.openaire.id).delete()
 
         # Delete service without deleting other linked objects
         await service.delete(link_rule=DeleteRules.DO_NOTHING)

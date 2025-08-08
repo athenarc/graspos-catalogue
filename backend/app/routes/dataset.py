@@ -143,7 +143,7 @@ async def create_dataset(dataset: Dataset,
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error))
 
-    data = get_zenodo_data(dataset.source)
+    data = await get_zenodo_data(dataset.source)
     if data["status"] != 200:
         raise HTTPException(status_code=data["status"], detail=data["detail"])
 

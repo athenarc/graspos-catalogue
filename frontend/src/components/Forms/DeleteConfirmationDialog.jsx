@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Notification from "../Notification";
+import Notification from "@helpers/Notification";
 
 export default function DeleteConfirmationDialog({
   open,

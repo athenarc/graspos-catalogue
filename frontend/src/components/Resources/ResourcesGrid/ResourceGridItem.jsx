@@ -1,0 +1,74 @@
+import { Box, Grid2 as Grid, Card, CardContent } from "@mui/material";
+import ResourceItemHeader from "./ResourceGridItemComponents/ResourceItemHeader";
+import ResourceItemContent from "./ResourceGridItemComponents/ResourceItemContent";
+import ResourceItemFooter from "./ResourceGridItemComponents/ResourceItemFooter";
+
+export default function ResourceGridItem({ resource, type, user }) {
+  const typeColors = {
+    data: { bg: "#B3E5FC", color: "#01579B" },
+    monitoring: { bg: "#C8E6C9", color: "#1B5E20" },
+    enrichment: { bg: "#F8BBD0", color: "#880E4F" },
+  };
+
+  const { bg, color } = typeColors[resource?.service_type] || {
+    bg: "#E0E0E0",
+    color: "#424242",
+  };
+  return (
+    <Grid key={resource?._id} size={{ xs: 12 }}>
+      <Card
+        sx={{
+          height: "100%",
+          display: "flex",
+          borderRadius: "5px",
+          border: "1px solid",
+          borderColor: !resource?.approved ? "#FFD700" : "#e0dfdf",
+          backgroundColor: !resource?.approved ? "#FFFDE7" : "#f8faff",
+          boxShadow: 0,
+          transition: "box-shadow 0.3s ease-in-out",
+          "&:hover": {
+            boxShadow: 4,
+          },
+          color: "#555",
+        }}
+      >
+        {type === "service" && (
+          <Box
+            sx={{
+              width: "30px",
+              minWidth: "30px",
+              backgroundColor: bg,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#fff",
+              writingMode: "sideways-lr",
+              textOrientation: "mixed",
+              fontSize: 18,
+              fontWeight: "bold",
+              borderTopLeftRadius: "5px",
+              borderBottomLeftRadius: "5px",
+            }}
+          >
+            {resource?.service_type?.toUpperCase()}
+          </Box>
+        )}
+        <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
+          <CardContent sx={{ pb: 0 }}>
+            <ResourceItemHeader resource={resource} type={type} user={user} />
+            <ResourceItemContent resource={resource} />
+          </CardContent>
+          <CardContent
+            sx={{
+              paddingBottom: "8px !important",
+              paddingTop: "0 !important",
+              mt: "auto",
+            }}
+          >
+            <ResourceItemFooter resource={resource} type={type} />
+          </CardContent>
+        </Box>
+      </Card>
+    </Grid>
+  );
+}

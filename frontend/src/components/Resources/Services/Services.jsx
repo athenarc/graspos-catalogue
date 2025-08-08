@@ -1,20 +1,17 @@
 import { useService } from "../../../queries/service";
-import { RectangularVariants } from "../../Skeleton";
-import ResourceGridItem from "../ResourceTemplate/ResourceGridItem";
-import { Grid2 as Grid, Stack, useTheme } from "@mui/material";
+import { RectangularVariants } from "../../Helpers/Skeleton";
+import ResourceGridItem from "../ResourcesGrid/ResourceGridItem";
+import { Grid2 as Grid, Stack } from "@mui/material";
 import {
-  ResourceAuthors,
-  ResourceBasicInformation,
-  ResourceLicense,
-  ResourceTags,
-  ResourceStatistics,
-  ResourceGeographicCoverage,
-  ResourceTRL,
-} from "../ResourceTemplate/ResourcePage";
+  ContributorsCard,
+  TrlCard,
+  TagsCard,
+  StatisticsCard,
+  GeographicCoverageCard,
+} from "../ResourcesGrid/ResourcePageComponents/ResourcePageCards";
+import { ResourceBasicInformation } from "../ResourcesGrid/ResourcePageComponents/ResourcePageBasicInformation";
 
 export function Services({ services, user }) {
-  const theme = useTheme();
-
   return (
     <>
       {services?.isLoading && <RectangularVariants count={2} />}
@@ -40,11 +37,11 @@ export function Service({ resourceId }) {
       </Grid>
       <Grid size={{ xs: 12, lg: 4 }}>
         <Stack direction="column" spacing={2}>
-          <ResourceAuthors resource={service} type={"service"} />
-          <ResourceTags resource={service} />
-          <ResourceTRL resource={service} />
-          <ResourceStatistics resource={service} />
-          <ResourceGeographicCoverage resource={service} />
+          <ContributorsCard resource={service} type={"service"} />
+          <TagsCard resource={service} />
+          <TrlCard resource={service} />
+          <StatisticsCard resource={service} />
+          <GeographicCoverageCard resource={service} />
         </Stack>
       </Grid>
     </>

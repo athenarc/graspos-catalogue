@@ -5,18 +5,21 @@ from datetime import datetime
 from pydantic import BaseModel
 from beanie import PydanticObjectId, Link
 from datetime import datetime
+from models.openaire import OpenAIRE
 from models.zenodo import Zenodo
 from models.scope import Scope
 from typing import List, Optional
 from models.shared import GeographicalCoverage
 from models.assessment import Assessment
+from models.trl import TRLEntry
 
 
 class Service(BaseModel):
     doi: str | None = None
     source: str | None = None
     service_type: str | None = None
-    tlr: object | None = None
+    trl: Link[TRLEntry] | None = None
+    openaire: Link[OpenAIRE] | None = None
     zenodo: Link[Zenodo] | None = None
     scopes: List[Link[Scope]] | None = None
     geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
@@ -30,7 +33,7 @@ class Service(BaseModel):
 class ServicePatch(BaseModel):
     approved: bool | None = None
     service_type: str | None = None
-    tlr: object | None = None
+    trl: Link[TRLEntry] | None = None
     owner: PydanticObjectId | None = None
     scopes: List[Link[Scope]] | None = None
     geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
@@ -41,7 +44,8 @@ class ServiceView(BaseModel):
     doi: str | None = None
     source: str | None = None
     service_type: str | None = None
-    tlr: object | None = None
+    openaire: Link[OpenAIRE] | None = None
+    trl: Link[TRLEntry] | None = None
     zenodo: Link[Zenodo] | None = None
     scopes: List[Link[Scope]] | None = None
     geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
@@ -82,26 +86,25 @@ class Service(Document, ServiceView):
         }
 
     @classmethod
-    async def get_unique_field_values_from_zenodo(cls,
-                                                  field_name: str) -> list:
+    async def get_unique_field_values_from_openaire(cls,
+                                                    field_name: str) -> list:
         """
-        Return all unique values for a given metadata field from linked Zenodo services.
+        Return all unique values for a given metadata field from linked OpenAIRE services.
 
-        :param field_name: The field name in zenodo.metadata to extract unique values from.
+        :param field_name: The field name in openaire.metadata to extract unique values from.
         :return: A list of unique field values (dicts or scalars).
         """
         services = await cls.find_all().to_list()
         unique_values = set()
 
         for service in services:
-            if service.zenodo is not None:
-                await service.fetch_link("zenodo")
-                zenodo = service.zenodo
-                metadata = zenodo.metadata
+            if service.openaire is not None:
+                await service.fetch_link("openaire")
+                openaire = service.openaire
+                metadata = openaire.metadata
 
                 if metadata:
                     value = getattr(metadata, field_name, None)
-
                     if isinstance(value, list):
                         for item in value:
                             if isinstance(item, dict):
@@ -128,7 +131,7 @@ class Service(Document, ServiceView):
         :param field_name: The field name in the service document to extract unique values from.
         :return: A list of unique field values (dicts or scalars).
         """
-        services = await cls.find_all().to_list()
+        services = await cls.find_all(fetch_links=True).to_list()
         unique_values = set()
 
         for service in services:
@@ -142,8 +145,12 @@ class Service(Document, ServiceView):
                         unique_values.add(item)
             elif isinstance(value, dict):
                 unique_values.add(frozenset(value.items()))
+
             elif value is not None:
-                unique_values.add(value)
+                if field_name == "trl":
+                    unique_values.add(value.european_description)
+                else:
+                    unique_values.add(value)
 
         result = [
             dict(item) if isinstance(item, frozenset) else item

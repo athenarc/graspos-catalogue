@@ -4,6 +4,7 @@ from pydantic import BaseModel
 import pymongo
 from pymongo import IndexModel
 
+
 class ZenodoMetadata(BaseModel):
     title: str | None = None
     doi: str | None = None
@@ -23,7 +24,7 @@ class ZenodoMetadata(BaseModel):
 
 
 class Zenodo(BaseModel):
-    source: str
+    source: str | None = None
     created: datetime | None = None
     modified: datetime | None = None
     zenodo_id: int | None = None
@@ -47,6 +48,7 @@ class Zenodo(BaseModel):
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
 
+
 class ZenodoView(BaseModel):
     source: str | None = None
 
@@ -61,13 +63,17 @@ class Zenodo(Document, Zenodo, ZenodoView):
         name = "zenodo"
         indexes = [
             IndexModel(
-                [("metadata.title", pymongo.TEXT), ("metadata.description", pymongo.TEXT)],  # Compound text index
+                [("metadata.title", pymongo.TEXT),
+                 ("metadata.description", pymongo.TEXT)
+                 ],  # Compound text index
                 name="metadata_title_description_text",
-                weights={"metadata.title": 1, "metadata.description": 1},  # Optional: You can add custom weights
+                weights={
+                    "metadata.title": 1,
+                    "metadata.description": 1
+                },  # Optional: You can add custom weights
                 default_language="english",
                 language_override="language",
-                textIndexVersion=3
-            ),
+                textIndexVersion=3),
         ]
 
     class Config:

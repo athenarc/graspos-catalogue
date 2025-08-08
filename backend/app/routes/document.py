@@ -136,7 +136,7 @@ async def create_document(
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error))
 
-    data = get_zenodo_data(document.source)
+    data = await get_zenodo_data(document.source)
     if data["status"] != 200:
         raise HTTPException(status_code=data["status"], detail=data["detail"])
 
