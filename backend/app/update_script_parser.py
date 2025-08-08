@@ -1,5 +1,8 @@
-import os, logging
+import os
+import sys
+import logging
 from dotenv import load_dotenv
+from models.openaire import OpenAIRE
 from models.zenodo import Zenodo
 from models.update import Update
 from util.requests import get_zenodo_data
@@ -7,19 +10,25 @@ from beanie import init_beanie
 import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 from util.update_records import update_zenodo_records, update_openaire_records
+import traceback
 
 
 async def init(mongodb_uri):
     db = AsyncIOMotorClient(mongodb_uri).graspos
-    await init_beanie(db, document_models=[Zenodo, Update])
+    await init_beanie(db, document_models=[Zenodo, Update, OpenAIRE])
 
 
 async def main():
 
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s %(levelname)s %(message)s',
+        handlers=[
+            logging.FileHandler('update_script_parser.log', encoding='utf-8'),
+            logging.StreamHandler(sys.stdout)
+        ]
+    )
     logger = logging.getLogger(__name__)
-    logging.basicConfig(filename='update_script_parser.log',
-                        encoding='utf-8',
-                        level=logging.DEBUG)
 
     load_dotenv(dotenv_path="/code/.env")
     mongo_user = os.environ.get("MONGO_INITDB_ROOT_USERNAME")
@@ -32,18 +41,21 @@ async def main():
     )
 
     await init(mongodb_uri)
+
     try:
         logger.info("Starting Zenodo update process...")
         await update_zenodo_records()
         logger.info("Zenodo update process completed successfully.")
     except Exception as e:
-        logger.error(f"Error during Zenodo update process: {e}")
+        logger.error(f"Error during Zenodo update process: {e}", exc_info=True)
 
     try:
         logger.info("Starting OpenAIRE update process...")
         await update_openaire_records()
         logger.info("OpenAIRE update process completed successfully.")
-    except Exception as e:
-        logger.error(f"Error during OpenAIRE update process: {e}")
+    except Exception:
+        logger.error("Error during OpenAIRE update process", exc_info=True)
 
-asyncio.run(main())
+
+if __name__ == "__main__":
+    asyncio.run(main())
