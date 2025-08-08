@@ -9,7 +9,7 @@ from beanie import PydanticObjectId
 from jwt import access_security
 from util.current_user import current_user, current_user_mandatory
 from util.requests import get_zenodo_data
-from util.update_zenodo import update_records
+from util.update_records import update_zenodo_records
 
 router = APIRouter(prefix="/api/v1/zenodo", tags=["Zenodo"])
 
@@ -25,11 +25,11 @@ async def get_all_zenodo_records():
 async def update_all_zenodo_records(
     zenodo: Zenodo | None = None,
     user: User = Depends(current_user_mandatory)):
-
+ 
     if zenodo:
-        return await update_records(user_id=user.id, zenodo_id=zenodo.id)
+        return await update_zenodo_records(user_id=user.id, zenodo_id=zenodo.id)
 
-    return await update_records(user_id=user.id, zenodo_id=None)
+    return await update_zenodo_records(user_id=user.id, zenodo_id=None)
 
 
 @router.post("/search", status_code=200)
@@ -38,18 +38,17 @@ async def post_zenodo_records(dataset: Dataset) -> Zenodo:
     zenodo = await Zenodo.find_one(Zenodo.source == dataset.source)
 
     if zenodo:
-        raise HTTPException(status_code=409,
-                            detail=str("Resource already exists"))
+        raise HTTPException(status_code=409, detail="Resource already exists")
 
     try:
-
-        data = get_zenodo_data(dataset.source)
-        if data["status"] is not 200:
+        data = await get_zenodo_data(dataset.source)
+        if data["status"] != 200:
             raise HTTPException(status_code=data["status"],
                                 detail=data["detail"])
+
         zenodo = Zenodo(**data["zenodo_object"])
 
-    except ValueError as error:
+    except Exception as error:
         raise HTTPException(status_code=400, detail=str(error))
 
     return zenodo

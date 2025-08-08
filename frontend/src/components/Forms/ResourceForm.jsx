@@ -6,48 +6,35 @@ import {
   IconButton,
   DialogContent,
   Stack,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormControl,
-  Divider,
-  Typography,
-  FormControlLabel,
-  FormGroup,
-  Checkbox,
-  Tooltip,
-  TextField,
-  Autocomplete,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
-import InfoIcon from "@mui/icons-material/Info";
 import { useNavigate } from "react-router-dom";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-
-import Notification from "../Notification.jsx";
-import { useCreateDataset } from "../../queries/dataset.js";
-import { useCreateTool } from "../../queries/tool.js";
-import { useCreateDocument } from "../../queries/document.js";
-import ZenodoForm from "../Forms/ZenodoForm.jsx";
+import Notification from "@helpers/Notification.jsx";
+import { useCreateDataset } from "@queries/dataset.js";
+import { useCreateTool } from "@queries/tool.js";
+import { useCreateDocument } from "@/queries/document.js";
+import ResourcePreview from "./ResourcePreview.jsx";
 import { useAuth } from "../AuthContext.jsx";
-import DatasetFormFields from "./DatasetFormFields.jsx";
-import DocumentFormFields from "./DocumentsFormFields.jsx";
-import ToolFormFields from "./ToolFormFields.jsx";
-import { useZenodo } from "../../queries/zenodo.js";
-import { useScopes } from "../../queries/scope.js";
-import { useCountries } from "../../queries/countries.js";
-import { useAssessments } from "../../queries/assessment.js";
-import ServiceFormFields from "./ServiceFormFields.jsx";
-import { useCreateService } from "../../queries/service.js";
+import { useZenodo } from "@queries/zenodo.js";
+import { useCreateService } from "@queries/service.js";
+import ResourcePathsForm from "./ResourcePathsForm.jsx";
+import { useOpenaire } from "@queries/openaire.js";
+import ResourceFormSearch from "./ResourceFormSearch.jsx";
 
 export default function ResourceForm() {
   const [message, setMessage] = useState("");
-  const [zenodoData, setZenodoData] = useState(null);
+  const [data, setData] = useState(null);
   const [resourceType, setResourceType] = useState("dataset");
+  const [resourceTypesList, setResourceTypesList] = useState([
+    { value: "dataset", label: "Dataset" },
+    { value: "tool", label: "Tool" },
+    { value: "document", label: "Document" },
+    { value: "service", label: "Service" },
+  ]);
   const { user } = useAuth();
-  const countries = useCountries();
   const {
     register,
     handleSubmit,
@@ -56,6 +43,7 @@ export default function ResourceForm() {
     reset,
     watch,
     control,
+    getValues,
     formState: { errors },
   } = useForm({ mode: "onBlur" });
 
@@ -67,42 +55,15 @@ export default function ResourceForm() {
   const createService = useCreateService();
 
   const zenodo = useZenodo();
-  const scopesQuery = useScopes();
-  const [selectedScopes, setSelectedScopes] = useState([]);
-  const assessmentData = useAssessments();
-  const [selectedAssessments, setSelectedAssessments] = useState([]);
+  const openaire = useOpenaire();
 
   useEffect(() => {
-    setValue("scopes", selectedScopes);
-  }, [selectedScopes, setValue]);
-
-  useEffect(() => {
-    setValue("assessments", selectedAssessments);
-  }, [selectedAssessments, setValue]);
-
-  const handleToggleScope = (scopeId) => {
-    setSelectedScopes((prev) =>
-      prev.includes(scopeId)
-        ? prev.filter((id) => id !== scopeId)
-        : [...prev, scopeId]
-    );
-  };
-
-  const handleToggleAssessment = (assessmentId) => {
-    setSelectedAssessments((prev) =>
-      prev.includes(assessmentId)
-        ? prev.filter((id) => id !== assessmentId)
-        : [...prev, assessmentId]
-    );
-  };
-
-  useEffect(() => {
-    if (zenodoData && zenodoData.source) {
-      setValue("source", zenodoData.source);
+    if (data && data.source) {
+      setValue("source", data.source);
     } else {
       setValue("source", "");
     }
-  }, [zenodoData]);
+  }, [data]);
 
   const getMutation = () => {
     if (resourceType === "tool") return createTool;
@@ -134,6 +95,12 @@ export default function ResourceForm() {
   const onZenodoSearch = () => {
     const sourceValue = watch("source");
 
+    setResourceType("dataset");
+    setResourceTypesList([
+      { value: "dataset", label: "Dataset" },
+      { value: "tool", label: "Tool" },
+      { value: "document", label: "Document" },
+    ]);
     if (!sourceValue) {
       setError("source", { message: "Source cannot be empty" });
       return;
@@ -143,7 +110,16 @@ export default function ResourceForm() {
       { data: { source: sourceValue } },
       {
         onSuccess: (data) => {
-          setZenodoData(data?.data);
+          setData(data?.data);
+          // Set resource type based on Zenodo data if the data.data.resource_type exists in available resourceTypesList
+          if (
+            data?.data?.resource_type &&
+            resourceTypesList.some(
+              (type) => type.value === data?.data?.resource_type
+            )
+          ) {
+            setResourceType(data?.data?.resource_type);
+          }
           setMessage("Zenodo data fetched!");
           setValue("source", data?.data?.source);
         },
@@ -152,6 +128,33 @@ export default function ResourceForm() {
           setError("source", {
             message: error?.response?.data?.detail || "Zenodo search failed",
           });
+          setData(null);
+        },
+      }
+    );
+  };
+  const onOpenaireSearch = () => {
+    const sourceValue = watch("source");
+    setResourceType("service");
+    setResourceTypesList([{ value: "service", label: "Service" }]);
+    if (!sourceValue) {
+      setError("source", { message: "Source cannot be empty" });
+      return;
+    }
+    openaire.mutate(
+      { data: { source: sourceValue } },
+      {
+        onSuccess: (data) => {
+          setData(data?.data);
+          setMessage("Openaire data fetched!");
+          setValue("source", data?.data?.source);
+        },
+        onError: (error) => {
+          setMessage(error?.response?.data?.detail || "Openaire search failed");
+          setError("source", {
+            message: error?.response?.data?.detail || "Openaire search failed",
+          });
+          setData(null);
           setZenodoData(null);
         },
       }
@@ -160,7 +163,7 @@ export default function ResourceForm() {
 
   const handleReset = () => {
     reset();
-    setZenodoData(null);
+    setData(null);
     setMessage("");
   };
 
@@ -180,7 +183,7 @@ export default function ResourceForm() {
           noValidate
           onSubmit={handleSubmit(onSubmit)}
           fullWidth
-          maxWidth={zenodoData ? "lg" : "sm"}
+          maxWidth={data ? "lg" : "sm"}
         >
           <DialogTitle
             sx={{
@@ -211,174 +214,38 @@ export default function ResourceForm() {
                 spacing={2}
                 sx={{ width: "100%" }}
               >
-                <ZenodoForm
+                <ResourceFormSearch
                   register={register}
                   errors={errors}
-                  zenodoData={zenodoData}
+                  getValues={getValues}
                   onZenodoSearch={onZenodoSearch}
+                  onOpenaireSearch={onOpenaireSearch}
                   handleReset={handleReset}
-                  isLoading={zenodo.isPending}
+                  isLoading={zenodo.isPending || openaire.isPending}
                 />
+                <ResourcePreview data={data} />
               </Stack>
-              {zenodoData && (
-                <>
-                  <Divider orientation="vertical" flexItem />
-                  <Stack direction="column" spacing={2} sx={{ width: "100%" }}>
-                    <Stack direction="row" alignItems="center">
-                      <Typography variant="h6" sx={{ mr: 0.5 }}>
-                        Resource Scope
-                      </Typography>
-                      <Tooltip title="SCOPE Framework for Research Evaluation">
-                        <InfoIcon fontSize="small" />
-                      </Tooltip>
-                    </Stack>
 
-                    <Stack direction="column" spacing={1} sx={{ mt: 2 }}>
-                      <FormGroup row>
-                        {scopesQuery?.data?.data?.map((scope) => (
-                          <Tooltip key={scope._id} title={scope?.description}>
-                            <FormControlLabel
-                              key={scope._id}
-                              control={
-                                <Checkbox
-                                  checked={selectedScopes.includes(scope._id)}
-                                  onChange={() => handleToggleScope(scope._id)}
-                                  sx={{ color: scope.bg_color ?? "#1976d2" }}
-                                />
-                              }
-                              label={scope.name}
-                            />
-                          </Tooltip>
-                        ))}
-                      </FormGroup>
-                    </Stack>
-
-                    <Stack direction="row" alignItems="center">
-                      <Typography variant="h6" sx={{ mr: 0.5 }}>
-                        Geographical Coverage
-                      </Typography>
-                      <Tooltip title="Select applicable countries or regions.">
-                        <InfoIcon fontSize="small" />
-                      </Tooltip>
-                    </Stack>
-                    {/* Geographical Coverage */}
-                    <Controller
-                      name="geographical_coverage"
-                      control={control}
-                      defaultValue={[]}
-                      render={({ field }) => (
-                        <Autocomplete
-                          {...field}
-                          multiple
-                          options={countries?.data?.data}
-                          getOptionLabel={(option) => option.label}
-                          value={field.value ?? []}
-                          onChange={(_, value) => field.onChange(value)}
-                          renderOption={(props, option) => {
-                            const { key, ...rest } = props;
-                            return (
-                              <li key={key} {...rest}>
-                                <img
-                                  loading="lazy"
-                                  width="20"
-                                  src={option.flag}
-                                  alt=""
-                                  style={{ marginRight: 10 }}
-                                />
-                                {option.label} ({option.code})
-                              </li>
-                            );
-                          }}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Select countries"
-                              placeholder="Start typing..."
-                            />
-                          )}
-                        />
-                      )}
-                    />
-                    <Stack direction="row" alignItems="center">
-                      <Typography variant="h6" sx={{ mr: 0.5 }}>
-                        Assessment Stages
-                      </Typography>
-                      <Tooltip title="">
-                        <InfoIcon fontSize="small" />
-                      </Tooltip>
-                    </Stack>
-                    <Stack direction="column" spacing={1} sx={{ mt: 2 }}>
-                      <FormGroup row>
-                        {assessmentData?.data?.data?.map((assessment) => (
-                          <Tooltip
-                            key={assessment._id}
-                            title={assessment?.description}
-                          >
-                            <FormControlLabel
-                              key={assessment._id}
-                              control={
-                                <Checkbox
-                                  checked={selectedAssessments.includes(
-                                    assessment._id
-                                  )}
-                                  onChange={() =>
-                                    handleToggleAssessment(assessment._id)
-                                  }
-                                />
-                              }
-                              label={assessment.name}
-                            />
-                          </Tooltip>
-                        ))}
-                      </FormGroup>
-                    </Stack>
-                    <Typography variant="h6" sx={{ mt: 3 }}>
-                      Resource Details
-                    </Typography>
-                    <FormControl fullWidth sx={{ mb: 2 }}>
-                      <InputLabel>Resource type</InputLabel>
-                      <Select
-                        disabled={!zenodoData}
-                        value={resourceType}
-                        label="Resource type"
-                        onChange={(e) => setResourceType(e.target.value)}
-                      >
-                        <MenuItem value="dataset">Dataset</MenuItem>
-                        <MenuItem value="tool">Tool</MenuItem>
-                        <MenuItem value="document">
-                          Template or Guideline
-                        </MenuItem>
-                        <MenuItem value="service">Service</MenuItem>
-                      </Select>
-                    </FormControl>
-
-                    {resourceType === "dataset" && (
-                      <DatasetFormFields
-                        register={register}
-                        errors={errors}
-                        setValue={setValue}
-                      />
-                    )}
-                    {resourceType === "document" && (
-                      <DocumentFormFields register={register} errors={errors} />
-                    )}
-                    {resourceType === "tool" && (
-                      <ToolFormFields register={register} errors={errors} />
-                    )}
-                    {resourceType === "service" && (
-                      <ServiceFormFields register={register} errors={errors} />
-                    )}
-                  </Stack>
-                </>
+              {data && (
+                <ResourcePathsForm
+                  data={data}
+                  control={control}
+                  setValue={setValue}
+                  resourceType={resourceType}
+                  resourceTypesList={resourceTypesList}
+                  setResourceType={setResourceType}
+                  register={register}
+                  errors={errors}
+                />
               )}
             </Stack>
           </DialogContent>
-          {zenodoData && (
+          {data && (
             <DialogActions sx={{ p: 2, pt: 0 }}>
               <Button
                 type="submit"
                 variant="contained"
-                disabled={!zenodoData}
+                disabled={!data}
                 loading={mutation?.isPending}
                 loadingPosition="end"
                 endIcon={<AddIcon />}
@@ -389,7 +256,7 @@ export default function ResourceForm() {
             </DialogActions>
           )}
         </Dialog>
-        {(!mutation?.isSuccess || mutation?.isError) && (
+        {(mutation?.isSuccess || mutation?.isError) && (
           <Notification requestStatus={mutation?.status} message={message} />
         )}
       </>

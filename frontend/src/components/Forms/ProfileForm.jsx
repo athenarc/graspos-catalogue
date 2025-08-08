@@ -20,7 +20,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useUpdateUser } from "../../queries/data";
 import SaveIcon from "@mui/icons-material/Save";
-import Notification from "../Notification";
+import Notification from "@helpers/Notification";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useAuth } from "../AuthContext";

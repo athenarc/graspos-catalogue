@@ -32,7 +32,7 @@ export function useServices(filters = {}) {
         if (typeof value === "object" && value !== null) {
           // If the value is an object (like "licenses"), loop through its properties
           Object.entries(value).forEach(([subKey, subValue]) => {
-            if (key == "tags" || key == "service_type") {
+            if (key == "tags" || key == "service_type" || key == "trl") {
               value.forEach((arrayValue) => {
                 params.append(
                   key.replace(key, key.replace(/s+$/, "")),
@@ -91,7 +91,7 @@ export function useServices(filters = {}) {
     enabled: true, // Ensure this fires by default if filters change
   });
 }
-export function useServiceUniqueFieldValues(field, enabled, scope = "zenodo") {
+export function useServiceUniqueFieldValues(field, enabled, scope = "openaire") {
   return useQuery({
     queryKey: ["service-unique-field-values", field],
     enabled: enabled && !!field,

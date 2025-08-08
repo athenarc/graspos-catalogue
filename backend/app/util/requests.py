@@ -1,46 +1,123 @@
-import requests, ast, re
+import httpx, re
+from util.url_transformer import transform_zenodo_url, transform_openaire_url
+from models.trl import TRLEntry
 
 
-def get_zenodo_data(source):
-    
-    doi_pattern = r'\d+'
-    target_source = "https://zenodo.org/api/records/"
-    match = re.search(doi_pattern, source)
-    if match:
-        target_source += match.group(0) + "/versions/latest"
-        
-    
-    request = None
+async def get_openaire_data(source: str) -> dict:
+    """
+    Async function to fetch OpenAIRE metadata by record URL or DOI.
+    """
     try:
-        request = requests.get(str(target_source))
-      
-    except requests.exceptions.RequestException as e:
+        async with httpx.AsyncClient() as client:
+            transformed_url = transform_openaire_url(source)
+            response = await client.get(transformed_url)
+            if response.status_code == 200:
+                data = response.json()
+
+                data["openaireId"] = data.get("id")
+                data["source"] = source.strip()
+                data["metadata"] = data
+                data["metadata"]["communities"] = [{
+                    "id": "graspos-services"
+                }] if "graspos" in source.lower() else []
+                trl_entry = None
+                if "trl" in data["metadata"]:
+                    print("TRL data found in OpenAIRE record:",
+                          data["metadata"]["trl"])
+
+                    trl_id_val = None
+
+                    if isinstance(data["metadata"]["trl"], str):
+                        trl_id_val = int(
+                            re.sub(r'\D', '', data["metadata"]["trl"]).strip())
+                    elif isinstance(data["metadata"]["trl"], int):
+                        trl_id_val = data["metadata"]["trl"]
+
+                    if trl_id_val:
+                        trl_entry = await TRLEntry.find_one(
+                            TRLEntry.trl_id == trl_id_val)
+                        print("trl_entry:", trl_entry)
+                        data["metadata"][
+                            "trl"] = trl_entry.id if trl_entry else None
+                    else:
+                        data["metadata"]["trl"] = None
+                else:
+                    print("No TRL data found in OpenAIRE record.")
+                    data["metadata"]["trl"] = None
+
+                # Αφαίρεση του "id" πριν αποθήκευση
+                del data["id"]
+
+                return {"status": 200, "openaire_object": data}
+            else:
+                return {
+                    "status": response.status_code,
+                    "detail": "Failed to fetch OpenAIRE data.",
+                    "openaire_object": {}
+                }
+    except httpx.RequestError as e:
         return {
-            "status": 404,
-            "detail": "Not a valid Zenodo url.",
+            "status": 503,
+            "detail": f"Request failed: {str(e)}",
+            "openaire_object": {}
+        }
+    re
+
+
+async def get_zenodo_data(source: str) -> dict:
+    """
+    Async function to fetch metadata from Zenodo by record URL or DOI.
+    """
+
+    api_url = transform_zenodo_url(source)
+    if not api_url:
+        return {
+            "status": 400,
+            "detail": "Could not extract Zenodo record ID from source.",
             "zenodo_object": {}
         }
-        
-    if request.status_code == 200:
 
-        if request and request.json():
-           
-            resource = request.json()
+    try:
+        async with httpx.AsyncClient(follow_redirects=True,
+                                     timeout=10.0) as client:
+            response = await client.get(api_url)
+
+        if response.status_code == 200:
+            resource = response.json()
             resource["zenodo_id"] = resource["id"]
-            resource["source"] = source
+            resource["source"] = source.strip()
             del resource["id"]
-            
+
             return {"status": 200, "zenodo_object": resource}
-    else:
-        if str(request.status_code).startswith('5'):
+
+        elif str(response.status_code).startswith("5"):
             return {
-                "status": request.status_code,
-                "detail": "Zenodo server error. Please try again later",
+                "status": response.status_code,
+                "detail": "Zenodo server error. Please try again later.",
                 "zenodo_object": {}
             }
-        error = ast.literal_eval(request.text)
+
+        else:
+            try:
+                error = response.json()
+            except Exception:
+                error = {
+                    "status": response.status_code,
+                    "message": "Unknown error from Zenodo."
+                }
+
+            return {
+                "status": error.get("status", response.status_code),
+                "detail": error.get("message", "Unknown error from Zenodo."),
+                "zenodo_object": {}
+            }
+
+    except httpx.RequestError as e:
         return {
-            "status": error["status"],
-            "detail": error["message"],
+            "status": 503,
+            "detail": f"Request failed: {str(e)}",
             "zenodo_object": {}
         }
+
+
+# async def get_openaire_data():

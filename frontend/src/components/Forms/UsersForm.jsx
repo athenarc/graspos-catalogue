@@ -23,7 +23,7 @@ import {
 } from "../../queries/data";
 import SaveIcon from "@mui/icons-material/Save";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
-import Notification from "../Notification";
+import Notification from "@helpers/Notification";
 import { useAuth } from "../AuthContext";
 
 function UserForm({ user }) {

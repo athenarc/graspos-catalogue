@@ -189,3 +189,6 @@ docker-compose-dev.yaml
 vm.txt
 
 *.server.*
+
+settings.json
+openaire-example.json

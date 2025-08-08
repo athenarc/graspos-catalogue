@@ -1,2 +1,2 @@
 * * * * * env > /tmp/cron-env.log
-0 11 * * * . /etc/environment && cd /code && /usr/local/bin/python /code/app/zenodo_update.py >> /var/log/cron.log 2>&1
+0 11 * * * . /etc/environment && cd /code && /usr/local/bin/python /code/app/update_script_parser.py >> /var/log/cron.log 2>&1

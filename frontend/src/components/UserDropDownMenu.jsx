@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 
 import Logout from "@mui/icons-material/Logout";
-import { CircularVariants } from "./Skeleton";
+import { CircularVariants } from "./Helpers/Skeleton";
 import GroupIcon from "@mui/icons-material/Group";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import AddIcon from "@mui/icons-material/Add";
