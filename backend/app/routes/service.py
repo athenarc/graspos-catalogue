@@ -12,7 +12,7 @@ from util.requests import get_openaire_data
 from typing import List, Optional
 from datetime import datetime
 from beanie import PydanticObjectId
-import logging
+import logging, re
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/service", tags=["Service"])
@@ -75,12 +75,8 @@ async def get_all_services(
 
     # TRL filter
     if trl:
-        trl_european_descriptions = [str(s) for s in trl]
-        filters.append(
-            {"trl.european_description": {
-                "$in": trl_european_descriptions
-            }})
-        print("TRL Filter Applied:", filters[-1])
+        trl_cleaned = [re.sub(r"^\d+ - ", "", str(s)) for s in trl]
+        filters.append({"trl.european_description": {"$in": trl_cleaned}})
 
     # GraspOS verified filter
     if graspos:
