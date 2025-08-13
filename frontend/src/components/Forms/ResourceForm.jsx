@@ -82,7 +82,6 @@ export default function ResourceForm() {
           navigate("..");
         },
         onError: (error) => {
-          reset();
           setMessage(error?.response?.detail || "Error occurred");
           setError("source", {
             message: error?.response?.detail || "Error occurred",
