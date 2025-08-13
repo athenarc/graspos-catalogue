@@ -148,7 +148,8 @@ class Service(Document, ServiceView):
 
             elif value is not None:
                 if field_name == "trl":
-                    unique_values.add(value.european_description)
+                    unique_values.add(
+                        str(value.trl_id) + " - " + value.european_description)
                 else:
                     unique_values.add(value)
 
