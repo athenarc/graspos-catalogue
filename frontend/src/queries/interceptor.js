@@ -5,64 +5,76 @@ const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_HOST,
   headers: { "Content-Type": "application/json" },
 });
+
+let logoutCallback = null;
+
+export const setLogoutCallback = (cb) => {
+  logoutCallback = cb;
+};
+
 async function refreshTokenFunction() {
-  var token = null;
+  let refreshToken = null;
   try {
-    token = JSON.parse(localStorage.getItem("refresh_token"));
-  } catch (err) {
-    return err;
-  }
-  const refreshToken = axios.create({
+    refreshToken = JSON.parse(localStorage.getItem("refresh_token"));
+  } catch {}
+  if (!refreshToken) return Promise.reject();
+
+  const refreshAxios = axios.create({
     baseURL: process.env.REACT_APP_BACKEND_HOST + "auth/refresh",
-    timeout: 1000,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${refreshToken}`,
     },
   });
-  const refreshTokenCall = await refreshToken.post();
-  if (refreshTokenCall?.data?.access_token) {
-    localStorage.removeItem("token");
-    localStorage.setItem(
-      "token",
-      JSON.stringify(refreshTokenCall.data.access_token)
-    );
-    queryClient.invalidateQueries(["Datasets"]);
-    queryClient.invalidateQueries(["Documents"]);
-    queryClient.invalidateQueries(["Tools"]);
-    return Promise.resolve();
-  } else {
+
+  try {
+    const res = await refreshAxios.post();
+    if (res?.data?.access_token) {
+      localStorage.setItem("token", JSON.stringify(res.data.access_token));
+      queryClient.invalidateQueries(["datasets"]);
+      queryClient.invalidateQueries(["documents"]);
+      queryClient.invalidateQueries(["tools"]);
+      return res.data.access_token;
+    }
     return Promise.reject();
+  } catch (err) {
+    return Promise.reject(err);
   }
 }
+
+// Request interceptor για να βάζουμε το Authorization header
 axiosInstance.interceptors.request.use(
-  function (config) {
-    var token = null;
-    try {
-      token = JSON.parse(localStorage.getItem("token"));
-    } catch (err) {}
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+  (config) => {
+    const token = JSON.parse(localStorage.getItem("token"));
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
-  function (error) {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
-axiosInstance.interceptors.response.use(
-  function (response) {
-    return response;
-  },
-  async function (error) {
-    if (
-      error?.response?.data?.detail ==
-      "Token time expired: Signature has expired."
-    ) {
-      refreshTokenFunction();
-    }
 
+// Response interceptor με retry
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (
+      error.response?.data?.detail ===
+        "Token time expired: Signature has expired." &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+      try {
+        const newToken = await refreshTokenFunction();
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return axiosInstance(originalRequest);
+      } catch (err) {
+        logoutCallback?.(); // εδώ καλείς το logout
+        return Promise.reject(err);
+      }
+    }
     return Promise.reject(error);
   }
 );
+
 export default axiosInstance;

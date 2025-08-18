@@ -1,82 +1,136 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
 import { useUserInformation } from "../queries/data";
 import { useQueryClient } from "@tanstack/react-query";
+import { setLogoutCallback } from "../queries/interceptor";
+
 const AuthContext = createContext();
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const getToken = () => {
-    const tokenString = localStorage.getItem("token");
-    if (tokenString) {
-      try {
-        const token = JSON.parse(localStorage.getItem("token"));
-        return token;
-      } catch (error) {
-        return null;
-      }
-    }
-    return null;
-  };
-
-  const getUser = () => {
-    const userString = localStorage.getItem("user");
-    if (typeof userString !== "undefined") {
-      try {
-        const user = JSON.parse(localStorage.getItem("user"));
-        return user;
-      } catch (error) {
-        return null;
-      }
-    }
-    return null;
-  };
-
-  const [token, setToken] = useState(getToken());
-  const [user, setUser] = useState(getUser());
-  const userInformation = useUserInformation(token);
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (!token) {
-      localStorage.clear();
-      setUser(null);
-      setToken(null);
+  // ---- STATE ----
+  const getTokenFromStorage = () => {
+    try {
+      const t = localStorage.getItem("token");
+      return t ? JSON.parse(t) : null;
+    } catch {
+      return null;
     }
+  };
+
+  const [token, setToken] = useState(getTokenFromStorage());
+  const [user, setUser] = useState(null);
+
+  const isAuthenticated = !!token && !!user;
+
+  const userInformation = useUserInformation(token);
+
+  // ---- SAFE LOGOUT ----
+  const handleLogout = useCallback(() => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("refresh_token");
+
+    setTimeout(() => {
+      queryClient.invalidateQueries(["datasets"]);
+      queryClient.invalidateQueries(["documents"]);
+      queryClient.invalidateQueries(["tools"]);
+      queryClient.invalidateQueries(["services"]);
+    }, 100);
+  }, [queryClient]);
+
+  // ---- LOGIN ----
+  const handleLogin = useCallback(
+    (data) => {
+      if (!data?.access_token) return;
+      localStorage.setItem("token", JSON.stringify(data.access_token));
+      localStorage.setItem("refresh_token", JSON.stringify(data.refresh_token));
+      setToken(data.access_token);
+      // user θα φορτωθεί από useUserInformation effect
+      setTimeout(() => {
+        queryClient.invalidateQueries(["datasets"]);
+        queryClient.invalidateQueries(["documents"]);
+        queryClient.invalidateQueries(["tools"]);
+        queryClient.invalidateQueries(["services"]);
+      }, 100);
+    },
+    [queryClient]
+  );
+
+  useEffect(() => {
+    setLogoutCallback(handleLogout);
+  }, [handleLogout]);
+
+  // ---- UPDATE USER FROM API ----
+  useEffect(() => {
     if (token && userInformation?.data?.data) {
-      localStorage.setItem("user", JSON.stringify(userInformation?.data?.data));
-      setUser(userInformation?.data?.data);
+      setUser(userInformation.data.data);
     }
   }, [userInformation, token]);
 
-  const handleLogin = (data) => {
-    localStorage.setItem("token", JSON.stringify(data?.access_token));
-    localStorage.setItem("refresh_token", JSON.stringify(data?.refresh_token));
-    localStorage.setItem("user", JSON.stringify(userInformation?.data?.data));
-    setToken(data);
-    setUser(userInformation?.data?.data);
-    setTimeout(() => {
-      queryClient.invalidateQueries(["datasets"]);
-      queryClient.invalidateQueries(["documents"]);
-      queryClient.invalidateQueries(["tools"]);
-    }, 100);
-  };
+  // ---- TOKEN EXPIRY & AUTO REFRESH ----
+  useEffect(() => {
+    if (!token) return;
 
-  const handleLogout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.clear();
-    setTimeout(() => {
-      queryClient.invalidateQueries(["datasets"]);
-      queryClient.invalidateQueries(["documents"]);
-      queryClient.invalidateQueries(["tools"]);
-    }, 100);
-  };
+    let timer;
+
+    const tryRefresh = async () => {
+      try {
+        const refreshToken = JSON.parse(localStorage.getItem("refresh_token"));
+        if (!refreshToken) throw new Error("No refresh token");
+
+        const res = await fetch(
+          `${process.env.REACT_APP_BACKEND_HOST}auth/refresh`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${refreshToken}`,
+            },
+          }
+        );
+
+        if (!res.ok) throw new Error("Refresh failed");
+        const data = await res.json();
+
+        localStorage.setItem("token", JSON.stringify(data.access_token));
+        setToken(data.access_token);
+      } catch (err) {
+        handleLogout(); // τελικό logout αν αποτύχει
+      }
+    };
+
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const expiresAt = payload.exp * 1000; // ms
+      const now = Date.now();
+      const timeout = expiresAt - now;
+
+      if (timeout <= 0) {
+        tryRefresh();
+      } else {
+        timer = setTimeout(() => tryRefresh(), timeout);
+      }
+    } catch (err) {
+      handleLogout();
+    }
+
+    return () => clearTimeout(timer);
+  }, [token, handleLogout]);
 
   return (
-    <AuthContext.Provider value={{ token, user, handleLogin, handleLogout }}>
+    <AuthContext.Provider
+      value={{ token, user, isAuthenticated, handleLogin, handleLogout }}
+    >
       {children}
     </AuthContext.Provider>
   );

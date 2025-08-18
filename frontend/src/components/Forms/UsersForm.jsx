@@ -1,205 +1,204 @@
 import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Button,
-  IconButton,
-  TextField,
-  Stack,
-  FormControlLabel,
-  Card,
-  CardContent,
   CardActions,
   Typography,
+  Stack,
+  TextField,
+  Button,
+  FormControlLabel,
+  Checkbox,
+  Dialog,
+  IconButton,
+  DialogContent,
+  DialogTitle,
+  Paper,
 } from "@mui/material";
+import SaveIcon from "@mui/icons-material/Save";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import CloseIcon from "@mui/icons-material/Close";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import {
   useUpdateUser,
   useUserResetPassword,
   useUsers,
 } from "../../queries/data";
-import SaveIcon from "@mui/icons-material/Save";
-import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import Notification from "@helpers/Notification";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 
 function UserForm({ user }) {
   const [message, setMessage] = useState("");
+  const [notificationStatus, setNotificationStatus] = useState("idle");
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      ...user,
+      super_user: !!user?.super_user,
+      disabled: !!user?.disabled,
+    },
+  });
+
+  const updateUser = useUpdateUser();
   const passwordReset = useUserResetPassword();
-  
-  function handlePasswordReset(data) {
+
+  const handlePasswordReset = () => {
+    setNotificationStatus("loading");
     passwordReset.mutate(
-      { data },
+      { data: { id: user?.id } },
       {
         onSuccess: () => {
           setMessage("User password reset successfully!");
+          setNotificationStatus("success");
         },
         onError: (error) => {
-          setMessage(error?.response?.data?.detail);
-        },
-      }
-    );
-  }
-  const updateUser = useUpdateUser();
-  const onSubmit = (data) => {
-    updateUser.mutate(
-      { data },
-      {
-        onSuccess: () => {
-          setMessage("User information updated successfully!");
-        },
-        onError: (error) => {
-          setMessage(error?.response?.data?.detail);
+          setMessage(
+            error?.response?.data?.detail || "Failed to reset password"
+          );
+          setNotificationStatus("error");
         },
       }
     );
   };
 
-  function handleReset() {
-    reset(user);
-  }
+  const onSubmit = (data) => {
+    setNotificationStatus("loading");
+    updateUser.mutate(
+      { data },
+      {
+        onSuccess: () => {
+          setMessage("User information updated successfully!");
+          setNotificationStatus("success");
+        },
+        onError: (error) => {
+          setMessage(error?.response?.data?.detail || "Failed to update user");
+          setNotificationStatus("error");
+        },
+      }
+    );
+  };
+
+  const handleResetForm = () => reset(user);
+  const disableForm = passwordReset.isPending || updateUser.isPending;
+
   return (
-    <Card component="form" noValidate onSubmit={handleSubmit(onSubmit)}>
-      <CardContent
-        component={Stack}
-        direction="column"
-        spacing={2}
-        sx={{ pb: 2 }}
-      >
-        <Stack direction="row" justifyContent="space-between" sx={{ pb: 2 }}>
-          <Typography variant="h5">{user?.username}</Typography>
-
-          <Stack direction="row" justifyContent="end" spacing={2}>
-            <FormControlLabel
-              label="Admin"
-              control={
-                <input
-                  {...register("super_user", {
-                    value: user?.super_user ? true : false,
-                  })}
-                  type="checkbox"
-                />
-              }
-            />
-            <FormControlLabel
-              label="Disabled"
-              control={
-                <input
-                  {...register("disabled", {
-                    value: user?.disabled ? true : false,
-                  })}
-                  type="checkbox"
-                />
-              }
-            />
-            <input
-              hidden={true}
-              {...register("id", {
-                value: user?.id,
-              })}
-              label="Id"
-            />
-
-            {(updateUser?.isSuccess || updateUser?.isError) && (
-              <Notification
-                requestStatus={updateUser?.status}
-                message={message}
+    <Paper elevation={3} sx={{ mb: 3, p: 2 }}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Stack spacing={2}>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ p: 1, borderRadius: 1 }}
+          >
+            <Typography variant="subtitle1" fontWeight="bold">
+              {user?.username}
+            </Typography>
+            <Stack direction="row" spacing={1}>
+              <FormControlLabel
+                disabled={disableForm}
+                control={<Checkbox {...register("super_user")} />}
+                label="Admin"
               />
-            )}
+              <FormControlLabel
+                disabled={disableForm}
+                control={<Checkbox {...register("disabled")} />}
+                label="Disabled"
+              />
+            </Stack>
           </Stack>
-        </Stack>
 
-        <Stack direction={"row"} justifyContent="start" spacing={2}>
-          <TextField
-            {...register("username", {
-              value: user?.username,
-            })}
-            label="Username"
-            disabled
-            fullWidth
-          />
-          <TextField
-            {...register("email", {
-              value: user?.email,
-            })}
-            label="Email"
-            fullWidth
-          />
+          {/* Notification */}
+          {(notificationStatus === "success" ||
+            notificationStatus === "error") && (
+            <Notification
+              requestStatus={notificationStatus}
+              message={message}
+            />
+          )}
+
+          <Stack direction="row" spacing={2}>
+            <TextField
+              disabled={disableForm}
+              label="First Name"
+              fullWidth
+              {...register("first_name")}
+              error={!!errors.first_name}
+              helperText={errors.first_name?.message || ""}
+            />
+            <TextField
+              disabled={disableForm}
+              label="Last Name"
+              fullWidth
+              {...register("last_name")}
+              error={!!errors.last_name}
+              helperText={errors.last_name?.message || ""}
+            />
+          </Stack>
+
+          <Stack direction="row" spacing={2}>
+            <TextField
+              label="Username"
+              fullWidth
+              disabled
+              {...register("username")}
+              error={!!errors.username}
+              helperText={errors.username?.message || ""}
+            />
+            <TextField
+              disabled={disableForm}
+              label="Email"
+              fullWidth
+              {...register("email")}
+              error={!!errors.email}
+              helperText={errors.email?.message || ""}
+            />
+          </Stack>
+
+          <CardActions sx={{ justifyContent: "flex-end", gap: 1 }}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleResetForm}
+              disabled={disableForm}
+            >
+              Reset Form
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handlePasswordReset}
+              endIcon={<RestartAltIcon />}
+              disabled={disableForm}
+            >
+              {passwordReset.isLoading ? "Resetting..." : "Reset Password"}
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              startIcon={<SaveIcon />}
+              disabled={disableForm}
+              sx={{ backgroundColor: "#20477B" }}
+            >
+              {updateUser.isLoading ? "Saving..." : "Save"}
+            </Button>
+          </CardActions>
         </Stack>
-        <Stack direction="row" justifyContent="start" spacing={2}>
-          <TextField
-            {...register("first_name", {
-              value: user?.first_name,
-            })}
-            label="First Name"
-            fullWidth
-          />
-          <TextField
-            {...register("last_name", {
-              value: user?.last_name,
-            })}
-            label="Last Name"
-            fullWidth
-          />
-        </Stack>
-      </CardContent>
-      <CardActions sx={{ p: 2, justifyContent: "end" }}>
-        <Stack direction="row" spacing={2}>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              handlePasswordReset({
-                email: user?.email,
-                password: "12345",
-              });
-            }}
-            endIcon={<RestartAltIcon />}
-          >
-            Reset Password
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={handleReset}
-            endIcon={<RestartAltIcon />}
-          >
-            Reset
-          </Button>
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={updateUser.isPending}
-            loading={updateUser.isPending}
-            endIcon={<SaveIcon />}
-            loadingPosition="end"
-            sx={{ backgroundColor: "#20477B" }}
-          >
-            Save
-          </Button>
-        </Stack>
-      </CardActions>
-    </Card>
+      </form>
+    </Paper>
   );
 }
 
 export default function UsersPanelForm() {
   const { user } = useAuth();
   const users = useUsers();
-
   const navigate = useNavigate();
 
-  function handleClose() {
-    navigate(-1);
-  }
+  const handleClose = () => navigate(-1);
 
   return (
     user && (
@@ -216,19 +215,17 @@ export default function UsersPanelForm() {
         <IconButton
           aria-label="close"
           onClick={handleClose}
-          sx={(theme) => ({
-            position: "absolute",
-            right: 8,
-            top: 8,
-            color: theme.palette.grey[500],
-          })}
+          sx={{ position: "absolute", right: 8, top: 8, color: "white" }}
         >
-          <CloseIcon sx={{ color: "white" }} />
+          <CloseIcon />
         </IconButton>
-        <DialogContent dividers sx={{ p: 2 }}>
-          <Stack direction={"column"} justifyContent="center" spacing={2}>
-            {users?.data?.data?.map((user) => (
-              <UserForm key={user?.id} user={user} />
+        <DialogContent
+          dividers
+          sx={{ maxHeight: "80vh", overflowY: "auto", p: 2 }}
+        >
+          <Stack direction="column" spacing={2}>
+            {users?.data?.data?.map((u) => (
+              <UserForm key={u?.id} user={u} />
             ))}
           </Stack>
         </DialogContent>
