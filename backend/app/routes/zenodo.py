@@ -25,15 +25,17 @@ async def get_all_zenodo_records():
 async def update_all_zenodo_records(
     zenodo: Zenodo | None = None,
     user: User = Depends(current_user_mandatory)):
- 
+
     if zenodo:
-        return await update_zenodo_records(user_id=user.id, zenodo_id=zenodo.id)
+        return await update_zenodo_records(user_id=user.id,
+                                           zenodo_id=zenodo.id)
 
     return await update_zenodo_records(user_id=user.id, zenodo_id=None)
 
 
 @router.post("/search", status_code=200)
-async def post_zenodo_records(dataset: Dataset) -> Zenodo:
+async def post_zenodo_records(
+    dataset: Dataset, user: User = Depends(current_user_mandatory)) -> Zenodo:
 
     zenodo = await Zenodo.find_one(Zenodo.source == dataset.source)
 
@@ -78,7 +80,7 @@ async def get_zenodo(
 
 
 @router.delete("/{zenodo_id}", status_code=200)
-async def delete_zenodo(zenodo_id: str, user: User = Depends(current_user)):
+async def delete_zenodo(zenodo_id: str, user: User = Depends(current_user_mandatory)):
 
     zenodo = await Zenodo.find_one(Zenodo.id == PydanticObjectId(zenodo_id))
 

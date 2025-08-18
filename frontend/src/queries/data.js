@@ -39,7 +39,7 @@ export function useRegister() {
 export function useUserResetPassword() {
   return useMutation({
     mutationFn: ({ data }) => {
-      return axiosInstance.post(`register/reset-password`, data);
+      return axiosInstance.patch(`user/reset`, data);
     },
   });
 }

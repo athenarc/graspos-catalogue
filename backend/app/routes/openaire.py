@@ -18,7 +18,8 @@ async def get_all_openaire_records():
 
 
 @router.post("/search", status_code=200)
-async def fetch_openaire_from_url(service: Service):
+async def fetch_openaire_from_url(
+    service: Service, user: User = Depends(current_user_mandatory)):
     """Fetch OpenAIRE metadata from a given URL or DOI.
     
     Returns:
@@ -40,25 +41,3 @@ async def fetch_openaire_from_url(service: Service):
         raise HTTPException(status_code=500, detail=str(e))
 
     return openaire
-
-    # # Fetch from the API
-    # async with httpx.AsyncClient() as client:
-    #     response = await client.get(transformed_url)
-    #     if response.status_code != 200:
-    #         raise HTTPException(status_code=response.status_code, detail="Could not fetch data")
-    #     data = response.json()
-
-    # # Check if the resource already exists
-    # existing = await OpenAIRE.find_one(OpenAIRE.metadata.id == data.get("id"))
-    # if existing:
-    #     raise HTTPException(status_code=409, detail="Resource already exists")
-
-    # # Create a new record
-    # openaire = OpenAIRE(source=dataset.source, metadata=data)
-
-    # return openaire
-
-    # except HTTPException:
-    #     raise
-    # except Exception as e:
-    #     raise HTTPException(status_code=500, detail=str(e))
