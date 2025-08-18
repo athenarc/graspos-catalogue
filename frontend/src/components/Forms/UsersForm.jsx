@@ -15,7 +15,7 @@ import {
 import SaveIcon from "@mui/icons-material/Save";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import CloseIcon from "@mui/icons-material/Close";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useState } from "react";
 import {
   useUpdateUser,
@@ -35,6 +35,7 @@ function UserForm({ user }) {
     handleSubmit,
     reset,
     formState: { errors },
+    control,
   } = useForm({
     defaultValues: {
       ...user,
@@ -99,15 +100,26 @@ function UserForm({ user }) {
               {user?.username}
             </Typography>
             <Stack direction="row" spacing={1}>
-              <FormControlLabel
-                disabled={disableForm}
-                control={<Checkbox {...register("super_user")} />}
-                label="Admin"
+              <Controller
+                name="super_user"
+                control={control}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={<Checkbox {...field} checked={field.value} />}
+                    label="Admin"
+                  />
+                )}
               />
-              <FormControlLabel
-                disabled={disableForm}
-                control={<Checkbox {...register("disabled")} />}
-                label="Disabled"
+              <Controller
+                name="disabled"
+                control={control}
+                render={({ field }) => (
+                  <FormControlLabel
+                    disabled={disableForm}
+                    control={<Checkbox {...field} checked={field.value} />}
+                    label="Disabled"
+                  />
+                )}
               />
             </Stack>
           </Stack>
