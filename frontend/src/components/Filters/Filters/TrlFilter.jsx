@@ -25,7 +25,6 @@ export default function ServiceTypeAutocompleteFilter({
     if (!isLoading && selectedResource === 3) {
       const types = trlTypeData?.data?.unique_trl || [];
       setTrlTypeOptions(types);
-      console.log("TRL Types:", trlTypeData?.data?.unique_trl);
     }
   }, [selectedResource, trlTypeData, isLoading]);
 

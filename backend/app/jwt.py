@@ -7,32 +7,28 @@ from fastapi_jwt import JwtAuthorizationCredentials, JwtAccessBearer, JwtRefresh
 from config import CONFIG
 from models.user import User
 
-ACCESS_EXPIRES = timedelta(hours=8)
-REFRESH_EXPIRES = timedelta(days=30)
+ACCESS_EXPIRES = timedelta(minutes=15)
+REFRESH_EXPIRES = timedelta(days=7)
 
 optional_access_security = JwtAccessBearer(
     CONFIG.authjwt_secret_key,
     access_expires_delta=ACCESS_EXPIRES,
     refresh_expires_delta=REFRESH_EXPIRES,
-    auto_error=False
-)
+    auto_error=False)
 
-access_security = JwtAccessBearer(
-    CONFIG.authjwt_secret_key,
-    access_expires_delta=ACCESS_EXPIRES,
-    refresh_expires_delta=REFRESH_EXPIRES,
-    auto_error=True
-)
+access_security = JwtAccessBearer(CONFIG.authjwt_secret_key,
+                                  access_expires_delta=ACCESS_EXPIRES,
+                                  refresh_expires_delta=REFRESH_EXPIRES,
+                                  auto_error=True)
 
-refresh_security = JwtRefreshBearer(
-    CONFIG.authjwt_secret_key,
-    access_expires_delta=ACCESS_EXPIRES,
-    refresh_expires_delta=REFRESH_EXPIRES,
-    auto_error=False
-)
+refresh_security = JwtRefreshBearer(CONFIG.authjwt_secret_key,
+                                    access_expires_delta=ACCESS_EXPIRES,
+                                    refresh_expires_delta=REFRESH_EXPIRES,
+                                    auto_error=False)
 
 
-async def user_from_credentials(auth: JwtAuthorizationCredentials) -> User | None:
+async def user_from_credentials(
+        auth: JwtAuthorizationCredentials) -> User | None:
     """Return the user associated with auth credentials."""
     return await User.by_email(auth.subject["username"])
 
