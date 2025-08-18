@@ -73,6 +73,7 @@ function UserForm({ user }) {
   };
 
   const handleResetForm = () => reset(user);
+  const disableForm = passwordReset.isPending || updateUser.isPending;
 
   return (
     <Card component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mb: 2 }}>
@@ -86,10 +87,12 @@ function UserForm({ user }) {
           <Typography variant="h6">{user?.username}</Typography>
           <Stack direction="row" spacing={1}>
             <FormControlLabel
+              disabled={disableForm}
               control={<Checkbox {...register("super_user")} />}
               label="Admin"
             />
             <FormControlLabel
+              disabled={disableForm}
               control={<Checkbox {...register("disabled")} />}
               label="Disabled"
             />
@@ -108,6 +111,7 @@ function UserForm({ user }) {
         <Stack spacing={2}>
           <Stack direction="row" spacing={2}>
             <TextField
+              disabled={disableForm}
               label="First Name"
               fullWidth
               {...register("first_name")}
@@ -115,6 +119,7 @@ function UserForm({ user }) {
               helperText={errors.first_name?.message || ""}
             />
             <TextField
+              disabled={disableForm}
               label="Last Name"
               fullWidth
               {...register("last_name")}
@@ -133,6 +138,7 @@ function UserForm({ user }) {
               helperText={errors.username?.message || ""}
             />
             <TextField
+              disabled={disableForm}
               label="Email"
               fullWidth
               {...register("email")}
@@ -144,7 +150,12 @@ function UserForm({ user }) {
       </CardContent>
 
       <CardActions sx={{ justifyContent: "flex-end", gap: 1, p: 2 }}>
-        <Button variant="outlined" color="secondary" onClick={handleResetForm}>
+        <Button
+          variant="outlined"
+          color="secondary"
+          disabled={passwordReset.isPending || updateUser.isPending}
+          onClick={handleResetForm}
+        >
           Reset Form
         </Button>
 
@@ -152,8 +163,9 @@ function UserForm({ user }) {
           variant="contained"
           color="error"
           onClick={handlePasswordReset}
-          startIcon={<RestartAltIcon />}
-          disabled={passwordReset.isLoading}
+          endIcon={<RestartAltIcon />}
+          disabled={passwordReset.isPending}
+          loading={passwordReset.isPending}
         >
           {passwordReset.isLoading ? "Resetting..." : "Reset Password"}
         </Button>
@@ -161,10 +173,13 @@ function UserForm({ user }) {
         <Button
           type="submit"
           variant="contained"
-          startIcon={<SaveIcon />}
-          disabled={updateUser.isLoading}
+          disabled={updateUser.isPending}
+          loading={updateUser.isPending}
+          endIcon={<SaveIcon />}
+          loadingPosition="end"
+          sx={{ backgroundColor: "#20477B" }}
         >
-          {updateUser.isLoading ? "Saving..." : "Save"}
+          Save
         </Button>
       </CardActions>
     </Card>
