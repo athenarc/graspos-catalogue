@@ -21,21 +21,8 @@ export const AuthProvider = ({ children }) => {
     return null;
   };
 
-  const getUser = () => {
-    const userString = localStorage.getItem("user");
-    if (typeof userString !== "undefined") {
-      try {
-        const user = JSON.parse(localStorage.getItem("user"));
-        return user;
-      } catch (error) {
-        return null;
-      }
-    }
-    return null;
-  };
-
   const [token, setToken] = useState(getToken());
-  const [user, setUser] = useState(getUser());
+  const [user, setUser] = useState(null);
   const userInformation = useUserInformation(token);
   const queryClient = useQueryClient();
 
@@ -46,7 +33,6 @@ export const AuthProvider = ({ children }) => {
       setToken(null);
     }
     if (token && userInformation?.data?.data) {
-      localStorage.setItem("user", JSON.stringify(userInformation?.data?.data));
       setUser(userInformation?.data?.data);
     }
   }, [userInformation, token]);
@@ -54,13 +40,13 @@ export const AuthProvider = ({ children }) => {
   const handleLogin = (data) => {
     localStorage.setItem("token", JSON.stringify(data?.access_token));
     localStorage.setItem("refresh_token", JSON.stringify(data?.refresh_token));
-    localStorage.setItem("user", JSON.stringify(userInformation?.data?.data));
     setToken(data);
     setUser(userInformation?.data?.data);
     setTimeout(() => {
       queryClient.invalidateQueries(["datasets"]);
       queryClient.invalidateQueries(["documents"]);
       queryClient.invalidateQueries(["tools"]);
+      queryClient.invalidateQueries(["services"]);
     }, 100);
   };
 
@@ -72,6 +58,7 @@ export const AuthProvider = ({ children }) => {
       queryClient.invalidateQueries(["datasets"]);
       queryClient.invalidateQueries(["documents"]);
       queryClient.invalidateQueries(["tools"]);
+      queryClient.invalidateQueries(["services"]);
     }, 100);
   };
 
