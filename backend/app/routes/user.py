@@ -1,36 +1,37 @@
 """User router."""
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Response, Security
+from fastapi import APIRouter, Body, Depends, HTTPException, Response, Security, status
 from fastapi_jwt import JwtAuthorizationCredentials
 
-from models.user import User, UserOut, UserPasswordUpdate
+from models.user import User, UserOut, UserPasswordUpdate, UserPasswordReset
 from jwt import access_security
 from util.current_user import current_user_mandatory
 from beanie import PydanticObjectId
 from util.password import hash_password
+from config import CONFIG
 
 router = APIRouter(prefix="/api/v1/user", tags=["User"])
 
 
 @router.get("", response_model=UserOut)
-async def get_user(
-        user: User = Depends(current_user_mandatory)):  # type: ignore[no-untyped-def]
+async def get_user(user: User = Depends(current_user_mandatory)
+                   ):  # type: ignore[no-untyped-def]
     """Return the current user."""
     return user
 
 
 @router.get("/users", response_model=list[UserOut])
-async def get_all_users(
-        user: User = Depends(current_user_mandatory)):  # type: ignore[no-untyped-def]
+async def get_all_users(user: User = Depends(current_user_mandatory)
+                        ):  # type: ignore[no-untyped-def]
     """Return the current user."""
     users = await User.find_all().to_list()
     return users
 
 
 @router.get("/{user_id}")
-async def get_user(
-    user_id: PydanticObjectId,
-    user: User = Depends(current_user_mandatory)):  # type: ignore[no-untyped-def]
+async def get_user(user_id: PydanticObjectId,
+                   user: User = Depends(current_user_mandatory)
+                   ):  # type: ignore[no-untyped-def]
     """Return the current user."""
     userOut = await User.by_id(user_id)
     if userOut is None:
@@ -39,9 +40,9 @@ async def get_user(
 
 
 @router.patch("", response_model=UserOut)
-async def update_user(
-    update: UserPasswordUpdate,
-    user: User = Depends(current_user_mandatory)):  # type: ignore[no-untyped-def]
+async def update_user(update: UserPasswordUpdate,
+                      user: User = Depends(current_user_mandatory)
+                      ):  # type: ignore[no-untyped-def]
     """Update allowed user fields."""
     fields = update.model_dump(exclude_unset=True)
     user = await User.get(fields["id"])
@@ -51,6 +52,36 @@ async def update_user(
             user.password = hash_password(update.password)
     await user.save()
     return user
+
+
+@router.patch("/reset", response_model=UserOut)
+async def reset_user_password(
+    update: UserPasswordReset,
+    current_user: User = Depends(current_user_mandatory)):
+    """
+    Reset a user's password to the default password in CONFIG.
+    Updates only if the password is different from the current one.
+    """
+
+    default_hashed_pw = hash_password(CONFIG.default_user_password)
+
+    # If the default password is the same as the current one, do nothing
+    if current_user.password == default_hashed_pw:
+        return current_user
+
+    # Atomic update in the database
+    updated_count = await User.find_one(User.id == update.id).update(
+        {"$set": {
+            "password": default_hashed_pw
+        }})
+
+    if not updated_count:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="User not found")
+
+    # Fetch the updated user object to return it
+    updated_user = await User.get(update.id)
+    return updated_user
 
 
 @router.delete("")

@@ -44,6 +44,9 @@ class UserUpdate(BaseModel):
 class UserPasswordUpdate(UserUpdate):
     password: str | None = None
 
+class UserPasswordReset(BaseModel):
+    """User password reset model."""
+    id: PydanticObjectId
 
 class UserOut(UserUpdate):
     """User fields returned to the client."""
