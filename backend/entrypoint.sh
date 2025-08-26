@@ -4,7 +4,7 @@
 printenv | grep -v "no_proxy" >> /etc/environment
 
 # Start cron in background
-cron
+cron -f &
 
 # Optionally kick off FastAPI or other services
 uvicorn main:app --host 0.0.0.0 --port 8080 --reload

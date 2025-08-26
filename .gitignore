@@ -192,3 +192,6 @@ vm.txt
 
 settings.json
 openaire-example.json
+
+dumps/mongodb/*
+!dumps/mongodb/.gitkeep

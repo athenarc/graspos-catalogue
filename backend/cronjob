@@ -1,2 +1,3 @@
 * * * * * env > /tmp/cron-env.log
 0 11 * * * . /etc/environment && cd /code && /usr/local/bin/python3 /code/app/update_script_parser.py >> /var/log/cron.log 2>&1
+0 8 * * 0 . /etc/environment && /code/mongo_backup.sh >> /var/log/mongo_backup.log 2>&1
