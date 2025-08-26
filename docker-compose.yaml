@@ -1,9 +1,11 @@
+version: "3.9"
+
 services:
   frontend:
     container_name: graspos-frontend
     build:
       context: .
-      dockerfile: ${FRONTEND_DOCKERFILE:-./frontend/Dockerfile.dev}
+      dockerfile: ./frontend/Dockerfile.dev
     env_file:
       - .env
     ports:
@@ -53,6 +55,7 @@ services:
       - "${REACT_APP_BACKEND_HOST_PORT:-8000}:8080"
     volumes:
       - ./backend/app:/code/app
+      - ./dumps/mongodb:/dumps/mongodb
     networks:
       - api_bridge
 
@@ -61,7 +64,11 @@ services:
     image: ${MONGO_IMAGE}
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "which mongosh && mongosh --eval \"db.adminCommand('ping')\" || mongo --eval \"db.adminCommand('ping')\""]
+      test:
+        [
+          "CMD-SHELL",
+          'which mongosh && mongosh --eval "db.adminCommand(''ping'')" || mongo --eval "db.adminCommand(''ping'')"',
+        ]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -72,6 +79,7 @@ services:
     volumes:
       - ./mongodb/db:/data/db:rw
       - ./mongodb/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
+      - ./dumps/mongodb:/dumps:rw
     networks:
       - api_bridge
 
