@@ -2,9 +2,13 @@ import { Grid2 as Grid, Typography, Stack, Tooltip, Chip } from "@mui/material";
 
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import { stripHtml } from "../../../../utils/utils";
+import { useEffect } from "react";
 
 export function ResourceItemKeywords({ resource }) {
-  const keywords = resource?.zenodo?.metadata?.keywords || resource?.openaire?.metadata?.tags || [];
+  const keywords =
+    resource?.zenodo?.metadata?.keywords ||
+    resource?.openaire?.metadata?.tags ||
+    [];
 
   return (
     <Stack direction="column" justifyContent="center">
@@ -33,6 +37,16 @@ export function ResourceItemKeywords({ resource }) {
 }
 
 export default function ResourceItemContent({ resource }) {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "/embed.js"; // πάντα από root, public folder
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
   const description =
     resource?.zenodo?.metadata?.description ||
     resource?.openaire?.metadata?.description ||
@@ -64,6 +78,16 @@ export default function ResourceItemContent({ resource }) {
           <LocalOfferIcon fontSize="small" />
         </Tooltip>
         <ResourceItemKeywords resource={resource} />
+      </Stack>
+      <Stack>
+        <span
+          className="bip-embed"
+          data-badge-type="doughnut"
+          data-doi="10.1109/34.895972"
+          style={{ fontFamily: "unset;" }}
+        >
+          {resource?.zenodo?.metadata?.doi ?? "N/A"}
+        </span>
       </Stack>
     </>
   );
