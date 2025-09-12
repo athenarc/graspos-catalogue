@@ -39,7 +39,7 @@ export function ResourceItemKeywords({ resource }) {
 export default function ResourceItemContent({ resource }) {
   useEffect(() => {
     const script = document.createElement("script");
-    script.src = "/embed.js"; // πάντα από root, public folder
+    script.src = import.meta.env.BASE_URL + "embed.js"; // πάντα από root, public folder
     script.async = true;
     document.body.appendChild(script);
 
@@ -84,9 +84,7 @@ export default function ResourceItemContent({ resource }) {
           className="bip-embed"
           data-badge-type="doughnut"
           data-doi="10.1109/34.895972"
-          style={{ fontFamily: "unset;" }}
-        >
-        </span>
+        ></span>
       </Stack>
     </>
   );
