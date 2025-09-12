@@ -86,7 +86,6 @@ export default function ResourceItemContent({ resource }) {
           data-doi="10.1109/34.895972"
           style={{ fontFamily: "unset;" }}
         >
-          {resource?.zenodo?.metadata?.doi ?? "N/A"}
         </span>
       </Stack>
     </>
