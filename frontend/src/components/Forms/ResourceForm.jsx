@@ -31,7 +31,7 @@ export default function ResourceForm() {
   const [resourceTypesList, setResourceTypesList] = useState([
     { value: "dataset", label: "Dataset" },
     { value: "tool", label: "Tool" },
-    { value: "document", label: "Document" },
+    { value: "document", label: "Templates & Guidelines" },
     { value: "service", label: "Service" },
   ]);
   const { user } = useAuth();
