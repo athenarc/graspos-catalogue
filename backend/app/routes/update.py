@@ -39,10 +39,10 @@ async def update_all_resources(body: UpdateRequest,
     if openaire_id:
         return await update_openaire_records(user_id=user.id,
                                              openaire_id=openaire_id)
-
+    zenodo = await update_zenodo_records(user_id=user.id, zenodo_id=None)
+    openaire = await update_openaire_records(user_id=user.id, openaire_id=None)
+    
     return {
-        "openaire":
-        await update_openaire_records(user_id=user.id, openaire_id=None),
-        "zenodo":
-        await update_zenodo_records(user_id=user.id, zenodo_id=None)
+        "openaire": openaire,
+        "zenodo": zenodo
     }
