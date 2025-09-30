@@ -98,7 +98,7 @@ export default function ResourceForm() {
     setResourceTypesList([
       { value: "dataset", label: "Dataset" },
       { value: "tool", label: "Tool" },
-      { value: "document", label: "Document" },
+      { value: "document", label: "Templates & Guidelines" },
     ]);
     if (!sourceValue) {
       setError("source", { message: "Source cannot be empty" });
