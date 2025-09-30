@@ -6,6 +6,12 @@ from dotenv import load_dotenv, set_key
 from datetime import datetime
 from iso3166 import countries
 
+def dict_to_js_obj(item):
+    return "{\n" + ",\n".join(
+        f'  {k}: {v}' if isinstance(v, (int, float)) or v == "new Date()" else f'  {k}: "{v}"'
+        for k, v in item.items()
+    ) + "\n}"
+
 # Load env
 ENV_FILE = ".env"
 load_dotenv(ENV_FILE)
@@ -124,9 +130,8 @@ geo_insert = ""
 if include_geo:
     with open("country_centroids.json", encoding="utf-8") as f:
         centroid_map = json.load(f)
-
     geo_items = []
-    geo_items.append({
+    geo_items.append(dict_to_js_obj({
         "code": "WW",
         "label": "Worldwide",
         "flag": "",
@@ -134,7 +139,7 @@ if include_geo:
         "modified_at": "new Date()",
         "lat": 0,
         "lng": 0
-    })
+    }))
 
     for c in countries:
         code = c.alpha2
@@ -160,6 +165,7 @@ if include_geo:
     geo_insert = "db.geographical_coverages.insertMany([\n" + ",\n".join(geo_items) + "\n]);"
 
 trl_insert = ""
+
 if include_trl:
     trl_items = [
         {"trl_id": 1, "nasa_description": "Basic principles observed and reported", "european_description": "Basic principles observed"},
