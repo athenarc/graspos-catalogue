@@ -10,10 +10,9 @@ from models.scope import Scope
 from models.assessment import Assessment
 from typing import List, Optional
 from models.shared import GeographicalCoverage
+from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseResourceView
 
-
-class Dataset(BaseModel):
-    source: str | None = None
+class DatasetBasicFields(BaseModel):
     organization: str | None = None
     visibility: str | None = None
     api_url: str | None = None
@@ -22,44 +21,15 @@ class Dataset(BaseModel):
     contact_person: str | None = None
     contact_person_email: str | None = None
     zenodo: Link[Zenodo] | None = None
-    scopes: List[Link[Scope]] | None = None
-    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
-    assessments: List[Link[Assessment]] | None = None
-    created_at: datetime | None = datetime.now()
-    modified_at: datetime | None = datetime.now()
-    approved: bool | None = None
-    owner: PydanticObjectId | None = None
 
+class Dataset(DatasetBasicFields, BaseResourceModel):
+    pass
 
-class DatasetPatch(BaseModel):
-    source: str | None = None
-    scopes: List[Link[Scope]] | None = None
-    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
-    assessments: List[Link[Assessment]] | None = None
-    created: datetime | None = None
-    modified: datetime | None = None
-    updated: datetime | None = None
-    approved: bool | None = None
-    owner: PydanticObjectId | None = None
+class DatasetPatch(DatasetBasicFields, BaseResourcePatch):
+    pass
 
-
-class DatasetView(BaseModel):
-    source: str | None = None
-    organization: str | None = None
-    visibility: str | None = None
-    api_url: str | None = None
-    api_url_instructions: str | None = None
-    documentation_url: str | None = None
-    contact_person: str | None = None
-    contact_person_email: str | None = None
-    zenodo: Link[Zenodo] | None = None
-    scopes: List[Link[Scope]] | None = None
-    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
-    assessments: List[Link[Assessment]] | None = None
-    created_at: datetime | None = datetime.now()
-    modified_at: datetime | None = datetime.now()
-    approved: bool | None = None
-    owner: PydanticObjectId | None = None
+class DatasetView(DatasetBasicFields, BaseResourceView):
+    pass
 
 
 class Dataset(Document, DatasetView):

@@ -10,53 +10,23 @@ from models.shared import GeographicalCoverage
 from models.zenodo import Zenodo
 from models.scope import Scope
 from models.assessment import Assessment
+from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseResourceView
 
-
-class Documents(BaseModel):
-    source: str
+class DocumentBasicFields(BaseModel):
     format: str | None = None
     url: str | None = None
-    created: Optional[datetime] = None
     zenodo: Link[Zenodo] | None = None
-    scopes: List[Link[Scope]] | None = None
     date_last_updated: Optional[datetime] = None
     metadata_last_updated: Optional[datetime] = None
-    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
-    assessments: List[Link[Assessment]] | None = None
-    created_at: datetime | None = datetime.now()
-    modified_at: datetime | None = datetime.now()
-    approved: bool | None = None
-    owner: PydanticObjectId | None = None
 
+class Documents(DocumentBasicFields, BaseResourceModel):
+    pass
 
-class DocumentsPatch(BaseModel):
-    source: str | None = None
-    format: str | None = None
-    url: str | None = None
-    created: Optional[datetime] | None = None
-    scopes: List[Link[Scope]] | None = None
-    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
-    assessments: List[Link[Assessment]] | None = None
-    date_last_updated: Optional[datetime] | None = None
-    metadata_last_updated: Optional[datetime] | None = None
-    approved: bool | None = None
-    owner: PydanticObjectId | None = None
+class DocumentsPatch(DocumentBasicFields, BaseResourcePatch):
+    pass
 
-
-class DocumentView(BaseModel):
-    source: str | None = None
-    format: str | None = None
-    organization: str | None = None
-    visibility: str | None = None
-    zenodo: Link[Zenodo] | None = None
-    scopes: List[Link[Scope]] | None = None
-    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
-    assessments: List[Link[Assessment]] | None = None
-    created_at: datetime | None = datetime.now()
-    modified_at: datetime | None = datetime.now()
-    approved: bool | None = None
-    owner: PydanticObjectId | None = None
-
+class DocumentView(DocumentBasicFields, BaseResourceView):
+    pass
 
 class Documents(Document, DocumentView):
 

@@ -10,39 +10,20 @@ from models.scope import Scope
 from typing import List, Optional 
 from models.shared import GeographicalCoverage
 from models.assessment import Assessment
+from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseResourceView
 
-class Tool(BaseModel):
+class ToolBasicFields(BaseModel):
     doi: str | None = None
-    source: str | None = None
     zenodo: Link[Zenodo] | None = None
-    scopes: List[Link[Scope]] | None = None
-    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
-    assessments: List[Link[Assessment]] | None = None
-    created_at: datetime | None = datetime.now()
-    modified_at: datetime | None = datetime.now()
-    approved: bool | None = None
-    owner: PydanticObjectId | None = None
 
+class Tool(ToolBasicFields, BaseResourceModel):
+    pass
 
-class ToolPatch(BaseModel):
-    approved: bool | None = None
-    owner: PydanticObjectId | None = None
-    scopes: List[Link[Scope]] | None = None
-    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
-    assessments: List[Link[Assessment]] | None = None
+class ToolPatch(ToolBasicFields, BaseResourcePatch):
+    pass 
 
-
-class ToolView(BaseModel):
-    doi: str | None = None
-    source: str | None = None
-    zenodo: Link[Zenodo] | None = None
-    scopes: List[Link[Scope]] | None = None
-    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
-    assessments: List[Link[Assessment]] | None = None
-    created_at: datetime | None = datetime.now()
-    modified_at: datetime | None = datetime.now()
-    approved: bool | None = None
-    owner: PydanticObjectId | None = None
+class ToolView(ToolBasicFields, BaseResourceView):
+    pass
 
 
 class Tool(Document, ToolView):

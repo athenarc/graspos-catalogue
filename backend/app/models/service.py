@@ -12,48 +12,22 @@ from typing import List, Optional
 from models.shared import GeographicalCoverage
 from models.assessment import Assessment
 from models.trl import TRLEntry
+from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseResourceView
 
-
-class Service(BaseModel):
+class ServiceBasicFields(BaseModel):
     doi: str | None = None
-    source: str | None = None
     service_type: str | None = None
     trl: Link[TRLEntry] | None = None
     openaire: Link[OpenAIRE] | None = None
-    zenodo: Link[Zenodo] | None = None
-    scopes: List[Link[Scope]] | None = None
-    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
-    assessments: List[Link[Assessment]] | None = None
-    created_at: datetime | None = datetime.now()
-    modified_at: datetime | None = datetime.now()
-    approved: bool | None = None
-    owner: PydanticObjectId | None = None
 
+class Service(ServiceBasicFields, BaseResourceModel):
+    pass
 
-class ServicePatch(BaseModel):
-    approved: bool | None = None
-    service_type: str | None = None
-    trl: Link[TRLEntry] | None = None
-    owner: PydanticObjectId | None = None
-    scopes: List[Link[Scope]] | None = None
-    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
-    assessments: List[Link[Assessment]] | None = None
+class ServicePatch(ServiceBasicFields, BaseResourcePatch):
+    pass
 
-
-class ServiceView(BaseModel):
-    doi: str | None = None
-    source: str | None = None
-    service_type: str | None = None
-    openaire: Link[OpenAIRE] | None = None
-    trl: Link[TRLEntry] | None = None
-    zenodo: Link[Zenodo] | None = None
-    scopes: List[Link[Scope]] | None = None
-    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
-    assessments: List[Link[Assessment]] | None = None
-    created_at: datetime | None = datetime.now()
-    modified_at: datetime | None = datetime.now()
-    approved: bool | None = None
-    owner: PydanticObjectId | None = None
+class ServiceView(ServiceBasicFields, BaseResourceView):
+    pass
 
 
 class Service(Document, ServiceView):
