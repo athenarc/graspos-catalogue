@@ -3,14 +3,12 @@
 from beanie import Document
 from datetime import datetime
 from pydantic import BaseModel
-from beanie import PydanticObjectId, Link
+from beanie import Link
 from datetime import datetime
-from typing import Optional, List, Optional
-from models.shared import GeographicalCoverage
+from typing import Optional, Optional
 from models.zenodo import Zenodo
-from models.scope import Scope
-from models.assessment import Assessment
 from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseResourceView
+
 
 class DocumentBasicFields(BaseModel):
     format: str | None = None
@@ -19,14 +17,18 @@ class DocumentBasicFields(BaseModel):
     date_last_updated: Optional[datetime] = None
     metadata_last_updated: Optional[datetime] = None
 
+
 class Documents(DocumentBasicFields, BaseResourceModel):
     pass
+
 
 class DocumentsPatch(DocumentBasicFields, BaseResourcePatch):
     pass
 
+
 class DocumentView(DocumentBasicFields, BaseResourceView):
     pass
+
 
 class Documents(Document, DocumentView):
 

@@ -1,18 +1,12 @@
 """Service models."""
 
 from beanie import Document
-from datetime import datetime
 from pydantic import BaseModel
-from beanie import PydanticObjectId, Link
-from datetime import datetime
+from beanie import Link
 from models.openaire import OpenAIRE
-from models.zenodo import Zenodo
-from models.scope import Scope
-from typing import List, Optional
-from models.shared import GeographicalCoverage
-from models.assessment import Assessment
 from models.trl import TRLEntry
 from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseResourceView
+
 
 class ServiceBasicFields(BaseModel):
     doi: str | None = None
@@ -20,11 +14,14 @@ class ServiceBasicFields(BaseModel):
     trl: Link[TRLEntry] | None = None
     openaire: Link[OpenAIRE] | None = None
 
+
 class Service(ServiceBasicFields, BaseResourceModel):
     pass
 
+
 class ServicePatch(ServiceBasicFields, BaseResourcePatch):
     pass
+
 
 class ServiceView(ServiceBasicFields, BaseResourceView):
     pass

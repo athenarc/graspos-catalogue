@@ -1,18 +1,15 @@
 """Dataset models."""
 
 from beanie import Document
-from datetime import datetime
-from pydantic import BaseModel
-from beanie import PydanticObjectId, Link
-from datetime import datetime
+from pydantic import BaseModel, Field
+from beanie import Link
 from models.zenodo import Zenodo
-from models.scope import Scope
-from models.assessment import Assessment
-from typing import List, Optional
-from models.shared import GeographicalCoverage
 from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseResourceView
 
+
 class DatasetBasicFields(BaseModel):
+
+    title: str | None = None
     organization: str | None = None
     visibility: str | None = None
     api_url: str | None = None
@@ -22,11 +19,14 @@ class DatasetBasicFields(BaseModel):
     contact_person_email: str | None = None
     zenodo: Link[Zenodo] | None = None
 
+
 class Dataset(DatasetBasicFields, BaseResourceModel):
     pass
 
+
 class DatasetPatch(DatasetBasicFields, BaseResourcePatch):
     pass
+
 
 class DatasetView(DatasetBasicFields, BaseResourceView):
     pass

@@ -1,26 +1,23 @@
 """Tool models."""
 
 from beanie import Document
-from datetime import datetime
 from pydantic import BaseModel
-from beanie import PydanticObjectId, Link
-from datetime import datetime
+from beanie import Link
 from models.zenodo import Zenodo
-from models.scope import Scope
-from typing import List, Optional 
-from models.shared import GeographicalCoverage
-from models.assessment import Assessment
 from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseResourceView
 
+
 class ToolBasicFields(BaseModel):
-    doi: str | None = None
     zenodo: Link[Zenodo] | None = None
+
 
 class Tool(ToolBasicFields, BaseResourceModel):
     pass
 
+
 class ToolPatch(ToolBasicFields, BaseResourcePatch):
-    pass 
+    pass
+
 
 class ToolView(ToolBasicFields, BaseResourceView):
     pass
@@ -55,7 +52,6 @@ class Tool(Document, ToolView):
             }
         }
 
-    
     @classmethod
     async def get_unique_field_values_from_zenodo(cls,
                                                   field_name: str) -> list:
