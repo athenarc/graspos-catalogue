@@ -1,12 +1,10 @@
 """Zenodo router."""
 
-from fastapi import APIRouter, HTTPException, Depends, Request
-from typing import Optional
-from models.zenodo import Zenodo, ZenodoView, ZenodoUpdate
+from fastapi import APIRouter, HTTPException, Depends
+from pydantic import ValidationError
+from models.zenodo import Zenodo
 from models.user import User
-from models.dataset import Dataset
 from beanie import PydanticObjectId
-from jwt import access_security
 from util.current_user import current_user, current_user_mandatory
 from util.requests import get_zenodo_data
 from util.update_records import update_zenodo_records
@@ -35,12 +33,12 @@ async def update_all_zenodo_records(
 
 @router.post("/search", status_code=200)
 async def post_zenodo_records(
-    dataset: Dataset, user: User = Depends(current_user_mandatory)) -> Zenodo:
+    dataset: Zenodo, user: User = Depends(current_user_mandatory)) -> Zenodo:
 
     zenodo = await Zenodo.find_one(Zenodo.source == dataset.source)
 
     if zenodo:
-        raise HTTPException(status_code=409, detail="Resource already exists")
+        raise HTTPException(status_code=409, detail="Resource already exists.")
 
     try:
         data = await get_zenodo_data(dataset.source)
@@ -49,9 +47,10 @@ async def post_zenodo_records(
                                 detail=data["detail"])
 
         zenodo = Zenodo(**data["zenodo_object"])
-
+    except ValidationError as error:
+        raise HTTPException(status_code=422, detail=error.errors())
     except Exception as error:
-        raise HTTPException(status_code=400, detail=str(error))
+        raise HTTPException(status_code=400, detail=error.errors())
 
     return zenodo
 

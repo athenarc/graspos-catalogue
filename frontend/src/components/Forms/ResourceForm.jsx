@@ -23,11 +23,13 @@ import { useCreateService } from "@queries/service.js";
 import ResourcePathsForm from "./ResourcePathsForm.jsx";
 import { useOpenaire } from "@queries/openaire.js";
 import ResourceFormSearch from "./ResourceFormSearch.jsx";
+import MessageBox from "@helpers/ErrorMessage.jsx";
 
 export default function ResourceForm() {
   const [message, setMessage] = useState("");
   const [data, setData] = useState(null);
   const [resourceType, setResourceType] = useState("dataset");
+  const [fieldMissing, setFieldMissing] = useState(false);
   const [resourceTypesList, setResourceTypesList] = useState([
     { value: "dataset", label: "Dataset" },
     { value: "tool", label: "Tool" },
@@ -123,10 +125,34 @@ export default function ResourceForm() {
           setValue("source", data?.data?.source);
         },
         onError: (error) => {
-          setMessage(error?.response?.data?.detail || "Zenodo search failed");
-          setError("source", {
-            message: error?.response?.data?.detail || "Zenodo search failed",
-          });
+          if (error?.response?.status === 422) {
+            setFieldMissing(true);
+
+            const errors = error?.response?.data?.detail;
+            // Αν είναι array, κάνε format
+            let msg = "Required fields: ";
+            if (Array.isArray(errors)) {
+              msg +=
+                errors.map((e) => e.loc?.slice(-1)[0]).join(", ");
+            }
+            msg += " are missing in the Zenodo record."
+
+            setMessage(
+              <>
+                {msg} Please enter them in{" "}
+                <a href={sourceValue} target="_blank" rel="noopener noreferrer">
+                  Zenodo
+                </a>
+                .
+              </>
+            );
+          } else {
+            const detail =
+              error?.response?.data?.detail || "Zenodo search failed";
+            setMessage(detail);
+            // setError("source", { message: detail });
+            setFieldMissing(true);
+          }
           setData(null);
         },
       }
@@ -164,6 +190,7 @@ export default function ResourceForm() {
     reset();
     setData(null);
     setMessage("");
+    setFieldMissing(false);
   };
 
   function handleClose() {
@@ -238,6 +265,7 @@ export default function ResourceForm() {
                 />
               )}
             </Stack>
+            {fieldMissing && <MessageBox message={message} status="error" />}
           </DialogContent>
           {data && (
             <DialogActions sx={{ p: 2, pt: 0 }}>
