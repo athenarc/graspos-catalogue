@@ -10,6 +10,7 @@ from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseR
 
 class ServiceBasicFields(BaseModel):
     doi: str | None = None
+    resource_type: str | None = None
     service_type: str | None = None
     trl: Link[TRLEntry] | None = None
     openaire: Link[OpenAIRE] | None = None

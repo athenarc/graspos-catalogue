@@ -268,25 +268,19 @@ export default function ResourceForm() {
             <CloseIcon sx={{ color: "white" }} />
           </IconButton>
           <DialogContent sx={{ p: 4 }}>
-            <Stack direction="row" spacing={4}>
-              <Stack
-                direction="column"
-                alignContent="flex-start"
-                spacing={2}
-                sx={{ width: "100%" }}
-              >
-                <ResourceFormSearch
-                  register={form?.register}
-                  errors={form?.errors}
-                  getValues={form?.getValues}
-                  onZenodoSearch={onZenodoSearch}
-                  onOpenaireSearch={onOpenaireSearch}
-                  handleReset={handleReset}
-                  isLoading={zenodo.isPending || openaire.isPending}
-                />
-                <ResourcePreview data={data} />
-              </Stack>
-              <Divider orientation="vertical" flexItem />
+            <Stack spacing={2}>
+              <ResourceFormSearch
+                form={form}
+                onZenodoSearch={onZenodoSearch}
+                onOpenaireSearch={onOpenaireSearch}
+                handleReset={handleReset}
+                isLoading={zenodo.isPending || openaire.isPending}
+                data={data}
+                resourceType={resourceType}
+              />
+              {/* <ResourcePreview data={data} /> */}
+
+              {/* <Divider orientation="vertical" flexItem /> */}
               {data && (
                 <WizardForm
                   form={form}

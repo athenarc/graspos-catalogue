@@ -25,8 +25,21 @@ import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import Notification from "@helpers/Notification";
 import { useForm, Controller } from "react-hook-form";
+import DatasetFormFields from "./DatasetFormFields";
+import DocumentFormFields from "./DocumentsFormFields";
+import ToolFormFields from "./ToolFormFields";
+import ServiceFormFields from "./ServiceFormFields";
+
+const tabs = [
+  "Basic Information",
+  "Governance, Sustainability & Funding",
+  "Support",
+  "Coverage",
+  "Equity & Ethical Considerations",
+];
 
 export default function EditResourceDialog({
+  resource,
   open,
   onClose,
   scopesQuery,
@@ -38,12 +51,25 @@ export default function EditResourceDialog({
   onSave,
 }) {
   const { isSuccess, isError, error, reset, isPending } = mutation;
-  const { control, watch, setValue, getValues } = useForm({
+  const form = useForm({
+    mode: "onChange",
     defaultValues: {
+      evidence_types: [],
+      covered_research_products: [],
+      covered_fields: [],
       geographical_coverage: [],
-      assessments: [],
+      assessment_functionalities: [],
     },
   });
+
+  const {
+    handleSubmit,
+    setError,
+    setValue,
+    watch,
+    getValues,
+    formState: { errors },
+  } = form;
 
   const assessments = watch("assessments") ?? [];
   const [tabIndex, setTabIndex] = useState(0);
@@ -78,7 +104,7 @@ export default function EditResourceDialog({
 
   return (
     <>
-      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
         <DialogTitle
           sx={{ bgcolor: "#20477B", color: "white", textAlign: "center" }}
         >
@@ -101,98 +127,21 @@ export default function EditResourceDialog({
             indicatorColor="primary"
             sx={{ mb: 3 }}
           >
-            <Tab label="Scope Stages" />
-            <Tab label="Assessment subjects" />
-            <Tab label="Geographical coverage" />
+            {tabs.map((label, index) => (
+              <Tab key={index} label={label} />
+            ))}
           </Tabs>
 
-          {tabIndex === 0 && (
-            <FormGroup>
-              <Grid container spacing={2}>
-                {scopesQuery.data?.data.map((scope) => (
-                  <Grid item xs={12} sm={6} md={4} key={scope._id}>
-                    <Card
-                      variant="outlined"
-                      sx={{
-                        borderColor: scope.bg_color ?? "#1976d2",
-                        height: "100%",
-                      }}
-                    >
-                      <CardContent>
-                        <Box display="flex" justifyContent="space-between">
-                          <Typography fontWeight={600}>{scope.name}</Typography>
-                          <Checkbox
-                            checked={selectedScopes.includes(scope._id)}
-                            onChange={() => onToggleScope(scope._id)}
-                            sx={{ color: scope.bg_color ?? "#1976d2" }}
-                          />
-                        </Box>
-                        <Typography variant="body2" color="text.secondary">
-                          {scope.description}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            </FormGroup>
+          {tabIndex === 0 && resource?.resource_type === "dataset" && (
+            <DatasetFormFields form={form} resource={resource} />
+
+            // resource?.resource_type  === "document" && (<DocumentFormFields form={form} />)
+            // resource?.resource_type  === "tool" && (<ToolFormFields form={form} />)
+            // resource?.resource_type  === "service" && (<ServiceFormFields form={form} />)
           )}
 
-          {tabIndex === 1 && (
-            <FormGroup row>
-              {assessmentsQuery?.data?.data?.map((a) => (
-                <Tooltip key={a._id} title={a.description}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={assessments.includes(a._id)}
-                        onChange={() => toggleAssessment(a._id)}
-                      />
-                    }
-                    label={a.name}
-                  />
-                </Tooltip>
-              ))}
-            </FormGroup>
-          )}
-          {tabIndex === 2 && (
-            <Controller
-              name="geographical_coverage"
-              control={control}
-              render={({ field }) => (
-                <Autocomplete
-                  {...field}
-                  multiple
-                  options={countriesQuery?.data?.data ?? []}
-                  getOptionLabel={(option) => option?.label}
-                  value={field?.value ?? []}
-                  onChange={(_, value) => field.onChange(value)}
-                  renderOption={(props, option) => {
-                    const { key, ...rest } = props;
-                    return (
-                      <li key={key} {...rest}>
-                        <img
-                          loading="lazy"
-                          width="20"
-                          src={option.flag}
-                          alt=""
-                          style={{ marginRight: 10 }}
-                        />
-                        {option.label} ({option.code})
-                      </li>
-                    );
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Select countries"
-                      placeholder="Start typing..."
-                    />
-                  )}
-                />
-              )}
-            />
-          )}
+          {tabIndex === 1 && <div></div>}
+          {tabIndex === 2 && <div></div>}
         </DialogContent>
 
         <DialogActions

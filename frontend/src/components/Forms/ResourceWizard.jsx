@@ -67,6 +67,7 @@ export default function WizardForm({
             <FormControl fullWidth>
               <InputLabel>Resource type</InputLabel>
               <Select
+                {...form?.register("resource_type")}
                 disabled={!data}
                 value={resourceType}
                 labelId="resource-type-select-label"

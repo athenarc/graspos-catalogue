@@ -50,7 +50,7 @@ async def post_zenodo_records(
     except ValidationError as error:
         raise HTTPException(status_code=422, detail=error.errors())
     except Exception as error:
-        raise HTTPException(status_code=400, detail=error.errors())
+        raise HTTPException(status_code=400, detail=str(error))
 
     return zenodo
 
@@ -79,7 +79,8 @@ async def get_zenodo(
 
 
 @router.delete("/{zenodo_id}", status_code=200)
-async def delete_zenodo(zenodo_id: str, user: User = Depends(current_user_mandatory)):
+async def delete_zenodo(zenodo_id: str,
+                        user: User = Depends(current_user_mandatory)):
 
     zenodo = await Zenodo.find_one(Zenodo.id == PydanticObjectId(zenodo_id))
 

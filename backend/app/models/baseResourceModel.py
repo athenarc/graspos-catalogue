@@ -22,7 +22,14 @@ class BaseResourceModel(BaseModel):
         if v is not None and not v.strip():
             raise ValueError("DOI cannot be empty")
         return v
-
+    resource_type: str  = Field(
+        description="Type of the resource, e.g., Tool, Service, Dataset.")
+    @field_validator("resource_type")
+    def resource_type_must_not_be_empty(cls, v):
+        if not v.strip():
+            raise ValueError("Resource type cannot be empty")
+        return v
+    
     source: str | None = None
     approved: bool | None = None
     owner: PydanticObjectId | None = None
@@ -62,6 +69,8 @@ class BaseResourceModel(BaseModel):
 
 
 class BaseResourcePatch(BaseResourceModel):
+    doi: str | None = None
+    resource_type: str | None = None
     updated: datetime | None = None
 
 
