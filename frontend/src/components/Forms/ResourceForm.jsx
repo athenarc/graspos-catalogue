@@ -6,6 +6,7 @@ import {
   IconButton,
   DialogContent,
   Stack,
+  Divider,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
@@ -20,10 +21,10 @@ import ResourcePreview from "./ResourcePreview.jsx";
 import { useAuth } from "../AuthContext.jsx";
 import { useZenodo } from "@queries/zenodo.js";
 import { useCreateService } from "@queries/service.js";
-import ResourcePathsForm from "./ResourcePathsForm.jsx";
 import { useOpenaire } from "@queries/openaire.js";
 import ResourceFormSearch from "./ResourceFormSearch.jsx";
 import MessageBox from "@helpers/ErrorMessage.jsx";
+import WizardForm from "./ResourceWizard.jsx";
 
 export default function ResourceForm() {
   const [message, setMessage] = useState("");
@@ -36,7 +37,19 @@ export default function ResourceForm() {
     { value: "document", label: "Templates & Guidelines" },
     { value: "service", label: "Service" },
   ]);
+  const [canCreate, setCanCreate] = useState(false);
+
   const { user } = useAuth();
+  const form = useForm({
+    mode: "onChange",
+    defaultValues: {
+      evidence_types: [],
+      covered_research_products: [],
+      covered_fields: [],
+      geographical_coverage: [],
+    },
+  });
+
   const {
     register,
     handleSubmit,
@@ -44,10 +57,11 @@ export default function ResourceForm() {
     setValue,
     reset,
     watch,
+    trigger,
     control,
     getValues,
     formState: { errors },
-  } = useForm({ mode: "onBlur" });
+  } = form;
 
   const navigate = useNavigate();
 
@@ -58,6 +72,32 @@ export default function ResourceForm() {
 
   const zenodo = useZenodo();
   const openaire = useOpenaire();
+
+  const stepFields = {
+    0: ["doi"], // basic info
+    1: [], // governance step
+    2: [], // support step
+    3: ["geographical_coverage", "covered_fields", "covered_research_products"], // coverage step
+    4: [], // ethics step
+  };
+  const allRequiredFields = Object.values(stepFields).flat();
+
+  const watchedValues = watch(allRequiredFields);
+
+  useEffect(() => {
+    // This useEffect checks if all required fields are filled to enable the Create button independently of every step in the wizard
+    const isComplete = allRequiredFields.every((field) => {
+      console.log("Checking field:", field);
+      const value = getValues(field);
+      if (Array.isArray(value))
+        return (
+          value?.length > 0 &&
+          value.every((v) => v != null && v !== "" && v !== " ")
+        );
+      return value != null && value !== "" && value !== " ";
+    });
+    setCanCreate(isComplete);
+  }, [JSON.stringify(watchedValues)]);
 
   useEffect(() => {
     if (data && data.source) {
@@ -132,10 +172,9 @@ export default function ResourceForm() {
             // Αν είναι array, κάνε format
             let msg = "Required fields: ";
             if (Array.isArray(errors)) {
-              msg +=
-                errors.map((e) => e.loc?.slice(-1)[0]).join(", ");
+              msg += errors.map((e) => e.loc?.slice(-1)[0]).join(", ");
             }
-            msg += " are missing in the Zenodo record."
+            msg += " are missing in the Zenodo record.";
 
             setMessage(
               <>
@@ -150,7 +189,6 @@ export default function ResourceForm() {
             const detail =
               error?.response?.data?.detail || "Zenodo search failed";
             setMessage(detail);
-            // setError("source", { message: detail });
             setFieldMissing(true);
           }
           setData(null);
@@ -241,9 +279,9 @@ export default function ResourceForm() {
                 sx={{ width: "100%" }}
               >
                 <ResourceFormSearch
-                  register={register}
-                  errors={errors}
-                  getValues={getValues}
+                  register={form?.register}
+                  errors={form?.errors}
+                  getValues={form?.getValues}
                   onZenodoSearch={onZenodoSearch}
                   onOpenaireSearch={onOpenaireSearch}
                   handleReset={handleReset}
@@ -251,17 +289,15 @@ export default function ResourceForm() {
                 />
                 <ResourcePreview data={data} />
               </Stack>
-
+              <Divider orientation="vertical" flexItem />
               {data && (
-                <ResourcePathsForm
-                  data={data}
-                  control={control}
-                  setValue={setValue}
+                <WizardForm
+                  form={form}
+                  stepFields={stepFields}
                   resourceType={resourceType}
                   resourceTypesList={resourceTypesList}
                   setResourceType={setResourceType}
-                  register={register}
-                  errors={errors}
+                  data={data}
                 />
               )}
             </Stack>
@@ -272,7 +308,7 @@ export default function ResourceForm() {
               <Button
                 type="submit"
                 variant="contained"
-                disabled={!data}
+                disabled={!data || !canCreate}
                 loading={mutation?.isPending}
                 loadingPosition="end"
                 endIcon={<AddIcon />}

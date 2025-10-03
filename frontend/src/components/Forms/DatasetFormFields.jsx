@@ -9,9 +9,25 @@ import {
 } from "@mui/material";
 
 export default function DatasetFormFields({ register, errors }) {
+  // console.log("DatasetFormFields errors:", errors);
   return (
     <Stack direction="column" sx={{ mt: 2 }}>
       <Stack direction="row" spacing={2}>
+        <TextField
+          {...register("doi", {
+            required: "DOI is required",
+            pattern: {
+              value: /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i,
+              message: "Not a valid DOI",
+            },
+          })}
+          label="DOI"
+          error={!!errors?.doi}
+          helperText={errors?.doi?.message ?? " "}
+          fullWidth
+          required
+        />
+
         <TextField
           {...register("organization")}
           label="Organization"

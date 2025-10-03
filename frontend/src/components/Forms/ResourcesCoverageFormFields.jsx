@@ -1,0 +1,429 @@
+import {
+  Autocomplete,
+  Checkbox,
+  FormControlLabel,
+  Grid2 as Grid,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Chip,
+  Box,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import InfoIcon from "@mui/icons-material/Info";
+import PersonIcon from "@mui/icons-material/Person";
+import GroupIcon from "@mui/icons-material/Group";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import FlagIcon from "@mui/icons-material/Flag";
+
+import { useEffect, useState } from "react";
+import { Controller } from "react-hook-form";
+
+import { useScopes } from "@queries/scope.js";
+import { useCountries } from "@queries/countries.js";
+import { useAssessments } from "@queries/assessment.js";
+import ArrayInputField from "../Helpers/ArrayInputField";
+
+function CheckboxArrayField({
+  items,
+  selectedItems,
+  setSelectedItems,
+  icons = false,
+  colors = false,
+}) {
+  const handleToggle = (id) => {
+    setSelectedItems((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
+  const renderIcon = (name) => {
+    switch (name) {
+      case "Researcher":
+        return <PersonIcon fontSize="small" sx={{ mr: 0.5 }} />;
+      case "Researcher team/group":
+        return <GroupIcon fontSize="small" sx={{ mr: 0.5 }} />;
+      case "Research organization":
+        return <AccountBalanceIcon fontSize="small" sx={{ mr: 0.5 }} />;
+      default:
+        return (
+          <FlagIcon fontSize="small" sx={{ mr: 0.5, color: "text.primary" }} />
+        );
+    }
+  };
+
+  return (
+    <Grid container spacing={1}>
+      {items?.map((item) => (
+        <Grid item xs={12} sm={6} key={item._id}>
+          <Tooltip title={item.description || ""}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={selectedItems.includes(item._id)}
+                  onChange={() => handleToggle(item._id)}
+                  sx={{
+                    color: item.bg_color && colors ? item.bg_color : "#1976d2",
+                  }}
+                />
+              }
+              label={
+                <Box display="flex" alignItems="center">
+                  {icons && renderIcon(item.name)}
+                  <span>{item.name}</span>
+                </Box>
+              }
+            />
+          </Tooltip>
+        </Grid>
+      ))}
+    </Grid>
+  );
+}
+
+function AssessmentValues({ control, errors, trigger, watch }) {
+  return (
+    <Accordion>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography variant="h6">Assessment Values</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <ArrayInputField
+          control={control}
+          name="assessment_values"
+          label="Assessment Values"
+          errors={errors}
+          placeholder="Enter assessment values for the resource"
+          trigger={trigger}
+          watch={watch}
+        />
+      </AccordionDetails>
+    </Accordion>
+  );
+}
+
+function ScopeStages({ setValue }) {
+  const scopesQuery = useScopes();
+  const [selectedScopes, setSelectedScopes] = useState([]);
+
+  useEffect(() => {
+    setValue("scopes", selectedScopes);
+  }, [selectedScopes, setValue]);
+
+  return (
+    <Accordion>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography variant="h6">Scope Methodology Stages</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <CheckboxArrayField
+          items={scopesQuery?.data?.data}
+          selectedItems={selectedScopes}
+          setSelectedItems={setSelectedScopes}
+          icons={false}
+          colors={true}
+        />
+      </AccordionDetails>
+    </Accordion>
+  );
+}
+
+function AssessmentSubjects({ control, setValue, errors, trigger, watch }) {
+  const assessmentData = useAssessments();
+  const [selectedAssessments, setSelectedAssessments] = useState([]);
+
+  useEffect(() => {
+    setValue("assessments", selectedAssessments);
+  }, [selectedAssessments, setValue]);
+
+  return (
+    <Accordion>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography variant="h6">Assessment Subjects</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <CheckboxArrayField
+          items={assessmentData?.data?.data}
+          selectedItems={selectedAssessments}
+          setSelectedItems={setSelectedAssessments}
+          icons={true}
+          colors={true}
+        />
+      </AccordionDetails>
+    </Accordion>
+  );
+}
+
+function GeographicScope({ control, errors }) {
+  const countries = useCountries();
+  const hasError = !!errors.geographical_coverage;
+
+  return (
+    <Accordion
+      sx={{
+        border: (theme) =>
+          hasError
+            ? `1px solid ${theme.palette.error.main}`
+            : `1px solid transparent`,
+      }}
+    >
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography variant="h6" color={hasError ? "error" : "inherit"}>
+          Geographical Coverage *
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Controller
+          name="geographical_coverage"
+          control={control}
+          defaultValue={[]}
+          rules={{
+            validate: (value) =>
+              (value && value.length > 0) || "At least one country is required",
+          }}
+          render={({ field, fieldState }) => (
+            <Autocomplete
+              {...field}
+              multiple
+              options={countries?.data?.data || []}
+              getOptionLabel={(option) => option.label}
+              value={field.value ?? []}
+              onChange={(_, value) => field.onChange(value)}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    key={option.code}
+                    label={`${option.label} (${option.code})`}
+                    {...getTagProps({ index })}
+                  />
+                ))
+              }
+              renderOption={(props, option) => {
+                const { key, ...rest } = props;
+                return (
+                  <li key={key} {...rest}>
+                    <img
+                      loading="lazy"
+                      width="20"
+                      src={option.flag}
+                      alt=""
+                      style={{ marginRight: 10 }}
+                    />
+                    {option.label} ({option.code})
+                  </li>
+                );
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select countries"
+                  placeholder="Start typing..."
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message ?? " "}
+                  fullWidth
+                />
+              )}
+            />
+          )}
+        />
+      </AccordionDetails>
+    </Accordion>
+  );
+}
+
+function CoveredFields({ control, errors }) {
+  const hasError = !!errors?.covered_fields;
+  return (
+    <Accordion
+      sx={{
+        border: (theme) =>
+          hasError
+            ? `1px solid ${theme.palette.error.main}`
+            : `1px solid transparent`,
+      }}
+    >
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography variant="h6" color={hasError ? "error" : "inherit"}>
+          Covered Fields *
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <ArrayInputField
+          control={control}
+          name="covered_fields"
+          label="Covered Fields"
+          errors={errors}
+          required={true}
+        />
+      </AccordionDetails>
+    </Accordion>
+  );
+}
+
+function CoveredResearchProducts({ control, errors }) {
+  const hasError = !!errors?.covered_research_products;
+  return (
+    <Accordion
+      sx={{
+        border: (theme) =>
+          hasError
+            ? `1px solid ${theme.palette.error.main}`
+            : `1px solid transparent`,
+      }}
+    >
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography variant="h6" color={hasError ? "error" : "inherit"}>
+          Covered Research Products *
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <ArrayInputField
+          control={control}
+          name="covered_research_products"
+          label="Covered Research Products"
+          errors={errors}
+          required={true}
+        />
+      </AccordionDetails>
+    </Accordion>
+  );
+}
+
+function AssessmentFunctionalities({ register }) {
+  return (
+    <Accordion>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography variant="h6">Assessment Functionalities</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <FormControl fullWidth>
+          <InputLabel>Assessment Functionalities</InputLabel>
+          <Select
+            multiple
+            {...register("assessment_functionalities")}
+            defaultValue={[]}
+            label="Assessment Functionalities"
+          >
+            <MenuItem value={"enrichment"}>Enrichment</MenuItem>
+            <MenuItem value={"monitoring"}>Monitoring</MenuItem>
+            <MenuItem value={"data"}>Data</MenuItem>
+          </Select>
+        </FormControl>
+      </AccordionDetails>
+    </Accordion>
+  );
+}
+
+function EvidenceTypes({ register }) {
+  return (
+    <Accordion>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography variant="h6">Evidence Types</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <FormControl fullWidth>
+          <InputLabel>Evidence Types</InputLabel>
+          <Select
+            multiple
+            {...register("evidence_types")}
+            defaultValue={[]}
+            label="Evidence Types"
+          >
+            <MenuItem value={"narratives"}>Narratives</MenuItem>
+            <MenuItem value={"indicators"}>Indicators</MenuItem>
+            <MenuItem value={"list_of_contributions"}>
+              List Of Contributions
+            </MenuItem>
+            <MenuItem value={"badges"}>Badges</MenuItem>
+            <MenuItem value={"other"}>Other</MenuItem>
+          </Select>
+        </FormControl>
+      </AccordionDetails>
+    </Accordion>
+  );
+}
+
+export default function ResourceCoverageFormFields({
+  control,
+  register,
+  setValue,
+  resourceType,
+  errors,
+  formState,
+  trigger,
+  watch,
+}) {
+  return (
+    <Stack direction="column" spacing={2}>
+      <ScopeStages
+        control={control}
+        setValue={setValue}
+        errors={errors}
+        trigger={trigger}
+        watch={watch}
+      />
+      <AssessmentSubjects
+        control={control}
+        setValue={setValue}
+        errors={errors}
+        trigger={trigger}
+        watch={watch}
+      />
+      <GeographicScope
+        control={control}
+        setValue={setValue}
+        errors={errors}
+        trigger={trigger}
+        watch={watch}
+      />
+      <CoveredFields
+        control={control}
+        setValue={setValue}
+        errors={errors}
+        formState={formState}
+        trigger={trigger}
+        watch={watch}
+      />
+      <CoveredResearchProducts
+        control={control}
+        setValue={setValue}
+        errors={errors}
+        formState={formState}
+        trigger={trigger}
+        watch={watch}
+      />
+      <EvidenceTypes
+        register={register}
+        setValue={setValue}
+        errors={errors}
+        trigger={trigger}
+        watch={watch}
+      />
+      <AssessmentValues
+        control={control}
+        setValue={setValue}
+        errors={errors}
+        trigger={trigger}
+        watch={watch}
+      />
+      {resourceType === "tool" ||
+        (resourceType === "service" && (
+          <AssessmentFunctionalities
+            register={register}
+            setValue={setValue}
+            errors={errors}
+            trigger={trigger}
+            watch={watch}
+          />
+        ))}
+    </Stack>
+  );
+}
