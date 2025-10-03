@@ -47,18 +47,16 @@ export default function ResourceForm() {
       covered_research_products: [],
       covered_fields: [],
       geographical_coverage: [],
+      assessment_functionalities: [],
     },
   });
 
   const {
-    register,
     handleSubmit,
     setError,
     setValue,
     reset,
     watch,
-    trigger,
-    control,
     getValues,
     formState: { errors },
   } = form;
