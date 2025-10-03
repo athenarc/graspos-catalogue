@@ -87,7 +87,6 @@ export default function ResourceForm() {
   useEffect(() => {
     // This useEffect checks if all required fields are filled to enable the Create button independently of every step in the wizard
     const isComplete = allRequiredFields.every((field) => {
-      console.log("Checking field:", field);
       const value = getValues(field);
       if (Array.isArray(value))
         return (
@@ -161,7 +160,7 @@ export default function ResourceForm() {
           ) {
             setResourceType(data?.data?.resource_type);
           }
-          setMessage("Zenodo data fetched!");
+          // setMessage("Zenodo data fetched!");
           setValue("source", data?.data?.source);
         },
         onError: (error) => {

@@ -5,13 +5,16 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useEffect, useRef } from "react";
 
 export default function ArrayInputField({
-  control,
+  form,
   name,
   label,
-  errors,
+  placeholder = "",
   required = false,
 }) {
-  const { fields, append, remove } = useFieldArray({ control, name });
+  const { fields, append, remove } = useFieldArray({
+    control: form?.control,
+    name,
+  });
   const didInit = useRef(false);
 
   useEffect(() => {
@@ -26,7 +29,7 @@ export default function ArrayInputField({
         <Stack key={field?.id} direction="row" spacing={1} alignItems="center">
           <Controller
             name={`${name}.${index}`}
-            control={control}
+            control={form?.control}
             rules={
               required && {
                 required: label + " field is required and can not be empty",
@@ -40,17 +43,18 @@ export default function ArrayInputField({
                 {...field}
                 key={field?.id}
                 fullWidth
-                placeholder={`${label} ${index + 1}`}
-                error={!!errors?.[name]?.[index]}
-                helperText={errors?.[name]?.[index]?.message}
+                placeholder={placeholder || `${label} ${index + 1}`}
+                error={!!form?.formState?.errors?.[name]?.[index]}
+                helperText={form?.formState?.errors?.[name]?.[index]?.message}
               />
             )}
           />
-          {fields.length > 1 && (
-            <IconButton color="error" onClick={() => remove(index)}>
-              <DeleteIcon />
-            </IconButton>
-          )}
+          {fields.length > 1 ||
+            (!required && (
+              <IconButton color="error" onClick={() => remove(index)}>
+                <DeleteIcon />
+              </IconButton>
+            ))}
         </Stack>
       ))}
       <Button

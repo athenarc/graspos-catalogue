@@ -7,18 +7,12 @@ import {
   TextField,
 } from "@mui/material";
 
-export default function DocumentFormFields({
-  register,
-  errors,
-  zenodoData,
-  setZenodoData,
-  setMessage,
-}) {
+export default function DocumentFormFields({ form }) {
   return (
     <Stack direction="column" sx={{ mt: 2 }}>
       <Stack direction="row" useFlexGap spacing={2} sx={{ mt: 2 }}>
         <TextField
-          {...register("doi", {
+          {...form?.register("doi", {
             required: "DOI is required",
             pattern: {
               value: /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i,
@@ -26,15 +20,15 @@ export default function DocumentFormFields({
             },
           })}
           label="DOI"
-          error={!!errors?.doi}
-          helperText={errors?.doi?.message ?? " "}
+          error={!!form?.formState?.errors?.doi}
+          helperText={form?.formState?.errors?.doi?.message ?? " "}
           fullWidth
           required
         />
         <FormControl fullWidth>
           <InputLabel>Format</InputLabel>
           <Select
-            {...register("format")}
+            {...form?.register("format")}
             label="Format"
             fullWidth
             defaultValue="csv"

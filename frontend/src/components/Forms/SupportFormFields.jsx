@@ -7,60 +7,50 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ArrayInputField from "@helpers/ArrayInputField";
+import AccordionField from "../Helpers/AccordionField";
 
-export default function SupportFormFields({ control, errors, trigger, watch }) {
+function SupportChannels({ form }) {
+  return (
+    <AccordionField
+      form={form}
+      fieldTitle="Support Channels"
+      name="support_channels"
+      label="Support Channels"
+      placeholder="Enter a URL or email"
+    />
+  );
+}
+
+function DocumentationURLs({ form }) {
+  return (
+    <AccordionField
+      form={form}
+      fieldTitle="Documentation URLs"
+      name="documentation_urls"
+      label="Documentation URLs"
+      placeholder="Enter documentation URLs"
+    />
+  );
+}
+
+function TrainingMaterials({ form }) {
+  return (
+    <AccordionField
+      form={form}
+      fieldTitle="Training Materials"
+      name="training_materials"
+      label="Training Materials"
+      placeholder="Enter training material URLs"
+    />
+  );
+}
+
+export default function SupportFormFields({ form }) {
   return (
     <Stack direction="column" spacing={2} sx={{ mt: 2 }}>
-      <Accordion>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="h6">Support Channels</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <ArrayInputField
-            control={control}
-            name="support_channels"
-            label="Support Channels"
-            errors={errors}
-            placeholder="Enter a URL or email"
-            trigger={trigger}
-            watch={watch}
-          />
-        </AccordionDetails>
-      </Accordion>
-
-      <Accordion>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="h6">Documentation URLs</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <ArrayInputField
-            control={control}
-            name="documentation_urls"
-            label="Documentation URLs"
-            errors={errors}
-            placeholder="Enter documentation URLs"
-            trigger={trigger}
-            watch={watch}
-          />
-        </AccordionDetails>
-      </Accordion>
-
-      <Accordion>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="h6">Training Materials</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <ArrayInputField
-            control={control}
-            name="training_materials"
-            label="Training Materials"
-            errors={errors}
-            placeholder="Enter training material URLs"
-            trigger={trigger}
-            watch={watch}
-          />
-        </AccordionDetails>
-      </Accordion>
+      <SupportChannels form={form} />
+      <DocumentationURLs form={form} />
+      <TrainingMaterials form={form} />
     </Stack>
   );
 }

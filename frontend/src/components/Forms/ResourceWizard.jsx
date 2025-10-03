@@ -19,7 +19,7 @@ import ToolFormFields from "./ToolFormFields";
 import ServiceFormFields from "./ServiceFormFields";
 import GovernanceFormFields from "./GovernanceFormFields";
 import SupportFormFields from "./SupportFormFields";
-import ResourceCoverageFormFields from "./ResourcesCoverageFormFields";
+import CoverageFormFields from "./CoverageFormFields";
 import EthicsFormFields from "./EthicsFormFields";
 
 const steps = [
@@ -82,83 +82,36 @@ export default function WizardForm({
             </FormControl>
 
             {resourceType === "dataset" && (
-              <DatasetFormFields
-                register={form.register}
-                errors={form.formState.errors}
-              />
+              <DatasetFormFields form={form} errors={form?.formState?.errors} />
             )}
-            {resourceType === "document" && (
-              <DocumentFormFields
-                register={form.register}
-                errors={form.formState.errors}
-                setValue={form.setValue}
-                trigger={form.trigger}
-                watch={form.watch}
-              />
-            )}
-            {resourceType === "tool" && (
-              <ToolFormFields
-                register={form.register}
-                errors={form.formState.errors}
-                setValue={form.setValue}
-                trigger={form.trigger}
-                watch={form.watch}
-              />
-            )}
-            {resourceType === "service" && (
-              <ServiceFormFields
-                register={form.register}
-                errors={form.formState.errors}
-                setValue={form.setValue}
-                trigger={form.trigger}
-                watch={form.watch}
-              />
-            )}
+            {resourceType === "document" && <DocumentFormFields form={form} />}
+            {resourceType === "tool" && <ToolFormFields form={form} />}
+            {resourceType === "service" && <ServiceFormFields form={form} />}
           </Stack>
         )}
 
         {activeStep === 1 && (
           <Stack spacing={2}>
-            <GovernanceFormFields
-              control={form.control}
-              register={form.register}
-              errors={form.formState.errors}
-              trigger={form.trigger}
-              watch={form.watch}
-            />
+            <GovernanceFormFields form={form} />
           </Stack>
         )}
 
         {activeStep === 2 && (
           <Stack spacing={2}>
-            <SupportFormFields
-              control={form.control}
-              register={form.register}
-              errors={form.formState.errors}
-              trigger={form.trigger}
-              watch={form.watch}
-            />
+            <SupportFormFields form={form} />
           </Stack>
         )}
 
         {activeStep === 3 && (
           <Stack spacing={2}>
-            <ResourceCoverageFormFields
-              control={form.control}
-              register={form.register}
-              errors={form.formState.errors}
-              setValue={form.setValue}
-              resourceType={resourceType}
-              formState={form.formState}
-              trigger={form.trigger}
-              watch={form.watch}
-            />
+            <CoverageFormFields form={form} resourceType={resourceType} />
           </Stack>
         )}
 
         {activeStep === 4 && (
           <Stack spacing={2}>
             <EthicsFormFields
+              form={form}
               control={form.control}
               register={form.register}
               errors={form.formState.errors}

@@ -8,13 +8,12 @@ import {
   TextareaAutosize,
 } from "@mui/material";
 
-export default function DatasetFormFields({ register, errors }) {
-  // console.log("DatasetFormFields errors:", errors);
+export default function DatasetFormFields({ form }) {
   return (
     <Stack direction="column" sx={{ mt: 2 }}>
       <Stack direction="row" spacing={2}>
         <TextField
-          {...register("doi", {
+          {...form.register("doi", {
             required: "DOI is required",
             pattern: {
               value: /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i,
@@ -22,23 +21,23 @@ export default function DatasetFormFields({ register, errors }) {
             },
           })}
           label="DOI"
-          error={!!errors?.doi}
-          helperText={errors?.doi?.message ?? " "}
+          error={!!form?.formState?.errors?.doi}
+          helperText={form?.formState?.errors?.doi?.message ?? " "}
           fullWidth
           required
         />
 
         <TextField
-          {...register("organization")}
+          {...form?.register("organization")}
           label="Organization"
-          error={!!errors?.organization}
-          helperText={errors?.organization?.message ?? " "}
+          error={!!form?.formState?.errors?.organization}
+          helperText={form?.formState?.errors?.organization?.message ?? " "}
           fullWidth
         />
         <FormControl fullWidth>
           <InputLabel>Visibility</InputLabel>
           <Select
-            {...register("visibility")}
+            {...form?.register("visibility")}
             defaultValue="public"
             label="Visibility"
           >
@@ -49,39 +48,43 @@ export default function DatasetFormFields({ register, errors }) {
       </Stack>
       <Stack direction="row" spacing={2}>
         <TextField
-          {...register("contact_person")}
+          {...form?.register("contact_person")}
           label="Contact Person"
-          error={!!errors?.contact_person}
-          helperText={errors?.contact_person?.message ?? " "}
+          error={!!form?.formState?.errors?.contact_person}
+          helperText={form?.formState?.errors?.contact_person?.message ?? " "}
           fullWidth
         />
         <TextField
-          {...register("contact_person_email")}
+          {...form?.register("contact_person_email")}
           label="Contact Person Email"
-          error={!!errors?.contact_person_email}
-          helperText={errors?.contact_person_email?.message ?? " "}
+          error={!!form?.formState?.errors?.contact_person_email}
+          helperText={
+            form?.formState?.errors?.contact_person_email?.message ?? " "
+          }
           fullWidth
         />
       </Stack>
       <Stack direction="row" spacing={2}>
         <TextField
-          {...register("documentation_url")}
+          {...form?.register("documentation_url")}
           label="Documentation Url"
-          error={!!errors?.documentation_url}
-          helperText={errors?.documentation_url?.message ?? " "}
+          error={!!form?.formState?.errors?.documentation_url}
+          helperText={
+            form?.formState?.errors?.documentation_url?.message ?? " "
+          }
           fullWidth
         />
         <TextField
-          {...register("api_url")}
+          {...form?.register("api_url")}
           label="Api Url"
-          error={!!errors?.api_url}
-          helperText={errors?.api_url?.message ?? " "}
+          error={!!form?.formState?.errors?.api_url}
+          helperText={form?.formState?.errors?.api_url?.message ?? " "}
           fullWidth
         />
       </Stack>
       <Stack direction="row" spacing={2}>
         <TextareaAutosize
-          {...register("api_url_instructions")}
+          {...form?.register("api_url_instructions")}
           minRows={6}
           placeholder="Api Url Instructions"
           style={{

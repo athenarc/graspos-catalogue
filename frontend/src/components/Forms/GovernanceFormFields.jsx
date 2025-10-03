@@ -1,63 +1,46 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import ArrayInputField from "../Helpers/ArrayInputField";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Stack, TextField } from "@mui/material";
+import AccordionField from "../Helpers/AccordionField";
 
-function GovernanceModel({ register, errors }) {
+function GovernanceModel({ form }) {
   return (
     <TextField
       label="Governance Model"
-      {...register("governance_model")}
+      {...form.register("governance_model")}
       fullWidth
       margin="normal"
     />
   );
 }
 
-function GovernanceBodies({ control, register, errors, trigger, watch }) {
+function GovernanceBodies({ form }) {
   return (
-    <Accordion>
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="h6">Governance Bodies</Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        <ArrayInputField
-          control={control}
-          name="governance_bodies"
-          label="Governance Bodies"
-          errors={errors}
-          placeholder="Enter governance bodies"
-          trigger={trigger}
-          watch={watch}
-        />
-      </AccordionDetails>
-    </Accordion>
+    <AccordionField
+      form={form}
+      fieldTitle="Governance Bodies"
+      name="governance_bodies"
+      label="Governance Bodies"
+      placeholder="Enter governance bodies"
+    />
   );
 }
 
-function SustainabilityPlan({ register, errors }) {
+function SustainabilityPlan({ form }) {
   return (
     <TextField
       label="Sustainability Plan"
-      {...register("sustainability_plan")}
+      {...form.register("sustainability_plan")}
       fullWidth
       margin="normal"
     />
   );
 }
 
-export default function GovernanceFormFields({ control, register, errors, trigger, watch }) {
+export default function GovernanceFormFields({ form }) {
   return (
     <Stack direction="column" spacing={2} sx={{ mt: 2 }}>
-      <GovernanceModel register={register} errors={errors} />
-      <GovernanceBodies register={register} errors={errors} control={control} trigger={trigger} watch={watch} />
-      <SustainabilityPlan register={register} errors={errors} />
+      <GovernanceModel form={form} />
+      <GovernanceBodies form={form} />
+      <SustainabilityPlan form={form} />
     </Stack>
   );
 }

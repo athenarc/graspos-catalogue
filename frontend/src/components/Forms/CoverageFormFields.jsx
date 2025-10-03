@@ -31,6 +31,7 @@ import { useScopes } from "@queries/scope.js";
 import { useCountries } from "@queries/countries.js";
 import { useAssessments } from "@queries/assessment.js";
 import ArrayInputField from "../Helpers/ArrayInputField";
+import AccordionField from "../Helpers/AccordionField";
 
 function CheckboxArrayField({
   items,
@@ -89,34 +90,25 @@ function CheckboxArrayField({
   );
 }
 
-function AssessmentValues({ control, errors, trigger, watch }) {
+function AssessmentValues({ form }) {
   return (
-    <Accordion>
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="h6">Assessment Values</Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        <ArrayInputField
-          control={control}
-          name="assessment_values"
-          label="Assessment Values"
-          errors={errors}
-          placeholder="Enter assessment values for the resource"
-          trigger={trigger}
-          watch={watch}
-        />
-      </AccordionDetails>
-    </Accordion>
+    <AccordionField
+      form={form}
+      name="assessment_values"
+      label="Assessment Values"
+      placeholder="Enter assessment values for the resource"
+      fieldTitle="Assessment Values"
+    />
   );
 }
 
-function ScopeStages({ setValue }) {
+function ScopeStages({ form }) {
   const scopesQuery = useScopes();
   const [selectedScopes, setSelectedScopes] = useState([]);
 
   useEffect(() => {
-    setValue("scopes", selectedScopes);
-  }, [selectedScopes, setValue]);
+    form?.setValue("scopes", selectedScopes);
+  }, [selectedScopes, form?.setValue]);
 
   return (
     <Accordion>
@@ -136,13 +128,13 @@ function ScopeStages({ setValue }) {
   );
 }
 
-function AssessmentSubjects({ control, setValue, errors, trigger, watch }) {
+function AssessmentSubjects({ form }) {
   const assessmentData = useAssessments();
   const [selectedAssessments, setSelectedAssessments] = useState([]);
 
   useEffect(() => {
-    setValue("assessments", selectedAssessments);
-  }, [selectedAssessments, setValue]);
+    form?.setValue("assessments", selectedAssessments);
+  }, [selectedAssessments, form?.setValue]);
 
   return (
     <Accordion>
@@ -162,9 +154,9 @@ function AssessmentSubjects({ control, setValue, errors, trigger, watch }) {
   );
 }
 
-function GeographicScope({ control, errors }) {
+function GeographicScope({ form }) {
   const countries = useCountries();
-  const hasError = !!errors.geographical_coverage;
+  const hasError = !!form?.formState?.errors?.geographical_coverage;
 
   return (
     <Accordion
@@ -183,7 +175,7 @@ function GeographicScope({ control, errors }) {
       <AccordionDetails>
         <Controller
           name="geographical_coverage"
-          control={control}
+          control={form?.control}
           defaultValue={[]}
           rules={{
             validate: (value) =>
@@ -226,8 +218,11 @@ function GeographicScope({ control, errors }) {
                   {...params}
                   label="Select countries"
                   placeholder="Start typing..."
-                  error={!!fieldState.error}
-                  helperText={fieldState.error?.message ?? " "}
+                  error={!!form?.formState?.errors?.geographical_coverage}
+                  helperText={
+                    form?.formState?.errors?.geographical_coverage?.message ??
+                    " "
+                  }
                   fullWidth
                 />
               )}
@@ -239,65 +234,33 @@ function GeographicScope({ control, errors }) {
   );
 }
 
-function CoveredFields({ control, errors }) {
-  const hasError = !!errors?.covered_fields;
+function CoveredFields({ form }) {
   return (
-    <Accordion
-      sx={{
-        border: (theme) =>
-          hasError
-            ? `1px solid ${theme.palette.error.main}`
-            : `1px solid transparent`,
-      }}
-    >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="h6" color={hasError ? "error" : "inherit"}>
-          Covered Fields *
-        </Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        <ArrayInputField
-          control={control}
-          name="covered_fields"
-          label="Covered Fields"
-          errors={errors}
-          required={true}
-        />
-      </AccordionDetails>
-    </Accordion>
+    <AccordionField
+      form={form}
+      name="covered_fields"
+      label="Covered Fields"
+      placeholder="Enter covered fields for the resource"
+      fieldTitle="Covered Fields *"
+      required
+    />
   );
 }
 
-function CoveredResearchProducts({ control, errors }) {
-  const hasError = !!errors?.covered_research_products;
+function CoveredResearchProducts({ form }) {
   return (
-    <Accordion
-      sx={{
-        border: (theme) =>
-          hasError
-            ? `1px solid ${theme.palette.error.main}`
-            : `1px solid transparent`,
-      }}
-    >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="h6" color={hasError ? "error" : "inherit"}>
-          Covered Research Products *
-        </Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        <ArrayInputField
-          control={control}
-          name="covered_research_products"
-          label="Covered Research Products"
-          errors={errors}
-          required={true}
-        />
-      </AccordionDetails>
-    </Accordion>
+    <AccordionField
+      form={form}
+      name="covered_research_products"
+      label="Covered Research Products"
+      placeholder="Enter covered research products for the resource"
+      fieldTitle="Covered Research Products *"
+      required
+    />
   );
 }
 
-function AssessmentFunctionalities({ register }) {
+function AssessmentFunctionalities({ form }) {
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -308,7 +271,7 @@ function AssessmentFunctionalities({ register }) {
           <InputLabel>Assessment Functionalities</InputLabel>
           <Select
             multiple
-            {...register("assessment_functionalities")}
+            {...form?.register("assessment_functionalities")}
             defaultValue={[]}
             label="Assessment Functionalities"
           >
@@ -322,7 +285,7 @@ function AssessmentFunctionalities({ register }) {
   );
 }
 
-function EvidenceTypes({ register }) {
+function EvidenceTypes({ form }) {
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -333,7 +296,7 @@ function EvidenceTypes({ register }) {
           <InputLabel>Evidence Types</InputLabel>
           <Select
             multiple
-            {...register("evidence_types")}
+            {...form?.register("evidence_types")}
             defaultValue={[]}
             label="Evidence Types"
           >
@@ -351,79 +314,19 @@ function EvidenceTypes({ register }) {
   );
 }
 
-export default function ResourceCoverageFormFields({
-  control,
-  register,
-  setValue,
-  resourceType,
-  errors,
-  formState,
-  trigger,
-  watch,
-}) {
+export default function CoverageFormFields({ resourceType, form }) {
   return (
     <Stack direction="column" spacing={2}>
-      <ScopeStages
-        control={control}
-        setValue={setValue}
-        errors={errors}
-        trigger={trigger}
-        watch={watch}
-      />
-      <AssessmentSubjects
-        control={control}
-        setValue={setValue}
-        errors={errors}
-        trigger={trigger}
-        watch={watch}
-      />
-      <GeographicScope
-        control={control}
-        setValue={setValue}
-        errors={errors}
-        trigger={trigger}
-        watch={watch}
-      />
-      <CoveredFields
-        control={control}
-        setValue={setValue}
-        errors={errors}
-        formState={formState}
-        trigger={trigger}
-        watch={watch}
-      />
-      <CoveredResearchProducts
-        control={control}
-        setValue={setValue}
-        errors={errors}
-        formState={formState}
-        trigger={trigger}
-        watch={watch}
-      />
-      <EvidenceTypes
-        register={register}
-        setValue={setValue}
-        errors={errors}
-        trigger={trigger}
-        watch={watch}
-      />
-      <AssessmentValues
-        control={control}
-        setValue={setValue}
-        errors={errors}
-        trigger={trigger}
-        watch={watch}
-      />
-      {resourceType === "tool" ||
-        (resourceType === "service" && (
-          <AssessmentFunctionalities
-            register={register}
-            setValue={setValue}
-            errors={errors}
-            trigger={trigger}
-            watch={watch}
-          />
-        ))}
+      <ScopeStages form={form} />
+      <AssessmentSubjects form={form} />
+      <GeographicScope form={form} />
+      <CoveredFields form={form} />
+      <CoveredResearchProducts form={form} />
+      <EvidenceTypes form={form} />
+      <AssessmentValues form={form} />
+      {(resourceType === "tool" || resourceType === "service") && (
+        <AssessmentFunctionalities form={form} />
+      )}
     </Stack>
   );
 }
