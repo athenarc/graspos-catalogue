@@ -49,12 +49,11 @@ export default function ArrayInputField({
               />
             )}
           />
-          {fields.length > 1 ||
-            (!required && (
-              <IconButton color="error" onClick={() => remove(index)}>
-                <DeleteIcon />
-              </IconButton>
-            ))}
+          {(!required || (required && fields?.length > 1)) && (
+            <IconButton color="error" onClick={() => remove(index)}>
+              <DeleteIcon />
+            </IconButton>
+          )}
         </Stack>
       ))}
       <Button
