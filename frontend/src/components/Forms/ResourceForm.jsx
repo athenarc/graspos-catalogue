@@ -148,6 +148,9 @@ export default function ResourceForm() {
       { data: { source: sourceValue } },
       {
         onSuccess: (data) => {
+          setError("source", null);
+          setFieldMissing(false);
+          setMessage("");
           setData(data?.data);
           // Set resource type based on Zenodo data if the data.data.resource_type exists in available resourceTypesList
           if (
@@ -204,6 +207,9 @@ export default function ResourceForm() {
       { data: { source: sourceValue } },
       {
         onSuccess: (data) => {
+          setError("source", null);
+          setFieldMissing(false);
+          setMessage("");
           setData(data?.data);
           setValue("source", data?.data?.source);
         },
@@ -243,6 +249,11 @@ export default function ResourceForm() {
           onSubmit={handleSubmit(onSubmit)}
           fullWidth
           maxWidth={data ? "lg" : "sm"}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+            }
+          }}
         >
           <DialogTitle
             sx={{
@@ -273,6 +284,7 @@ export default function ResourceForm() {
                 onOpenaireSearch={onOpenaireSearch}
                 handleReset={handleReset}
                 isLoading={zenodo.isPending || openaire.isPending}
+                isSuccess={zenodo.isSuccess || openaire.isSuccess}
                 data={data}
                 resourceType={resourceType}
               />

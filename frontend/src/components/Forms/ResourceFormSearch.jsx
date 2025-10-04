@@ -6,8 +6,6 @@ import {
   IconButton,
   CircularProgress,
   Stack,
-  TextField,
-  InputLabel,
 } from "@mui/material";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import SearchIcon from "@mui/icons-material/Search";
@@ -18,11 +16,19 @@ export default function ResourceFormSearch({
   handleReset,
   isLoading,
   data,
-  resourceType,
 }) {
-  const onClickHandler = () => {
-    // function that checks if the source is an openaire url by matching the regex https://graspos-services.athenarc.gr/service/[a-zA-Z0-9_.-]+/overview
-    const source = form?.getValues("source");
+  const disableSearch =
+    isLoading ||
+    form?.getValues("source")?.trim() === "" ||
+    !!form?.formState?.errors?.source ||
+    data !== null;
+
+  const onClickHandler = async () => {
+    // Trigger validation του πεδίου πριν τρέξει search
+    const isValid = await form.trigger("source");
+    if (!isValid) return; // Αν δεν είναι valid, μην κάνεις search
+
+    const source = form.getValues("source").trim();
     if (
       source.match(
         /https:\/\/graspos-services\.athenarc\.gr\/service\/[a-zA-Z0-9_.-]+\/overview/
@@ -34,8 +40,8 @@ export default function ResourceFormSearch({
     }
   };
   return (
-    <Stack direction="row" spacing={2} alignItems="center" pb={2}>
-      <Stack direction="column" sx={{ flexGrow: 1 }}>
+    <>
+      <Stack direction="row" sx={{ flexGrow: 1 }}>
         <Paper
           sx={{
             p: 0.5,
@@ -46,7 +52,7 @@ export default function ResourceFormSearch({
         >
           <InputBase
             {...form?.register("source", {
-              required: "Source cannot be empty",
+              required: "Resource source cannot be empty",
               pattern: {
                 value:
                   /(?:https:\/\/zenodo\.org\/records\/\d+|\d{2}\.\d{4}\/zenodo\.\d+|https:\/\/graspos-services\.athenarc\.gr\/service\/[a-zA-Z0-9_.-]+\/overview)/,
@@ -57,6 +63,7 @@ export default function ResourceFormSearch({
             placeholder="Zenodo or Openaire source or DOI"
             error={!!form?.formState?.errors?.source}
             inputProps={{ "aria-label": "Zenodo or Openaire source or DOI" }}
+            disabled={isLoading || data !== null}
           />
           <Tooltip title="Search Zenodo or Openaire">
             <IconButton
@@ -64,7 +71,7 @@ export default function ResourceFormSearch({
               onClick={onClickHandler}
               sx={{ p: "10px", minWidth: "40px" }}
               aria-label="search"
-              disabled={isLoading}
+              disabled={disableSearch}
               color="primary"
             >
               {isLoading ? <CircularProgress size={24} /> : <SearchIcon />}
@@ -84,31 +91,11 @@ export default function ResourceFormSearch({
           </Tooltip>
         </Paper>
       </Stack>
-      {data && resourceType !== "service" && (
-        <Stack direction="column">
-          <TextField
-            {...form.register("doi", {
-              required: "DOI is required",
-              pattern: {
-                value: /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i,
-                message: "Not a valid DOI",
-              },
-            })}
-            label="DOI"
-            value={data?.doi || ""}
-            error={!!form?.formState?.errors?.doi}
-            fullWidth
-            required
-            disabled
-            slotProps={{ inputLabel: { shrink: true } }}
-          />
-        </Stack>
-      )}
       {form?.formState?.errors?.source && (
         <div style={{ color: "red", fontSize: "0.8rem" }}>
-          {form?.formState?.errors.source.message}
+          {form?.formState?.errors?.source?.message}
         </div>
       )}
-    </Stack>
+    </>
   );
 }

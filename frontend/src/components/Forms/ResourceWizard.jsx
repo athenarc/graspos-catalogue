@@ -21,6 +21,7 @@ import GovernanceFormFields from "./GovernanceFormFields";
 import SupportFormFields from "./SupportFormFields";
 import CoverageFormFields from "./CoverageFormFields";
 import EthicsFormFields from "./EthicsFormFields";
+import SearchedResourceFormFields from "./SearchedResourceFormFields";
 
 const steps = [
   "Basic Information",
@@ -83,10 +84,7 @@ export default function WizardForm({
             </FormControl>
 
             {resourceType === "dataset" && (
-              <DatasetFormFields
-                form={form}
-                searchedResource={data}
-              />
+              <DatasetFormFields form={form} searchedResource={data} />
             )}
             {resourceType === "document" && (
               <DocumentFormFields form={form} searchedResource={data} />
@@ -97,6 +95,11 @@ export default function WizardForm({
             {resourceType === "service" && (
               <ServiceFormFields form={form} searchedResource={data} />
             )}
+            <SearchedResourceFormFields
+              form={form}
+              searchedResource={data}
+              resourceType={resourceType}
+            />
           </Stack>
         )}
 
