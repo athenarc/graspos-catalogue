@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from beanie import PydanticObjectId
 from models.service import Service
-from models.openaire import OpenAIRE
+from models.openaire import OpenAIRE, OpenAIREView
 from models.dataset import Dataset
 from models.user import User
 from util.current_user import current_user_mandatory
@@ -19,7 +19,7 @@ async def get_all_openaire_records():
 
 @router.post("/search", status_code=200)
 async def fetch_openaire_from_url(
-    service: Service, user: User = Depends(current_user_mandatory)):
+    service: OpenAIREView, user: User = Depends(current_user_mandatory)):
     """Fetch OpenAIRE metadata from a given URL or DOI.
     
     Returns:

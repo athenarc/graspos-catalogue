@@ -30,6 +30,14 @@ class BaseResourceModel(BaseModel):
             raise ValueError("Resource type cannot be empty")
         return v
     
+    url: str  = Field(
+        description="URL (e.g. landing page) of the resource.")
+    @field_validator("resource_type")
+    def resource_type_must_not_be_empty(cls, v):
+        if not v.strip():
+            raise ValueError("URL cannot be empty")
+        return v
+    
     source: str | None = None
     approved: bool | None = None
     owner: PydanticObjectId | None = None

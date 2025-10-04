@@ -11,11 +11,8 @@ from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseR
 
 
 class DocumentBasicFields(BaseModel):
-    format: str | None = None
     url: str | None = None
     zenodo: Link[Zenodo] | None = None
-    date_last_updated: Optional[datetime] = None
-    metadata_last_updated: Optional[datetime] = None
 
 
 class Documents(DocumentBasicFields, BaseResourceModel):

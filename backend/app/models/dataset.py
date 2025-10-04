@@ -8,15 +8,8 @@ from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseR
 
 
 class DatasetBasicFields(BaseModel):
-
-    title: str | None = None
+    url: str | None = None
     organization: str | None = None
-    visibility: str | None = None
-    api_url: str | None = None
-    api_url_instructions: str | None = None
-    documentation_url: str | None = None
-    contact_person: str | None = None
-    contact_person_email: str | None = None
     zenodo: Link[Zenodo] | None = None
 
 
