@@ -25,20 +25,6 @@ export default function DocumentFormFields({ form }) {
           fullWidth
           required
         />
-        <FormControl fullWidth>
-          <InputLabel>Format</InputLabel>
-          <Select
-            {...form?.register("format")}
-            label="Format"
-            fullWidth
-            defaultValue="csv"
-          >
-            <MenuItem value={"csv"}>CSV</MenuItem>
-            <MenuItem value={"pdf"}>PDF</MenuItem>
-            <MenuItem value={"xls"}>XLS</MenuItem>
-            <MenuItem value={"json"}>JSON</MenuItem>
-          </Select>
-        </FormControl>
       </Stack>
     </Stack>
   );

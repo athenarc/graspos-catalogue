@@ -83,11 +83,20 @@ export default function WizardForm({
             </FormControl>
 
             {resourceType === "dataset" && (
-              <DatasetFormFields form={form} errors={form?.formState?.errors} />
+              <DatasetFormFields
+                form={form}
+                searchedResource={data}
+              />
             )}
-            {resourceType === "document" && <DocumentFormFields form={form} />}
-            {resourceType === "tool" && <ToolFormFields form={form} />}
-            {resourceType === "service" && <ServiceFormFields form={form} />}
+            {resourceType === "document" && (
+              <DocumentFormFields form={form} searchedResource={data} />
+            )}
+            {resourceType === "tool" && (
+              <ToolFormFields form={form} searchedResource={data} />
+            )}
+            {resourceType === "service" && (
+              <ServiceFormFields form={form} searchedResource={data} />
+            )}
           </Stack>
         )}
 

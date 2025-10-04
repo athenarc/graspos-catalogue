@@ -53,12 +53,29 @@ export default function EditResourceDialog({
   const { isSuccess, isError, error, reset, isPending } = mutation;
   const form = useForm({
     mode: "onChange",
+    // in default values have everything except for id, Zenodo, OpenAIRE, created_at, updated_at
     defaultValues: {
-      evidence_types: [],
-      covered_research_products: [],
-      covered_fields: [],
-      geographical_coverage: [],
-      assessment_functionalities: [],
+      organization: resource?.organization,
+      adopted_standards: resource?.adopted_standards,
+      governance_model: resource?.governance_model,
+      governance_bodies: resource?.governance_bodies,
+      sustainability_plan: resource?.sustainability_plan,
+      documentation_urls: resource?.documentation_urls,
+      training_materials: resource?.training_materials,
+      support_channels: resource?.support_channels,
+      scopes: resource?.scopes,
+      geographical_coverage: resource?.geographical_coverage,
+      assessments: resource?.assessments,
+      assessment_values: resource?.assessment_values,
+      assessment_functionalities: resource?.assessment_functionalities,
+      evidence_types: resource?.evidence_types,
+      covered_fields: resource?.covered_fields,
+      covered_research_products: resource?.covered_research_products,
+      temporal_coverage: resource?.temporal_coverage,
+      privacy_policy: resource?.privacy_policy,
+      limitations: resource?.limitations,
+      ethical_considerations: resource?.ethical_considerations,
+      ethics_committee: resource?.ethics_committee,
     },
   });
 
@@ -102,6 +119,10 @@ export default function EditResourceDialog({
     );
   };
 
+  const handleFormSubmit = (data) => {
+    onSave(data);
+  };
+
   return (
     <>
       <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
@@ -132,12 +153,21 @@ export default function EditResourceDialog({
             ))}
           </Tabs>
 
-          {tabIndex === 0 && resource?.resource_type === "dataset" && (
-            <DatasetFormFields form={form} resource={resource} />
-
-            // resource?.resource_type  === "document" && (<DocumentFormFields form={form} />)
-            // resource?.resource_type  === "tool" && (<ToolFormFields form={form} />)
-            // resource?.resource_type  === "service" && (<ServiceFormFields form={form} />)
+          {tabIndex === 0 && (
+            <>
+              {resource?.resource_type === "dataset" && (
+                <DatasetFormFields form={form} resource={resource} />
+              )}
+              {resource?.resource_type === "document" && (
+                <DocumentFormFields form={form} resource={resource} />
+              )}
+              {resource?.resource_type === "tool" && (
+                <ToolFormFields form={form} resource={resource} />
+              )}
+              {resource?.resource_type === "service" && (
+                <ServiceFormFields form={form} resource={resource} />
+              )}
+            </>
           )}
 
           {tabIndex === 1 && <div></div>}
@@ -158,12 +188,8 @@ export default function EditResourceDialog({
           </Button>
           <Button
             onClick={() =>
-              onSave({
-                scopes: selectedScopes,
-                assessments: getValues("assessments"),
-                geographical_coverage: getValues("geographical_coverage").map(
-                  (country) => country._id
-                ),
+              handleFormSubmit({
+                ...getValues(),
               })
             }
             variant="contained"

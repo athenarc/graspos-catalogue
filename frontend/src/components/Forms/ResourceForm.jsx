@@ -72,7 +72,7 @@ export default function ResourceForm() {
   const openaire = useOpenaire();
 
   const stepFields = {
-    0: ["doi"], // basic info
+    0: [resourceType === "service" ? "url" : "doi"], // basic info
     1: [], // governance step
     2: [], // support step
     3: ["geographical_coverage", "covered_fields", "covered_research_products"], // coverage step
@@ -158,7 +158,6 @@ export default function ResourceForm() {
           ) {
             setResourceType(data?.data?.resource_type);
           }
-          // setMessage("Zenodo data fetched!");
           setValue("source", data?.data?.source);
         },
         onError: (error) => {
@@ -206,7 +205,6 @@ export default function ResourceForm() {
       {
         onSuccess: (data) => {
           setData(data?.data);
-          setMessage("Openaire data fetched!");
           setValue("source", data?.data?.source);
         },
         onError: (error) => {

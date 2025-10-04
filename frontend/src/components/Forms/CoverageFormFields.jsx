@@ -270,7 +270,6 @@ function AssessmentFunctionalities({ form }) {
         <FormControl fullWidth>
           <InputLabel>Assessment Functionalities</InputLabel>
           <Select
-            multiple
             {...form?.register("assessment_functionalities")}
             defaultValue={[]}
             label="Assessment Functionalities"

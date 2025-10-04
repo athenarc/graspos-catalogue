@@ -1,6 +1,11 @@
 import { Stack, TextField } from "@mui/material";
+import TrlFormField from "./TrlFormField";
 
-export default function ServiceFormFields({ form, resource = null }) {
+export default function ServiceFormFields({
+  form,
+  resource = null,
+  searchedResource = null,
+}) {
   return (
     <Stack direction="row" useFlexGap spacing={2}>
       <TextField
@@ -18,6 +23,13 @@ export default function ServiceFormFields({ form, resource = null }) {
         error={!!form?.formState?.errors?.url}
         helperText={form?.formState?.errors?.url?.message ?? " "}
         fullWidth
+      />
+      <TrlFormField
+        form={form}
+        name="trl"
+        label="TRL"
+        resource={resource}
+        searchedResource={searchedResource}
       />
     </Stack>
   );

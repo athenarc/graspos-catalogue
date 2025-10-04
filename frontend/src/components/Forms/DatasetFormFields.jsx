@@ -13,72 +13,28 @@ export default function DatasetFormFields({ form, resource = null }) {
     <Stack direction="column" sx={{ mt: 2 }}>
       <Stack direction="row" spacing={2}>
         <TextField
-          {...form?.register("organization")}
+          {...form?.register("organization", { value: resource?.organization })}
           label="Organization"
+          defaultValue={resource?.organization || ""}
           placeholder="Organization"
           error={!!form?.formState?.errors?.organization}
           helperText={form?.formState?.errors?.organization?.message ?? " "}
           fullWidth
         />
-        <FormControl fullWidth>
-          <InputLabel>Visibility</InputLabel>
-          <Select
-            {...form?.register("visibility")}
-            defaultValue="public"
-            label="Visibility"
-          >
-            <MenuItem value={"private"}>Private</MenuItem>
-            <MenuItem value={"public"}>Public</MenuItem>
-          </Select>
-        </FormControl>
-      </Stack>
-      <Stack direction="row" spacing={2}>
         <TextField
-          {...form?.register("contact_person")}
-          label="Contact Person"
-          error={!!form?.formState?.errors?.contact_person}
-          helperText={form?.formState?.errors?.contact_person?.message ?? " "}
+          {...form?.register("url", {
+            value: resource?.url,
+            pattern: {
+              value: /^https?:\/\/([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/,
+              message: "Not a valid URL",
+            },
+          })}
+          label="URL"
+          defaultValue={resource?.url || ""}
+          placeholder="URL of the resource"
+          error={!!form?.formState?.errors?.url}
+          helperText={form?.formState?.errors?.url?.message ?? " "}
           fullWidth
-        />
-        <TextField
-          {...form?.register("contact_person_email")}
-          label="Contact Person Email"
-          error={!!form?.formState?.errors?.contact_person_email}
-          helperText={
-            form?.formState?.errors?.contact_person_email?.message ?? " "
-          }
-          fullWidth
-        />
-      </Stack>
-      <Stack direction="row" spacing={2}>
-        <TextField
-          {...form?.register("documentation_url")}
-          label="Documentation Url"
-          error={!!form?.formState?.errors?.documentation_url}
-          helperText={
-            form?.formState?.errors?.documentation_url?.message ?? " "
-          }
-          fullWidth
-        />
-        <TextField
-          {...form?.register("api_url")}
-          label="Api Url"
-          error={!!form?.formState?.errors?.api_url}
-          helperText={form?.formState?.errors?.api_url?.message ?? " "}
-          fullWidth
-        />
-      </Stack>
-      <Stack direction="row" spacing={2}>
-        <TextareaAutosize
-          {...form?.register("api_url_instructions")}
-          minRows={6}
-          placeholder="Api Url Instructions"
-          style={{
-            width: "100%",
-            padding: "10px",
-            fontSize: "1rem",
-            borderColor: "#ccc",
-          }}
         />
       </Stack>
     </Stack>
