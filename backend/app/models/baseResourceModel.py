@@ -1,12 +1,12 @@
 """Base Resource Model."""
 
-from beanie import Document
 from datetime import datetime
 from pydantic import BaseModel, Field, field_validator
 from beanie import PydanticObjectId, Link
 from datetime import datetime
 from models.scope import Scope
 from models.assessment import Assessment
+from models.trl import TRLEntry
 from typing import List, Optional
 from models.shared import GeographicalCoverage
 
@@ -22,25 +22,28 @@ class BaseResourceModel(BaseModel):
         if v is not None and not v.strip():
             raise ValueError("DOI cannot be empty")
         return v
-    resource_type: str  = Field(
+
+    resource_type: str = Field(
         description="Type of the resource, e.g., Tool, Service, Dataset.")
+
     @field_validator("resource_type")
     def resource_type_must_not_be_empty(cls, v):
         if not v.strip():
             raise ValueError("Resource type cannot be empty")
         return v
-    
-    url: str  = Field(
-        description="URL (e.g. landing page) of the resource.")
+
+    url: str = Field(description="URL (e.g. landing page) of the resource.")
+
     @field_validator("resource_type")
     def resource_type_must_not_be_empty(cls, v):
         if not v.strip():
             raise ValueError("URL cannot be empty")
         return v
-    
+
     source: str | None = None
     approved: bool | None = None
     owner: PydanticObjectId | None = None
+    trl: Link[TRLEntry] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
 

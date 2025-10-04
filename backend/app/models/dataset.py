@@ -1,7 +1,7 @@
 """Dataset models."""
 
 from beanie import Document
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from beanie import Link
 from models.zenodo import Zenodo
 from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseResourceView

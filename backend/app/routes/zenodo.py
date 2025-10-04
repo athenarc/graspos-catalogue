@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import ValidationError
-from models.zenodo import Zenodo
+from models.zenodo import Zenodo, ZenodoView
 from models.user import User
 from beanie import PydanticObjectId
 from util.current_user import current_user, current_user_mandatory
@@ -33,7 +33,7 @@ async def update_all_zenodo_records(
 
 @router.post("/search", status_code=200)
 async def post_zenodo_records(
-    dataset: Zenodo, user: User = Depends(current_user_mandatory)) -> Zenodo:
+    dataset: ZenodoView, user: User = Depends(current_user_mandatory)) -> Zenodo:
 
     zenodo = await Zenodo.find_one(Zenodo.source == dataset.source)
 

@@ -1,11 +1,8 @@
 """Document models."""
 
 from beanie import Document
-from datetime import datetime
 from pydantic import BaseModel
 from beanie import Link
-from datetime import datetime
-from typing import Optional, Optional
 from models.zenodo import Zenodo
 from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseResourceView
 
