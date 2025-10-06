@@ -5,17 +5,6 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
-  Typography,
-  FormGroup,
-  Card,
-  CardContent,
-  Checkbox,
-  Box,
-  Tooltip,
-  FormControlLabel,
-  Autocomplete,
-  TextField,
-  Grid2 as Grid,
   Button,
   Tabs,
   Tab,
@@ -52,7 +41,6 @@ export default function EditResourceDialog({
   const { isSuccess, isError, error, reset, isPending } = mutation;
   const form = useForm({
     mode: "onChange",
-    defaultValues: { ...resource, trl: resource?.trl || [] },
   });
 
   const {

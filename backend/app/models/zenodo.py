@@ -23,8 +23,10 @@ class ZenodoMetadata(BaseModel):
     def validate_resource_type(cls, v):
         mapping = {
             "software": "Tool",
+            "tool": "Tool",
             "dataset": "Dataset",
             "publication": "Document",
+            "document": "Document",
             "service": "Service",
         }
 
