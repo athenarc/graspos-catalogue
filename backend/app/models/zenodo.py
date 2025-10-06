@@ -1,26 +1,26 @@
 from beanie import Document, PydanticObjectId
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import pymongo
 from pymongo import IndexModel
 
 
 class ZenodoMetadata(BaseModel):
-    title: str | None = None
-    doi: str | None = None
-    publication_date: datetime | None = None
-    description: str | None = None
-    access_right: str | None = None
-    creators: list | None = None
+    title: str = Field(..., description="Title of the resource")
+    doi: str = Field(..., description="Digital Object Identifier")
+    publication_date: datetime = Field(..., description="Publication date")
+    description: str = Field(..., description="Description of the resource")
+    access_right: str = Field(..., description="Access rights of the resource")
+    creators: list = Field(..., description="List of creators")
     keywords: list | None = None
-    version: str | None = None
+    version: str = Field(..., description="Version of the resource")
     references: list | None = None
     resource_type: object | None = None
-    license: object | None = None
+    license: object = Field(..., description="License information")
     grants: list | None = None
     communities: list | None = None
     relations: object | None = None
-    notes: str | None = None
+    notes: str | None = None  # str = Field(..., description="Notes about the resource") #
 
 
 class Zenodo(BaseModel):

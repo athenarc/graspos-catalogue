@@ -1,9 +1,10 @@
-import { Stack } from "@mui/material";
+import { Stack, TextField } from "@mui/material";
+import TrlFormField from "./TrlFormField";
 
-export default function ToolFormFields({}) {
+export default function ToolFormFields({ form, resource = null }) {
   return (
-    <Stack direction="column" sx={{ mt: 2 }}>
-      <Stack direction="row" useFlexGap spacing={2} sx={{ mt: 2 }}></Stack>
+    <Stack direction="row" spacing={2} useFlexGap sx={{ mt: 2 }}>
+      <TrlFormField form={form} name="trl" label="TRL" resource={resource} />
     </Stack>
   );
 }

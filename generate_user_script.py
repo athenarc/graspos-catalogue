@@ -6,22 +6,30 @@ from dotenv import load_dotenv, set_key
 from datetime import datetime
 from iso3166 import countries
 
+
 def dict_to_js_obj(item):
-    return "{\n" + ",\n".join(
-        f'  {k}: {v}' if isinstance(v, (int, float)) or v == "new Date()" else f'  {k}: "{v}"'
-        for k, v in item.items()
-    ) + "\n}"
+    return "{\n" + ",\n".join(f'  {k}: {v}' if isinstance(v, (
+        int, float)) or v == "new Date()" else f'  {k}: "{v}"'
+                              for k, v in item.items()) + "\n}"
+
 
 # Load env
 ENV_FILE = ".env"
 load_dotenv(ENV_FILE)
 
 # Args
-parser = argparse.ArgumentParser(description="MongoDB Initialization Script Generator")
-parser.add_argument("--user", action="store_true", help="Include user creation")
+parser = argparse.ArgumentParser(
+    description="MongoDB Initialization Script Generator")
+parser.add_argument("--user",
+                    action="store_true",
+                    help="Include user creation")
 parser.add_argument("--scope", action="store_true", help="Include scopes")
-parser.add_argument("--geo", action="store_true", help="Include geographical coverages")
-parser.add_argument("--assessment", action="store_true", help="Include assessments")
+parser.add_argument("--geo",
+                    action="store_true",
+                    help="Include geographical coverages")
+parser.add_argument("--assessment",
+                    action="store_true",
+                    help="Include assessments")
 parser.add_argument("--trl", action="store_true", help="Include TRL levels")
 parser.add_argument("--all", action="store_true", help="Include all sections")
 args = parser.parse_args()
@@ -36,10 +44,13 @@ include_assessment = include_all or args.assessment
 include_trl = include_all or args.trl
 
 username = os.getenv("MONGO_SUPER_USER", "super_user")
-password_plain = os.getenv("MONGO_SUPER_USER_PASSWORD", "super_user")
+password_plain = os.getenv("MONGO_SUPER_USER_PASSWORD")
+if not password_plain:
+    raise ValueError("MONGO_SUPER_USER_PASSWORD must be set in the .env file")
 salt_rounds = int(os.getenv("BCRYPT_SALT_ROUNDS", 12))
 salt = bcrypt.gensalt(rounds=salt_rounds)
-hashed_password = bcrypt.hashpw(password_plain.encode("utf-8"), salt).decode("utf-8")
+hashed_password = bcrypt.hashpw(password_plain.encode("utf-8"),
+                                salt).decode("utf-8")
 now_str = datetime.now().isoformat()
 
 user_insert = f"""
@@ -131,15 +142,16 @@ if include_geo:
     with open("country_centroids.json", encoding="utf-8") as f:
         centroid_map = json.load(f)
     geo_items = []
-    geo_items.append(dict_to_js_obj({
-        "code": "WW",
-        "label": "Worldwide",
-        "flag": "",
-        "created_at": "new Date()",
-        "modified_at": "new Date()",
-        "lat": 0,
-        "lng": 0
-    }))
+    geo_items.append(
+        dict_to_js_obj({
+            "code": "WW",
+            "label": "Worldwide",
+            "flag": "",
+            "created_at": "new Date()",
+            "modified_at": "new Date()",
+            "lat": 0,
+            "lng": 0
+        }))
 
     for c in countries:
         code = c.alpha2
@@ -157,35 +169,76 @@ if include_geo:
             item["lng"] = lng
 
         js_obj = "{\n" + ",\n".join(
-            f'  {k}: {v}' if isinstance(v, (int, float)) or v == "new Date()" else f'  {k}: "{v}"'
-            for k, v in item.items()
-        ) + "\n}"
+            f'  {k}: {v}' if isinstance(v, (
+                int, float)) or v == "new Date()" else f'  {k}: "{v}"'
+            for k, v in item.items()) + "\n}"
         geo_items.append(js_obj)
 
-    geo_insert = "db.geographical_coverages.insertMany([\n" + ",\n".join(geo_items) + "\n]);"
+    geo_insert = "db.geographical_coverages.insertMany([\n" + ",\n".join(
+        geo_items) + "\n]);"
 
 trl_insert = ""
 
 if include_trl:
-    trl_items = [
-        {"trl_id": 1, "nasa_description": "Basic principles observed and reported", "european_description": "Basic principles observed"},
-        {"trl_id": 2, "nasa_description": "Technology concept and/or application formulated", "european_description": "Technology concept formulated"},
-        {"trl_id": 3, "nasa_description": "Analytical and experimental critical function and/or characteristic proof-of-concept", "european_description": "Experimental proof of concept"},
-        {"trl_id": 4, "nasa_description": "Component and/or breadboard validation in laboratory environment", "european_description": "Technology validated in lab"},
-        {"trl_id": 5, "nasa_description": "Component and/or breadboard validation in relevant environment", "european_description": "Technology validated in relevant environment"},
-        {"trl_id": 6, "nasa_description": "System/subsystem model or prototype demonstration in a relevant environment", "european_description": "Technology demonstrated in relevant environment"},
-        {"trl_id": 7, "nasa_description": "System prototype demonstration in a space environment", "european_description": "System prototype demonstration in operational environment"},
-        {"trl_id": 8, "nasa_description": "Actual system completed and 'flight qualified' through test and demonstration", "european_description": "System complete and qualified"},
-        {"trl_id": 9, "nasa_description": "Actual system 'flight proven' through successful mission operations", "european_description": "System proven in operational environment"}
-    ]
+    trl_items = [{
+        "trl_id": 1,
+        "nasa_description": "Basic principles observed and reported",
+        "european_description": "Basic principles observed"
+    }, {
+        "trl_id": 2,
+        "nasa_description": "Technology concept and/or application formulated",
+        "european_description": "Technology concept formulated"
+    }, {
+        "trl_id": 3,
+        "nasa_description":
+        "Analytical and experimental critical function and/or characteristic proof-of-concept",
+        "european_description": "Experimental proof of concept"
+    }, {
+        "trl_id": 4,
+        "nasa_description":
+        "Component and/or breadboard validation in laboratory environment",
+        "european_description": "Technology validated in lab"
+    }, {
+        "trl_id":
+        5,
+        "nasa_description":
+        "Component and/or breadboard validation in relevant environment",
+        "european_description":
+        "Technology validated in relevant environment"
+    }, {
+        "trl_id":
+        6,
+        "nasa_description":
+        "System/subsystem model or prototype demonstration in a relevant environment",
+        "european_description":
+        "Technology demonstrated in relevant environment"
+    }, {
+        "trl_id":
+        7,
+        "nasa_description":
+        "System prototype demonstration in a space environment",
+        "european_description":
+        "System prototype demonstration in operational environment"
+    }, {
+        "trl_id": 8,
+        "nasa_description":
+        "Actual system completed and 'flight qualified' through test and demonstration",
+        "european_description": "System complete and qualified"
+    }, {
+        "trl_id":
+        9,
+        "nasa_description":
+        "Actual system 'flight proven' through successful mission operations",
+        "european_description":
+        "System proven in operational environment"
+    }]
 
     trl_insert = "db.trl.insertMany([\n" + ",\n".join(
-        "{\n" + ",\n".join(
-            f'  {k}: {v}' if isinstance(v, int) else f'  {k}: "{v}"'
-            for k, v in trl.items()) +
+        "{\n" +
+        ",\n".join(f'  {k}: {v}' if isinstance(v, int) else f'  {k}: "{v}"'
+                   for k, v in trl.items()) +
         ",\n  created_at: new Date(),\n  modified_at: new Date()\n}"
-        for trl in trl_items
-    ) + "\n]);"
+        for trl in trl_items) + "\n]);"
 
 # Final JS script
 final_script = f"""
