@@ -17,6 +17,7 @@ export default function ServiceFormFields({
             message: "Not a valid URL",
           },
         })}
+        required
         label="URL"
         defaultValue={resource?.url || ""}
         placeholder="URL of the resource"

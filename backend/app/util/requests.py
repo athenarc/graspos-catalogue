@@ -22,8 +22,6 @@ async def get_openaire_data(source: str) -> dict:
                 }] if "graspos" in source.lower() else []
                 trl_entry = None
                 if "trl" in data["metadata"]:
-                    print("TRL data found in OpenAIRE record:",
-                          data["metadata"]["trl"])
 
                     trl_id_val = None
 
@@ -36,16 +34,15 @@ async def get_openaire_data(source: str) -> dict:
                     if trl_id_val:
                         trl_entry = await TRLEntry.find_one(
                             TRLEntry.trl_id == trl_id_val)
-                        print("trl_entry:", trl_entry)
+
                         data["metadata"][
                             "trl"] = trl_entry.id if trl_entry else None
                     else:
                         data["metadata"]["trl"] = None
                 else:
-                    print("No TRL data found in OpenAIRE record.")
+
                     data["metadata"]["trl"] = None
 
-                # Αφαίρεση του "id" πριν αποθήκευση
                 del data["id"]
 
                 return {"status": 200, "openaire_object": data}
@@ -118,6 +115,3 @@ async def get_zenodo_data(source: str) -> dict:
             "detail": f"Request failed: {str(e)}",
             "zenodo_object": {}
         }
-
-
-# async def get_openaire_data():

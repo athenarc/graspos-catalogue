@@ -6,7 +6,6 @@ import {
   IconButton,
   DialogContent,
   Stack,
-  Divider,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
@@ -17,29 +16,31 @@ import Notification from "@helpers/Notification.jsx";
 import { useCreateDataset } from "@queries/dataset.js";
 import { useCreateTool } from "@queries/tool.js";
 import { useCreateDocument } from "@/queries/document.js";
-import ResourcePreview from "./ResourcePreview.jsx";
 import { useAuth } from "../AuthContext.jsx";
 import { useZenodo } from "@queries/zenodo.js";
 import { useCreateService } from "@queries/service.js";
 import { useOpenaire } from "@queries/openaire.js";
 import ResourceFormSearch from "./ResourceFormSearch.jsx";
-import MessageBox from "@helpers/ErrorMessage.jsx";
 import WizardForm from "./ResourceWizard.jsx";
+import AlertMessage from "../Helpers/AlertMessage.jsx";
 
 export default function ResourceForm() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [message, setMessage] = useState("");
+  const [status, setStatus] = useState("info");
   const [data, setData] = useState(null);
   const [resourceType, setResourceType] = useState("dataset");
-  const [fieldMissing, setFieldMissing] = useState(false);
+  const [canCreate, setCanCreate] = useState(false);
+  const [showWizard, setShowWizard] = useState(false);
+  const [delayActive, setDelayActive] = useState(false);
   const [resourceTypesList, setResourceTypesList] = useState([
     { value: "dataset", label: "Dataset" },
     { value: "tool", label: "Tool" },
     { value: "document", label: "Templates & Guidelines" },
     { value: "service", label: "Service" },
   ]);
-  const [canCreate, setCanCreate] = useState(false);
 
-  const { user } = useAuth();
   const form = useForm({
     mode: "onChange",
     defaultValues: {
@@ -60,8 +61,6 @@ export default function ResourceForm() {
     getValues,
     formState: { errors },
   } = form;
-
-  const navigate = useNavigate();
 
   const createDataset = useCreateDataset();
   const createTool = useCreateTool();
@@ -149,8 +148,8 @@ export default function ResourceForm() {
       {
         onSuccess: (data) => {
           setError("source", null);
-          setFieldMissing(false);
-          setMessage("");
+          setMessage("Zenodo record found. Loading...");
+          setStatus("success");
           setData(data?.data);
           // Set resource type based on Zenodo data if the data.data.resource_type exists in available resourceTypesList
           if (
@@ -162,19 +161,24 @@ export default function ResourceForm() {
             setResourceType(data?.data?.resource_type);
           }
           setValue("source", data?.data?.source);
+          setShowWizard(false);
+          setDelayActive(true);
+          setTimeout(() => {
+            setShowWizard(true);
+            setDelayActive(false);
+            setStatus("info");
+            setMessage("");
+          }, 2000);
         },
         onError: (error) => {
           if (error?.response?.status === 422) {
-            setFieldMissing(true);
-
             const errors = error?.response?.data?.detail;
-            // Αν είναι array, κάνε format
-            let msg = "Required fields: ";
+            let msg = "Required field/s: ";
             if (Array.isArray(errors)) {
               msg += errors.map((e) => e.loc?.slice(-1)[0]).join(", ");
             }
             msg += " are missing in the Zenodo record.";
-
+            setStatus("error");
             setMessage(
               <>
                 {msg} Please enter them in{" "}
@@ -188,13 +192,15 @@ export default function ResourceForm() {
             const detail =
               error?.response?.data?.detail || "Zenodo search failed";
             setMessage(detail);
-            setFieldMissing(true);
+            setStatus("error");
           }
           setData(null);
+          setShowWizard(false);
         },
       }
     );
   };
+
   const onOpenaireSearch = () => {
     const sourceValue = watch("source");
     setResourceType("service");
@@ -208,18 +214,28 @@ export default function ResourceForm() {
       {
         onSuccess: (data) => {
           setError("source", null);
-          setFieldMissing(false);
-          setMessage("");
+          setStatus("success");
+          setMessage("OpenAIRE record found. Loading...");
           setData(data?.data);
           setValue("source", data?.data?.source);
+          setShowWizard(false);
+          setDelayActive(true);
+          setTimeout(() => {
+            setShowWizard(true);
+            setDelayActive(false);
+            setStatus("info");
+            setMessage("");
+          }, 2000);
         },
         onError: (error) => {
           setMessage(error?.response?.data?.detail || "Openaire search failed");
           setError("source", {
             message: error?.response?.data?.detail || "Openaire search failed",
           });
+          setStatus("error");
           setData(null);
           setZenodoData(null);
+          setShowWizard(false);
         },
       }
     );
@@ -229,7 +245,8 @@ export default function ResourceForm() {
     reset();
     setData(null);
     setMessage("");
-    setFieldMissing(false);
+    setStatus("");
+    setShowWizard(false);
   };
 
   function handleClose() {
@@ -248,7 +265,7 @@ export default function ResourceForm() {
           noValidate
           onSubmit={handleSubmit(onSubmit)}
           fullWidth
-          maxWidth={data ? "lg" : "sm"}
+          maxWidth={showWizard ? "lg" : "sm"}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
@@ -287,11 +304,11 @@ export default function ResourceForm() {
                 isSuccess={zenodo.isSuccess || openaire.isSuccess}
                 data={data}
                 resourceType={resourceType}
+                setStatus={setStatus}
+                setMessage={setMessage}
               />
-              {/* <ResourcePreview data={data} /> */}
 
-              {/* <Divider orientation="vertical" flexItem /> */}
-              {data && (
+              {showWizard && data && (
                 <WizardForm
                   form={form}
                   stepFields={stepFields}
@@ -301,10 +318,14 @@ export default function ResourceForm() {
                   data={data}
                 />
               )}
+              {message && (
+                <AlertMessage severity={status} sx={{ position: "relative" }}>
+                  {message}
+                </AlertMessage>
+              )}
             </Stack>
-            {fieldMissing && <MessageBox message={message} status="error" />}
           </DialogContent>
-          {data && (
+          {data && showWizard && (
             <DialogActions sx={{ p: 2, pt: 0 }}>
               <Button
                 type="submit"
