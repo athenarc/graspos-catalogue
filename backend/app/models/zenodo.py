@@ -13,8 +13,7 @@ class ZenodoMetadata(BaseModel):
     access_right: str = Field(..., description="Access rights of the resource")
     creators: list = Field(..., description="List of creators")
     keywords: list | None = None
-    version: str = Field(
-        ..., description="Version of the resource")  #| None = None  #
+    version: str = Field(..., description="Version of the resource")
     references: list | None = None
     resource_type: object = Field(
         description="Type of the resource, e.g., Tool, Service, Dataset.")
@@ -46,7 +45,9 @@ class ZenodoMetadata(BaseModel):
             if not mapped:
                 valid_keys = ", ".join(
                     [k.capitalize() for k in mapping.keys()])
-                raise ValueError(f"Resource type must be one of {valid_keys}")
+                raise ValueError(
+                    f"Resource type must be one of {valid_keys} and not '{type_value}'"
+                )
             return {"type": mapped}
 
         raise ValueError(
