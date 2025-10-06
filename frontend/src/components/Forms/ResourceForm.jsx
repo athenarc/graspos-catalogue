@@ -153,9 +153,6 @@ export default function ResourceForm() {
       {
         onSuccess: (data) => {
           setError("source", null);
-          setMessage("Zenodo record found. Loading...");
-          setStatus("success");
-          setData(data?.data);
 
           const recordType =
             data?.data?.metadata?.resource_type?.type?.toLowerCase();
@@ -169,7 +166,9 @@ export default function ResourceForm() {
               setResourceType(matchedType?.value);
             }
           }
-
+          setMessage("Zenodo record found. Loading...");
+          setStatus("success");
+          setData(data?.data);
           setValue("source", data?.data?.source);
           setShowWizard(false);
           setDelayActive(true);
@@ -184,27 +183,59 @@ export default function ResourceForm() {
         onError: (error) => {
           if (error?.response?.status === 422) {
             const errors = error?.response?.data?.detail;
-            let msg = "Required field/s: ";
-            if (Array.isArray(errors)) {
-              msg += errors.map((e) => e.loc?.slice(-1)[0]).join(", ");
+
+            if (Array.isArray(errors) && errors.length > 0) {
+              const items = errors.map((e, idx) => {
+                const field = e.loc?.slice(-1)[0] || "unknown";
+                let description = "";
+
+                switch (e.type) {
+                  case "missing":
+                    description = `Missing required field`;
+                    break;
+                  case "value_error":
+                    description = `Invalid value (${e.ctx?.error || e.msg})`;
+                    break;
+                  default:
+                    description = e.msg;
+                }
+
+                return (
+                  <li key={idx}>
+                    <strong>{field}</strong>: {description}
+                  </li>
+                );
+              });
+
+              setStatus("error");
+              setMessage(
+                <>
+                  <p>
+                    There were errors with the Zenodo record. Please update them
+                    in{" "}
+                    <a
+                      href={sourceValue}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Zenodo
+                    </a>
+                    :
+                  </p>
+                  <ul>{items}</ul>
+                </>
+              );
+            } else {
+              setStatus("error");
+              setMessage("Zenodo record validation failed.");
             }
-            msg += " are missing in the Zenodo record.";
-            setStatus("error");
-            setMessage(
-              <>
-                {msg} Please enter them in{" "}
-                <a href={sourceValue} target="_blank" rel="noopener noreferrer">
-                  Zenodo
-                </a>
-                .
-              </>
-            );
           } else {
             const detail =
               error?.response?.data?.detail || "Zenodo search failed";
-            setMessage(detail);
             setStatus("error");
+            setMessage(detail);
           }
+
           setData(null);
           setShowWizard(false);
         },

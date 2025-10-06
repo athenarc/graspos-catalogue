@@ -1,6 +1,6 @@
 from beanie import Document, PydanticObjectId
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 import pymongo
 from pymongo import IndexModel
 
@@ -13,14 +13,48 @@ class ZenodoMetadata(BaseModel):
     access_right: str = Field(..., description="Access rights of the resource")
     creators: list = Field(..., description="List of creators")
     keywords: list | None = None
-    version: str = Field(..., description="Version of the resource")
+    version: str = Field(
+        ..., description="Version of the resource")  #| None = None  #
     references: list | None = None
-    resource_type: object = Field(..., description="Type of the resource")
+    resource_type: object = Field(
+        description="Type of the resource, e.g., Tool, Service, Dataset.")
+
+    @field_validator("resource_type")
+    def validate_resource_type(cls, v):
+        mapping = {
+            "software": "Tool",
+            "dataset": "Dataset",
+            "publication": "Document",
+            "service": "Service",
+        }
+
+        if v is None:
+            return None
+
+        if isinstance(v, str):
+            normalized = v.strip().lower()
+            mapped = mapping.get(normalized, None)
+            if not mapped:
+                raise ValueError(f"Resource type '{v}' not recognized")
+            return {"type": mapped}
+
+        if isinstance(v, dict):
+            type_value = v.get("type", "").lower()
+            mapped = mapping.get(type_value, None)
+            if not mapped:
+                valid_keys = ", ".join(
+                    [k.capitalize() for k in mapping.keys()])
+                raise ValueError(f"Resource type must be one of {valid_keys}")
+            return {"type": mapped}
+
+        raise ValueError(
+            "Resource type must be a string or object with type field")
+
     license: object = Field(..., description="License information")
     grants: list | None = None
     communities: list | None = None
     relations: object | None = None
-    notes: str | None = None  # str = Field(..., description="Notes about the resource") #
+    notes: str | None = None
 
 
 class Zenodo(BaseModel):

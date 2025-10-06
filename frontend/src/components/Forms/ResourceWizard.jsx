@@ -69,7 +69,7 @@ export default function WizardForm({
               <InputLabel>Resource type</InputLabel>
               <Select
                 {...form?.register("resource_type")}
-                disabled={!data}
+                disabled
                 value={resourceType}
                 labelId="resource-type-select-label"
                 label="Resource type"
