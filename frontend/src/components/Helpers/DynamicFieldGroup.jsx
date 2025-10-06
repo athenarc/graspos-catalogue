@@ -12,6 +12,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import AlertHelperText from "./AlertHelperText";
 
 /**
  * Generic repeatable metadata field group
@@ -146,19 +147,24 @@ function renderDynamicRow({
       sx={{ mt: 2 }}
     >
       {subfieldKeys.map((key) => (
-        <TextField
-          key={key}
-          disabled={disabled}
-          {...register(`metadata.${fieldName}.${index}.${key}`)}
-          label={
-            key === "value" ? `${fieldName.slice(0, -1)} ${index + 1}` : key
-          }
-          fullWidth
-          error={!!errors?.metadata?.[fieldName]?.[index]?.[key]}
-          helperText={
-            errors?.metadata?.[fieldName]?.[index]?.[key]?.message ?? ""
-          }
-        />
+        <>
+          <TextField
+            key={key}
+            disabled={disabled}
+            {...register(`metadata.${fieldName}.${index}.${key}`)}
+            label={
+              key === "value" ? `${fieldName.slice(0, -1)} ${index + 1}` : key
+            }
+            fullWidth
+            error={!!errors?.metadata?.[fieldName]?.[index]?.[key]}
+            helperText=" "
+          />
+          {errors?.metadata?.[fieldName]?.[index]?.[key] && (
+            <AlertHelperText
+              error={errors?.metadata?.[fieldName]?.[index]?.[key]}
+            />
+          )}
+        </>
       ))}
       {!disabled && subfieldKeys.length > 0 && (
         <IconButton color="error" onClick={() => remove(index)}>

@@ -23,9 +23,7 @@ export default function TrlFormField({
       {isLoading && <CircularProgress size={24} />}
       {isSuccess && (
         <FormControl
-          fullWidth
           variant="outlined"
-          sx={{ width: { xs: "100%", lg: "60%" } }}
         >
           <InputLabel id="sort-filter-label">{label}</InputLabel>
           <Select

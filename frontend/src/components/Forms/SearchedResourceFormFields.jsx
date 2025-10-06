@@ -13,6 +13,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { enGB, tr } from "date-fns/locale";
 import DynamicFieldGroup from "@helpers/DynamicFieldGroup";
+import AlertHelperText from "../Helpers/AlertHelperText";
 
 export function DescriptionTextArea({
   searchedResource,
@@ -76,16 +77,21 @@ export function SearchedResourceTextField({
   fullWidth = true,
 }) {
   return (
-    <TextField
-      {...form?.register(name, { required })}
-      error={!!form?.formState?.errors?.searched_resource}
-      helperText={form?.formState?.errors?.searched_resource?.message ?? " "}
-      label={name.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
-      fullWidth={fullWidth}
-      disabled={disabled}
-      value={value || ""}
-      sx={{ flex: 1 }}
-    />
+    <>
+      <TextField
+        {...form?.register(name, { required })}
+        error={!!form?.formState?.errors?.searched_resource}
+        helperText=" "
+        label={name.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+        fullWidth={fullWidth}
+        disabled={disabled}
+        value={value || ""}
+        sx={{ flex: 1 }}
+      />
+      {form?.formState?.errors?.searched_resource && (
+        <AlertHelperText error={form?.formState?.errors?.searched_resource} />
+      )}
+    </>
   );
 }
 

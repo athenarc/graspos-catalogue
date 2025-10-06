@@ -32,6 +32,7 @@ import { useCountries } from "@queries/countries.js";
 import { useAssessments } from "@queries/assessment.js";
 import ArrayInputField from "../Helpers/ArrayInputField";
 import AccordionField from "../Helpers/AccordionField";
+import AlertHelperText from "../Helpers/AlertHelperText";
 
 function CheckboxArrayField({
   items,
@@ -214,17 +215,20 @@ function GeographicScope({ form }) {
                 );
               }}
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Select countries"
-                  placeholder="Start typing..."
-                  error={!!form?.formState?.errors?.geographical_coverage}
-                  helperText={
-                    form?.formState?.errors?.geographical_coverage?.message ??
-                    " "
-                  }
-                  fullWidth
-                />
+                <>
+                  <TextField
+                    {...params}
+                    label="Select countries"
+                    placeholder="Start typing..."
+                    error={!!form?.formState?.errors?.geographical_coverage}
+                    fullWidth
+                  />
+                  {form?.formState?.errors?.geographical_coverage && (
+                    <AlertHelperText
+                      error={form?.formState?.errors?.geographical_coverage}
+                    />
+                  )}
+                </>
               )}
             />
           )}
