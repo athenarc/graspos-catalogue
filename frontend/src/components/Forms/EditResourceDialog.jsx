@@ -46,17 +46,13 @@ export default function EditResourceDialog({
   resource,
   open,
   onClose,
-  scopesQuery,
-  countriesQuery,
-  assessmentsQuery,
-  selectedScopes,
-  onToggleScope,
   mutation,
   onSave,
 }) {
   const { isSuccess, isError, error, reset, isPending } = mutation;
   const form = useForm({
     mode: "onChange",
+    defaultValues: { ...resource, trl: resource?.trl || [] },
   });
 
   const {

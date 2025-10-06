@@ -99,6 +99,7 @@ export function AccessRightsSelect({
   searchedResource,
   form,
   disabled = true,
+  fullWidth = true,
 }) {
   const accessRight = searchedResource?.metadata?.access_right || "";
   return (
@@ -107,6 +108,8 @@ export function AccessRightsSelect({
       label="Access Rights"
       disabled={disabled}
       value={accessRight}
+      fullWidth={fullWidth}
+      sx={{ flex: 1 }}
     >
       <MenuItem value="open">Open Access</MenuItem>
       <MenuItem value="embargoed">Embargoed Access</MenuItem>
@@ -124,11 +127,25 @@ export default function SearchedResourceFormFields({
 }) {
   const [tabIndex, setTabIndex] = useState(0);
   const openAireTabs = ["tags"];
-  const zenodoTabs = ["creators", "keywords", "references", "contributors"];
+  const zenodoTabs = [
+    "creators",
+    "keywords",
+    "references",
+    "contributors",
+    "grants",
+  ];
+  const fieldSchemas = {
+    creators: { name: "", affiliation: "", orcid: "" },
+    keywords: {},
+    references: {},
+    contributors: { name: "", affiliation: "", orcid: "" },
+    grants: { code: "", internal_id: "", acronym: "", program: "", url: "" },
+    tags: {},
+  };
   const allTabs = resourceType === "service" ? openAireTabs : zenodoTabs;
 
   const visibleTabs = allTabs.filter((tabName) => {
-    const value = searchedResource?.metadata?.[tabName.toLowerCase()];
+    const value = searchedResource?.metadata?.[tabName.toLowerCase()] || {};
     return value && (Array.isArray(value) ? value.length > 0 : true);
   });
 
@@ -213,6 +230,7 @@ export default function SearchedResourceFormFields({
             searchedResource={searchedResource}
             form={form}
             disabled={disabled}
+            fullWidth={false}
           />
 
           <SearchedResourceTextField
@@ -239,7 +257,11 @@ export default function SearchedResourceFormFields({
             {allTabs.map((tabName, index) => (
               <Tab
                 key={tabName}
-                label={tabName.charAt(0).toUpperCase() + tabName.slice(1)}
+                label={
+                  tabName !== "grants"
+                    ? tabName.charAt(0).toUpperCase() + tabName.slice(1)
+                    : "Funding"
+                }
               />
             ))}
           </Tabs>
@@ -254,13 +276,7 @@ export default function SearchedResourceFormFields({
                   form={form}
                   searchedResource={searchedResource}
                   fieldName={tabName.toLowerCase()}
-                  fieldSchema={
-                    tabName === "keywords" ||
-                    tabName === "tags" ||
-                    tabName === "references"
-                      ? undefined
-                      : { name: "", affiliation: "", orcid: "" }
-                  }
+                  fieldSchema={fieldSchemas[tabName.toLowerCase()] || undefined}
                   disabled={disabled}
                 />
               </Box>

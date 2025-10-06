@@ -16,19 +16,16 @@ export default function TrlFormField({
   searchedResource = null,
 }) {
   const { data: trls, isLoading, isSuccess } = useTrls();
-  const selectedTrl = resource?.trl || searchedResource?.metadata?.trl || "";
-
+  const selectedTrl = resource?.trl || searchedResource?.metadata?.trl || null;
   return (
     <>
       {isLoading && <CircularProgress size={24} />}
       {isSuccess && (
-        <FormControl
-          variant="outlined"
-        >
+        <FormControl variant="outlined" sx={{ flex: 1 }}>
           <InputLabel id="sort-filter-label">{label}</InputLabel>
           <Select
-            {...form?.register("trl", { value: selectedTrl?.id })}
-            defaultValue={selectedTrl?.id || ""}
+            {...form?.register("trl", { value: selectedTrl?.id || null })}
+            defaultValue={selectedTrl?.id || null}
             label={label}
             error={!!form?.formState?.errors["trl"]}
             helperText={form?.formState?.errors["trl"]?.message}

@@ -36,7 +36,6 @@ export default function DynamicFieldGroup({
 
   const [expanded, setExpanded] = useState(false);
 
-  // Καθορισμός subfields
   const isPrimitiveArray =
     existingData.length > 0 && typeof existingData[0] !== "object";
   const subfieldKeys = fieldSchema
@@ -62,7 +61,6 @@ export default function DynamicFieldGroup({
 
   return (
     <Stack spacing={2} sx={{ mb: 3 }}>
-      {/* Header */}
       <Stack direction="row" alignItems="center" spacing={1}>
         <Typography variant="subtitle1" fontWeight="bold">
           {fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}
@@ -84,7 +82,6 @@ export default function DynamicFieldGroup({
         )}
       </Stack>
 
-      {/* Πρώτο πεδίο */}
       {fields.length > 0 &&
         renderDynamicRow({
           index: 0,
@@ -96,7 +93,6 @@ export default function DynamicFieldGroup({
           disabled,
         })}
 
-      {/* Τα υπόλοιπα πεδία σε collapse */}
       {hasMultiple && (
         <Collapse in={expanded} sx={{ marginTop: "0px !important;" }}>
           {fields.slice(1).map((_, index) =>
@@ -113,7 +109,6 @@ export default function DynamicFieldGroup({
         </Collapse>
       )}
 
-      {/* Κουμπί εμφάνισης/απόκρυψης */}
       {hasMultiple && (
         <Button
           size="small"

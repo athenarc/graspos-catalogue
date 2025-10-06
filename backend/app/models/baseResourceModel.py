@@ -43,7 +43,7 @@ class BaseResourceModel(BaseModel):
     source: str | None = None
     approved: bool | None = None
     owner: PydanticObjectId | None = None
-    trl: Link[TRLEntry] | None = None
+    trl: Optional[Link[TRLEntry]] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
 

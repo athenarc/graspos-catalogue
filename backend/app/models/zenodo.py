@@ -15,7 +15,7 @@ class ZenodoMetadata(BaseModel):
     keywords: list | None = None
     version: str = Field(..., description="Version of the resource")
     references: list | None = None
-    resource_type: object | None = None
+    resource_type: object = Field(..., description="Type of the resource")
     license: object = Field(..., description="License information")
     grants: list | None = None
     communities: list | None = None

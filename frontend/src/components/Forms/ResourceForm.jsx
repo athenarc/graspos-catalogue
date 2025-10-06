@@ -44,6 +44,7 @@ export default function ResourceForm() {
   const form = useForm({
     mode: "onChange",
     defaultValues: {
+      trl: null,
       evidence_types: [],
       covered_research_products: [],
       covered_fields: [],
@@ -134,9 +135,13 @@ export default function ResourceForm() {
 
     setResourceType("dataset");
     setResourceTypesList([
-      { value: "dataset", label: "Dataset" },
-      { value: "tool", label: "Tool" },
-      { value: "document", label: "Templates & Guidelines" },
+      { match: ["dataset"], value: "dataset", label: "Dataset" },
+      { match: ["tool", "software"], value: "tool", label: "Tool" },
+      {
+        match: ["document"],
+        value: "document",
+        label: "Templates & Guidelines",
+      },
     ]);
     if (!sourceValue) {
       setError("source", { message: "Source cannot be empty" });
@@ -151,18 +156,24 @@ export default function ResourceForm() {
           setMessage("Zenodo record found. Loading...");
           setStatus("success");
           setData(data?.data);
-          // Set resource type based on Zenodo data if the data.data.resource_type exists in available resourceTypesList
-          if (
-            data?.data?.resource_type &&
-            resourceTypesList.some(
-              (type) => type.value === data?.data?.resource_type
-            )
-          ) {
-            setResourceType(data?.data?.resource_type);
+
+          const recordType =
+            data?.data?.metadata?.resource_type?.type?.toLowerCase();
+
+          if (recordType) {
+            const matchedType = resourceTypesList?.find((item) =>
+              item?.match?.some((m) => recordType?.includes(m?.toLowerCase()))
+            );
+
+            if (matchedType) {
+              setResourceType(matchedType?.value);
+            }
           }
+
           setValue("source", data?.data?.source);
           setShowWizard(false);
           setDelayActive(true);
+
           setTimeout(() => {
             setShowWizard(true);
             setDelayActive(false);

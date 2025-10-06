@@ -8,6 +8,7 @@ from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseR
 
 
 class ToolBasicFields(BaseModel):
+    url: str | None = None
     zenodo: Link[Zenodo] | None = None
 
 
