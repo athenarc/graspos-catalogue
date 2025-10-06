@@ -20,7 +20,7 @@ class ZenodoMetadata(BaseModel):
     grants: list | None = None
     communities: list | None = None
     relations: object | None = None
-    notes:str | None = None  # str = Field(..., description="Notes about the resource") # 
+    notes: str | None = None  # str = Field(..., description="Notes about the resource") #
 
 
 class Zenodo(BaseModel):

@@ -33,7 +33,8 @@ async def update_all_zenodo_records(
 
 @router.post("/search", status_code=200)
 async def post_zenodo_records(
-    dataset: ZenodoView, user: User = Depends(current_user_mandatory)) -> Zenodo:
+    dataset: ZenodoView,
+    user: User = Depends(current_user_mandatory)) -> Zenodo:
 
     zenodo = await Zenodo.find_one(Zenodo.source == dataset.source)
 
