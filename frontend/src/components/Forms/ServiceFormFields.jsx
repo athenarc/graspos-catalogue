@@ -31,13 +31,13 @@ export default function ServiceFormFields({
         />
         {error && <AlertHelperText error={error} />}
       </Stack>
-      <TrlFormField
+      {/* <TrlFormField
         form={form}
         name="trl"
         label="TRL"
         resource={resource}
         searchedResource={searchedResource}
-      />
+      /> */}
     </Stack>
   );
 }

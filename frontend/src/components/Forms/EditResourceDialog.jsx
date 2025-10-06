@@ -29,6 +29,10 @@ import DatasetFormFields from "./DatasetFormFields";
 import DocumentFormFields from "./DocumentsFormFields";
 import ToolFormFields from "./ToolFormFields";
 import ServiceFormFields from "./ServiceFormFields";
+import GovernanceFormFields from "./GovernanceFormFields";
+import CoverageFormFields from "./CoverageFormFields";
+import EthicsFormFields from "./EthicsFormFields";
+import SupportFormFields from "./SupportFormFields";
 
 const tabs = [
   "Basic Information",
@@ -53,30 +57,6 @@ export default function EditResourceDialog({
   const { isSuccess, isError, error, reset, isPending } = mutation;
   const form = useForm({
     mode: "onChange",
-    // in default values have everything except for id, Zenodo, OpenAIRE, created_at, updated_at
-    defaultValues: {
-      organization: resource?.organization,
-      adopted_standards: resource?.adopted_standards,
-      governance_model: resource?.governance_model,
-      governance_bodies: resource?.governance_bodies,
-      sustainability_plan: resource?.sustainability_plan,
-      documentation_urls: resource?.documentation_urls,
-      training_materials: resource?.training_materials,
-      support_channels: resource?.support_channels,
-      scopes: resource?.scopes,
-      geographical_coverage: resource?.geographical_coverage,
-      assessments: resource?.assessments,
-      assessment_values: resource?.assessment_values,
-      assessment_functionalities: resource?.assessment_functionalities,
-      evidence_types: resource?.evidence_types,
-      covered_fields: resource?.covered_fields,
-      covered_research_products: resource?.covered_research_products,
-      temporal_coverage: resource?.temporal_coverage,
-      privacy_policy: resource?.privacy_policy,
-      limitations: resource?.limitations,
-      ethical_considerations: resource?.ethical_considerations,
-      ethics_committee: resource?.ethics_committee,
-    },
   });
 
   const {
@@ -120,7 +100,8 @@ export default function EditResourceDialog({
   };
 
   const handleFormSubmit = (data) => {
-    onSave(data);
+    const geoIds = (data.geographical_coverage || []).map((geo) => geo._id);
+    onSave({ ...data, geographical_coverage: geoIds });
   };
 
   return (
@@ -170,8 +151,18 @@ export default function EditResourceDialog({
             </>
           )}
 
-          {tabIndex === 1 && <div></div>}
-          {tabIndex === 2 && <div></div>}
+          {tabIndex === 1 && (
+            <GovernanceFormFields form={form} resource={resource} />
+          )}
+          {tabIndex === 2 && (
+            <SupportFormFields form={form} resource={resource} />
+          )}
+          {tabIndex === 3 && (
+            <CoverageFormFields form={form} resource={resource} />
+          )}
+          {tabIndex === 4 && (
+            <EthicsFormFields form={form} resource={resource} />
+          )}
         </DialogContent>
 
         <DialogActions

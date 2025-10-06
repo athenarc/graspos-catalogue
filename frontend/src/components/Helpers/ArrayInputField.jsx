@@ -11,40 +11,47 @@ export default function ArrayInputField({
   label,
   placeholder = "",
   required = false,
+  defaultValue = [],
 }) {
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control: form?.control,
     name,
   });
+
   const didInit = useRef(false);
 
   useEffect(() => {
-    if (!didInit.current && fields.length === 0 && required) {
-      append(" ");
+    if (!didInit.current) {
+      if (defaultValue && defaultValue.length > 0) {
+        replace(defaultValue);
+        form?.setValue(name, defaultValue);
+      } else if (required && fields.length === 0) {
+        append("");
+      }
       didInit.current = true;
     }
-  }, [fields, required, append]);
+  }, [defaultValue, replace, append, form, name, required]);
+
   return (
     <Stack direction="column" spacing={2}>
       {fields.map((field, index) => (
-        <Stack key={field?.id} direction="row" spacing={1} alignItems="center">
+        <Stack key={field.id} direction="row" spacing={1} alignItems="center">
           <Stack direction="column" flex={1}>
             <Controller
               name={`${name}.${index}`}
               control={form?.control}
               rules={
                 required && {
-                  required: label + " field is required and can not be empty",
+                  required: `${label} field is required and cannot be empty`,
                   validate: (value) =>
-                    value.trim() !== "" ||
-                    label + " field is required and can not be empty",
+                    value?.trim() !== "" ||
+                    `${label} field is required and cannot be empty`,
                 }
               }
               render={({ field }) => (
                 <>
                   <TextField
                     {...field}
-                    key={field?.id}
                     fullWidth
                     placeholder={placeholder || `${label} ${index + 1}`}
                     error={!!form?.formState?.errors?.[name]?.[index]}
@@ -59,7 +66,7 @@ export default function ArrayInputField({
               )}
             />
           </Stack>
-          {(!required || (required && fields?.length > 1)) && (
+          {(!required || (required && fields.length > 1)) && (
             <IconButton color="error" onClick={() => remove(index)}>
               <DeleteIcon />
             </IconButton>
@@ -68,7 +75,7 @@ export default function ArrayInputField({
       ))}
       <Button
         endIcon={<AddIcon />}
-        onClick={() => append(" ")}
+        onClick={() => append("")}
         size="small"
         variant="outlined"
       >

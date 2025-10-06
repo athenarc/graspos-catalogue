@@ -13,6 +13,7 @@ export default function AccordionField({
   label,
   placeholder,
   required = false,
+  defaultValue = [],
 }) {
   const hasError = !!form?.formState?.errors?.[name];
   return (
@@ -36,6 +37,7 @@ export default function AccordionField({
           label={label}
           placeholder={placeholder}
           required={required}
+          defaultValue={defaultValue}
         />
       </AccordionDetails>
     </Accordion>

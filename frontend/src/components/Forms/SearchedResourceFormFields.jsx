@@ -107,7 +107,6 @@ export function AccessRightsSelect({
       label="Access Rights"
       disabled={disabled}
       value={accessRight}
-      helperText="Access level for the resource"
     >
       <MenuItem value="open">Open Access</MenuItem>
       <MenuItem value="embargoed">Embargoed Access</MenuItem>

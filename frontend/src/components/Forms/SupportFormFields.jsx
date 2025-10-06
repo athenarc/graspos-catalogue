@@ -9,7 +9,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ArrayInputField from "@helpers/ArrayInputField";
 import AccordionField from "../Helpers/AccordionField";
 
-function SupportChannels({ form }) {
+function SupportChannels({ form, resource = null }) {
   return (
     <AccordionField
       form={form}
@@ -17,11 +17,12 @@ function SupportChannels({ form }) {
       name="support_channels"
       label="Support Channels"
       placeholder="Enter a URL or email"
+      defaultValue={resource?.support_channels || []}
     />
   );
 }
 
-function DocumentationURLs({ form }) {
+function DocumentationURLs({ form, resource = null }) {
   return (
     <AccordionField
       form={form}
@@ -29,11 +30,12 @@ function DocumentationURLs({ form }) {
       name="documentation_urls"
       label="Documentation URLs"
       placeholder="Enter documentation URLs"
+      defaultValue={resource?.documentation_urls || []}
     />
   );
 }
 
-function TrainingMaterials({ form }) {
+function TrainingMaterials({ form, resource = null }) {
   return (
     <AccordionField
       form={form}
@@ -41,16 +43,17 @@ function TrainingMaterials({ form }) {
       name="training_materials"
       label="Training Materials"
       placeholder="Enter training material URLs"
+      defaultValue={resource?.training_materials || []}
     />
   );
 }
 
-export default function SupportFormFields({ form }) {
+export default function SupportFormFields({ form, resource = null }) {
   return (
     <Stack direction="column" spacing={2} sx={{ mt: 2 }}>
-      <SupportChannels form={form} />
-      <DocumentationURLs form={form} />
-      <TrainingMaterials form={form} />
+      <SupportChannels form={form} resource={resource} />
+      <DocumentationURLs form={form} resource={resource} />
+      <TrainingMaterials form={form} resource={resource} />
     </Stack>
   );
 }

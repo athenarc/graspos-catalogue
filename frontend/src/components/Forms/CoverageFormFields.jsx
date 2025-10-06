@@ -18,7 +18,6 @@ import {
   InputLabel,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import InfoIcon from "@mui/icons-material/Info";
 import PersonIcon from "@mui/icons-material/Person";
 import GroupIcon from "@mui/icons-material/Group";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
@@ -30,7 +29,6 @@ import { Controller } from "react-hook-form";
 import { useScopes } from "@queries/scope.js";
 import { useCountries } from "@queries/countries.js";
 import { useAssessments } from "@queries/assessment.js";
-import ArrayInputField from "../Helpers/ArrayInputField";
 import AccordionField from "../Helpers/AccordionField";
 import AlertHelperText from "../Helpers/AlertHelperText";
 
@@ -42,9 +40,10 @@ function CheckboxArrayField({
   colors = false,
 }) {
   const handleToggle = (id) => {
-    setSelectedItems((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+    const newSelected = selectedItems.includes(id)
+      ? selectedItems.filter((i) => i !== id)
+      : [...selectedItems, id];
+    setSelectedItems(newSelected); // ενημερώνει το state
   };
 
   const renderIcon = (name) => {
@@ -103,13 +102,23 @@ function AssessmentValues({ form }) {
   );
 }
 
-function ScopeStages({ form }) {
+function ScopeStages({ form, resource = null }) {
   const scopesQuery = useScopes();
   const [selectedScopes, setSelectedScopes] = useState([]);
 
+  // Initial load: set selected scopes from resource
   useEffect(() => {
-    form?.setValue("scopes", selectedScopes);
-  }, [selectedScopes, form?.setValue]);
+    if (resource?.scopes) {
+      const ids = resource.scopes.map((s) => s.id);
+      setSelectedScopes(ids);
+      form?.setValue("scopes", ids);
+    }
+  }, [resource, form]);
+
+  const handleSelectedScopesChange = (newSelected) => {
+    setSelectedScopes(newSelected);
+    form?.setValue("scopes", newSelected);
+  };
 
   return (
     <Accordion>
@@ -120,7 +129,7 @@ function ScopeStages({ form }) {
         <CheckboxArrayField
           items={scopesQuery?.data?.data}
           selectedItems={selectedScopes}
-          setSelectedItems={setSelectedScopes}
+          setSelectedItems={handleSelectedScopesChange}
           icons={false}
           colors={true}
         />
@@ -129,13 +138,22 @@ function ScopeStages({ form }) {
   );
 }
 
-function AssessmentSubjects({ form }) {
+function AssessmentSubjects({ form, resource = null }) {
   const assessmentData = useAssessments();
   const [selectedAssessments, setSelectedAssessments] = useState([]);
 
   useEffect(() => {
-    form?.setValue("assessments", selectedAssessments);
-  }, [selectedAssessments, form?.setValue]);
+    if (resource?.assessments) {
+      const ids = resource.assessments.map((a) => a.id);
+      setSelectedAssessments(ids);
+      form?.setValue("assessments", ids);
+    }
+  }, [resource, form]);
+
+  const handleSelectedAssessmentsChange = (newSelected) => {
+    setSelectedAssessments(newSelected);
+    form?.setValue("assessments", newSelected);
+  };
 
   return (
     <Accordion>
@@ -146,7 +164,7 @@ function AssessmentSubjects({ form }) {
         <CheckboxArrayField
           items={assessmentData?.data?.data}
           selectedItems={selectedAssessments}
-          setSelectedItems={setSelectedAssessments}
+          setSelectedItems={handleSelectedAssessmentsChange}
           icons={true}
           colors={true}
         />
@@ -155,9 +173,19 @@ function AssessmentSubjects({ form }) {
   );
 }
 
-function GeographicScope({ form }) {
+function GeographicScope({ form, resource = null }) {
   const countries = useCountries();
   const hasError = !!form?.formState?.errors?.geographical_coverage;
+
+  // compute initial value
+  useEffect(() => {
+    if (resource && countries?.data) {
+      const initialCountries = resource?.geographical_coverage.map((c) =>
+        countries?.data?.data?.find((co) => co._id === c.id)
+      );
+      form?.setValue("geographical_coverage", initialCountries);
+    }
+  }, [resource, countries?.data, form?.setValue]);
 
   return (
     <Accordion
@@ -177,24 +205,25 @@ function GeographicScope({ form }) {
         <Controller
           name="geographical_coverage"
           control={form?.control}
-          defaultValue={[]}
           rules={{
             validate: (value) =>
               (value && value.length > 0) || "At least one country is required",
           }}
-          render={({ field, fieldState }) => (
+          render={({ field }) => (
             <Autocomplete
               {...field}
               multiple
               options={countries?.data?.data || []}
-              getOptionLabel={(option) => option.label}
-              value={field.value ?? []}
-              onChange={(_, value) => field.onChange(value)}
+              getOptionLabel={(option) => option?.label}
+              value={field?.value ?? []}
+              onChange={(_, value) => {
+                field.onChange(value);
+              }}
               renderTags={(value, getTagProps) =>
                 value.map((option, index) => (
                   <Chip
-                    key={option.code}
-                    label={`${option.label} (${option.code})`}
+                    key={option?.code}
+                    label={`${option?.label} (${option?.code})`}
                     {...getTagProps({ index })}
                   />
                 ))
@@ -206,11 +235,11 @@ function GeographicScope({ form }) {
                     <img
                       loading="lazy"
                       width="20"
-                      src={option.flag}
+                      src={option?.flag}
                       alt=""
                       style={{ marginRight: 10 }}
                     />
-                    {option.label} ({option.code})
+                    {option?.label} ({option?.code})
                   </li>
                 );
               }}
@@ -220,10 +249,10 @@ function GeographicScope({ form }) {
                     {...params}
                     label="Select countries"
                     placeholder="Start typing..."
-                    error={!!form?.formState?.errors?.geographical_coverage}
+                    error={hasError}
                     fullWidth
                   />
-                  {form?.formState?.errors?.geographical_coverage && (
+                  {hasError && (
                     <AlertHelperText
                       error={form?.formState?.errors?.geographical_coverage}
                     />
@@ -238,7 +267,7 @@ function GeographicScope({ form }) {
   );
 }
 
-function CoveredFields({ form }) {
+function CoveredFields({ form, resource = null }) {
   return (
     <AccordionField
       form={form}
@@ -247,6 +276,7 @@ function CoveredFields({ form }) {
       placeholder="Enter covered fields for the resource"
       fieldTitle="Covered Fields *"
       required
+      defaultValue={resource?.covered_fields || []}
     />
   );
 }
@@ -288,7 +318,7 @@ function AssessmentFunctionalities({ form }) {
   );
 }
 
-function EvidenceTypes({ form }) {
+function EvidenceTypes({ form, resource = null }) {
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -297,38 +327,51 @@ function EvidenceTypes({ form }) {
       <AccordionDetails>
         <FormControl fullWidth>
           <InputLabel>Evidence Types</InputLabel>
-          <Select
-            multiple
-            {...form?.register("evidence_types")}
-            defaultValue={[]}
-            label="Evidence Types"
-          >
-            <MenuItem value={"narratives"}>Narratives</MenuItem>
-            <MenuItem value={"indicators"}>Indicators</MenuItem>
-            <MenuItem value={"list_of_contributions"}>
-              List Of Contributions
-            </MenuItem>
-            <MenuItem value={"badges"}>Badges</MenuItem>
-            <MenuItem value={"other"}>Other</MenuItem>
-          </Select>
+          <Controller
+            name="evidence_types"
+            control={form?.control}
+            defaultValue={resource?.evidence_types || []} // αρχικά τιμές
+            render={({ field }) => (
+              <Select
+                multiple
+                value={field.value || []} // πάντα array
+                onChange={(event) => {
+                  const value = event.target.value;
+                  field.onChange(Array.isArray(value) ? value : []); // ποτέ string
+                }}
+              >
+                <MenuItem value="narratives">Narratives</MenuItem>
+                <MenuItem value="indicators">Indicators</MenuItem>
+                <MenuItem value="list_of_contributions">
+                  List Of Contributions
+                </MenuItem>
+                <MenuItem value="badges">Badges</MenuItem>
+                <MenuItem value="other">Other</MenuItem>
+              </Select>
+            )}
+          />
         </FormControl>
       </AccordionDetails>
     </Accordion>
   );
 }
 
-export default function CoverageFormFields({ resourceType, form }) {
+export default function CoverageFormFields({
+  resourceType,
+  form,
+  resource = null,
+}) {
   return (
     <Stack direction="column" spacing={2}>
-      <ScopeStages form={form} />
-      <AssessmentSubjects form={form} />
-      <GeographicScope form={form} />
-      <CoveredFields form={form} />
-      <CoveredResearchProducts form={form} />
-      <EvidenceTypes form={form} />
-      <AssessmentValues form={form} />
+      <ScopeStages form={form} resource={resource} />
+      <AssessmentSubjects form={form} resource={resource} />
+      <GeographicScope form={form} resource={resource} />
+      <CoveredFields form={form} resource={resource} />
+      <CoveredResearchProducts form={form} resource={resource} />
+      <EvidenceTypes form={form} resource={resource} />
+      <AssessmentValues form={form} resource={resource} />
       {(resourceType === "tool" || resourceType === "service") && (
-        <AssessmentFunctionalities form={form} />
+        <AssessmentFunctionalities form={form} resource={resource} />
       )}
     </Stack>
   );
