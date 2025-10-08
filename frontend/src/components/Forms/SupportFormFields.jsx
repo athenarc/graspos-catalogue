@@ -1,12 +1,4 @@
-import {
-  Stack,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-} from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ArrayInputField from "@helpers/ArrayInputField";
+import { Stack } from "@mui/material";
 import AccordionField from "../Helpers/AccordionField";
 
 function SupportChannels({ form, resource = null }) {
