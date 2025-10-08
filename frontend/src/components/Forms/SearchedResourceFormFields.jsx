@@ -11,9 +11,9 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { enGB, tr } from "date-fns/locale";
+import { enGB } from "date-fns/locale";
 import DynamicFieldGroup from "@helpers/DynamicFieldGroup";
-import AlertHelperText from "../Helpers/AlertHelperText";
+import AlertHelperText from "@helpers/AlertHelperText";
 
 export function DescriptionTextArea({
   searchedResource,
@@ -167,7 +167,6 @@ export default function SearchedResourceFormFields({
           Searched Resource Information
         </Typography>
 
-        {/* Πρώτη σειρά πεδίων */}
         <Stack direction="row" spacing={2}>
           <SearchedResourceTextField
             name={resourceType === "service" ? "name" : "title"}
@@ -195,7 +194,6 @@ export default function SearchedResourceFormFields({
           )}
         </Stack>
 
-        {/* Description */}
         <Stack
           direction="row"
           spacing={2}
@@ -208,7 +206,6 @@ export default function SearchedResourceFormFields({
           />
         </Stack>
 
-        {/* Language */}
         <Stack
           direction="row"
           spacing={2}

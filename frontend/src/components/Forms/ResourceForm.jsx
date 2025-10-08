@@ -24,6 +24,23 @@ import ResourceFormSearch from "./ResourceFormSearch.jsx";
 import WizardForm from "./ResourceWizard.jsx";
 import AlertMessage from "../Helpers/AlertMessage.jsx";
 
+const resourceTypesList = [
+  { match: ["dataset"], value: "dataset", label: "Dataset" },
+  { match: ["tool"], value: "tool", label: "Tool" },
+  { match: ["software"], value: "tool", label: "Tool" },
+  {
+    match: ["document"],
+    value: "document",
+    label: "Templates & Guidelines",
+  },
+  {
+    match: ["publication"],
+    value: "document",
+    label: "Templates & Guidelines",
+  },
+  { match: ["service"], value: "service", label: "Service" },
+];
+
 export default function ResourceForm() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -34,12 +51,6 @@ export default function ResourceForm() {
   const [canCreate, setCanCreate] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
   const [delayActive, setDelayActive] = useState(false);
-  const [resourceTypesList, setResourceTypesList] = useState([
-    { value: "dataset", label: "Dataset" },
-    { value: "tool", label: "Tool" },
-    { value: "document", label: "Templates & Guidelines" },
-    { value: "service", label: "Service" },
-  ]);
 
   const form = useForm({
     mode: "onChange",
@@ -133,16 +144,6 @@ export default function ResourceForm() {
   const onZenodoSearch = () => {
     const sourceValue = watch("source");
 
-    setResourceType("dataset");
-    setResourceTypesList([
-      { match: ["dataset"], value: "dataset", label: "Dataset" },
-      { match: ["tool", "software"], value: "tool", label: "Tool" },
-      {
-        match: ["document"],
-        value: "document",
-        label: "Templates & Guidelines",
-      },
-    ]);
     if (!sourceValue) {
       setError("source", { message: "Source cannot be empty" });
       return;
@@ -246,7 +247,6 @@ export default function ResourceForm() {
   const onOpenaireSearch = () => {
     const sourceValue = watch("source");
     setResourceType("service");
-    setResourceTypesList([{ value: "service", label: "Service" }]);
     if (!sourceValue) {
       setError("source", { message: "Source cannot be empty" });
       return;
