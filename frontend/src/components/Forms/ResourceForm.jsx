@@ -55,7 +55,7 @@ export default function ResourceForm() {
   const form = useForm({
     mode: "onChange",
     defaultValues: {
-      trl: null,
+      trl: "",
       evidence_types: [],
       covered_research_products: [],
       covered_fields: [],

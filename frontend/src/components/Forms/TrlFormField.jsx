@@ -6,38 +6,55 @@ import {
   Select,
 } from "@mui/material";
 import { useTrls } from "@queries/trl";
-import { useEffect } from "react";
+import { Controller } from "react-hook-form";
+import AlertHelperText from "@helpers/AlertHelperText";
+
 export default function TrlFormField({
   form,
-  name,
+  name = "trl",
   label,
   required = false,
   resource = null,
   searchedResource = null,
 }) {
   const { data: trls, isLoading, isSuccess } = useTrls();
-  const selectedTrl = resource?.trl || searchedResource?.metadata?.trl || null;
+  const hasError = !!form?.formState?.errors?.[name];
   return (
     <>
       {isLoading && <CircularProgress size={24} />}
       {isSuccess && (
         <FormControl variant="outlined" sx={{ flex: 1 }}>
-          <InputLabel id="sort-filter-label">{label}</InputLabel>
-          <Select
-            {...form?.register("trl", { value: selectedTrl?.id || null })}
-            defaultValue={selectedTrl?.id || null}
-            label={label}
-            error={!!form?.formState?.errors["trl"]}
-            helperText={form?.formState?.errors["trl"]?.message}
-            fullWidth
-            disabled={!!searchedResource?.metadata?.trl}
-          >
-            {trls?.data?.map((trl) => (
-              <MenuItem key={trl?._id} value={trl?._id}>
-                {trl?.trl_id + " - " + trl?.european_description}
-              </MenuItem>
-            ))}
-          </Select>
+          <InputLabel id={`${name}-label`}>{label}</InputLabel>
+          <Controller
+            name={name}
+            control={form.control}
+            rules={required && {
+              required: "TRL is required",
+            }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                labelId={`${name}-label`}
+                label={label}
+                error={hasError}
+                fullWidth
+                disabled={!!searchedResource?.metadata?.trl}
+              >
+                {trls?.data?.map((trl) => (
+                  <MenuItem key={trl._id} value={trl._id}>
+                    {trl.trl_id + " - " + trl.european_description}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+          />
+          {hasError && required && (
+            <AlertHelperText
+              error={
+                form?.formState?.errors?.trl || "TRL is required"
+              }
+            />
+          )}
         </FormControl>
       )}
     </>
