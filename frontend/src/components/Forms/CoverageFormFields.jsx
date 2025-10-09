@@ -341,13 +341,13 @@ function AssessmentFunctionalities({
       resource_types: ["all"],
     },
     {
-      value: "open_science_monitoring_data",
-      label: "Open Science monitoring: Data",
+      value: "data",
+      label: "Data",
       resource_types: ["service"],
     },
     {
-      value: "open_science_monitoring_other",
-      label: "Open Science monitoring: Other",
+      value: "other",
+      label: "Other",
       resource_types: ["all"],
     },
   ];

@@ -53,12 +53,12 @@ const assessmentFunctionalityMenuItems = [
     label: "Open Science monitoring: General",
   },
   {
-    value: "open_science_monitoring_data",
-    label: "Open Science monitoring: Data",
+    value: "data",
+    label: "Data",
   },
   {
-    value: "open_science_monitoring_other",
-    label: "Open Science monitoring: Other",
+    value: "other",
+    label: "Other",
   },
 ];
 
