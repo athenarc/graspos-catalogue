@@ -217,13 +217,7 @@ export default function ResourceItemContent({ resource }) {
   const [value, setValue] = useState(0);
 
   const allTabsMapping = {
-    assessment_functionalities: {
-      title: "Assessment Functionalities",
-      icon: <AssessmentIcon fontSize="small" color="action" />,
-      items: resource?.metadata?.assessment_functionalities || [],
-      labelMap: functionalityLabelMap,
-      displayTab: resource?.resource_type === "service",
-    },
+
     evidence_types: {
       title: "Evidence Types",
       icon: <AssessmentIcon fontSize="small" color="action" />,
@@ -232,6 +226,13 @@ export default function ResourceItemContent({ resource }) {
         evidenceTypesMenuItems.map((i) => [i.value, i.label])
       ),
       displayTab: true,
+    },
+    assessment_functionalities: {
+      title: "Assessment Functionalities",
+      icon: <AssessmentIcon fontSize="small" color="action" />,
+      items: resource?.metadata?.assessment_functionalities || [],
+      labelMap: functionalityLabelMap,
+      displayTab: resource?.resource_type.toLowerCase() === "service" || resource?.resource_type.toLowerCase() === "tool",
     },
     assessment_values: {
       title: "Assessment Values",
@@ -256,6 +257,9 @@ export default function ResourceItemContent({ resource }) {
     },
   };
 
+  const visibleTabs = Object.entries(allTabsMapping).filter(
+    ([, { displayTab }]) => displayTab
+  );
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -294,7 +298,7 @@ export default function ResourceItemContent({ resource }) {
             minWidth: 220,
           }}
         >
-          {tabsEntries.map(([key, { title, icon, displayTab }], index) => (
+          {visibleTabs.map(([key, { title, icon, displayTab }], index) => (
             displayTab && (
               <Tab
                 key={key}
@@ -312,9 +316,11 @@ export default function ResourceItemContent({ resource }) {
         </Tabs>
 
         {/* Tab Panels */}
-        {tabsEntries.map(([key, { title, items, labelMap, displayTab }], index) => (
+        {visibleTabs.map(([key, { title, items, labelMap, displayTab }], index) => (
+
           displayTab && (
             <TabPanel key={key} value={value} index={index}>
+
               <ResourceItemChipsSection
                 title={title}
                 items={resource?.[key] || []}

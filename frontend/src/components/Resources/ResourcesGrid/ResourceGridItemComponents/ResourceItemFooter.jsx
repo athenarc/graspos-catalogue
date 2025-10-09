@@ -115,7 +115,6 @@ export default function ResourceItemFooter({ resource, type }) {
     resource?.zenodo?.metadata?.license?.id ||
     resource?.openaire?.metadata?.license ||
     "N/A";
-  console.log(type)
   return (
     <Stack direction="row" justifyContent="space-between" alignItems="center">
       <Stack direction="row" spacing={2} alignItems="center">

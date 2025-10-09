@@ -123,6 +123,9 @@ export default function ResourceForm() {
 
   const onSubmit = (data) => {
     const mutation = getMutation();
+    if (data?.trl === "") {
+      data.trl = null;
+    }
     mutation.mutate(
       { data },
       {

@@ -285,7 +285,7 @@ function CoveredFields({ form, resource = null }) {
   );
 }
 
-function CoveredResearchProducts({ form }) {
+function CoveredResearchProducts({ form, resource = null }) {
   return (
     <AccordionField
       form={form}
@@ -294,6 +294,7 @@ function CoveredResearchProducts({ form }) {
       placeholder="Enter covered research products for the resource"
       fieldTitle="Covered Research Products *"
       required
+      defaultValue={resource?.covered_fields || []}
     />
   );
 }
