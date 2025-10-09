@@ -41,10 +41,10 @@ export default function DynamicFieldGroup({
   const subfieldKeys = fieldSchema
     ? Object.keys(fieldSchema)
     : existingData.length > 0
-    ? isPrimitiveArray
-      ? ["value"]
-      : Object.keys(existingData[0])
-    : ["value"];
+      ? isPrimitiveArray
+        ? ["value"]
+        : Object.keys(existingData[0])
+      : ["value"];
 
   useEffect(() => {
     const currentValues = form.getValues(`metadata.${fieldName}`) || [];
@@ -55,7 +55,6 @@ export default function DynamicFieldGroup({
       append(dataToAppend);
     }
   }, []);
-
   const errors = formState?.errors;
   const hasMultiple = fields.length > 1;
 
@@ -139,16 +138,16 @@ function renderDynamicRow({
       direction="row"
       spacing={2}
       alignItems="center"
-      sx={{ mt: 2 }}
+      sx={{ mt: 0 }}
     >
       {subfieldKeys.map((key) => (
-        <>
+        <Stack key={key} spacing={1} sx={{ flexGrow: 1 }}>
           <TextField
-            key={key}
+            key={key === "value" ? `${fieldName.slice(0, -1)}-${index + 1}` : `${key}-${index + 1}`}
             disabled={disabled}
             {...register(`metadata.${fieldName}.${index}.${key}`)}
             label={
-              key === "value" ? `${fieldName.slice(0, -1)} ${index + 1}` : key
+              key === "value" ? fieldName.slice(0, -1) : key
             }
             fullWidth
             error={!!errors?.metadata?.[fieldName]?.[index]?.[key]}
@@ -156,13 +155,14 @@ function renderDynamicRow({
           />
           {errors?.metadata?.[fieldName]?.[index]?.[key] && (
             <AlertHelperText
+              key={`error-${fieldName}-${index}-${key}`}
               error={errors?.metadata?.[fieldName]?.[index]?.[key]}
             />
           )}
-        </>
+        </Stack>
       ))}
       {!disabled && subfieldKeys.length > 0 && (
-        <IconButton color="error" onClick={() => remove(index)}>
+        <IconButton key={`remove-${fieldName}-${index}`} color="error" onClick={() => remove(index)}>
           <DeleteIcon />
         </IconButton>
       )}

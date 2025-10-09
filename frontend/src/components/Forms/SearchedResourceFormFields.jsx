@@ -136,11 +136,9 @@ export default function SearchedResourceFormFields({
   ];
   const fieldSchemas = {
     creators: { name: "", affiliation: "", orcid: "" },
-    keywords: {},
     references: {},
     contributors: { name: "", affiliation: "", orcid: "" },
     grants: { code: "", internal_id: "", acronym: "", program: "", url: "" },
-    tags: {},
   };
   const allTabs = resourceType === "service" ? openAireTabs : zenodoTabs;
 
@@ -270,6 +268,7 @@ export default function SearchedResourceFormFields({
                 sx={{ display: tabIndex === index ? "block" : "none" }}
               >
                 <DynamicFieldGroup
+                  key={tabName}
                   form={form}
                   searchedResource={searchedResource}
                   fieldName={tabName.toLowerCase()}

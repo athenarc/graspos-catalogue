@@ -64,7 +64,7 @@ function CheckboxArrayField({
   return (
     <Grid container spacing={1}>
       {items?.map((item) => (
-        <Grid item xs={12} sm={6} key={item._id}>
+        <Grid size={{ xs: 12, sm: 6 }} key={item._id}>
           <Tooltip title={item.description || ""}>
             <FormControlLabel
               control={
@@ -229,9 +229,9 @@ function GeographicScope({ form, resource = null }) {
                 ))
               }
               renderOption={(props, option) => {
-                const { key, ...rest } = props;
+                // const { key, ...rest } = props;
                 return (
-                  <li key={key} {...rest}>
+                  <li key={option} {...props}>
                     <img
                       loading="lazy"
                       width="20"
