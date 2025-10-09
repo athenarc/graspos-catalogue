@@ -220,18 +220,22 @@ function GeographicScope({ form, resource = null }) {
                 field.onChange(value);
               }}
               renderTags={(value, getTagProps) =>
-                value.map((option, index) => (
-                  <Chip
-                    key={option?.code}
-                    label={`${option?.label} (${option?.code})`}
-                    {...getTagProps({ index })}
-                  />
-                ))
+                value.map((option, index) => {
+                  const tagProps = getTagProps({ index });
+                  const { key, ...rest } = tagProps; // Remove key from the spread, jsx warning
+                  return (
+                    <Chip
+                      key={option?._id}
+                      label={`${option?.label} (${option?.code})`}
+                      {...rest}
+                    />
+                  );
+                })
               }
               renderOption={(props, option) => {
-                // const { key, ...rest } = props;
+                const { key, ...rest } = props; // Remove key from the spread, jsx warning
                 return (
-                  <li key={option} {...props}>
+                  <li key={option?._id} {...rest}>
                     <img
                       loading="lazy"
                       width="20"
