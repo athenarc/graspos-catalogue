@@ -14,6 +14,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { enGB } from "date-fns/locale";
 import DynamicFieldGroup from "@helpers/DynamicFieldGroup";
 import AlertHelperText from "@helpers/AlertHelperText";
+import TrlFormField from "./TrlFormField";
 
 export function DescriptionTextArea({
   searchedResource,
@@ -44,9 +45,9 @@ export function PublicationDatePickerField({
 }) {
   const publicationDate = searchedResource?.metadata?.publication_date
     ? new Date(
-        searchedResource.metadata.publication_date.$date ||
-          searchedResource.metadata.publication_date
-      )
+      searchedResource.metadata.publication_date.$date ||
+      searchedResource.metadata.publication_date
+    )
     : null;
 
   return (
@@ -214,6 +215,14 @@ export default function SearchedResourceFormFields({
             value={searchedResource?.metadata?.language}
             form={form}
           />
+          {resourceType === "service" && (
+            <TrlFormField
+              form={form}
+              name="trl"
+              label="TRL"
+              searchedResource={searchedResource}
+            />
+          )}
         </Stack>
 
         <Stack

@@ -2,6 +2,8 @@ import {
   Stack,
   Typography,
   Tooltip,
+  Tabs,
+  Tab,
   Chip,
   Divider,
   Box,
@@ -193,11 +195,72 @@ export function ResourceItemKeywords({ resource }) {
 }
 
 // --- Main Content ---
+function TabPanel({ children, value, index }) {
+  return (
+    <Box
+      role="tabpanel"
+      hidden={value !== index}
+      sx={{ flex: 1, p: 2 }}
+    >
+      {value === index && children}
+    </Box>
+  );
+}
+
+// --- Main Content ---
 export default function ResourceItemContent({ resource }) {
   const description =
     resource?.zenodo?.metadata?.description ||
     resource?.openaire?.metadata?.description ||
     "No description available";
+
+  const [value, setValue] = useState(0);
+
+  const allTabsMapping = {
+    assessment_functionalities: {
+      title: "Assessment Functionalities",
+      icon: <AssessmentIcon fontSize="small" color="action" />,
+      items: resource?.metadata?.assessment_functionalities || [],
+      labelMap: functionalityLabelMap,
+      displayTab: resource?.resource_type === "service",
+    },
+    evidence_types: {
+      title: "Evidence Types",
+      icon: <AssessmentIcon fontSize="small" color="action" />,
+      items: resource?.metadata?.evidence_types || [],
+      labelMap: Object.fromEntries(
+        evidenceTypesMenuItems.map((i) => [i.value, i.label])
+      ),
+      displayTab: true,
+    },
+    assessment_values: {
+      title: "Assessment Values",
+      icon: <AssessmentIcon fontSize="small" color="action" />,
+      items: resource?.metadata?.assessment_values || [],
+      labelMap: null,
+      displayTab: true,
+    },
+    covered_fields: {
+      title: "Covered Fields",
+      icon: <AssessmentIcon fontSize="small" color="action" />,
+      items: resource?.metadata?.covered_fields || [],
+      labelMap: null,
+      displayTab: true,
+    },
+    covered_research_products: {
+      title: "Covered Research Products",
+      icon: <AssessmentIcon fontSize="small" color="action" />,
+      items: resource?.metadata?.covered_research_products || [],
+      labelMap: null,
+      displayTab: true,
+    },
+  };
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const tabsEntries = Object.entries(allTabsMapping);
 
   return (
     <Stack spacing={2}>
@@ -218,53 +281,49 @@ export default function ResourceItemContent({ resource }) {
       {/* Keywords */}
       <ResourceItemKeywords resource={resource} />
 
-      <Divider flexItem sx={{ my: 0.5 }} />
+      {/* Tabs + Panels */}
+      <Box sx={{ display: "flex", border: 1, borderColor: "divider", borderRadius: 2 }}>
+        <Tabs
+          orientation="vertical"
+          variant="scrollable"
+          value={value}
+          onChange={handleChange}
+          sx={{
+            borderRight: 1,
+            borderColor: "divider",
+            minWidth: 220,
+          }}
+        >
+          {tabsEntries.map(([key, { title, icon, displayTab }], index) => (
+            displayTab && (
+              <Tab
+                key={key}
 
-      {/* Assessment Functionalities */}
-      <ResourceItemChipsSection
-        title="Assessment Functionalities"
-        items={resource?.assessment_functionalities}
-        labelMap={functionalityLabelMap}
-        limit={3}
-        icon={<AssessmentIcon fontSize="small" color="action" />}
-      />
+                label={
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    {icon}
+                    <span>{title}</span>
+                  </Box>
+                }
+                sx={{ alignItems: "flex-start", textAlign: "left" }}
+              />
+            )
+          ))}
+        </Tabs>
 
-      <Divider flexItem sx={{ my: 0.5 }} />
-
-      {/* Evidence Types */}
-      <ResourceItemChipsSection
-        title="Evidence Types"
-        items={resource?.evidence_types}
-        labelMap={Object.fromEntries(
-          evidenceTypesMenuItems.map((i) => [i.value, i.label])
-        )}
-      />
-
-      <Divider flexItem sx={{ my: 0.5 }} />
-
-      {/* Assessment Values */}
-      <ResourceItemChipsSection
-        title="Assessment Values"
-        items={resource?.assessment_values}
-      />
-
-      <Divider flexItem sx={{ my: 0.5 }} />
-
-      {/* Covered Fields */}
-      <ResourceItemChipsSection
-        title="Covered Fields"
-        items={resource?.covered_fields}
-      />
-
-      <Divider flexItem sx={{ my: 0.5 }} />
-
-      {/* Covered Research Products */}
-      <ResourceItemChipsSection
-        title="Covered Research Products"
-        items={resource?.covered_research_products}
-      />
-
-      <Divider flexItem sx={{ my: 0.5 }} />
+        {/* Tab Panels */}
+        {tabsEntries.map(([key, { title, items, labelMap, displayTab }], index) => (
+          displayTab && (
+            <TabPanel key={key} value={value} index={index}>
+              <ResourceItemChipsSection
+                title={title}
+                items={resource?.[key] || []}
+                labelMap={labelMap}
+              />
+            </TabPanel>
+          )
+        ))}
+      </Box>
     </Stack>
   );
 }
