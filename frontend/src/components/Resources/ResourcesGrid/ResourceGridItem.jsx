@@ -65,7 +65,7 @@ export default function ResourceGridItem({ resource, type, user }) {
               mt: "auto",
             }}
           >
-            <ResourceItemFooter resource={resource} type={type} />
+            <ResourceItemFooter resource={resource} type={type?.toLowerCase()} />
           </CardContent>
         </Box>
       </Card>
