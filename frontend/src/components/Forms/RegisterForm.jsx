@@ -15,8 +15,9 @@ import Notification from "@helpers/Notification";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { useRegister } from "@queries/data";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import AlertHelperText from "../Helpers/AlertHelperText";
 
 const SITE_KEY = process.env.REACT_APP_CAPTCHA_SITE_KEY;
 
@@ -27,14 +28,33 @@ export default function RegisterForm() {
     handleSubmit,
     setError,
     setValue,
+    clearErrors,
     control,
+    watch,
     formState: { errors },
   } = useForm({ mode: "onBlur" });
 
   const navigate = useNavigate();
 
   const registerUser = useRegister();
+  //  on change captcha reset errors
+  useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name === "captcha_token" && value.captcha_token) {
+        clearErrors("captcha_token"); // <-- Διορθώνει το error
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, clearErrors]);
+
   const onSubmit = (data) => {
+    if (!data.captcha_token) {
+      setError("captcha_token", {
+        type: "manual",
+        message: "Please verify that you are not a robot.",
+      });
+      return;
+    }
     registerUser.mutate(
       { data },
       {
@@ -46,18 +66,27 @@ export default function RegisterForm() {
         },
         onError: (e) => {
           const error = e?.response?.data?.detail;
-          if (error.email) {
-            setMessage(error.email);
-            setError("email", {
+          setValue("captcha_token", "");
+          if (error.captcha_token) {
+            setMessage(error.captcha_token);
+            setError("captcha_token", {
               type: "server",
-              message: error.email,
+              message: error?.captcha_token,
             });
           }
-          if (error.username) {
-            setMessage(error.username);
+
+          if (error.email) {
+            setMessage(error?.email);
+            setError("email", {
+              type: "server",
+              message: error?.email,
+            });
+          }
+          if (error?.username) {
+            setMessage(error?.username);
             setError("username", {
               type: "server",
-              message: error.username,
+              message: error?.username,
             });
           }
         },
@@ -110,9 +139,10 @@ export default function RegisterForm() {
               })}
               label="Username"
               error={!!errors?.username}
-              helperText={errors?.username?.message}
               fullWidth
             />
+            {!!errors?.username && <AlertHelperText error={errors?.username} />}
+
             <TextField
               required
               {...register("password", {
@@ -121,9 +151,11 @@ export default function RegisterForm() {
               label="Password"
               type="password"
               error={!!errors?.password}
-              helperText={errors?.password?.message}
+              // helperText={errors?.password?.message}
               fullWidth
             />
+            {!!errors?.password && <AlertHelperText error={errors?.password} />}
+
             <TextField
               required
               {...register("email", {
@@ -136,9 +168,10 @@ export default function RegisterForm() {
               })}
               label="Email"
               error={!!errors?.email}
-              helperText={errors?.email?.message}
               fullWidth
             />
+            {!!errors?.email && <AlertHelperText error={errors?.email} />}
+
             <TextField
               {...register("first_name")}
               label="First name"
@@ -181,10 +214,15 @@ export default function RegisterForm() {
                 render={({ field }) => (
                   <ReCAPTCHA
                     sitekey={SITE_KEY}
-                    onChange={(token) => setValue("captcha_token", token)}
+                    onChange={(token) =>
+                      setValue("captcha_token", token, { shouldValidate: true })
+                    }
                   />
                 )}
               />
+              {errors.captcha_token && (
+                <AlertHelperText error={errors?.captcha_token} />
+              )}
             </Stack>
           </Stack>
         </DialogContent>
