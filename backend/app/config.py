@@ -42,6 +42,12 @@ class Settings(BaseModel):
                            "Please set it in your .env file or environment.")
 
     try:
+        captcha_secret_key: str = config("BACKEND_CAPTCHA_SECRET_KEY")
+    except UndefinedValueError:
+        raise RuntimeError("Missing environment variable: BACKEND_CAPTCHA_SECRET_KEY. "
+                           "Please set it in your .env file or environment.")
+    
+    try:
         salt: bytes = config("SALT").encode()
     except UndefinedValueError:
         raise RuntimeError("Missing environment variable: SALT. "

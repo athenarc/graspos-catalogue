@@ -9,6 +9,7 @@ from util.mail import send_password_reset_email
 from util.password import hash_password
 from datetime import datetime
 from util.current_user import current_user
+from util.verify_captcha import verify_recaptcha
 
 router = APIRouter(prefix="/api/v1/register", tags=["Register"])
 
@@ -18,6 +19,7 @@ embed = Body(..., embed=True)
 @router.post("", response_model=UserOut)
 async def user_registration(user_auth: UserAuthRegister):
     """Create a new user."""
+    await verify_recaptcha(user_auth.captcha_token)
     user = await User.by_email(user_auth.email)
     if user is not None:
         raise HTTPException(409,

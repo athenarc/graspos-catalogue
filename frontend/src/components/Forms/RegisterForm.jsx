@@ -13,9 +13,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import Notification from "@helpers/Notification";
 import { Link, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { useRegister } from "../../queries/data";
+import { useForm, Controller } from "react-hook-form";
+import { useRegister } from "@queries/data";
 import { useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
+
+const SITE_KEY = process.env.REACT_APP_CAPTCHA_SITE_KEY;
 
 export default function RegisterForm() {
   const [message, setMessage] = useState("");
@@ -23,6 +26,8 @@ export default function RegisterForm() {
     register,
     handleSubmit,
     setError,
+    setValue,
+    control,
     formState: { errors },
   } = useForm({ mode: "onBlur" });
 
@@ -169,6 +174,18 @@ export default function RegisterForm() {
             >
               Login <Link to={"/login"}>here</Link>!
             </Typography>
+            <Stack alignItems="center" sx={{ mt: 2 }}>
+              <Controller
+                name="captcha_token"
+                control={control}
+                render={({ field }) => (
+                  <ReCAPTCHA
+                    sitekey={SITE_KEY}
+                    onChange={(token) => setValue("captcha_token", token)}
+                  />
+                )}
+              />
+            </Stack>
           </Stack>
         </DialogContent>
 

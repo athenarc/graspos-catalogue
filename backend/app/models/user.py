@@ -20,6 +20,7 @@ class UserAuthRegister(BaseModel):
     username: str
     email: EmailStr
     password: str
+    captcha_token: str
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     organization: Optional[str] = None
