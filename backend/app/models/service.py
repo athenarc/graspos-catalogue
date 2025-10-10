@@ -1,59 +1,30 @@
 """Service models."""
 
 from beanie import Document
-from datetime import datetime
 from pydantic import BaseModel
-from beanie import PydanticObjectId, Link
-from datetime import datetime
+from beanie import Link
 from models.openaire import OpenAIRE
-from models.zenodo import Zenodo
-from models.scope import Scope
-from typing import List, Optional
-from models.shared import GeographicalCoverage
-from models.assessment import Assessment
 from models.trl import TRLEntry
+from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseResourceView
 
 
-class Service(BaseModel):
+class ServiceBasicFields(BaseModel):
     doi: str | None = None
-    source: str | None = None
-    service_type: str | None = None
-    trl: Link[TRLEntry] | None = None
-    openaire: Link[OpenAIRE] | None = None
-    zenodo: Link[Zenodo] | None = None
-    scopes: List[Link[Scope]] | None = None
-    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
-    assessments: List[Link[Assessment]] | None = None
-    created_at: datetime | None = datetime.now()
-    modified_at: datetime | None = datetime.now()
-    approved: bool | None = None
-    owner: PydanticObjectId | None = None
-
-
-class ServicePatch(BaseModel):
-    approved: bool | None = None
-    service_type: str | None = None
-    trl: Link[TRLEntry] | None = None
-    owner: PydanticObjectId | None = None
-    scopes: List[Link[Scope]] | None = None
-    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
-    assessments: List[Link[Assessment]] | None = None
-
-
-class ServiceView(BaseModel):
-    doi: str | None = None
-    source: str | None = None
+    resource_type: str | None = None
     service_type: str | None = None
     openaire: Link[OpenAIRE] | None = None
-    trl: Link[TRLEntry] | None = None
-    zenodo: Link[Zenodo] | None = None
-    scopes: List[Link[Scope]] | None = None
-    geographical_coverage: Optional[List[Link[GeographicalCoverage]]] = None
-    assessments: List[Link[Assessment]] | None = None
-    created_at: datetime | None = datetime.now()
-    modified_at: datetime | None = datetime.now()
-    approved: bool | None = None
-    owner: PydanticObjectId | None = None
+
+
+class Service(ServiceBasicFields, BaseResourceModel):
+    pass
+
+
+class ServicePatch(ServiceBasicFields, BaseResourcePatch):
+    pass
+
+
+class ServiceView(ServiceBasicFields, BaseResourceView):
+    pass
 
 
 class Service(Document, ServiceView):

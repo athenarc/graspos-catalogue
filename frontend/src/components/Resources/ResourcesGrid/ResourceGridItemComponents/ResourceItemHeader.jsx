@@ -260,6 +260,8 @@ export function ResourceActionsMenu({ resource, type, user }) {
       />
 
       <EditResourceDialog
+        // resourceType={type.toLowerCase()}
+        resource={resource}
         open={editResourceOpen}
         onClose={handleCloseEditResource}
         scopesQuery={scopesQuery}

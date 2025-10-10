@@ -1,22 +1,59 @@
 from beanie import Document, PydanticObjectId
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 import pymongo
 from pymongo import IndexModel
 
 
 class ZenodoMetadata(BaseModel):
-    title: str | None = None
-    doi: str | None = None
-    publication_date: datetime | None = None
-    description: str | None = None
-    access_right: str | None = None
-    creators: list | None = None
+    title: str = Field(..., description="Title of the resource")
+    doi: str = Field(..., description="Digital Object Identifier")
+    publication_date: datetime = Field(..., description="Publication date")
+    description: str = Field(..., description="Description of the resource")
+    access_right: str = Field(..., description="Access rights of the resource")
+    creators: list = Field(..., description="List of creators")
     keywords: list | None = None
-    version: str | None = None
+    version: str = Field(..., description="Version of the resource")
     references: list | None = None
-    resource_type: object | None = None
-    license: object | None = None
+    resource_type: object = Field(
+        description="Type of the resource, e.g., Tool, Service, Dataset.")
+
+    @field_validator("resource_type")
+    def validate_resource_type(cls, v):
+        mapping = {
+            "software": "Tool",
+            "tool": "Tool",
+            "dataset": "Dataset",
+            "publication": "Document",
+            "document": "Document",
+            "service": "Service",
+        }
+
+        if v is None:
+            return None
+
+        if isinstance(v, str):
+            normalized = v.strip().lower()
+            mapped = mapping.get(normalized, None)
+            if not mapped:
+                raise ValueError(f"Resource type '{v}' not recognized")
+            return {"type": mapped}
+
+        if isinstance(v, dict):
+            type_value = v.get("type", "").lower()
+            mapped = mapping.get(type_value, None)
+            if not mapped:
+                valid_keys = ", ".join(
+                    [k.capitalize() for k in mapping.keys()])
+                raise ValueError(
+                    f"Resource type must be one of {valid_keys} and not '{type_value}'"
+                )
+            return {"type": mapped}
+
+        raise ValueError(
+            "Resource type must be a string or object with type field")
+
+    license: object = Field(..., description="License information")
     grants: list | None = None
     communities: list | None = None
     relations: object | None = None

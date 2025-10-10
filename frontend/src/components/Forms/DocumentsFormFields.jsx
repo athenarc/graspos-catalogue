@@ -1,36 +1,9 @@
-import {
-  Stack,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormControl,
-} from "@mui/material";
+import { Stack } from "@mui/material";
 
-export default function DocumentFormFields({
-  register,
-  errors,
-  zenodoData,
-  setZenodoData,
-  setMessage,
-}) {
+export default function DocumentFormFields({ form }) {
   return (
     <Stack direction="column" sx={{ mt: 2 }}>
-      <Stack direction="row" useFlexGap spacing={2} sx={{ mt: 2 }}>
-        <FormControl fullWidth>
-          <InputLabel>Format</InputLabel>
-          <Select
-            {...register("format")}
-            label="Format"
-            fullWidth
-            defaultValue="csv"
-          >
-            <MenuItem value={"csv"}>CSV</MenuItem>
-            <MenuItem value={"pdf"}>PDF</MenuItem>
-            <MenuItem value={"xls"}>XLS</MenuItem>
-            <MenuItem value={"json"}>JSON</MenuItem>
-          </Select>
-        </FormControl>
-      </Stack>
+      <Stack direction="row" useFlexGap spacing={2} sx={{ mt: 2 }}></Stack>
     </Stack>
   );
 }
