@@ -11,8 +11,9 @@ mail_conf = ConnectionConfig(
     MAIL_PORT=CONFIG.mail_port,
     MAIL_SERVER=CONFIG.mail_server,
     MAIL_STARTTLS=True,
-    MAIL_SSL_TLS=True,
-    USE_CREDENTIALS=True,
+    MAIL_SSL_TLS=False,
+    USE_CREDENTIALS=False,
+    VALIDATE_CERTS=False,
 )
 
 mail = FastMail(mail_conf)
@@ -22,7 +23,7 @@ async def send_verification_email(email: str, token: str) -> None:
     """Send user verification email."""
     # Change this later to public endpoint
     url = CONFIG.root_url + "/mail/verify/" + token
-    if CONFIG.mail_console:
+    if not CONFIG.mail_console:
         print("POST to " + url)
     else:
         message = MessageSchema(

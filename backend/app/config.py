@@ -64,6 +64,4 @@ class Settings(BaseModel):
     mail_password: str = config("MAIL_PASSWORD", default="")
     mail_sender: str = config("MAIL_SENDER", default="noreply@myserver.io")
 
-
-# Δημιουργία του global CONFIG instance
 CONFIG = Settings()
