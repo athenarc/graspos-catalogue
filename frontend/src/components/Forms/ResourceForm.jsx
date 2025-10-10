@@ -24,6 +24,23 @@ import ResourceFormSearch from "./ResourceFormSearch.jsx";
 import WizardForm from "./ResourceWizard.jsx";
 import AlertMessage from "../Helpers/AlertMessage.jsx";
 
+const resourceTypesList = [
+  { match: ["dataset"], value: "dataset", label: "Dataset" },
+  { match: ["tool"], value: "tool", label: "Tool" },
+  { match: ["software"], value: "tool", label: "Tool" },
+  {
+    match: ["document"],
+    value: "document",
+    label: "Templates & Guidelines",
+  },
+  {
+    match: ["publication"],
+    value: "document",
+    label: "Templates & Guidelines",
+  },
+  { match: ["service"], value: "service", label: "Service" },
+];
+
 export default function ResourceForm() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -34,12 +51,6 @@ export default function ResourceForm() {
   const [canCreate, setCanCreate] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
   const [delayActive, setDelayActive] = useState(false);
-  const [resourceTypesList, setResourceTypesList] = useState([
-    { value: "dataset", label: "Dataset" },
-    { value: "tool", label: "Tool" },
-    { value: "document", label: "Templates & Guidelines" },
-    { value: "service", label: "Service" },
-  ]);
 
   const form = useForm({
     mode: "onChange",
@@ -112,6 +123,9 @@ export default function ResourceForm() {
 
   const onSubmit = (data) => {
     const mutation = getMutation();
+    if (data?.trl === "") {
+      data.trl = null;
+    }
     mutation.mutate(
       { data },
       {
@@ -132,12 +146,6 @@ export default function ResourceForm() {
   const onZenodoSearch = () => {
     const sourceValue = watch("source");
 
-    setResourceType("dataset");
-    setResourceTypesList([
-      { value: "dataset", label: "Dataset" },
-      { value: "tool", label: "Tool" },
-      { value: "document", label: "Templates & Guidelines" },
-    ]);
     if (!sourceValue) {
       setError("source", { message: "Source cannot be empty" });
       return;
@@ -148,21 +156,26 @@ export default function ResourceForm() {
       {
         onSuccess: (data) => {
           setError("source", null);
+
+          const recordType =
+            data?.data?.metadata?.resource_type?.type?.toLowerCase();
+
+          if (recordType) {
+            const matchedType = resourceTypesList?.find((item) =>
+              item?.match?.some((m) => recordType?.includes(m?.toLowerCase()))
+            );
+
+            if (matchedType) {
+              setResourceType(matchedType?.value);
+            }
+          }
           setMessage("Zenodo record found. Loading...");
           setStatus("success");
           setData(data?.data);
-          // Set resource type based on Zenodo data if the data.data.resource_type exists in available resourceTypesList
-          if (
-            data?.data?.resource_type &&
-            resourceTypesList.some(
-              (type) => type.value === data?.data?.resource_type
-            )
-          ) {
-            setResourceType(data?.data?.resource_type);
-          }
           setValue("source", data?.data?.source);
           setShowWizard(false);
           setDelayActive(true);
+
           setTimeout(() => {
             setShowWizard(true);
             setDelayActive(false);
@@ -173,27 +186,59 @@ export default function ResourceForm() {
         onError: (error) => {
           if (error?.response?.status === 422) {
             const errors = error?.response?.data?.detail;
-            let msg = "Required field/s: ";
-            if (Array.isArray(errors)) {
-              msg += errors.map((e) => e.loc?.slice(-1)[0]).join(", ");
+
+            if (Array.isArray(errors) && errors.length > 0) {
+              const items = errors.map((e, idx) => {
+                const field = e.loc?.slice(-1)[0] || "unknown";
+                let description = "";
+
+                switch (e.type) {
+                  case "missing":
+                    description = `Missing required field`;
+                    break;
+                  case "value_error":
+                    description = `Invalid value (${e.ctx?.error || e.msg})`;
+                    break;
+                  default:
+                    description = e.msg;
+                }
+
+                return (
+                  <li key={idx}>
+                    <strong>{field}</strong>: {description}
+                  </li>
+                );
+              });
+
+              setStatus("error");
+              setMessage(
+                <>
+                  <p>
+                    There were errors with the Zenodo record. Please update them
+                    in{" "}
+                    <a
+                      href={sourceValue}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Zenodo
+                    </a>
+                    :
+                  </p>
+                  <ul>{items}</ul>
+                </>
+              );
+            } else {
+              setStatus("error");
+              setMessage("Zenodo record validation failed.");
             }
-            msg += " are missing in the Zenodo record.";
-            setStatus("error");
-            setMessage(
-              <>
-                {msg} Please enter them in{" "}
-                <a href={sourceValue} target="_blank" rel="noopener noreferrer">
-                  Zenodo
-                </a>
-                .
-              </>
-            );
           } else {
             const detail =
               error?.response?.data?.detail || "Zenodo search failed";
-            setMessage(detail);
             setStatus("error");
+            setMessage(detail);
           }
+
           setData(null);
           setShowWizard(false);
         },
@@ -204,7 +249,6 @@ export default function ResourceForm() {
   const onOpenaireSearch = () => {
     const sourceValue = watch("source");
     setResourceType("service");
-    setResourceTypesList([{ value: "service", label: "Service" }]);
     if (!sourceValue) {
       setError("source", { message: "Source cannot be empty" });
       return;

@@ -33,9 +33,9 @@ async def update_all_zenodo_records(
 
 @router.post("/search", status_code=200)
 async def post_zenodo_records(
-    dataset: ZenodoView,
-    user: User = Depends(current_user_mandatory)) -> Zenodo:
-
+        dataset: ZenodoView,
+        user: User = Depends(current_user_mandatory),
+) -> Zenodo:
     zenodo = await Zenodo.find_one(Zenodo.source == dataset.source)
 
     if zenodo:
@@ -48,12 +48,20 @@ async def post_zenodo_records(
                                 detail=data["detail"])
 
         zenodo = Zenodo(**data["zenodo_object"])
+        return zenodo
+
     except ValidationError as error:
-        raise HTTPException(status_code=422, detail=error.errors())
+        cleaned_errors = []
+        for e in error.errors():
+            ctx = e.get("ctx")
+            if ctx and "error" in ctx:
+                ctx["error"] = str(ctx["error"])
+            cleaned_errors.append(e)
+
+        raise HTTPException(status_code=422, detail=cleaned_errors)
+
     except Exception as error:
         raise HTTPException(status_code=400, detail=str(error))
-
-    return zenodo
 
 
 @router.get("/licenses")

@@ -36,16 +36,15 @@ export default function DynamicFieldGroup({
 
   const [expanded, setExpanded] = useState(false);
 
-  // Καθορισμός subfields
   const isPrimitiveArray =
     existingData.length > 0 && typeof existingData[0] !== "object";
   const subfieldKeys = fieldSchema
     ? Object.keys(fieldSchema)
     : existingData.length > 0
-    ? isPrimitiveArray
-      ? ["value"]
-      : Object.keys(existingData[0])
-    : ["value"];
+      ? isPrimitiveArray
+        ? ["value"]
+        : Object.keys(existingData[0])
+      : ["value"];
 
   useEffect(() => {
     const currentValues = form.getValues(`metadata.${fieldName}`) || [];
@@ -56,13 +55,11 @@ export default function DynamicFieldGroup({
       append(dataToAppend);
     }
   }, []);
-
   const errors = formState?.errors;
   const hasMultiple = fields.length > 1;
 
   return (
     <Stack spacing={2} sx={{ mb: 3 }}>
-      {/* Header */}
       <Stack direction="row" alignItems="center" spacing={1}>
         <Typography variant="subtitle1" fontWeight="bold">
           {fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}
@@ -84,7 +81,6 @@ export default function DynamicFieldGroup({
         )}
       </Stack>
 
-      {/* Πρώτο πεδίο */}
       {fields.length > 0 &&
         renderDynamicRow({
           index: 0,
@@ -96,7 +92,6 @@ export default function DynamicFieldGroup({
           disabled,
         })}
 
-      {/* Τα υπόλοιπα πεδία σε collapse */}
       {hasMultiple && (
         <Collapse in={expanded} sx={{ marginTop: "0px !important;" }}>
           {fields.slice(1).map((_, index) =>
@@ -113,7 +108,6 @@ export default function DynamicFieldGroup({
         </Collapse>
       )}
 
-      {/* Κουμπί εμφάνισης/απόκρυψης */}
       {hasMultiple && (
         <Button
           size="small"
@@ -144,16 +138,16 @@ function renderDynamicRow({
       direction="row"
       spacing={2}
       alignItems="center"
-      sx={{ mt: 2 }}
+      sx={{ mt: 0 }}
     >
       {subfieldKeys.map((key) => (
-        <>
+        <Stack key={key} spacing={1} sx={{ flexGrow: 1 }}>
           <TextField
-            key={key}
+            key={key === "value" ? `${fieldName.slice(0, -1)}-${index + 1}` : `${key}-${index + 1}`}
             disabled={disabled}
             {...register(`metadata.${fieldName}.${index}.${key}`)}
             label={
-              key === "value" ? `${fieldName.slice(0, -1)} ${index + 1}` : key
+              key === "value" ? fieldName.slice(0, -1) : key
             }
             fullWidth
             error={!!errors?.metadata?.[fieldName]?.[index]?.[key]}
@@ -161,13 +155,14 @@ function renderDynamicRow({
           />
           {errors?.metadata?.[fieldName]?.[index]?.[key] && (
             <AlertHelperText
+              key={`error-${fieldName}-${index}-${key}`}
               error={errors?.metadata?.[fieldName]?.[index]?.[key]}
             />
           )}
-        </>
+        </Stack>
       ))}
       {!disabled && subfieldKeys.length > 0 && (
-        <IconButton color="error" onClick={() => remove(index)}>
+        <IconButton key={`remove-${fieldName}-${index}`} color="error" onClick={() => remove(index)}>
           <DeleteIcon />
         </IconButton>
       )}

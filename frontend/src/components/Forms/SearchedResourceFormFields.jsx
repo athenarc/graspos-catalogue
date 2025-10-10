@@ -11,9 +11,10 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { enGB, tr } from "date-fns/locale";
+import { enGB } from "date-fns/locale";
 import DynamicFieldGroup from "@helpers/DynamicFieldGroup";
-import AlertHelperText from "../Helpers/AlertHelperText";
+import AlertHelperText from "@helpers/AlertHelperText";
+import TrlFormField from "./TrlFormField";
 
 export function DescriptionTextArea({
   searchedResource,
@@ -44,9 +45,9 @@ export function PublicationDatePickerField({
 }) {
   const publicationDate = searchedResource?.metadata?.publication_date
     ? new Date(
-        searchedResource.metadata.publication_date.$date ||
-          searchedResource.metadata.publication_date
-      )
+      searchedResource.metadata.publication_date.$date ||
+      searchedResource.metadata.publication_date
+    )
     : null;
 
   return (
@@ -99,6 +100,7 @@ export function AccessRightsSelect({
   searchedResource,
   form,
   disabled = true,
+  fullWidth = true,
 }) {
   const accessRight = searchedResource?.metadata?.access_right || "";
   return (
@@ -107,6 +109,8 @@ export function AccessRightsSelect({
       label="Access Rights"
       disabled={disabled}
       value={accessRight}
+      fullWidth={fullWidth}
+      sx={{ flex: 1 }}
     >
       <MenuItem value="open">Open Access</MenuItem>
       <MenuItem value="embargoed">Embargoed Access</MenuItem>
@@ -124,11 +128,23 @@ export default function SearchedResourceFormFields({
 }) {
   const [tabIndex, setTabIndex] = useState(0);
   const openAireTabs = ["tags"];
-  const zenodoTabs = ["creators", "keywords", "references", "contributors"];
+  const zenodoTabs = [
+    "creators",
+    "keywords",
+    "references",
+    "contributors",
+    "grants",
+  ];
+  const fieldSchemas = {
+    creators: { name: "", affiliation: "", orcid: "" },
+    references: {},
+    contributors: { name: "", affiliation: "", orcid: "" },
+    grants: { code: "", internal_id: "", acronym: "", program: "", url: "" },
+  };
   const allTabs = resourceType === "service" ? openAireTabs : zenodoTabs;
 
   const visibleTabs = allTabs.filter((tabName) => {
-    const value = searchedResource?.metadata?.[tabName.toLowerCase()];
+    const value = searchedResource?.metadata?.[tabName.toLowerCase()] || {};
     return value && (Array.isArray(value) ? value.length > 0 : true);
   });
 
@@ -150,7 +166,6 @@ export default function SearchedResourceFormFields({
           Searched Resource Information
         </Typography>
 
-        {/* Πρώτη σειρά πεδίων */}
         <Stack direction="row" spacing={2}>
           <SearchedResourceTextField
             name={resourceType === "service" ? "name" : "title"}
@@ -178,7 +193,6 @@ export default function SearchedResourceFormFields({
           )}
         </Stack>
 
-        {/* Description */}
         <Stack
           direction="row"
           spacing={2}
@@ -191,7 +205,6 @@ export default function SearchedResourceFormFields({
           />
         </Stack>
 
-        {/* Language */}
         <Stack
           direction="row"
           spacing={2}
@@ -202,6 +215,14 @@ export default function SearchedResourceFormFields({
             value={searchedResource?.metadata?.language}
             form={form}
           />
+          {resourceType === "service" && (
+            <TrlFormField
+              form={form}
+              name="trl"
+              label="TRL"
+              searchedResource={searchedResource}
+            />
+          )}
         </Stack>
 
         <Stack
@@ -213,6 +234,7 @@ export default function SearchedResourceFormFields({
             searchedResource={searchedResource}
             form={form}
             disabled={disabled}
+            fullWidth={false}
           />
 
           <SearchedResourceTextField
@@ -239,7 +261,11 @@ export default function SearchedResourceFormFields({
             {allTabs.map((tabName, index) => (
               <Tab
                 key={tabName}
-                label={tabName.charAt(0).toUpperCase() + tabName.slice(1)}
+                label={
+                  tabName !== "grants"
+                    ? tabName.charAt(0).toUpperCase() + tabName.slice(1)
+                    : "Funding"
+                }
               />
             ))}
           </Tabs>
@@ -251,16 +277,11 @@ export default function SearchedResourceFormFields({
                 sx={{ display: tabIndex === index ? "block" : "none" }}
               >
                 <DynamicFieldGroup
+                  key={tabName}
                   form={form}
                   searchedResource={searchedResource}
                   fieldName={tabName.toLowerCase()}
-                  fieldSchema={
-                    tabName === "keywords" ||
-                    tabName === "tags" ||
-                    tabName === "references"
-                      ? undefined
-                      : { name: "", affiliation: "", orcid: "" }
-                  }
+                  fieldSchema={fieldSchemas[tabName.toLowerCase()] || undefined}
                   disabled={disabled}
                 />
               </Box>

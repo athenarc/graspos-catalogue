@@ -141,6 +141,15 @@ export default function ResourceItemFooter({ resource, type }) {
               <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
                 {license}
               </Typography>
+              {type === "tool" && (
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Tooltip title="TRL">
+                    <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
+                  </Tooltip>
+                  <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
+                    {resource?.trl?.trl_id ? resource?.trl?.trl_id + " - " + resource?.trl?.european_description : "N/A"}
+                  </Typography>
+                </Stack>)}
             </Stack>
           </>
         )}

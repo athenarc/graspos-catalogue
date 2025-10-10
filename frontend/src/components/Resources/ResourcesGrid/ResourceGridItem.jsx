@@ -54,18 +54,18 @@ export default function ResourceGridItem({ resource, type, user }) {
           </Box>
         )}
         <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
-          <CardContent sx={{ pb: 0 }}>
+          <CardContent sx={{ pb: 1, mb: 1 }}>
             <ResourceItemHeader resource={resource} type={type} user={user} />
             <ResourceItemContent resource={resource} />
           </CardContent>
           <CardContent
             sx={{
-              paddingBottom: "8px !important",
+              paddingBottom: "16px !important",
               paddingTop: "0 !important",
               mt: "auto",
             }}
           >
-            <ResourceItemFooter resource={resource} type={type} />
+            <ResourceItemFooter resource={resource} type={type?.toLowerCase()} />
           </CardContent>
         </Box>
       </Card>

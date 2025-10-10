@@ -28,6 +28,10 @@ class BaseResourceModel(BaseModel):
 
     @field_validator("resource_type")
     def resource_type_must_not_be_empty(cls, v):
+        resource_type_values = ["Tool", "Service", "Dataset", "Document"]
+        if v not in resource_type_values:
+            raise ValueError(
+                f"Resource type must be one of {resource_type_values}")
         if not v.strip():
             raise ValueError("Resource type cannot be empty")
         return v
@@ -43,7 +47,7 @@ class BaseResourceModel(BaseModel):
     source: str | None = None
     approved: bool | None = None
     owner: PydanticObjectId | None = None
-    trl: Link[TRLEntry] | None = None
+    trl: Optional[Link[TRLEntry]] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
 

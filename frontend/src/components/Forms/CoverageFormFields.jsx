@@ -64,7 +64,7 @@ function CheckboxArrayField({
   return (
     <Grid container spacing={1}>
       {items?.map((item) => (
-        <Grid item xs={12} sm={6} key={item._id}>
+        <Grid size={{ xs: 12, sm: 6 }} key={item._id}>
           <Tooltip title={item.description || ""}>
             <FormControlLabel
               control={
@@ -220,18 +220,22 @@ function GeographicScope({ form, resource = null }) {
                 field.onChange(value);
               }}
               renderTags={(value, getTagProps) =>
-                value.map((option, index) => (
-                  <Chip
-                    key={option?.code}
-                    label={`${option?.label} (${option?.code})`}
-                    {...getTagProps({ index })}
-                  />
-                ))
+                value.map((option, index) => {
+                  const tagProps = getTagProps({ index });
+                  const { key, ...rest } = tagProps; // Remove key from the spread, jsx warning
+                  return (
+                    <Chip
+                      key={option?._id}
+                      label={`${option?.label} (${option?.code})`}
+                      {...rest}
+                    />
+                  );
+                })
               }
               renderOption={(props, option) => {
-                const { key, ...rest } = props;
+                const { key, ...rest } = props; // Remove key from the spread, jsx warning
                 return (
-                  <li key={key} {...rest}>
+                  <li key={option?._id} {...rest}>
                     <img
                       loading="lazy"
                       width="20"
@@ -281,7 +285,7 @@ function CoveredFields({ form, resource = null }) {
   );
 }
 
-function CoveredResearchProducts({ form }) {
+function CoveredResearchProducts({ form, resource = null }) {
   return (
     <AccordionField
       form={form}
@@ -290,11 +294,63 @@ function CoveredResearchProducts({ form }) {
       placeholder="Enter covered research products for the resource"
       fieldTitle="Covered Research Products *"
       required
+      defaultValue={resource?.covered_fields || []}
     />
   );
 }
 
-function AssessmentFunctionalities({ form }) {
+function AssessmentFunctionalities({
+  form,
+  resource = null,
+  resource_type = null,
+}) {
+  const menuItems = [
+    {
+      value: "scholarly_data_enrichment_missing_attributes",
+      label: "Scholarly data enrichment: Missing attributes",
+      resource_types: ["all"],
+    },
+    {
+      value: "scholarly_data_enrichment_indicators",
+      label: "Scholarly data enrichment: Indicators",
+      resource_types: ["all"],
+    },
+    {
+      value: "scholarly_data_enrichment_semantics",
+      label: "Scholarly data enrichment: Missing links & semantics",
+      resource_types: ["all"],
+    },
+    {
+      value: "open_science_monitoring_researchers",
+      label: "Open Science monitoring: Researchers",
+      resource_types: ["all"],
+    },
+    {
+      value: "open_science_monitoring_institutions",
+      label: "Open Science monitoring: Institutions",
+      resource_types: ["all"],
+    },
+    {
+      value: "open_science_monitoring_countries",
+      label: "Open Science monitoring: Countries",
+      resource_types: ["all"],
+    },
+    {
+      value: "open_science_monitoring_general",
+      label: "Open Science monitoring: General",
+      resource_types: ["all"],
+    },
+    {
+      value: "data",
+      label: "Data",
+      resource_types: ["service"],
+    },
+    {
+      value: "other",
+      label: "Other",
+      resource_types: ["all"],
+    },
+  ];
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -303,15 +359,35 @@ function AssessmentFunctionalities({ form }) {
       <AccordionDetails>
         <FormControl fullWidth>
           <InputLabel>Assessment Functionalities</InputLabel>
-          <Select
-            {...form?.register("assessment_functionalities")}
-            defaultValue={[]}
+          <Controller
+            name="assessment_functionalities"
+            control={form?.control}
+            defaultValue={resource?.assessment_functionalities || []}
             label="Assessment Functionalities"
-          >
-            <MenuItem value={"enrichment"}>Enrichment</MenuItem>
-            <MenuItem value={"monitoring"}>Monitoring</MenuItem>
-            <MenuItem value={"data"}>Data</MenuItem>
-          </Select>
+            render={({ field }) => (
+              <Select
+                multiple
+                label="Assessment Functionalities"
+                value={field.value || []}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  field.onChange(Array.isArray(value) ? value : []);
+                }}
+              >
+                {menuItems
+                  .filter(
+                    (item) =>
+                      item.resource_types.includes("all") ||
+                      item.resource_types.includes(resource_type)
+                  )
+                  .map((item) => (
+                    <MenuItem key={item.value} value={item.value}>
+                      {item.label}
+                    </MenuItem>
+                  ))}
+              </Select>
+            )}
+          />
         </FormControl>
       </AccordionDetails>
     </Accordion>
@@ -330,14 +406,15 @@ function EvidenceTypes({ form, resource = null }) {
           <Controller
             name="evidence_types"
             control={form?.control}
-            defaultValue={resource?.evidence_types || []} // αρχικά τιμές
+            defaultValue={resource?.evidence_types || []}
             render={({ field }) => (
               <Select
                 multiple
-                value={field.value || []} // πάντα array
+                label="Evidence Types"
+                value={field.value || []}
                 onChange={(event) => {
                   const value = event.target.value;
-                  field.onChange(Array.isArray(value) ? value : []); // ποτέ string
+                  field.onChange(Array.isArray(value) ? value : []);
                 }}
               >
                 <MenuItem value="narratives">Narratives</MenuItem>
@@ -361,6 +438,8 @@ export default function CoverageFormFields({
   form,
   resource = null,
 }) {
+  const resource_type = resource?.resource_type || resourceType;
+
   return (
     <Stack direction="column" spacing={2}>
       <ScopeStages form={form} resource={resource} />
@@ -370,8 +449,12 @@ export default function CoverageFormFields({
       <CoveredResearchProducts form={form} resource={resource} />
       <EvidenceTypes form={form} resource={resource} />
       <AssessmentValues form={form} resource={resource} />
-      {(resourceType === "tool" || resourceType === "service") && (
-        <AssessmentFunctionalities form={form} resource={resource} />
+      {(resource_type === "tool" || resource_type === "service") && (
+        <AssessmentFunctionalities
+          form={form}
+          resource={resource}
+          resource_type={resource_type}
+        />
       )}
     </Stack>
   );
