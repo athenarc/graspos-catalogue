@@ -67,12 +67,12 @@ export default function EmailVerificationModal() {
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 1, paddingTop: "16px !important;" }}>
+      <DialogContent sx={{ p: 2, paddingTop: "16px !important;" }}>
         <Stack spacing={2} alignItems="center" sx={{ mt: 1 }}>
           {status === "pending" && <CircularProgress />}
 
           {message && (
-            <AlertMessage severity={status} sx={{ width: "100%" }}>
+            <AlertMessage severity={status}>
               {message}
             </AlertMessage>
           )}

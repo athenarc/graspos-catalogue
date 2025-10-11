@@ -40,10 +40,18 @@ export default function LoginForm() {
           handleClose();
         },
         onError: (error) => {
-          setError("password", {
-            type: "server",
-            message: error?.response?.data?.detail,
-          });
+          if (error?.response?.status === 401) {
+            setError("password", {
+              type: "manual",
+              message: "Incorrect username or password",
+            });
+          }
+          if (error?.response?.status === 400) {
+            setError("username", {
+              type: "manual",
+              message: "Email is not yet verified",
+            });
+          }
         },
       }
     );
@@ -122,6 +130,7 @@ export default function LoginForm() {
                 <Divider sx={{ mt: 1, mb: 1 }} />
               </>
             )}
+
 
             <Typography align="center" variant="subtitle2" sx={{ mt: 2 }}>
               New to GRASPOS Catalogue?

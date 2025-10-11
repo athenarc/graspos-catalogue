@@ -69,7 +69,6 @@ class User(Document, UserOut):
     username: str
     organization: str | None = None
     orcid: str | None = None
-    token: str | None = None  # For email verification and password resets
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
 
@@ -106,11 +105,6 @@ class User(Document, UserOut):
     async def by_username(cls, username: str) -> Optional["User"]:
         """Get a user by username."""
         return await cls.find_one(cls.username == username)
-
-    @classmethod
-    async def by_token(cls, token: str) -> Optional["User"]:
-        """Get a user by token."""
-        return await cls.find_one(cls.token == token)
 
     @classmethod
     async def by_id(cls, id: PydanticObjectId) -> Optional["User"]:
