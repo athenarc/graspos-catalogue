@@ -47,7 +47,7 @@ async def user_registration(user_auth: UserAuthRegister):
     except Exception as e:
         raise HTTPException(500, {"error": str(e)})
     token = create_register_token(user_auth)
-    print(token)
+
     try:
         await send_verification_email(user_auth.email, token)
     except Exception as e:
