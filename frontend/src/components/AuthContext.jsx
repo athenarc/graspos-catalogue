@@ -8,9 +8,9 @@ import React, {
 import { useUserInformation } from "../queries/data";
 import { useQueryClient } from "@tanstack/react-query";
 import { setLogoutCallback } from "../queries/interceptor";
+import { Box, CircularProgress, Typography } from "@mui/material";
 
 const AuthContext = createContext();
-
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
@@ -28,10 +28,10 @@ export const AuthProvider = ({ children }) => {
 
   const [token, setToken] = useState(getTokenFromStorage());
   const [user, setUser] = useState(null);
-
-  const isAuthenticated = !!token && !!user;
+  const [isLoadingAuth, setIsLoadingAuth] = useState(!!getTokenFromStorage()); // ✅ νέο
 
   const userInformation = useUserInformation(token);
+  const isAuthenticated = !!token && !!user;
 
   // ---- SAFE LOGOUT ----
   const handleLogout = useCallback(() => {
@@ -55,7 +55,8 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("token", JSON.stringify(data.access_token));
       localStorage.setItem("refresh_token", JSON.stringify(data.refresh_token));
       setToken(data.access_token);
-      // user θα φορτωθεί από useUserInformation effect
+      setIsLoadingAuth(true);
+
       setTimeout(() => {
         queryClient.invalidateQueries(["datasets"]);
         queryClient.invalidateQueries(["documents"]);
@@ -72,17 +73,24 @@ export const AuthProvider = ({ children }) => {
 
   // ---- UPDATE USER FROM API ----
   useEffect(() => {
-    if (token && userInformation?.data?.data) {
-      setUser(userInformation.data.data);
+    if (token && userInformation.isFetched) {
+      if (userInformation.data?.data) {
+        setUser(userInformation.data.data);
+      } else {
+        // invalid token -> logout
+        handleLogout();
+      }
+      setIsLoadingAuth(false);
+    } else if (!token) {
+      setIsLoadingAuth(false);
     }
-  }, [userInformation, token]);
+  }, [userInformation, token, handleLogout]);
 
   // ---- TOKEN EXPIRY & AUTO REFRESH ----
   useEffect(() => {
     if (!token) return;
 
     let timer;
-
     const tryRefresh = async () => {
       try {
         const refreshToken = JSON.parse(localStorage.getItem("refresh_token"));
@@ -105,13 +113,13 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("token", JSON.stringify(data.access_token));
         setToken(data.access_token);
       } catch (err) {
-        handleLogout(); // τελικό logout αν αποτύχει
+        handleLogout();
       }
     };
 
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
-      const expiresAt = payload.exp * 1000; // ms
+      const expiresAt = payload.exp * 1000;
       const now = Date.now();
       const timeout = expiresAt - now;
 
@@ -126,6 +134,26 @@ export const AuthProvider = ({ children }) => {
 
     return () => clearTimeout(timer);
   }, [token, handleLogout]);
+
+  // ---- LOADING SCREEN ----
+  if (isLoadingAuth) {
+    return (
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        height="100vh"
+        gap={2}
+        sx={{ backgroundColor: "#f9fafc" }}
+      >
+        <CircularProgress size={64} sx={{ color: "#20477B" }} />
+        <Typography variant="h6" sx={{ color: "#20477B" }}>
+          Loading ...
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <AuthContext.Provider

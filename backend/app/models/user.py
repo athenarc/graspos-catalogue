@@ -20,6 +20,9 @@ class UserAuthRegister(BaseModel):
     username: str
     email: EmailStr
     password: str
+    captcha_token: str
+    token: Optional[str] = None
+    # User information
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     organization: Optional[str] = None
@@ -66,6 +69,8 @@ class User(Document, UserOut):
     username: str
     organization: str | None = None
     orcid: str | None = None
+    created_at: datetime | None = datetime.now()
+    modified_at: datetime | None = datetime.now()
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"

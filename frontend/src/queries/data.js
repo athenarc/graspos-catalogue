@@ -39,7 +39,7 @@ export function useRegister() {
 export function useUserResetPassword() {
   return useMutation({
     mutationFn: ({ data }) => {
-      return axiosInstance.patch(`user/reset`, data);
+      return axiosInstance.post(`user/reset-password`, data);
     },
   });
 }
@@ -67,5 +67,33 @@ export function useUsers() {
     queryKey: ["users"],
     retry: false,
     queryFn: () => axiosInstance.get(`user/users`, {}),
+  });
+}
+
+export function useVerifyEmail(token) {
+  return useQuery({
+    queryKey: ["verify", token],
+    retry: false,
+    enabled: !!token,
+    queryFn: () => axiosInstance.get(`register/verify/${token}`),
+  });
+}
+
+export function useResetPassword(token) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ data }) => {
+      return axiosInstance.post(`register/reset-password`, data);
+    },
+    onSuccess: () => {},
+  });
+}
+
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: ({ data }) => {
+      return axiosInstance.post(`register/forgot-password`, data);
+    },
+    onSuccess: () => {},
   });
 }

@@ -8,6 +8,7 @@ import {
   TextField,
   Typography,
   Stack,
+  Divider,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Link, useNavigate } from "react-router-dom";
@@ -15,6 +16,8 @@ import { useForm } from "react-hook-form";
 import { useLogin } from "../../queries/data.js";
 import LoginIcon from "@mui/icons-material/Login";
 import { useAuth } from "../AuthContext.jsx";
+import AlertHelperText from "../Helpers/AlertHelperText.jsx";
+import Password from "./Fields/Password.jsx";
 
 export default function LoginForm() {
   const {
@@ -38,17 +41,25 @@ export default function LoginForm() {
           handleClose();
         },
         onError: (error) => {
-          setError("password", {
-            type: "server",
-            message: error?.response?.data?.detail,
-          });
+          if (error?.response?.status === 401) {
+            setError("password", {
+              type: "manual",
+              message: "Incorrect username or password",
+            });
+          }
+          if (error?.response?.status === 400) {
+            setError("username", {
+              type: "manual",
+              message: "Email is not yet verified",
+            });
+          }
         },
       }
     );
   };
 
   function handleClose() {
-    navigate(-1);
+    navigate("..");
   }
 
   return (
@@ -93,24 +104,31 @@ export default function LoginForm() {
               id="outlined-required"
               label="Username"
               error={!!errors?.username}
-              helperText={errors?.username?.message}
               fullWidth
             />
-            <TextField
-              {...register("password", {
-                required: "Password can not be empty",
-              })}
-              required
-              id="outlined-password-input"
-              label="Password"
-              type="password"
-              error={!!errors?.password}
-              helperText={errors?.password?.message}
-              autoComplete="current-password"
-              fullWidth
+
+            {errors?.username && <AlertHelperText error={errors?.username} />}
+            <Password
+              form={{ register, formState: { errors } }}
+              confirmPassword={false}
+              previousPassword={false}
+              passwordValidation={false}
+              currentPasswordValidation={false}
             />
-            <Typography align="center" variant="subtitle2">
-              Don't have an account?
+
+            {errors?.password && (
+              <>
+                <Divider sx={{ mt: 1, mb: 1 }} />
+                <Typography align="center" variant="subtitle2" sx={{ mt: 2 }}>
+                  Forgot your password? Reset it <Link to={"/reset"}>here</Link>
+                  .
+                </Typography>
+                <Divider sx={{ mt: 1, mb: 1 }} />
+              </>
+            )}
+
+            <Typography align="center" variant="subtitle2" sx={{ mt: 2 }}>
+              New to GRASPOS Catalogue?
             </Typography>
             <Typography
               align="center"
