@@ -19,6 +19,7 @@ import AlertHelperText from "./AlertHelperText";
 import LoginIcon from "@mui/icons-material/Login";
 import CloseIcon from "@mui/icons-material/Close";
 import { useResetPassword } from "../../queries/data";
+import Password from "../Forms/Fields/Password";
 
 export default function PasswordResetModal() {
   const { token } = useParams();
@@ -73,7 +74,7 @@ export default function PasswordResetModal() {
             setGlobalError(err);
             return;
           }
-          
+
           if (typeof err === "object") {
             Object.entries(err).forEach(([field, message]) => {
               setError(field, { type: "server", message });
@@ -146,39 +147,14 @@ export default function PasswordResetModal() {
             />
             {!!errors?.email && <AlertHelperText error={errors?.email} />}
 
-            <TextField
-              {...register("password", {
-                required: "Password cannot be empty",
-                minLength: {
-                  value: 8,
-                  message: "Password must be at least 8 characters long",
-                },
-              })}
-              required
-              id="password-new"
-              label="New Password"
-              type="password"
-              autoComplete="new-password"
-              error={!!errors?.password}
-              fullWidth
+            <Password
+              form={{ register, formState: { errors }, watch, setError }}
+              confirmPassword
+              confirmPasswordRules={{
+                validate: (value) =>
+                  value === watch("password") || "Passwords do not match",
+              }}
             />
-            {errors?.password && <AlertHelperText error={errors?.password} />}
-
-            <TextField
-              {...register("passwordConfirmation", {
-                required: "Please confirm your password",
-              })}
-              required
-              id="password-confirm"
-              label="Confirm Password"
-              type="password"
-              autoComplete="new-password"
-              error={!!errors?.passwordConfirmation}
-              fullWidth
-            />
-            {errors?.passwordConfirmation && (
-              <AlertHelperText error={errors?.passwordConfirmation} />
-            )}
 
             {globalError && (
               <AlertMessage severity="error">{globalError}</AlertMessage>
