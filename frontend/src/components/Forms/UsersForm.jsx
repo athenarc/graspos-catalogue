@@ -11,16 +11,18 @@ import {
   DialogContent,
   DialogTitle,
   Paper,
+  Tooltip,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import CloseIcon from "@mui/icons-material/Close";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useState } from "react";
 import { useUpdateUser, useForgotPassword, useUsers } from "@queries/data";
 import Notification from "@helpers/Notification";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
+import VerifiedIcon from "@mui/icons-material/Verified";
 
 function UserForm({ user }) {
   const [message, setMessage] = useState("");
@@ -30,12 +32,14 @@ function UserForm({ user }) {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm({
     defaultValues: {
       ...user,
       super_user: !!user?.super_user,
       disabled: !!user?.disabled,
+      verified: !!(user?.email_confirmed_at !== null),
     },
   });
 
@@ -89,21 +93,65 @@ function UserForm({ user }) {
             direction="row"
             justifyContent="space-between"
             alignItems="center"
-            sx={{ p: 1, borderRadius: 1 }}
+            sx={{
+              px: 2,
+              py: 1.5,
+              borderRadius: 2,
+              backgroundColor: "#f9fafc",
+              border: "1px solid #e0e0e0",
+            }}
           >
-            <Typography variant="subtitle1" fontWeight="bold">
-              {user?.username}
-            </Typography>
-            <Stack direction="row" spacing={1}>
+            {/* Left: Username + Verified */}
+            <Stack direction="row" alignItems="center" spacing={1.2}>
+              <Typography variant="h6" fontWeight="600" color="text.primary">
+                {user?.username}
+              </Typography>
+
+              {user?.email_confirmed_at && (
+                <Tooltip title="Email Verified">
+                  <VerifiedIcon
+                    sx={{
+                      color: "#1e88e5",
+                      fontSize: 22,
+                      verticalAlign: "middle",
+                    }}
+                  />
+                </Tooltip>
+              )}
+            </Stack>
+
+            {/* Right: Checkboxes */}
+            <Stack direction="row" spacing={2}>
               <FormControlLabel
                 disabled={disableForm}
-                control={<Checkbox {...register("super_user")} />}
-                label="Admin"
+                control={
+                  <Checkbox
+                    {...register("super_user")}
+                    defaultChecked={user?.super_user}
+                    color="primary"
+                  />
+                }
+                label={
+                  <Typography variant="body2" fontWeight="500">
+                    Admin
+                  </Typography>
+                }
               />
+
               <FormControlLabel
                 disabled={disableForm}
-                control={<Checkbox {...register("disabled")} />}
-                label="Disabled"
+                control={
+                  <Checkbox
+                    {...register("disabled")}
+                    defaultChecked={user?.disabled}
+                    color="error"
+                  />
+                }
+                label={
+                  <Typography variant="body2" fontWeight="500">
+                    Disabled
+                  </Typography>
+                }
               />
             </Stack>
           </Stack>

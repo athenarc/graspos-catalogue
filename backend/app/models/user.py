@@ -56,6 +56,7 @@ class UserOut(UserUpdate):
     id: PydanticObjectId
     email: Annotated[str, Indexed(EmailStr, unique=True)]
     disabled: bool = False
+    email_confirmed_at: datetime | None = None
 
 
 class User(Document, UserOut):
@@ -71,6 +72,7 @@ class User(Document, UserOut):
     orcid: str | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
+    disabled: bool = False
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"

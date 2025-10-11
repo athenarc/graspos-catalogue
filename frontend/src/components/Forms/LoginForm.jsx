@@ -50,7 +50,7 @@ export default function LoginForm() {
           if (error?.response?.status === 400) {
             setError("username", {
               type: "manual",
-              message: "Email is not yet verified",
+              message: error?.response?.data?.detail || "Login failed",
             });
           }
         },
