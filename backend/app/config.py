@@ -67,7 +67,7 @@ class Settings(BaseModel):
     mail_url: str = config("REACT_APP_BACKEND_HOST") + (
         ":" +
         config("REACT_APP_HOST_PORT") if config("REACT_APP_PROD").lower()
-        == "dev" else "") + config("REACT_APP_BASE_PATH") + "mail/verify/"
+        == "dev" else "") + config("REACT_APP_BASE_PATH")
     mail_console: bool = config("MAIL_CONSOLE", default=False, cast=bool)
     mail_server: str = config("MAIL_SERVER", default="smtp.myserver.io")
     mail_port: int = config("MAIL_PORT", default=587, cast=int)
