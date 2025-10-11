@@ -21,6 +21,9 @@ export default defineConfig(({ mode }) => {
       "process.env.REACT_APP_BASE_PATH": JSON.stringify(
         env.REACT_APP_BASE_PATH
       ),
+      "process.env.REACT_APP_CAPTCHA_SITE_KEY": JSON.stringify(
+        env.REACT_APP_CAPTCHA_SITE_KEY
+      ),
     },
     base: env.REACT_APP_BASE_PATH,
     server: {

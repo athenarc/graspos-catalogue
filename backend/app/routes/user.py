@@ -84,6 +84,42 @@ async def reset_user_password(
     return updated_user
 
 
+@router.post("/reset-password")
+async def reset_user_password(
+        # update: UserPasswordReset,
+        password: str = Body(..., embed=True),
+        new_password: str = Body(..., embed=True),
+        current_user: User = Depends(current_user_mandatory)):
+    """
+    Reset a user's password to the default password in CONFIG.
+    Updates only if the password is different from the current one.
+    """
+
+    # Verify the old password
+    if current_user.password != hash_password(password):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Old password is incorrect")
+    # If the new password is the same as the current one, do nothing
+    new_hashed_pw = hash_password(new_password)
+    if current_user.password == new_hashed_pw:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be different from the old one")
+
+    # Atomic update in the database
+    updated_count = await User.find_one(User.id == current_user.id).update(
+        {"$set": {
+            "password": new_hashed_pw
+        }})
+    if not updated_count:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="User not found")
+
+    # Fetch the updated user object to return it
+    updated_user = await User.get(current_user.id)
+    return updated_user
+
+
 @router.delete("")
 async def delete_user(auth: JwtAuthorizationCredentials = Security(
     access_security)) -> Response:

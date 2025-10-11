@@ -11,7 +11,7 @@ class Settings(BaseModel):
     # SERVER SETTINGS
     # -------------------------------
     root_url: str = config("ROOT_URL", default="http://localhost:8080")
-
+    prod: str = config("REACT_APP_PROD", default="dev", cast=str)
     # -------------------------------
     # MONGO SETTINGS
     # -------------------------------
@@ -42,6 +42,13 @@ class Settings(BaseModel):
                            "Please set it in your .env file or environment.")
 
     try:
+        captcha_secret_key: str = config("BACKEND_CAPTCHA_SECRET_KEY")
+    except UndefinedValueError:
+        raise RuntimeError(
+            "Missing environment variable: BACKEND_CAPTCHA_SECRET_KEY. "
+            "Please set it in your .env file or environment.")
+
+    try:
         salt: bytes = config("SALT").encode()
     except UndefinedValueError:
         raise RuntimeError("Missing environment variable: SALT. "
@@ -57,6 +64,10 @@ class Settings(BaseModel):
     # -------------------------------
     # MAIL SETTINGS
     # -------------------------------
+    mail_url: str = config("REACT_APP_BACKEND_HOST") + (
+        ":" +
+        config("REACT_APP_HOST_PORT") if config("REACT_APP_PROD").lower()
+        == "dev" else "") + config("REACT_APP_BASE_PATH")
     mail_console: bool = config("MAIL_CONSOLE", default=False, cast=bool)
     mail_server: str = config("MAIL_SERVER", default="smtp.myserver.io")
     mail_port: int = config("MAIL_PORT", default=587, cast=int)
@@ -65,5 +76,4 @@ class Settings(BaseModel):
     mail_sender: str = config("MAIL_SENDER", default="noreply@myserver.io")
 
 
-# Δημιουργία του global CONFIG instance
 CONFIG = Settings()

@@ -82,14 +82,7 @@ export default function MenuBar({ handleLogout, user }) {
         <Stack direction="row" justifyContent="flex-end">
           {!user && (
             <Stack direction="row" spacing={1}>
-              <Link to={"register"} state={{ backgroundLocation: location }}>
-                <Button
-                  variant="outlined"
-                  sx={{ color: "#fff", border: "none" }}
-                >
-                  Register
-                </Button>
-              </Link>
+              
               <Link to={"login"} state={{ backgroundLocation: location }}>
                 <Button
                   variant="outlined"
