@@ -5,6 +5,8 @@ import AlertHelperText from "@helpers/AlertHelperText";
 
 export default function Password({
   form,
+  passwordValidation = true,
+  newPasswordValidation = true,
   currentPasswordValidation = true,
   confirmPassword = false,
   confirmPasswordRules = {},
@@ -26,8 +28,11 @@ export default function Password({
 
   const newPasswordRules = {
     required: "New password cannot be empty",
-    minLength: { value: 8, message: "Password must be at least 8 characters" },
-    pattern: {
+    minLength: newPasswordValidation && {
+      value: 8,
+      message: "Password must be at least 8 characters",
+    },
+    pattern: newPasswordValidation && {
       value:
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
       message:

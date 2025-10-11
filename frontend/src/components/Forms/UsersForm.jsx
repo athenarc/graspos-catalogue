@@ -17,11 +17,7 @@ import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import {
-  useUpdateUser,
-  useUserResetPassword,
-  useUsers,
-} from "../../queries/data";
+import { useUpdateUser, useForgotPassword, useUsers } from "@queries/data";
 import Notification from "@helpers/Notification";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
@@ -44,15 +40,15 @@ function UserForm({ user }) {
   });
 
   const updateUser = useUpdateUser();
-  const passwordReset = useUserResetPassword();
+  const passwordReset = useForgotPassword();
 
   const handlePasswordReset = () => {
     setNotificationStatus("loading");
     passwordReset.mutate(
-      { data: { id: user?.id } },
+      { data: { email: user?.email } },
       {
-        onSuccess: () => {
-          setMessage("User password reset successfully!");
+        onSuccess: (data) => {
+          setMessage("User email with password reset link sent!");
           setNotificationStatus("success");
         },
         onError: (error) => {
@@ -150,7 +146,7 @@ function UserForm({ user }) {
               helperText={errors.username?.message || ""}
             />
             <TextField
-              disabled={disableForm}
+              disabled={true}
               label="Email"
               fullWidth
               {...register("email")}

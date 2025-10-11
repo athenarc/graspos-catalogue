@@ -17,6 +17,7 @@ import { useLogin } from "../../queries/data.js";
 import LoginIcon from "@mui/icons-material/Login";
 import { useAuth } from "../AuthContext.jsx";
 import AlertHelperText from "../Helpers/AlertHelperText.jsx";
+import Password from "./Fields/Password.jsx";
 
 export default function LoginForm() {
   const {
@@ -107,19 +108,14 @@ export default function LoginForm() {
             />
 
             {errors?.username && <AlertHelperText error={errors?.username} />}
-            <TextField
-              {...register("password", {
-                required: "Password can not be empty",
-              })}
-              required
-              id="outlined-password-input"
-              label="Password"
-              type="password"
-              error={!!errors?.password}
-              autoComplete="current-password"
-              fullWidth
+            <Password
+              form={{ register, formState: { errors } }}
+              confirmPassword={false}
+              previousPassword={false}
+              passwordValidation={false}
+              currentPasswordValidation={false}
             />
-            {errors?.password && <AlertHelperText error={errors?.password} />}
+
             {errors?.password && (
               <>
                 <Divider sx={{ mt: 1, mb: 1 }} />
@@ -130,7 +126,6 @@ export default function LoginForm() {
                 <Divider sx={{ mt: 1, mb: 1 }} />
               </>
             )}
-
 
             <Typography align="center" variant="subtitle2" sx={{ mt: 2 }}>
               New to GRASPOS Catalogue?
