@@ -1,5 +1,5 @@
 import { Alert } from "@mui/material";
 
 export default function AlertMessage({ severity, children }) {
-  return <Alert severity={severity}>{children}</Alert>;
+  return <Alert severity={severity} sx={{ position: "relative", p: 1 }}>{children}</Alert>;
 }

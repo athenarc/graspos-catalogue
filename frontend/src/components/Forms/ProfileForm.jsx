@@ -101,7 +101,7 @@ export default function ProfileForm() {
   }, [user, reset]);
 
   function handleClose() {
-    navigate(-1);
+    navigate("..");
   }
 
   return (

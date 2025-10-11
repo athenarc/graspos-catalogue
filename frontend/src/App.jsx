@@ -9,7 +9,7 @@ import "@fontsource/montserrat/400.css";
 import "./App.css";
 
 import { QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "./components/AuthContext";
+import { AuthProvider, useAuth } from "./components/AuthContext";
 import AppLayout from "./components/Layout/AppLayout";
 import LoginForm from "./components/Forms/LoginForm";
 import RegisterForm from "./components/Forms/RegisterForm";
@@ -19,11 +19,13 @@ import UpdatesModal from "./components/ResourceUpdatesModal";
 import { ResourcePage } from "./components/Resources/ResourcesGrid/ResourcePage";
 import { queryClient } from "./queries/queryClient";
 import ResourceForm from "./components/Forms/ResourceForm";
+import EmailVerificationPage from "@helpers/EmailVerification";
 
 function AppRoutes() {
   const location = useLocation();
-  const state = location.state;
+  const state = location?.state;
   const backgroundLocation = state?.backgroundLocation;
+  const { isAuthenticated } = useAuth();
 
   return (
     <>
@@ -33,9 +35,19 @@ function AppRoutes() {
           <Route path="tools/:resourceId" element={<ResourcePage />} />
           <Route path="documents/:resourceId" element={<ResourcePage />} />
           <Route path="services/:resourceId" element={<ResourcePage />} />
-          <Route path="login" element={<LoginForm />} />
-          <Route path="profile" element={<div />} />
-          <Route path="register" element={<RegisterForm />} />
+
+          {!isAuthenticated && (
+            <>
+              <Route
+                path="mail/verify/:token"
+                element={<EmailVerificationPage />}
+              />
+              <Route path="login" element={<LoginForm />} />
+              <Route path="register" element={<RegisterForm />} />
+            </>
+          )}
+
+          <Route path="profile" element={<ProfileForm />} />
           <Route path="users" element={<UsersPanelForm />} />
           <Route path="resource/add" element={<ResourceForm />} />
           <Route path="zenodo/updates" element={<UpdatesModal />} />
@@ -45,9 +57,29 @@ function AppRoutes() {
 
       {backgroundLocation && (
         <Routes>
+          <Route
+            path="/login"
+            element={
+              !isAuthenticated ? <LoginForm /> : <Navigate to="/" replace />
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              !isAuthenticated ? <RegisterForm /> : <Navigate to="/" replace />
+            }
+          />
+          <Route
+            path="/mail/verify/:token"
+            element={
+              !isAuthenticated ? (
+                <EmailVerificationPage />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          />
           <Route path="/profile" element={<ProfileForm />} />
-          <Route path="/login" element={<LoginForm />} />
-          <Route path="/register" element={<RegisterForm />} />
           <Route path="zenodo/updates" element={<UpdatesModal />} />
           <Route path="users" element={<UsersPanelForm />} />
           <Route path="resource/add" element={<ResourceForm />} />

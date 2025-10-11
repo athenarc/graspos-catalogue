@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { useLogin } from "../../queries/data.js";
 import LoginIcon from "@mui/icons-material/Login";
 import { useAuth } from "../AuthContext.jsx";
+import AlertHelperText from "../Helpers/AlertHelperText.jsx";
 
 export default function LoginForm() {
   const {
@@ -48,7 +49,7 @@ export default function LoginForm() {
   };
 
   function handleClose() {
-    navigate(-1);
+    navigate("..");
   }
 
   return (
@@ -93,9 +94,10 @@ export default function LoginForm() {
               id="outlined-required"
               label="Username"
               error={!!errors?.username}
-              helperText={errors?.username?.message}
               fullWidth
             />
+
+            {errors?.username && <AlertHelperText error={errors?.username} />}
             <TextField
               {...register("password", {
                 required: "Password can not be empty",
@@ -105,12 +107,18 @@ export default function LoginForm() {
               label="Password"
               type="password"
               error={!!errors?.password}
-              helperText={errors?.password?.message}
               autoComplete="current-password"
               fullWidth
             />
-            <Typography align="center" variant="subtitle2">
-              Don't have an account?
+            {errors?.password && <AlertHelperText error={errors?.password} />}
+            {/* {errors?.password && (
+              <Typography align="center" variant="subtitle2" sx={{ mt: 2 }}>
+                Forgot your password? Reset it <Link to={"/reset"}>here</Link>.
+              </Typography>
+            )}
+            <hr /> */}
+            <Typography align="center" variant="subtitle2" sx={{ mt: 2 }}>
+              New to GRASPOS Catalogue?
             </Typography>
             <Typography
               align="center"

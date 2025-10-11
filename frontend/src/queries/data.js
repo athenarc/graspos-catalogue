@@ -69,3 +69,12 @@ export function useUsers() {
     queryFn: () => axiosInstance.get(`user/users`, {}),
   });
 }
+
+export function useVerifyEmail(token) {
+  return useQuery({
+    queryKey: ["verify", token],
+    retry: false,
+    enabled: !!token,
+    queryFn: () => axiosInstance.get(`register/verify/${token}`),
+  });
+}
