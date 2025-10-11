@@ -20,6 +20,9 @@ import { ResourcePage } from "./components/Resources/ResourcesGrid/ResourcePage"
 import { queryClient } from "./queries/queryClient";
 import ResourceForm from "./components/Forms/ResourceForm";
 import EmailVerificationPage from "@helpers/EmailVerification";
+import PasswordResetModal from "@helpers/PasswordResetToken";
+import ForgotPasswordModal from "@helpers/PasswordResetEmail";
+
 
 function AppRoutes() {
   const location = useLocation();
@@ -44,6 +47,11 @@ function AppRoutes() {
               />
               <Route path="login" element={<LoginForm />} />
               <Route path="register" element={<RegisterForm />} />
+              <Route
+                path="password/reset/:token"
+                element={<PasswordResetModal />}
+              />
+              <Route path="reset" element={<ForgotPasswordModal />} />
             </>
           )}
 
@@ -78,6 +86,16 @@ function AppRoutes() {
                 <Navigate to="/" replace />
               )
             }
+          />
+          <Route
+            path="/reset"
+            element={
+              !isAuthenticated ? <ForgotPasswordModal /> : <Navigate to="/" />
+            }
+          />
+          <Route
+            path="/password/reset/:token"
+            element={<PasswordResetModal />}
           />
           <Route path="/profile" element={<ProfileForm />} />
           <Route path="zenodo/updates" element={<UpdatesModal />} />

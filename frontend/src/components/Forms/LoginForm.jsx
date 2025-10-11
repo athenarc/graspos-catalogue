@@ -8,6 +8,7 @@ import {
   TextField,
   Typography,
   Stack,
+  Divider,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Link, useNavigate } from "react-router-dom";
@@ -111,12 +112,17 @@ export default function LoginForm() {
               fullWidth
             />
             {errors?.password && <AlertHelperText error={errors?.password} />}
-            {/* {errors?.password && (
-              <Typography align="center" variant="subtitle2" sx={{ mt: 2 }}>
-                Forgot your password? Reset it <Link to={"/reset"}>here</Link>.
-              </Typography>
+            {errors?.password && (
+              <>
+                <Divider sx={{ mt: 1, mb: 1 }} />
+                <Typography align="center" variant="subtitle2" sx={{ mt: 2 }}>
+                  Forgot your password? Reset it <Link to={"/reset"}>here</Link>
+                  .
+                </Typography>
+                <Divider sx={{ mt: 1, mb: 1 }} />
+              </>
             )}
-            <hr /> */}
+
             <Typography align="center" variant="subtitle2" sx={{ mt: 2 }}>
               New to GRASPOS Catalogue?
             </Typography>

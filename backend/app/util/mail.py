@@ -21,19 +21,10 @@ mail = FastMail(mail_conf)
 
 async def send_verification_email(email: str, token: str) -> None:
     """Send user verification email with nicer formatting."""
-    url = f"{CONFIG.mail_url}{token}"
+    url = f"{CONFIG.mail_url}" + "mail/verify/" + token
     if CONFIG.mail_console or CONFIG.prod.lower() == "dev":
         print(f"Verification link for {email}: {url}")
     else:
-        body_plain = (
-            f"Hello,\n\n"
-            f"Welcome to GraspOS Catalogue!\n\n"
-            f"Please verify your email address by clicking the link below:\n"
-            f"{url}\n\n"
-            f"If you did not sign up, just ignore this email.\n\n"
-            f"Thanks,\nGraspOS Team")
-
-        # HTML body
         body_html = f"""
         <!DOCTYPE html>
         <html lang="en">
@@ -98,15 +89,16 @@ async def send_verification_email(email: str, token: str) -> None:
 async def send_password_reset_email(email: str, token: str) -> None:
     """Send password reset email."""
     # Change this later to public endpoint
-    url = CONFIG.root_url + "/register/reset-password/" + token
-    if CONFIG.mail_console:
-        print("POST to " + url)
+    url = f"{CONFIG.mail_url}{token}"
+    url = CONFIG.mail_url + "password/reset/" + token
+    if CONFIG.mail_console or CONFIG.prod.lower() == "dev":
+        print(f"Password reset link for {email}: {url}")
     else:
         message = MessageSchema(
             recipients=[email],
-            subject="MyServer Password Reset",
+            subject="GraspOS Password Reset",
             body=
-            f"Click the link to reset your MyServer account password: {url}\nIf you did not request this, please ignore this email",
+            f"Click the link to reset your GraspOS account password: {url}\nIf you did not request this, please ignore this email",
             subtype=MessageType.plain,
         )
         await mail.send_message(message)
