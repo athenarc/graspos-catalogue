@@ -16,7 +16,7 @@ import AlertMessage from "./AlertMessage";
 import AlertHelperText from "./AlertHelperText";
 import CloseIcon from "@mui/icons-material/Close";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import { useForgotPassword } from "@queries/data"; // create a hook for /forgot-password
+import { useForgotPassword } from "@queries/data";
 import { useNavigate } from "react-router-dom";
 
 export default function ForgotPasswordModal() {
@@ -65,7 +65,6 @@ export default function ForgotPasswordModal() {
   };
 
   const handleClose = () => {
-    // Reset state on close & timeout
     setError(null);
     setGlobalMessage(null);
     navigate("..");
