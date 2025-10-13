@@ -6,6 +6,7 @@ import {
   IconButton,
   DialogContent,
   Stack,
+  Tooltip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
@@ -372,17 +373,21 @@ export default function ResourceForm() {
           </DialogContent>
           {data && showWizard && (
             <DialogActions sx={{ p: 2, pt: 0 }}>
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={!data || !canCreate}
-                loading={mutation?.isPending}
-                loadingPosition="end"
-                endIcon={<AddIcon />}
-                sx={{ backgroundColor: "#20477B" }}
-              >
-                {mutation?.isPending ? "Creating..." : "Create"}
-              </Button>
+              <Tooltip title="You need to fill in all required fields to create the resource">
+                <span>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={!data || !canCreate}
+                    loading={mutation?.isPending}
+                    loadingPosition="end"
+                    endIcon={<AddIcon />}
+                    sx={{ backgroundColor: "#20477B" }}
+                  >
+                    {mutation?.isPending ? "Adding..." : "Add"}
+                  </Button>
+                </span>
+              </Tooltip>
             </DialogActions>
           )}
         </Dialog>
