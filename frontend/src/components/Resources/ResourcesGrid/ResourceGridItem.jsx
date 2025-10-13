@@ -32,27 +32,6 @@ export default function ResourceGridItem({ resource, type, user }) {
           color: "#555",
         }}
       >
-        {type === "service" && (
-          <Box
-            sx={{
-              width: "30px",
-              minWidth: "30px",
-              backgroundColor: bg,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#fff",
-              writingMode: "sideways-lr",
-              textOrientation: "mixed",
-              fontSize: 18,
-              fontWeight: "bold",
-              borderTopLeftRadius: "5px",
-              borderBottomLeftRadius: "5px",
-            }}
-          >
-            {resource?.service_type?.toUpperCase()}
-          </Box>
-        )}
         <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
           <CardContent sx={{ pb: 1, mb: 1 }}>
             <ResourceItemHeader resource={resource} type={type} user={user} />
@@ -65,7 +44,10 @@ export default function ResourceGridItem({ resource, type, user }) {
               mt: "auto",
             }}
           >
-            <ResourceItemFooter resource={resource} type={type?.toLowerCase()} />
+            <ResourceItemFooter
+              resource={resource}
+              type={type?.toLowerCase()}
+            />
           </CardContent>
         </Box>
       </Card>

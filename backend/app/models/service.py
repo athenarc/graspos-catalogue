@@ -20,6 +20,7 @@ class Service(ServiceBasicFields, BaseResourceModel):
 
 
 class ServicePatch(ServiceBasicFields, BaseResourcePatch):
+    url: str | None = None
     pass
 
 

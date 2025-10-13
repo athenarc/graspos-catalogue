@@ -32,10 +32,16 @@ export function useTools(filters = {}) {
         if (typeof value === "object" && value !== null) {
           // If the value is an object (like "license"), loop through its properties
           Object.entries(value).forEach(([subKey, subValue]) => {
-            if (key == "tags") {
+            if (
+              key == "tags" ||
+              key == "trl" ||
+              key == "assessment_functionalities"
+            ) {
               value.forEach((arrayValue) => {
                 params.append(
-                  key.replace(key, key.replace(/s+$/, "")),
+                  key != "assessment_functionalities"
+                    ? key.replace(key, key.replace(/s+$/, ""))
+                    : key,
                   arrayValue
                 );
               });
@@ -91,14 +97,14 @@ export function useTools(filters = {}) {
   });
 }
 
-export function useToolUniqueFieldValues(field, enabled) {
+export function useToolUniqueFieldValues(field, enabled, scope = "zenodo") {
   return useQuery({
-    queryKey: ["tool-unique-field-values", field],
+    queryKey: ["tool-unique-field-values", field, scope],
     enabled: enabled && !!field,
     retry: false,
     queryFn: () =>
       axiosInstance
-        .get(`/tool/fields/unique`, { params: { field } })
+        .get(`/tool/fields/unique`, { params: { field, scope } })
         .then((res) => res),
   });
 }

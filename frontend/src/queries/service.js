@@ -32,10 +32,16 @@ export function useServices(filters = {}) {
         if (typeof value === "object" && value !== null) {
           // If the value is an object (like "licenses"), loop through its properties
           Object.entries(value).forEach(([subKey, subValue]) => {
-            if (key == "tags" || key == "service_type" || key == "trl") {
+            if (
+              key == "tags" ||
+              key == "trl" ||
+              key == "assessment_functionalities"
+            ) {
               value.forEach((arrayValue) => {
                 params.append(
-                  key.replace(key, key.replace(/s+$/, "")),
+                  key != "assessment_functionalities"
+                    ? key.replace(key, key.replace(/s+$/, ""))
+                    : key,
                   arrayValue
                 );
               });
@@ -91,9 +97,13 @@ export function useServices(filters = {}) {
     enabled: true, // Ensure this fires by default if filters change
   });
 }
-export function useServiceUniqueFieldValues(field, enabled, scope = "openaire") {
+export function useServiceUniqueFieldValues(
+  field,
+  enabled,
+  scope = "openaire"
+) {
   return useQuery({
-    queryKey: ["service-unique-field-values", field],
+    queryKey: ["service-unique-field-values", field, scope],
     enabled: enabled && !!field,
     retry: false,
     queryFn: () =>

@@ -6,6 +6,7 @@ import {
   IconButton,
   DialogContent,
   Stack,
+  Tooltip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
@@ -72,7 +73,6 @@ export default function ResourceForm() {
     getValues,
     formState: { errors },
   } = form;
-
   const createDataset = useCreateDataset();
   const createTool = useCreateTool();
   const createDocument = useCreateDocument();
@@ -123,7 +123,7 @@ export default function ResourceForm() {
 
   const onSubmit = (data) => {
     const mutation = getMutation();
-    if (data?.trl === "") {
+    if (data?.trl === "" || Array.isArray(data?.trl)) {
       data.trl = null;
     }
     mutation.mutate(
@@ -212,21 +212,32 @@ export default function ResourceForm() {
 
               setStatus("error");
               setMessage(
-                <>
-                  <p>
+                <div style={{ lineHeight: 1.6 }}>
+                  <p style={{ marginBottom: 8, marginTop: 0 }}>
                     There were errors with the Zenodo record. Please update them
                     in{" "}
                     <a
                       href={sourceValue}
                       target="_blank"
                       rel="noopener noreferrer"
+                      style={{
+                        color: "#1976d2",
+                        textDecoration: "none",
+                        fontWeight: 500,
+                      }}
                     >
                       Zenodo
                     </a>
                     :
                   </p>
-                  <ul>{items}</ul>
-                </>
+                  <ul style={{ margin: "8px 0 0 20px", padding: 0 }}>
+                    {items.map((item, idx) => (
+                      <li key={idx} style={{ marginBottom: 4 }}>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               );
             } else {
               setStatus("error");
@@ -293,7 +304,8 @@ export default function ResourceForm() {
     setShowWizard(false);
   };
 
-  function handleClose() {
+  function handleClose(event, reason) {
+    if (reason && reason === "backdropClick") return;
     navigate("..");
   }
 
@@ -371,17 +383,21 @@ export default function ResourceForm() {
           </DialogContent>
           {data && showWizard && (
             <DialogActions sx={{ p: 2, pt: 0 }}>
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={!data || !canCreate}
-                loading={mutation?.isPending}
-                loadingPosition="end"
-                endIcon={<AddIcon />}
-                sx={{ backgroundColor: "#20477B" }}
-              >
-                {mutation?.isPending ? "Creating..." : "Create"}
-              </Button>
+              <Tooltip title="You need to fill in all required fields to create the resource">
+                <span>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={!data || !canCreate}
+                    loading={mutation?.isPending}
+                    loadingPosition="end"
+                    endIcon={<AddIcon />}
+                    sx={{ backgroundColor: "#20477B" }}
+                  >
+                    {mutation?.isPending ? "Adding..." : "Add"}
+                  </Button>
+                </span>
+              </Tooltip>
             </DialogActions>
           )}
         </Dialog>

@@ -1,5 +1,6 @@
 """Tool router."""
 
+import re
 from fastapi import APIRouter, HTTPException, Depends, Query, status
 from models.tool import Tool, ToolPatch
 from models.user import User
@@ -25,6 +26,8 @@ async def get_all_tools(
         geographical_coverage: Optional[List[str]] = Query(None),
         tag: Optional[List[str]] = Query(None),
         graspos: Optional[bool] = Query(None),
+        trl: Optional[List[str]] = Query(None),
+        assessment_functionalities: Optional[List[str]] = Query(None),
         sort_field: Optional[str] = Query(None),
         sort_direction: Optional[str] = Query(None),
         start: Optional[str] = Query(None),
@@ -61,6 +64,19 @@ async def get_all_tools(
     if assessment:
         assessment_ids = [PydanticObjectId(s) for s in assessment]
         filters.append({"assessments._id": {"$in": assessment_ids}})
+
+    # TRL filter
+    if trl:
+        trl_cleaned = [re.sub(r"^\d+ - ", "", str(s)) for s in trl]
+        filters.append({"trl.european_description": {"$in": trl_cleaned}})
+
+    # Assessment Functionalities filter
+    if assessment_functionalities:
+        filters.append({
+            "assessment_functionalities": {
+                "$in": assessment_functionalities
+            }
+        })
 
     # Geographical Coverage filtering
     if geographical_coverage:
@@ -155,13 +171,20 @@ async def create_tool(tool: Tool,
 
 
 @router.get("/fields/unique")
-async def get_unique_metadata_values(field: str = Query(
-    ..., description="Field name inside zenodo.metadata")):
+async def get_unique_metadata_values(
+        field: str = Query(...,
+                           description="Field name inside zenodo.metadata"),
+        scope: str = Query(...,
+                           description="Field name inside zenodo.metadata")):
     """
     Return unique values from the given field in Zenodo metadata across all tools.
     """
     try:
-        unique_values = await Tool.get_unique_field_values_from_zenodo(field)
+        if scope == "local":
+            unique_values = await Tool.get_unique_field_values(field)
+        else:
+            unique_values = await Tool.get_unique_field_values_from_zenodo(
+                field)
         return {f"unique_{field}": unique_values}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

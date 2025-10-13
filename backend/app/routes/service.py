@@ -27,6 +27,7 @@ async def get_all_services(
         geographical_coverage: Optional[List[str]] = Query(None),
         tag: Optional[List[str]] = Query(None),
         service_type: Optional[List[str]] = Query(None),
+        assessment_functionalities: Optional[List[str]] = Query(None),
         trl: Optional[List[str]] = Query(None),
         graspos: Optional[bool] = Query(None),
         sort_field: Optional[str] = Query(None),
@@ -78,6 +79,14 @@ async def get_all_services(
         trl_cleaned = [re.sub(r"^\d+ - ", "", str(s)) for s in trl]
         filters.append({"trl.european_description": {"$in": trl_cleaned}})
 
+    # Assessment Functionalities filter
+    if assessment_functionalities:
+        filters.append({
+            "assessment_functionalities": {
+                "$in": assessment_functionalities
+            }
+        })
+        
     # GraspOS verified filter
     if graspos:
         filters.append({
@@ -262,19 +271,20 @@ async def update_service(
                 f"Service {service_id} marked as unapproved. Deleting service and linked Zenodo and updates."
             )
 
-            if service.zenodo:
+            if service.openaire:
                 logger.info(
-                    f"Deleting linked Zenodo {service.zenodo.id} and related updates."
+                    f"Deleting linked OpenAIRE {service.openaire.id} and related updates."
                 )
-                await Update.find(zenodo_id=service.zenodo.id).delete()
-                await Zenodo.find(Zenodo.id == service.zenodo.id).delete()
+                await Update.find(openaire_id=service.openaire.id).delete()
+                await OpenAIRE.find(OpenAIRE.id == service.openaire.id
+                                    ).delete()
 
             await service.delete(link_rule=DeleteRules.DO_NOTHING)
 
             logger.info(
-                f"Service {service_id} and linked Zenodo/Updates deleted successfully."
+                f"Service {service_id} and linked OpenAIRE/Updates deleted successfully."
             )
-            return {"message": "Service and linked Zenodo/Updates deleted"}
+            return {"message": "Service and linked OpenAIRE/Updates deleted"}
 
         logger.info(f"Updating service {service_id} with fields: {fields}")
         service = Service.model_copy(service, update=fields)

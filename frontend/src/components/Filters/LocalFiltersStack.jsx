@@ -19,6 +19,7 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import CloseIcon from "@mui/icons-material/Close";
 import ServiceTypeAutocompleteFilter from "./Filters/ServiceTypeFilter";
 import TrlFilter from "./Filters/TrlFilter";
+import AssessmentFunctionalitiesFilter from "./Filters/AssessmentFunctionalitiesFilter";
 
 export default function LocalFiltersStack({
   filters,
@@ -143,20 +144,6 @@ export default function LocalFiltersStack({
                 onFilterChange={handleChangeFilters}
               />
             )}
-            {selectedResource === 3 && (
-              <>
-                <ServiceTypeAutocompleteFilter
-                  selectedFilters={filters}
-                  selectedResource={selectedResource}
-                  onFilterChange={handleChangeFilters}
-                />
-                <TrlFilter
-                  selectedFilters={filters}
-                  selectedResource={selectedResource}
-                  onFilterChange={handleChangeFilters}
-                />
-              </>
-            )}
 
             <TagAutoCompleteFilter
               selectedFilters={filters}
@@ -165,7 +152,33 @@ export default function LocalFiltersStack({
             />
           </Box>
         </DialogContent>
-
+        <DialogContent
+          dividers
+          sx={{
+            display: "flex",
+            gap: 3,
+            alignItems: "stretch",
+          }}
+        >
+          {(selectedResource === 3 || selectedResource === 1) && (
+            <Box flex={1} display="flex" flexDirection="column" gap={2}>
+              {(selectedResource === 3 || selectedResource === 1) && (
+                <>
+                  <AssessmentFunctionalitiesFilter
+                    selectedFilters={filters}
+                    selectedResource={selectedResource}
+                    onFilterChange={handleChangeFilters}
+                  />
+                  <TrlFilter
+                    selectedFilters={filters}
+                    selectedResource={selectedResource}
+                    onFilterChange={handleChangeFilters}
+                  />
+                </>
+              )}
+            </Box>
+          )}
+        </DialogContent>
         <DialogActions
           sx={{
             px: 3,

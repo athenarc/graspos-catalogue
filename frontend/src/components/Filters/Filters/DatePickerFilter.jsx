@@ -41,15 +41,16 @@ export default function DateFilter({ selectedFilters, onFilterChange }) {
       hasError = true;
     }
 
-    if (!hasError) {
-      onFilterChange({
-        dateRange: {
-          startDate: startDate ? startDate.toISOString() : null,
-          endDate: endDate ? endDate.toISOString() : null,
-        },
-      });
+    const prevDateRange = selectedFilters?.dateRange || {};
+    if (
+      startDate !== prevDateRange.startDate ||
+      endDate !== prevDateRange.endDate
+    ) {
+      if (!hasError) {
+        onFilterChange({ dateRange: { startDate, endDate } });
+      }
     }
-  }, [startDate, endDate, onFilterChange]);
+  }, [startDate, endDate, onFilterChange, selectedFilters?.dateRange]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enGB}>

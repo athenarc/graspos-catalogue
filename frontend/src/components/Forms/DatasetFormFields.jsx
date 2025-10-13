@@ -13,15 +13,6 @@ export default function DatasetFormFields({ form, resource = null }) {
     <Stack direction="column" sx={{ mt: 2 }}>
       <Stack direction="row" spacing={2}>
         <TextField
-          {...form?.register("organization", { value: resource?.organization })}
-          label="Organization"
-          defaultValue={resource?.organization || ""}
-          placeholder="Organization"
-          error={!!form?.formState?.errors?.organization}
-          helperText={form?.formState?.errors?.organization?.message ?? " "}
-          fullWidth
-        />
-        <TextField
           {...form?.register("url", {
             value: resource?.url,
             pattern: {

@@ -6,6 +6,7 @@ const getDefaultFilters = () => ({
   tags: [],
   service_type: [],
   trl: [],
+  assessment_functionalities: [],
   scopes: {},
   assessments: {},
   geographical_coverage: {},
@@ -28,6 +29,7 @@ const GLOBAL_FILTER_KEYS = new Set([
 ]);
 
 const LOCAL_FILTER_KEYS = new Set([
+  "assessment_functionalities",
   "licenses",
   "tags",
   "service_type",
@@ -93,6 +95,9 @@ export function useURLFilters(resourceMap) {
     searchParams.getAll("geographical_coverage").forEach((value) => {
       newFilters.geographical_coverage[value] = true;
     });
+    searchParams.getAll("assessment_functionalities").forEach((value) => {
+      newFilters.assessment_functionalities.push(value);
+    });
     searchParams.getAll("tag").forEach((value) => {
       newFilters.tags.push(value);
     });
@@ -151,6 +156,14 @@ export function useURLFilters(resourceMap) {
       filters.tags?.forEach((tag) => {
         searchParams.append("tag", tag);
       });
+      filters.assessment_functionalities?.forEach(
+        (assessment_functionality) => {
+          searchParams.append(
+            "assessment_functionalities",
+            assessment_functionality
+          );
+        }
+      );
       filters.service_type?.forEach((service_type) => {
         searchParams.append("service_type", service_type);
       });

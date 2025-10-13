@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useServiceUniqueFieldValues } from "@queries/service";
+import { useToolUniqueFieldValues } from "@queries/tool";
 
 export default function ServiceTypeAutocompleteFilter({
   selectedResource,
@@ -16,17 +17,30 @@ export default function ServiceTypeAutocompleteFilter({
 }) {
   const [trlTypeOptions, setTrlTypeOptions] = useState([]);
 
-  const { data: trlTypeData, isLoading } = useServiceUniqueFieldValues(
-    "trl",
-    selectedResource === 3,
-    "local"
-  );
+  const { data: serviceTrlTypeData, isLoading: isServiceLoading } =
+    useServiceUniqueFieldValues("trl", selectedResource === 3, "local");
+  const { data: toolTrlTypeData, isLoading: isToolLoading } =
+    useToolUniqueFieldValues("trl", selectedResource === 1, "local");
+
   useEffect(() => {
-    if (!isLoading && selectedResource === 3) {
-      const types = trlTypeData?.data?.unique_trl || [];
-      setTrlTypeOptions(types);
-    }
-  }, [selectedResource, trlTypeData, isLoading]);
+    if (isServiceLoading || isToolLoading) return;
+
+    const resourceTrlTypeData =
+      selectedResource === 3
+        ? serviceTrlTypeData?.data?.unique_trl
+        : selectedResource === 1
+        ? toolTrlTypeData?.data?.unique_trl
+        : [];
+
+    const ids = resourceTrlTypeData?.map((t) => t) || [];
+    setTrlTypeOptions(ids);
+  }, [
+    selectedResource,
+    serviceTrlTypeData,
+    toolTrlTypeData,
+    isServiceLoading,
+    isToolLoading,
+  ]);
 
   const selectedTrlTypes = selectedFilters?.trl || [];
 
@@ -60,7 +74,7 @@ export default function ServiceTypeAutocompleteFilter({
             placeholder="Select service types"
           />
         )}
-        disabled={selectedResource !== 3}
+        disabled={selectedResource !== 3 && selectedResource !== 1}
       />
     </Stack>
   );
