@@ -262,19 +262,19 @@ async def update_service(
                 f"Service {service_id} marked as unapproved. Deleting service and linked Zenodo and updates."
             )
 
-            if service.zenodo:
+            if service.openaire:
                 logger.info(
-                    f"Deleting linked Zenodo {service.zenodo.id} and related updates."
+                    f"Deleting linked OpenAIRE {service.openaire.id} and related updates."
                 )
-                await Update.find(zenodo_id=service.zenodo.id).delete()
-                await Zenodo.find(Zenodo.id == service.zenodo.id).delete()
+                await Update.find(openaire_id=service.openaire.id).delete()
+                await OpenAIRE.find(OpenAIRE.id == service.openaire.id).delete()
 
             await service.delete(link_rule=DeleteRules.DO_NOTHING)
 
             logger.info(
-                f"Service {service_id} and linked Zenodo/Updates deleted successfully."
+                f"Service {service_id} and linked OpenAIRE/Updates deleted successfully."
             )
-            return {"message": "Service and linked Zenodo/Updates deleted"}
+            return {"message": "Service and linked OpenAIRE/Updates deleted"}
 
         logger.info(f"Updating service {service_id} with fields: {fields}")
         service = Service.model_copy(service, update=fields)
