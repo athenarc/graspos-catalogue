@@ -82,6 +82,42 @@ class BaseResourceModel(BaseModel):
     ethical_considerations: str | None = None
     ethics_committee: List[str] | None = None
 
+    @classmethod
+    async def get_unique_field_values(cls, field_name: str) -> list:
+        """
+        Return all unique values for a given field directly from the service documents.
+
+        :param field_name: The field name in the service document to extract unique values from.
+        :return: A list of unique field values (dicts or scalars).
+        """
+        services = await cls.find_all(fetch_links=True).to_list()
+        unique_values = set()
+
+        for service in services:
+            value = getattr(service, field_name, None)
+
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item, dict):
+                        unique_values.add(frozenset(item.items()))
+                    else:
+                        unique_values.add(item)
+            elif isinstance(value, dict):
+                unique_values.add(frozenset(value.items()))
+
+            elif value is not None:
+                if field_name == "trl":
+                    unique_values.add(
+                        str(value.trl_id) + " - " + value.european_description)
+                else:
+                    unique_values.add(value)
+
+        result = [
+            dict(item) if isinstance(item, frozenset) else item
+            for item in unique_values
+        ]
+        return result
+
 
 class BaseResourcePatch(BaseResourceModel):
     doi: str | None = None
