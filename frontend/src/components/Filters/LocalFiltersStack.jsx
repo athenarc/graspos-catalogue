@@ -144,20 +144,6 @@ export default function LocalFiltersStack({
                 onFilterChange={handleChangeFilters}
               />
             )}
-            {(selectedResource === 3 || selectedResource === 1) && (
-              <>
-                <AssessmentFunctionalitiesFilter
-                  selectedFilters={filters}
-                  selectedResource={selectedResource}
-                  onFilterChange={handleChangeFilters}
-                />
-                <TrlFilter
-                  selectedFilters={filters}
-                  selectedResource={selectedResource}
-                  onFilterChange={handleChangeFilters}
-                />
-              </>
-            )}
 
             <TagAutoCompleteFilter
               selectedFilters={filters}
@@ -166,7 +152,33 @@ export default function LocalFiltersStack({
             />
           </Box>
         </DialogContent>
-
+        <DialogContent
+          dividers
+          sx={{
+            display: "flex",
+            gap: 3,
+            alignItems: "stretch",
+          }}
+        >
+          {(selectedResource === 3 || selectedResource === 1) && (
+            <Box flex={1} display="flex" flexDirection="column" gap={2}>
+              {(selectedResource === 3 || selectedResource === 1) && (
+                <>
+                  <AssessmentFunctionalitiesFilter
+                    selectedFilters={filters}
+                    selectedResource={selectedResource}
+                    onFilterChange={handleChangeFilters}
+                  />
+                  <TrlFilter
+                    selectedFilters={filters}
+                    selectedResource={selectedResource}
+                    onFilterChange={handleChangeFilters}
+                  />
+                </>
+              )}
+            </Box>
+          )}
+        </DialogContent>
         <DialogActions
           sx={{
             px: 3,
