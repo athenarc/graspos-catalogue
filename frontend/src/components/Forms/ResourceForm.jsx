@@ -61,7 +61,6 @@ export default function ResourceForm() {
       covered_fields: [],
       geographical_coverage: [],
       assessment_functionalities: [],
-      trl: [],
     },
   });
 
@@ -74,7 +73,6 @@ export default function ResourceForm() {
     getValues,
     formState: { errors },
   } = form;
-
   const createDataset = useCreateDataset();
   const createTool = useCreateTool();
   const createDocument = useCreateDocument();
@@ -125,7 +123,7 @@ export default function ResourceForm() {
 
   const onSubmit = (data) => {
     const mutation = getMutation();
-    if (data?.trl === "") {
+    if (data?.trl === "" || Array.isArray(data?.trl)) {
       data.trl = null;
     }
     mutation.mutate(

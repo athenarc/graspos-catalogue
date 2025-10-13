@@ -8,6 +8,7 @@ import {
 import { useTrls } from "@queries/trl";
 import { Controller } from "react-hook-form";
 import AlertHelperText from "@helpers/AlertHelperText";
+import { useEffect } from "react";
 
 export default function TrlFormField({
   form,
@@ -19,8 +20,15 @@ export default function TrlFormField({
 }) {
   const { data: trls, isLoading, isSuccess } = useTrls();
   const hasError = !!form?.formState?.errors?.[name];
+
   const selectedTrl =
     resource?.trl?.id || searchedResource?.metadata?.trl?.id || "";
+
+  useEffect(() => {
+    const newValue = selectedTrl || "";
+    form?.setValue(name, newValue);
+  }, [selectedTrl]);
+
   return (
     <>
       {isLoading && <CircularProgress size={24} />}
@@ -29,7 +37,7 @@ export default function TrlFormField({
           <InputLabel id={`${name}-label`}>{label}</InputLabel>
           <Controller
             name={name}
-            control={form?.control}
+            control={form.control}
             defaultValue={selectedTrl || ""}
             rules={
               required && {
@@ -42,13 +50,14 @@ export default function TrlFormField({
                 labelId={`${name}-label`}
                 label={label}
                 error={hasError}
+                value={field?.value ?? selectedTrl ?? ""}
                 fullWidth
                 disabled={!!searchedResource?.metadata?.trl}
-                onChange={(e) => field.onChange(e.target.value)}
+                onChange={(e) => field?.onChange(e?.target?.value)}
               >
                 {trls?.data?.map((trl) => (
                   <MenuItem key={trl._id} value={trl._id}>
-                    {trl.trl_id + " - " + trl.european_description}
+                    {trl?.trl_id + " - " + trl?.european_description}
                   </MenuItem>
                 ))}
               </Select>
