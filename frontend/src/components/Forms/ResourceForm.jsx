@@ -212,21 +212,32 @@ export default function ResourceForm() {
 
               setStatus("error");
               setMessage(
-                <>
-                  <p>
+                <div style={{ lineHeight: 1.6 }}>
+                  <p style={{ marginBottom: 8, marginTop: 0 }}>
                     There were errors with the Zenodo record. Please update them
                     in{" "}
                     <a
                       href={sourceValue}
                       target="_blank"
                       rel="noopener noreferrer"
+                      style={{
+                        color: "#1976d2",
+                        textDecoration: "none",
+                        fontWeight: 500,
+                      }}
                     >
                       Zenodo
                     </a>
                     :
                   </p>
-                  <ul>{items}</ul>
-                </>
+                  <ul style={{ margin: "8px 0 0 20px", padding: 0 }}>
+                    {items.map((item, idx) => (
+                      <li key={idx} style={{ marginBottom: 4 }}>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               );
             } else {
               setStatus("error");
