@@ -137,7 +137,6 @@ export default function SearchedResourceFormFields({
   ];
   const fieldSchemas = {
     creators: { name: "", affiliation: "", orcid: "" },
-    references: {},
     contributors: { name: "", affiliation: "", orcid: "" },
     grants: { code: "", internal_id: "", acronym: "", program: "", url: "" },
   };
