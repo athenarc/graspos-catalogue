@@ -25,7 +25,7 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import FlagIcon from "@mui/icons-material/Flag";
 
 import { useEffect, useState } from "react";
-import { Controller } from "react-hook-form";
+import { Controller, useWatch } from "react-hook-form";
 
 import { useScopes } from "@queries/scope.js";
 import { useCountries } from "@queries/countries.js";
@@ -342,16 +342,50 @@ function GeographicScope({ form, resource = null }) {
   );
 }
 
-function CoveredFields({ form, resource = null }) {
+export function CoveredFields({ form, resource = null }) {
+  const name = "covered_fields";
+  const defaultValue = resource?.covered_fields || [];
+
+  // Watch the array value from the form
+  const coveredFields = useWatch({ control: form.control, name });
+
+  // Determine if "Field Agnostic" is currently selected
+  const isFieldAgnosticChecked = coveredFields?.includes("Field Agnostic");
+
+  const handleCheckboxChange = (event) => {
+    const checked = event.target.checked;
+    let newValue = [...(coveredFields || [])];
+
+    if (checked && !newValue.includes("Field Agnostic")) {
+      newValue = ["Field Agnostic"];
+    } else if (!checked) {
+      newValue = [""];
+    }
+
+    form.clearErrors(name);
+    form.setValue(name, newValue, { shouldValidate: true });
+  };
+
   return (
     <AccordionField
       form={form}
-      name="covered_fields"
-      label="Covered Fields"
-      placeholder="Enter covered fields for the resource"
+      name={name}
+      label="Enter covered fields"
       fieldTitle="Covered Fields *"
       required
-      defaultValue={resource?.covered_fields || []}
+      defaultValue={defaultValue}
+      isChecked={isFieldAgnosticChecked}
+      checkbox={
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={isFieldAgnosticChecked || false}
+              onChange={handleCheckboxChange}
+            />
+          }
+          label="Field Agnostic"
+        />
+      }
     />
   );
 }

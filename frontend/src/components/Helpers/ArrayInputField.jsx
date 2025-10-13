@@ -12,6 +12,7 @@ export default function ArrayInputField({
   placeholder = "",
   required = false,
   defaultValue = [],
+  disabled = false,
 }) {
   const { fields, append, remove, replace } = useFieldArray({
     control: form?.control,
@@ -53,6 +54,7 @@ export default function ArrayInputField({
                   <TextField
                     {...field}
                     fullWidth
+                    disabled={disabled}
                     placeholder={placeholder || `${label} ${index + 1}`}
                     error={!!form?.formState?.errors?.[name]?.[index]}
                     helperText=" "
@@ -67,7 +69,11 @@ export default function ArrayInputField({
             />
           </Stack>
           {(!required || (required && fields.length > 1)) && (
-            <IconButton color="error" onClick={() => remove(index)}>
+            <IconButton
+              color="error"
+              onClick={() => remove(index)}
+              disabled={disabled}
+            >
               <DeleteIcon />
             </IconButton>
           )}
@@ -78,6 +84,7 @@ export default function ArrayInputField({
         onClick={() => append("")}
         size="small"
         variant="outlined"
+        disabled={disabled}
       >
         Add
       </Button>
