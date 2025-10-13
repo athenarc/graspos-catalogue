@@ -19,7 +19,8 @@ export default function TrlFormField({
 }) {
   const { data: trls, isLoading, isSuccess } = useTrls();
   const hasError = !!form?.formState?.errors?.[name];
-  const selectedTrl = resource?.trl?.id || searchedResource?.metadata?.trl?.id || "";
+  const selectedTrl =
+    resource?.trl?.id || searchedResource?.metadata?.trl?.id || "";
   return (
     <>
       {isLoading && <CircularProgress size={24} />}
@@ -30,10 +31,11 @@ export default function TrlFormField({
             name={name}
             control={form?.control}
             defaultValue={selectedTrl || ""}
-            rules={required && {
-              required: "TRL is required",
-            }}
-
+            rules={
+              required && {
+                required: "TRL is required",
+              }
+            }
             render={({ field }) => (
               <Select
                 {...field}
@@ -41,8 +43,8 @@ export default function TrlFormField({
                 label={label}
                 error={hasError}
                 fullWidth
-                value={selectedTrl || ""}
                 disabled={!!searchedResource?.metadata?.trl}
+                onChange={(e) => field.onChange(e.target.value)}
               >
                 {trls?.data?.map((trl) => (
                   <MenuItem key={trl._id} value={trl._id}>
@@ -54,9 +56,7 @@ export default function TrlFormField({
           />
           {hasError && required && (
             <AlertHelperText
-              error={
-                form?.formState?.errors?.trl || "TRL is required"
-              }
+              error={form?.formState?.errors?.trl || "TRL is required"}
             />
           )}
         </FormControl>

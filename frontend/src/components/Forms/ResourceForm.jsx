@@ -61,6 +61,7 @@ export default function ResourceForm() {
       covered_fields: [],
       geographical_coverage: [],
       assessment_functionalities: [],
+      trl: [],
     },
   });
 
