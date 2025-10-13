@@ -293,7 +293,8 @@ export default function ResourceForm() {
     setShowWizard(false);
   };
 
-  function handleClose() {
+  function handleClose(event, reason) {
+    if (reason && reason === "backdropClick") return;
     navigate("..");
   }
 
