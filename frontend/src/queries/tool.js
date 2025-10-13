@@ -35,11 +35,19 @@ export function useTools(filters = {}) {
             if (
               key == "tags" ||
               key == "trl" ||
-              key == "assessment_functionalities"
+              key == "assessment_functionalities" ||
+              key == "assessment_values" ||
+              key == "evidence_types" ||
+              key == "covered_fields" ||
+              key == "covered_research_products"
             ) {
               value.forEach((arrayValue) => {
                 params.append(
-                  key != "assessment_functionalities"
+                  key != "assessment_functionalities" &&
+                    key != "covered_fields" &&
+                    key != "covered_research_products" &&
+                    key != "evidence_types" &&
+                    key != "assessment_values"
                     ? key.replace(key, key.replace(/s+$/, ""))
                     : key,
                   arrayValue

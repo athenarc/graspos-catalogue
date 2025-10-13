@@ -25,6 +25,10 @@ async def get_all_documents(
         assessment: Optional[List[str]] = Query(None),
         geographical_coverage: Optional[List[str]] = Query(None),
         tag: Optional[List[str]] = Query(None),
+        assessment_values: Optional[List[str]] = Query(None),
+        evidence_types: Optional[List[str]] = Query(None),
+        covered_fields: Optional[List[str]] = Query(None),
+        covered_research_products: Optional[List[str]] = Query(None),
         graspos: Optional[bool] = Query(None),
         sort_field: Optional[str] = Query(None),
         sort_direction: Optional[str] = Query(None),
@@ -69,6 +73,25 @@ async def get_all_documents(
     # Tag filter
     if tag:
         filters.append({"zenodo.metadata.keywords": {"$in": tag}})
+
+    # Assessment values filtering
+    if assessment_values:
+        filters.append({"assessment_values": {"$in": assessment_values}})
+
+    # Evidence types filtering
+    if evidence_types:
+        filters.append({"evidence_types": {"$in": evidence_types}})
+
+    # Covered fields filtering
+    if covered_fields:
+        filters.append({"covered_fields": {"$in": covered_fields}})
+
+    # Covered research products filtering
+    if covered_research_products:
+        filters.append(
+            {"covered_research_products": {
+                "$in": covered_research_products
+            }})
 
     # GraspOS verified filter
     if graspos:
