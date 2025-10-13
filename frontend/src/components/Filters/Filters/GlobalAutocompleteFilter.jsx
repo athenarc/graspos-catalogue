@@ -95,7 +95,7 @@ export default function UniqueAutocompleteFieldFilter({
           options={options}
           value={selectedValues}
           onChange={handleChange}
-          getOptionLabel={(option) => option}
+          getOptionLabel={(option) => option?.replace(/_/g, " ")}
           renderTags={(value, getTagProps) =>
             value.map((option, index) => (
               <Chip key={option} label={option} {...getTagProps({ index })} />
