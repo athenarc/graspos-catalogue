@@ -177,7 +177,18 @@ function AssessmentSubjects({ form, resource = null }) {
 function GeographicScope({ form, resource = null }) {
   const countries = useCountries();
   const hasError = !!form?.formState?.errors?.geographical_coverage;
-  const [isWorldwide, setIsWorldwide] = useState(false);
+
+  const geographicalCoverage = useWatch({
+    control: form.control,
+    name: "geographical_coverage",
+  });
+
+  const isWorldwide =
+    geographicalCoverage?.some(
+      (c) =>
+        c?.code?.toUpperCase() === "WW" ||
+        c?.label?.toLowerCase() === "worldwide"
+    ) || false;
 
   useEffect(() => {
     if (resource && countries?.data) {
@@ -185,25 +196,16 @@ function GeographicScope({ form, resource = null }) {
         countries?.data?.data?.find((co) => co._id === c.id)
       );
       form?.setValue("geographical_coverage", initialCountries);
-
-      if (
-        resource?.geographical_coverage?.some(
-          (c) => c.code?.toUpperCase() === "WW" || c.label === "Worldwide"
-        )
-      ) {
-        setIsWorldwide(true);
-      }
     }
   }, [resource, countries?.data, form?.setValue]);
 
   const handleWorldwideToggle = (checked) => {
-    setIsWorldwide(checked);
     if (checked) {
       const worldwideCountry = countries?.data?.data?.find(
         (c) =>
           c.code?.toUpperCase() === "WW" ||
           c.label.toLowerCase() === "worldwide"
-      ) || { label: "Worldwide", code: "WW" }; // fallback
+      ) || { label: "Worldwide", code: "WW" };
       form.setValue("geographical_coverage", [worldwideCountry]);
     } else {
       form.setValue("geographical_coverage", []);
@@ -233,7 +235,6 @@ function GeographicScope({ form, resource = null }) {
 
       <AccordionDetails sx={{ p: 2 }}>
         <Stack spacing={2}>
-          {/* Hint */}
           <Alert
             severity="info"
             icon={<FlagIcon fontSize="small" />}
@@ -303,20 +304,18 @@ function GeographicScope({ form, resource = null }) {
                         );
                       })
                     }
-                    renderOption={(props, option) => {
-                      return (
-                        <li key={option?._id} {...props}>
-                          <img
-                            loading="lazy"
-                            width="20"
-                            src={option?.flag}
-                            alt=""
-                            style={{ marginRight: 10 }}
-                          />
-                          {option?.label} ({option?.code})
-                        </li>
-                      );
-                    }}
+                    renderOption={(props, option) => (
+                      <li key={option?._id} {...props}>
+                        <img
+                          loading="lazy"
+                          width="20"
+                          src={option?.flag}
+                          alt=""
+                          style={{ marginRight: 10 }}
+                        />
+                        {option?.label} ({option?.code})
+                      </li>
+                    )}
                     renderInput={(params) => (
                       <TextField
                         {...params}
