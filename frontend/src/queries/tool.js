@@ -35,11 +35,13 @@ export function useTools(filters = {}) {
             if (
               key == "tags" ||
               key == "trl" ||
-              key == "assessment_functionality"
+              key == "assessment_functionalities"
             ) {
               value.forEach((arrayValue) => {
                 params.append(
-                  key.replace(key, key.replace(/s+$/, "")),
+                  key != "assessment_functionalities"
+                    ? key.replace(key, key.replace(/s+$/, ""))
+                    : key,
                   arrayValue
                 );
               });

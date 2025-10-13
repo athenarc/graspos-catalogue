@@ -19,6 +19,7 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import CloseIcon from "@mui/icons-material/Close";
 import ServiceTypeAutocompleteFilter from "./Filters/ServiceTypeFilter";
 import TrlFilter from "./Filters/TrlFilter";
+import AssessmentFunctionalitiesFilter from "./Filters/AssessmentFunctionalitiesFilter";
 
 export default function LocalFiltersStack({
   filters,
@@ -143,9 +144,9 @@ export default function LocalFiltersStack({
                 onFilterChange={handleChangeFilters}
               />
             )}
-            {selectedResource === 3 && (
+            {(selectedResource === 3 || selectedResource === 1) && (
               <>
-                <ServiceTypeAutocompleteFilter
+                <AssessmentFunctionalitiesFilter
                   selectedFilters={filters}
                   selectedResource={selectedResource}
                   onFilterChange={handleChangeFilters}
