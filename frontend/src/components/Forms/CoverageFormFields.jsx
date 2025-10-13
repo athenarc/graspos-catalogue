@@ -16,6 +16,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Alert,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PersonIcon from "@mui/icons-material/Person";
@@ -176,16 +177,44 @@ function AssessmentSubjects({ form, resource = null }) {
 function GeographicScope({ form, resource = null }) {
   const countries = useCountries();
   const hasError = !!form?.formState?.errors?.geographical_coverage;
+  const [isWorldwide, setIsWorldwide] = useState(false);
 
-  // compute initial value
   useEffect(() => {
     if (resource && countries?.data) {
-      const initialCountries = resource?.geographical_coverage.map((c) =>
+      const initialCountries = resource?.geographical_coverage?.map((c) =>
         countries?.data?.data?.find((co) => co._id === c.id)
       );
       form?.setValue("geographical_coverage", initialCountries);
+
+      if (
+        resource?.geographical_coverage?.some(
+          (c) => c.code?.toUpperCase() === "WW" || c.label === "Worldwide"
+        )
+      ) {
+        setIsWorldwide(true);
+      }
     }
   }, [resource, countries?.data, form?.setValue]);
+
+  const handleWorldwideToggle = (checked) => {
+    setIsWorldwide(checked);
+    if (checked) {
+      const worldwideCountry = countries?.data?.data?.find(
+        (c) =>
+          c.code?.toUpperCase() === "WW" ||
+          c.label.toLowerCase() === "worldwide"
+      ) || { label: "Worldwide", code: "WW" }; // fallback
+      form.setValue("geographical_coverage", [worldwideCountry]);
+    } else {
+      form.setValue("geographical_coverage", []);
+    }
+    form.trigger("geographical_coverage");
+  };
+
+  const filteredCountries =
+    countries?.data?.data?.filter(
+      (c) => c.label.toLowerCase() !== "worldwide"
+    ) || [];
 
   return (
     <Accordion
@@ -201,71 +230,113 @@ function GeographicScope({ form, resource = null }) {
           Geographical Coverage *
         </Typography>
       </AccordionSummary>
-      <AccordionDetails>
-        <Controller
-          name="geographical_coverage"
-          control={form?.control}
-          rules={{
-            validate: (value) =>
-              (value && value.length > 0) || "At least one country is required",
-          }}
-          render={({ field }) => (
-            <Autocomplete
-              {...field}
-              multiple
-              options={countries?.data?.data || []}
-              getOptionLabel={(option) => option?.label}
-              value={field?.value ?? []}
-              onChange={(_, value) => {
-                field.onChange(value);
-              }}
-              renderTags={(value, getTagProps) =>
-                value.map((option, index) => {
-                  const tagProps = getTagProps({ index });
-                  const { key, ...rest } = tagProps; // Remove key from the spread, jsx warning
-                  return (
-                    <Chip
-                      key={option?._id}
-                      label={`${option?.label} (${option?.code})`}
-                      {...rest}
-                    />
-                  );
-                })
-              }
-              renderOption={(props, option) => {
-                const { key, ...rest } = props; // Remove key from the spread, jsx warning
-                return (
-                  <li key={option?._id} {...rest}>
-                    <img
-                      loading="lazy"
-                      width="20"
-                      src={option?.flag}
-                      alt=""
-                      style={{ marginRight: 10 }}
-                    />
-                    {option?.label} ({option?.code})
-                  </li>
-                );
-              }}
-              renderInput={(params) => (
-                <>
-                  <TextField
-                    {...params}
-                    label="Select countries"
-                    placeholder="Start typing..."
-                    error={hasError}
-                    fullWidth
+
+      <AccordionDetails sx={{ p: 2 }}>
+        <Stack spacing={2}>
+          {/* Hint */}
+          <Alert
+            severity="info"
+            icon={<FlagIcon fontSize="small" />}
+            sx={{
+              backgroundColor: (theme) => theme.palette.action.hover,
+              color: "text.secondary",
+              borderRadius: 2,
+              py: 1,
+            }}
+          >
+            <Typography variant="body2">
+              You can either select <strong>Worldwide</strong> or choose one or
+              more specific countries.
+            </Typography>
+          </Alert>
+
+          <Grid container spacing={2} alignItems="center">
+            <Grid
+              size={{ xs: 12, sm: 6 }}
+              display="flex"
+              justifyContent="center"
+            >
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={isWorldwide}
+                    onChange={(e) => handleWorldwideToggle(e.target.checked)}
                   />
-                  {hasError && (
-                    <AlertHelperText
-                      error={form?.formState?.errors?.geographical_coverage}
-                    />
-                  )}
-                </>
+                }
+                label="Worldwide"
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <Controller
+                name="geographical_coverage"
+                control={form?.control}
+                rules={{
+                  validate: (value) => {
+                    if (isWorldwide) return true;
+                    if (value && value.length > 0) return true;
+                    return "At least one country or 'Worldwide' is required";
+                  },
+                }}
+                render={({ field }) => (
+                  <Autocomplete
+                    {...field}
+                    multiple
+                    disabled={isWorldwide}
+                    options={filteredCountries}
+                    getOptionLabel={(option) => option?.label}
+                    value={field?.value ?? []}
+                    onChange={(_, value) => field.onChange(value)}
+                    renderTags={(value, getTagProps) =>
+                      value.map((option, index) => {
+                        const tagProps = getTagProps({ index });
+                        return (
+                          <Chip
+                            key={option?._id || option?.code}
+                            label={`${option?.label} (${option?.code})`}
+                            {...tagProps}
+                            sx={{
+                              borderRadius: "12px",
+                              backgroundColor: "#f4f6f8",
+                            }}
+                          />
+                        );
+                      })
+                    }
+                    renderOption={(props, option) => {
+                      return (
+                        <li key={option?._id} {...props}>
+                          <img
+                            loading="lazy"
+                            width="20"
+                            src={option?.flag}
+                            alt=""
+                            style={{ marginRight: 10 }}
+                          />
+                          {option?.label} ({option?.code})
+                        </li>
+                      );
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Select countries"
+                        placeholder="Start typing..."
+                        error={hasError}
+                        fullWidth
+                      />
+                    )}
+                  />
+                )}
+              />
+              {hasError && (
+                <AlertHelperText
+                  error={form?.formState?.errors?.geographical_coverage}
+                />
               )}
-            />
-          )}
-        />
+            </Grid>
+          </Grid>
+        </Stack>
       </AccordionDetails>
     </Accordion>
   );
