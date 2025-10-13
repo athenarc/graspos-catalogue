@@ -119,7 +119,6 @@ function ResourceItemChipsSection({
       >
         <Stack direction="row" alignItems="center" spacing={1}>
           {icon && <Tooltip title={title}>{icon}</Tooltip>}
-          <Typography variant="subtitle2">{title}</Typography>
         </Stack>
         {hasMore && (
           <Box
@@ -197,11 +196,7 @@ export function ResourceItemKeywords({ resource }) {
 // --- Main Content ---
 function TabPanel({ children, value, index }) {
   return (
-    <Box
-      role="tabpanel"
-      hidden={value !== index}
-      sx={{ flex: 1, p: 2 }}
-    >
+    <Box role="tabpanel" hidden={value !== index} sx={{ flex: 1, p: 2 }}>
       {value === index && children}
     </Box>
   );
@@ -217,7 +212,6 @@ export default function ResourceItemContent({ resource }) {
   const [value, setValue] = useState(0);
 
   const allTabsMapping = {
-
     evidence_types: {
       title: "Evidence Types",
       icon: <AssessmentIcon fontSize="small" color="action" />,
@@ -232,7 +226,9 @@ export default function ResourceItemContent({ resource }) {
       icon: <AssessmentIcon fontSize="small" color="action" />,
       items: resource?.metadata?.assessment_functionalities || [],
       labelMap: functionalityLabelMap,
-      displayTab: resource?.resource_type.toLowerCase() === "service" || resource?.resource_type.toLowerCase() === "tool",
+      displayTab:
+        resource?.resource_type.toLowerCase() === "service" ||
+        resource?.resource_type.toLowerCase() === "tool",
     },
     assessment_values: {
       title: "Assessment Values",
@@ -286,7 +282,14 @@ export default function ResourceItemContent({ resource }) {
       <ResourceItemKeywords resource={resource} />
 
       {/* Tabs + Panels */}
-      <Box sx={{ display: "flex", border: 1, borderColor: "divider", borderRadius: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          border: 1,
+          borderColor: "divider",
+          borderRadius: 2,
+        }}
+      >
         <Tabs
           orientation="vertical"
           variant="scrollable"
@@ -298,37 +301,35 @@ export default function ResourceItemContent({ resource }) {
             minWidth: 220,
           }}
         >
-          {visibleTabs.map(([key, { title, icon, displayTab }], index) => (
-            displayTab && (
-              <Tab
-                key={key}
-
-                label={
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    {icon}
-                    <span>{title}</span>
-                  </Box>
-                }
-                sx={{ alignItems: "flex-start", textAlign: "left" }}
-              />
-            )
-          ))}
+          {visibleTabs.map(
+            ([key, { title, icon, displayTab }], index) =>
+              displayTab && (
+                <Tab
+                  key={key}
+                  label={
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <span>{title}</span>
+                    </Box>
+                  }
+                  sx={{ alignItems: "flex-start", textAlign: "left" }}
+                />
+              )
+          )}
         </Tabs>
 
         {/* Tab Panels */}
-        {visibleTabs.map(([key, { title, items, labelMap, displayTab }], index) => (
-
-          displayTab && (
-            <TabPanel key={key} value={value} index={index}>
-
-              <ResourceItemChipsSection
-                title={title}
-                items={resource?.[key] || []}
-                labelMap={labelMap}
-              />
-            </TabPanel>
-          )
-        ))}
+        {visibleTabs.map(
+          ([key, { title, items, labelMap, displayTab }], index) =>
+            displayTab && (
+              <TabPanel key={key} value={value} index={index}>
+                <ResourceItemChipsSection
+                  title={title}
+                  items={resource?.[key] || []}
+                  labelMap={labelMap}
+                />
+              </TabPanel>
+            )
+        )}
       </Box>
     </Stack>
   );
