@@ -27,6 +27,7 @@ async def get_all_tools(
         tag: Optional[List[str]] = Query(None),
         graspos: Optional[bool] = Query(None),
         trl: Optional[List[str]] = Query(None),
+        assessment_functionalities: Optional[List[str]] = Query(None),
         sort_field: Optional[str] = Query(None),
         sort_direction: Optional[str] = Query(None),
         start: Optional[str] = Query(None),
@@ -68,9 +69,14 @@ async def get_all_tools(
     if trl:
         trl_cleaned = [re.sub(r"^\d+ - ", "", str(s)) for s in trl]
         filters.append({"trl.european_description": {"$in": trl_cleaned}})
-    else:
-        print("No TRL filter applied")
-    print(filters)
+
+    # Assessment Functionalities filter
+    if assessment_functionalities:
+        filters.append({
+            "assessment_functionalities": {
+                "$in": assessment_functionalities
+            }
+        })
 
     # Geographical Coverage filtering
     if geographical_coverage:

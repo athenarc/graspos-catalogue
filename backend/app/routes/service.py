@@ -27,6 +27,7 @@ async def get_all_services(
         geographical_coverage: Optional[List[str]] = Query(None),
         tag: Optional[List[str]] = Query(None),
         service_type: Optional[List[str]] = Query(None),
+        assessment_functionalities: Optional[List[str]] = Query(None),
         trl: Optional[List[str]] = Query(None),
         graspos: Optional[bool] = Query(None),
         sort_field: Optional[str] = Query(None),
@@ -78,6 +79,14 @@ async def get_all_services(
         trl_cleaned = [re.sub(r"^\d+ - ", "", str(s)) for s in trl]
         filters.append({"trl.european_description": {"$in": trl_cleaned}})
 
+    # Assessment Functionalities filter
+    if assessment_functionalities:
+        filters.append({
+            "assessment_functionalities": {
+                "$in": assessment_functionalities
+            }
+        })
+        
     # GraspOS verified filter
     if graspos:
         filters.append({
@@ -267,7 +276,8 @@ async def update_service(
                     f"Deleting linked OpenAIRE {service.openaire.id} and related updates."
                 )
                 await Update.find(openaire_id=service.openaire.id).delete()
-                await OpenAIRE.find(OpenAIRE.id == service.openaire.id).delete()
+                await OpenAIRE.find(OpenAIRE.id == service.openaire.id
+                                    ).delete()
 
             await service.delete(link_rule=DeleteRules.DO_NOTHING)
 
