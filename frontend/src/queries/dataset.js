@@ -91,14 +91,15 @@ export function useDatasets(filters = {}) {
     enabled: true, // Ensure this fires by default if filters change
   });
 }
-export function useDatasetUniqueFieldValues(field, enabled) {
+
+export function useDatasetUniqueFieldValues(field, enabled, scope = "zenodo") {
   return useQuery({
-    queryKey: ["dataset-unique-field-values", field],
+    queryKey: ["dataset-unique-field-values", field, scope],
     enabled: enabled && !!field,
     retry: false,
     queryFn: () =>
       axiosInstance
-        .get(`/dataset/fields/unique`, { params: { field } })
+        .get(`/dataset/fields/unique`, { params: { field, scope } })
         .then((res) => res),
   });
 }

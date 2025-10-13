@@ -90,14 +90,14 @@ export function useDocuments(filters = {}) {
   });
 }
 
-export function useDocumentUniqueFieldValues(field, enabled) {
+export function useDocumentUniqueFieldValues(field, enabled, scope = "zenodo") {
   return useQuery({
-    queryKey: ["document-unique-field-values", field],
+    queryKey: ["document-unique-field-values", field, scope],
     enabled: enabled && !!field,
     retry: false,
     queryFn: () =>
       axiosInstance
-        .get(`/document/fields/unique`, { params: { field } })
+        .get(`/document/fields/unique`, { params: { field, scope } })
         .then((res) => res),
   });
 }

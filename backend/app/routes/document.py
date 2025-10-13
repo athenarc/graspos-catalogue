@@ -58,8 +58,13 @@ async def get_all_documents(
 
     # Geographical Coverage filtering
     if geographical_coverage:
-        geographical_coverage_ids = [PydanticObjectId(s) for s in geographical_coverage]
-        filters.append({"geographical_coverage._id": {"$in": geographical_coverage_ids}})
+        geographical_coverage_ids = [
+            PydanticObjectId(s) for s in geographical_coverage
+        ]
+        filters.append(
+            {"geographical_coverage._id": {
+                "$in": geographical_coverage_ids
+            }})
 
     # Tag filter
     if tag:
@@ -151,14 +156,19 @@ async def create_document(
 
 
 @router.get("/fields/unique")
-async def get_unique_metadata_values(field: str = Query(
-    ..., description="Field name inside zenodo.metadata")):
+async def get_unique_metadata_values(
+        field: str = Query(..., description="Field name inside document"),
+        scope: str = Query(...,
+                           description="Field name inside zenodo.metadata")):
     """
-    Return unique values from the given field in Zenodo metadata across all documents.
+    Return unique values from the given field in Zenodo metadata across all tools.
     """
     try:
-        unique_values = await Documents.get_unique_field_values_from_zenodo(
-            field)
+        if scope == "local":
+            unique_values = await Documents.get_unique_field_values(field)
+        else:
+            unique_values = await Documents.get_unique_field_values_from_zenodo(
+                field)
         return {f"unique_{field}": unique_values}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
