@@ -47,7 +47,8 @@ async def update_openaire_records(
 
             new_openaire = data["openaire_object"]
 
-            if new_openaire["metadata"]["version"] != record.metadata.version:
+            if new_openaire["metadata"][
+                    "version"] != record.metadata.version or openaire_id:
 
                 updated_model = OpenAIRE(**new_openaire)
                 fields = updated_model.model_dump(exclude_unset=True)
@@ -132,7 +133,7 @@ async def update_zenodo_records(user_id=None, zenodo_id=None):
 
             new_zenodo = data["zenodo_object"]
 
-            if new_zenodo["zenodo_id"] != record.zenodo_id:
+            if new_zenodo["zenodo_id"] != record.zenodo_id or zenodo_id:
 
                 updated_model = Zenodo(**new_zenodo)
                 fields = updated_model.model_dump(exclude_unset=True)
