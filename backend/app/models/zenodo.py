@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field, field_validator, model_validator
 import pymongo
 from pymongo import IndexModel
+import pycountry
 
 
 class ZenodoMetadata(BaseModel):
@@ -15,6 +16,33 @@ class ZenodoMetadata(BaseModel):
     keywords: list | None = None
     version: str = Field(..., description="Version of the resource")
     language: str | None = None
+    mapped_language: dict | None = None
+    language_override: str | None = "en"
+
+    @model_validator(mode="after")
+    def normalize_language(self):
+        if not self.language:
+            return self
+        self.language_override = "en"
+        code = self.language.strip().lower()
+        lang = (pycountry.languages.get(alpha_2=code)
+                or pycountry.languages.get(alpha_3=code)
+                or pycountry.languages.get(terminology=code))
+
+        if lang:
+            alpha_2 = getattr(lang, "alpha_2", None)
+            alpha_3 = getattr(lang, "alpha_3", None)
+            name = lang.name
+
+            self.mapped_language = {
+                "alpha_2": alpha_2,
+                "alpha_3": alpha_3,
+                "name": name,
+            }
+            self.language_override = alpha_2
+
+        return self
+
     references: list | None = None
     license: object = Field(..., description="License information")
     grants: list | None = None
@@ -181,7 +209,7 @@ class Zenodo(Document, Zenodo, ZenodoView):
                     "metadata.description": 1
                 },  # Optional: You can add custom weights
                 default_language="english",
-                language_override="language",
+                language_override="language_override",
                 textIndexVersion=3),
         ]
 
