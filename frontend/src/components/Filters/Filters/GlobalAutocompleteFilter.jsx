@@ -18,6 +18,7 @@ import { useDocumentUniqueFieldValues } from "@queries/document";
 export default function UniqueAutocompleteFieldFilter({
   field,
   label,
+  scope = "local",
   selectedFilters,
   onFilterChange,
 }) {
@@ -25,16 +26,16 @@ export default function UniqueAutocompleteFieldFilter({
 
   // Fetch all resource-specific unique values
   const { data: serviceData, isLoading: loadingService } =
-    useServiceUniqueFieldValues(field, true, "local");
+    useServiceUniqueFieldValues(field, true, scope);
   const { data: toolData, isLoading: loadingTool } = useToolUniqueFieldValues(
     field,
     true,
-    "local"
+    scope
   );
   const { data: datasetData, isLoading: loadingDataset } =
-    useDatasetUniqueFieldValues(field, true, "local");
+    useDatasetUniqueFieldValues(field, true, scope);
   const { data: documentData, isLoading: loadingDocument } =
-    useDocumentUniqueFieldValues(field, true, "local");
+    useDocumentUniqueFieldValues(field, true, scope);
 
   useEffect(() => {
     if (loadingService || loadingTool || loadingDataset || loadingDocument)

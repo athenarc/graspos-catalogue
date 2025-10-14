@@ -23,24 +23,28 @@ function ResourceFilters({ handleChangeFilters, selectedFilters }) {
       <UniqueAutocompleteFieldFilter
         field="assessment_values"
         label="Assessment Values"
+        scope="local"
         selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />
       <UniqueAutocompleteFieldFilter
         field="evidence_types"
         label="Evidence Types"
+        scope="local"
         selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />
       <UniqueAutocompleteFieldFilter
         field="covered_fields"
         label="Covered Fields"
+        scope="local"
         selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />
       <UniqueAutocompleteFieldFilter
         field="covered_research_products"
         label="Covered Research Products"
+        scope="local"
         selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />
