@@ -14,7 +14,16 @@ class ZenodoMetadata(BaseModel):
     creators: list = Field(..., description="List of creators")
     keywords: list | None = None
     version: str = Field(..., description="Version of the resource")
+    language: str | None = None
     references: list | None = None
+    license: object = Field(..., description="License information")
+    grants: list | None = None
+    communities: list | None = None
+    contributors: list | None = None
+    subjects: list | None = None
+    relations: object | None = None
+    notes: str | None = None
+    custom: object | None = None
     resource_type: object = Field(
         description="Type of the resource, e.g., Tool, Service, Dataset.")
 
@@ -112,12 +121,6 @@ class ZenodoMetadata(BaseModel):
                 }
 
         return self
-
-    license: object = Field(..., description="License information")
-    grants: list | None = None
-    communities: list | None = None
-    relations: object | None = None
-    notes: str | None = None
 
 
 class Zenodo(BaseModel):
