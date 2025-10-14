@@ -189,39 +189,39 @@ export function ResourceActionsMenu({ resource, type, user }) {
                   </MenuItem>
                 </span>
               </Tooltip>
-
-              <Tooltip
-                title={
-                  !user.super_user && resource?.owner !== user.id
-                    ? "You don't have permission"
-                    : ""
-                }
-              >
-                <span>
-                  <MenuItem
-                    onClick={() =>
-                      handleUpdateResource({
-                        zenodo_id: resource?.zenodo?.id || null,
-                        openaire_id: resource?.openaire?.id || null,
-                        source: resource?.zenodo?.source,
-                      })
-                    }
-                    disabled={
-                      !user ||
-                      updateResources.isPending ||
-                      (!user.super_user && resource?.owner !== user.id)
-                    }
-                  >
-                    <ListItemIcon>
-                      <RefreshIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>
-                      {updateResources.isPending ? "Updating" : "Update"}
-                    </ListItemText>
-                  </MenuItem>
-                </span>
-              </Tooltip>
-
+              {user?.super_user && (
+                <Tooltip
+                  title={
+                    !user.super_user && resource?.owner !== user.id
+                      ? "You don't have permission"
+                      : ""
+                  }
+                >
+                  <span>
+                    <MenuItem
+                      onClick={() =>
+                        handleUpdateResource({
+                          zenodo_id: resource?.zenodo?.id || null,
+                          openaire_id: resource?.openaire?.id || null,
+                          source: resource?.zenodo?.source,
+                        })
+                      }
+                      disabled={
+                        !user ||
+                        updateResources.isPending ||
+                        (!user.super_user && resource?.owner !== user.id)
+                      }
+                    >
+                      <ListItemIcon>
+                        <RefreshIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>
+                        {updateResources.isPending ? "Syncing..." : "Sync"}
+                      </ListItemText>
+                    </MenuItem>
+                  </span>
+                </Tooltip>
+              )}
               <Tooltip
                 title={
                   !user.super_user && resource?.owner !== user.id
