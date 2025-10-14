@@ -22,6 +22,8 @@ const getDefaultFilters = () => ({
   evidence_types: [],
   covered_fields: [],
   covered_research_products: [],
+  language: [],
+  access_right: [],
 });
 
 // Define which filters are global vs local
@@ -46,6 +48,8 @@ const LOCAL_FILTER_KEYS = new Set([
   "sortDirection",
   "dateRange",
   "trl",
+  "language",
+  "access_right",
 ]);
 
 const normalizeToLocalMidnight = (date) => {
@@ -118,8 +122,14 @@ export function useURLFilters(resourceMap) {
     searchParams.getAll("assessment_values").forEach((value) => {
       newFilters.assessment_values.push(value);
     });
+    searchParams.getAll("language").forEach((value) => {
+      newFilters.language.push(value);
+    });
     searchParams.getAll("tag").forEach((value) => {
       newFilters.tags.push(value);
+    });
+    searchParams.getAll("access_right").forEach((value) => {
+      newFilters.access_right.push(value);
     });
     searchParams.getAll("service_type").forEach((value) => {
       newFilters.service_type.push(value);
@@ -184,6 +194,12 @@ export function useURLFilters(resourceMap) {
           );
         }
       );
+      filters.language?.forEach((language) => {
+        searchParams.append("language", language);
+      });
+      filters.access_right?.forEach((access_right) => {
+        searchParams.append("access_right", access_right);
+      });
       filters.service_type?.forEach((service_type) => {
         searchParams.append("service_type", service_type);
       });

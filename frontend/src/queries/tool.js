@@ -39,7 +39,9 @@ export function useTools(filters = {}) {
               key == "assessment_values" ||
               key == "evidence_types" ||
               key == "covered_fields" ||
-              key == "covered_research_products"
+              key == "covered_research_products" ||
+              key == "language" ||
+              key == "access_right"
             ) {
               value.forEach((arrayValue) => {
                 params.append(
@@ -47,7 +49,9 @@ export function useTools(filters = {}) {
                     key != "covered_fields" &&
                     key != "covered_research_products" &&
                     key != "evidence_types" &&
-                    key != "assessment_values"
+                    key != "assessment_values" &&
+                    key != "language" &&
+                    key != "access_right"
                     ? key.replace(key, key.replace(/s+$/, ""))
                     : key,
                   arrayValue
