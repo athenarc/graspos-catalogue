@@ -51,7 +51,6 @@ export default function WizardForm({
   const handleBack = () => {
     setActiveStep((prev) => prev - 1);
   };
-
   return (
     <Stack spacing={2} sx={{ width: "100%" }}>
       <FormProvider {...form}>

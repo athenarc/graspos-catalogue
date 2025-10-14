@@ -1,6 +1,6 @@
 from beanie import Document, PydanticObjectId
 from datetime import datetime
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 import pymongo
 from pymongo import IndexModel
 
@@ -18,15 +18,25 @@ class ZenodoMetadata(BaseModel):
     resource_type: object = Field(
         description="Type of the resource, e.g., Tool, Service, Dataset.")
 
+    mapped_resource_type: dict | None = None
+
     @field_validator("resource_type")
     def validate_resource_type(cls, v):
         mapping = {
-            "software": "Tool",
-            "tool": "Tool",
-            "dataset": "Dataset",
-            "publication": "Document",
-            "document": "Document",
-            "service": "Service",
+            "Tool": {
+                "types": ["tool", "software"],
+            },
+            "Dataset": {
+                "types": ["dataset"],
+            },
+            "Document": {
+                "types": ["publication", "document"],
+                "subtypes":
+                ["publication", "journal", "other", "document", "article"],
+            },
+            "Service": {
+                "types": ["service"],
+            },
         }
 
         if v is None:
@@ -34,24 +44,74 @@ class ZenodoMetadata(BaseModel):
 
         if isinstance(v, str):
             normalized = v.strip().lower()
-            mapped = mapping.get(normalized, None)
-            if not mapped:
-                raise ValueError(f"Resource type '{v}' not recognized")
-            return {"type": mapped}
+            for canonical, conf in mapping.items():
+                if normalized in conf.get("types", []):
+                    return {"type": canonical}
+            valid_values = ", ".join(
+                sorted({
+                    t
+                    for conf in mapping.values()
+                    for t in conf.get("types", [])
+                }))
+            raise ValueError(
+                f"Resource type '{v}' not recognized (valid: {valid_values})")
 
         if isinstance(v, dict):
-            type_value = v.get("type", "").lower()
-            mapped = mapping.get(type_value, None)
-            if not mapped:
-                valid_keys = ", ".join(
-                    [k.capitalize() for k in mapping.keys()])
-                raise ValueError(
-                    f"Resource type must be one of {valid_keys} and not '{type_value}'"
-                )
-            return {"type": mapped}
+            type_value = v.get("type", "").strip().lower()
+            subtype_value = v.get(
+                "subtype", "").strip().lower() if v.get("subtype") else None
+
+            for canonical, conf in mapping.items():
+                if type_value in conf.get("types", []):
+                    if subtype_value:
+                        if "subtypes" in conf:
+                            if subtype_value in [
+                                    s.lower() for s in conf["subtypes"]
+                            ]:
+                                return {
+                                    "type": canonical,
+                                    "subtype": subtype_value
+                                }
+                            else:
+                                valid_subtypes = ", ".join(conf["subtypes"])
+                                raise ValueError(
+                                    f"Invalid subtype '{subtype_value}' for '{canonical}'. "
+                                    f"Valid subtypes: {valid_subtypes}")
+                    return {"type": canonical}
+
+            valid_types = ", ".join(
+                sorted({
+                    t
+                    for conf in mapping.values()
+                    for t in conf.get("types", [])
+                }))
+            raise ValueError(
+                f"Resource type '{type_value}' not recognized (valid: {valid_types})"
+            )
 
         raise ValueError(
-            "Resource type must be a string or object with type field")
+            "Resource type must be a string or object with a 'type' field")
+
+    @model_validator(mode="after")
+    def set_mapped_resource_type(self):
+
+        label_mapping = {
+            "Document": "Templates & Guidelines",
+            "Tool": "Tool",
+            "Dataset": "Dataset",
+            "Service": "Service",
+        }
+
+        if self.resource_type and isinstance(self.resource_type, dict):
+            type_value = self.resource_type.get("type")
+            if type_value:
+                label_value = label_mapping.get(type_value, type_value)
+                self.mapped_resource_type = {
+                    "value": type_value.lower(),
+                    "label": label_value,
+                }
+
+        return self
 
     license: object = Field(..., description="License information")
     grants: list | None = None
@@ -84,6 +144,15 @@ class Zenodo(BaseModel):
     submitted: bool | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
+
+    mapped_resource_type: dict | None = None
+
+    @model_validator(mode="after")
+    def propagate_mapped_resource_type(self):
+
+        if self.metadata and self.metadata.mapped_resource_type:
+            self.mapped_resource_type = self.metadata.mapped_resource_type
+        return self
 
 
 class ZenodoView(BaseModel):
