@@ -25,6 +25,8 @@ async def get_all_documents(
         assessment: Optional[List[str]] = Query(None),
         geographical_coverage: Optional[List[str]] = Query(None),
         tag: Optional[List[str]] = Query(None),
+        language: Optional[List[str]] = Query(None),
+        access_right: Optional[List[str]] = Query(None),
         assessment_values: Optional[List[str]] = Query(None),
         evidence_types: Optional[List[str]] = Query(None),
         covered_fields: Optional[List[str]] = Query(None),
@@ -73,6 +75,14 @@ async def get_all_documents(
     # Tag filter
     if tag:
         filters.append({"zenodo.metadata.keywords": {"$in": tag}})
+
+    # Language filtering
+    if language:
+        filters.append({"zenodo.metadata.language": {"$in": language}})
+
+    # Access right filtering
+    if access_right:
+        filters.append({"zenodo.metadata.access_right": {"$in": access_right}})
 
     # Assessment values filtering
     if assessment_values:

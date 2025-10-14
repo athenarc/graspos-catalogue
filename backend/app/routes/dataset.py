@@ -29,6 +29,8 @@ async def get_all_datasets(
         evidence_types: Optional[List[str]] = Query(None),
         covered_fields: Optional[List[str]] = Query(None),
         covered_research_products: Optional[List[str]] = Query(None),
+        language: Optional[List[str]] = Query(None),
+        access_right: Optional[List[str]] = Query(None),
         graspos: Optional[bool] = Query(None),
         sort_field: Optional[str] = Query(None),
         sort_direction: Optional[str] = Query(None),
@@ -74,6 +76,14 @@ async def get_all_datasets(
     if tag:
         filters.append({"zenodo.metadata.keywords": {"$in": tag}})
 
+    # Language filtering
+    if language:
+        filters.append({"zenodo.metadata.language": {"$in": language}})
+
+    # Access right filtering
+    if access_right:
+        filters.append({"zenodo.metadata.access_right": {"$in": access_right}})
+        
     # Assessment values filtering
     if assessment_values:
         filters.append({"assessment_values": {"$in": assessment_values}})
