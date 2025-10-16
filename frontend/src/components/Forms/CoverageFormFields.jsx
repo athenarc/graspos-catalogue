@@ -460,6 +460,7 @@ export function AssessmentFunctionalities({
       item.resource_types.includes("all") ||
       item.resource_types.includes(resource_type)
   );
+
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -476,17 +477,21 @@ export function AssessmentFunctionalities({
                 multiple
                 disableCloseOnSelect
                 options={filteredOptions}
-                getOptionLabel={(option) => option.label}
+                getOptionLabel={(option) => option?.label}
                 isOptionEqualToValue={(option, value) =>
-                  option.value === value.value
+                  option?.value === value?.value
                 }
-                value={Array.isArray(field.value) ? field.value : []}
-                onChange={(_, newValue) => field.onChange(newValue)}
-                renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
+                value={filteredOptions?.filter((opt) =>
+                  field?.value?.includes(opt?.value)
+                )}
+                onChange={(_, newValue) =>
+                  field?.onChange(newValue?.map((opt) => opt?.value))
+                }
+                renderTags={(selected, getTagProps) =>
+                  selected.map((option, index) => (
                     <Chip
-                      key={option.value}
-                      label={option.label}
+                      key={option?.value}
+                      label={option?.label}
                       {...getTagProps({ index })}
                       sx={{
                         borderRadius: "12px",
@@ -499,13 +504,7 @@ export function AssessmentFunctionalities({
                   <TextField
                     {...params}
                     label="Assessment Functionalities"
-                    error={
-                      !!form?.formState?.errors?.assessment_functionalities
-                    }
-                    helperText={
-                      form?.formState?.errors?.assessment_functionalities
-                        ?.message
-                    }
+                    error={!!form.formState.errors?.assessment_functionalities}
                   />
                 )}
               />
@@ -540,12 +539,20 @@ function EvidenceTypes({ form, resource = null }) {
             render={({ field }) => (
               <Autocomplete
                 multiple
+                disableCloseOnSelect
                 options={options}
-                freeSolo
-                value={Array.isArray(field.value) ? field.value : []}
-                onChange={(_, newValue) => field.onChange(newValue)}
-                renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
+                getOptionLabel={(option) => option?.label ?? ""}
+                isOptionEqualToValue={(option, value) =>
+                  option?.value === value?.value
+                }
+                value={options.filter((opt) =>
+                  field.value?.includes(opt.value)
+                )}
+                onChange={(_, newValue) =>
+                  field.onChange(newValue?.map((opt) => opt?.value))
+                }
+                renderTags={(selected, getTagProps) =>
+                  selected.map((option, index) => (
                     <Chip
                       key={option?.value}
                       label={option?.label}
@@ -561,7 +568,7 @@ function EvidenceTypes({ form, resource = null }) {
                   <TextField
                     {...params}
                     label="Evidence Types"
-                    placeholder="Type and press Enter to add"
+                    placeholder="Select or type..."
                     error={!!form?.formState?.errors?.evidence_types}
                     helperText={
                       form?.formState?.errors?.evidence_types?.message

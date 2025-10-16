@@ -119,17 +119,6 @@ export default function ResourceForm() {
     if (data?.trl === "" || Array.isArray(data?.trl)) {
       data.trl = null;
     }
-    // keep only value from each object in array assessment_functionalities and evidence_types
-    if (Array.isArray(data?.assessment_functionalities)) {
-      data.assessment_functionalities = data.assessment_functionalities.map(
-        (item) => (typeof item === "string" ? item : item.value)
-      );
-    }
-    if (Array.isArray(data?.evidence_types)) {
-      data.evidence_types = data.evidence_types.map((item) =>
-        typeof item === "string" ? item : item.value
-      );
-    }
     mutation.mutate(
       { data },
       {
