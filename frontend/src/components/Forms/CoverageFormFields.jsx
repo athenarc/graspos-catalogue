@@ -403,58 +403,63 @@ function CoveredResearchProducts({ form, resource = null }) {
   );
 }
 
-function AssessmentFunctionalities({
+export function AssessmentFunctionalities({
   form,
   resource = null,
   resource_type = null,
 }) {
   const menuItems = [
     {
+      id: 1,
       value: "scholarly_data_enrichment_missing_attributes",
       label: "Scholarly data enrichment: Missing attributes",
       resource_types: ["all"],
     },
     {
+      id: 2,
       value: "scholarly_data_enrichment_indicators",
       label: "Scholarly data enrichment: Indicators",
       resource_types: ["all"],
     },
     {
+      id: 3,
       value: "scholarly_data_enrichment_semantics",
       label: "Scholarly data enrichment: Missing links & semantics",
       resource_types: ["all"],
     },
     {
+      id: 4,
       value: "open_science_monitoring_researchers",
       label: "Open Science monitoring: Researchers",
       resource_types: ["all"],
     },
     {
+      id: 5,
       value: "open_science_monitoring_institutions",
       label: "Open Science monitoring: Institutions",
       resource_types: ["all"],
     },
     {
+      id: 6,
       value: "open_science_monitoring_countries",
       label: "Open Science monitoring: Countries",
       resource_types: ["all"],
     },
     {
+      id: 7,
       value: "open_science_monitoring_general",
       label: "Open Science monitoring: General",
       resource_types: ["all"],
     },
-    {
-      value: "data",
-      label: "Data",
-      resource_types: ["service"],
-    },
-    {
-      value: "other",
-      label: "Other",
-      resource_types: ["all"],
-    },
+    { id: 8, value: "data", label: "Data", resource_types: ["service"] },
+    { id: 9, value: "other", label: "Other", resource_types: ["all"] },
   ];
+
+  const filteredOptions = menuItems.filter(
+    (item) =>
+      item.resource_types.includes("all") ||
+      item.resource_types.includes(resource_type)
+  );
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -462,34 +467,48 @@ function AssessmentFunctionalities({
       </AccordionSummary>
       <AccordionDetails>
         <FormControl fullWidth>
-          <InputLabel>Assessment Functionalities</InputLabel>
           <Controller
             name="assessment_functionalities"
             control={form?.control}
             defaultValue={resource?.assessment_functionalities || []}
-            label="Assessment Functionalities"
             render={({ field }) => (
-              <Select
+              <Autocomplete
                 multiple
-                label="Assessment Functionalities"
-                value={field.value || []}
-                onChange={(event) => {
-                  const value = event.target.value;
-                  field.onChange(Array.isArray(value) ? value : []);
-                }}
-              >
-                {menuItems
-                  .filter(
-                    (item) =>
-                      item.resource_types.includes("all") ||
-                      item.resource_types.includes(resource_type)
-                  )
-                  .map((item) => (
-                    <MenuItem key={item.value} value={item.value}>
-                      {item.label}
-                    </MenuItem>
-                  ))}
-              </Select>
+                disableCloseOnSelect
+                options={filteredOptions}
+                getOptionLabel={(option) => option.label}
+                isOptionEqualToValue={(option, value) =>
+                  option.value === value.value
+                }
+                value={Array.isArray(field.value) ? field.value : []}
+                onChange={(_, newValue) => field.onChange(newValue)}
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Chip
+                      key={option.value}
+                      label={option.label}
+                      {...getTagProps({ index })}
+                      sx={{
+                        borderRadius: "12px",
+                        backgroundColor: "#f4f6f8",
+                      }}
+                    />
+                  ))
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Assessment Functionalities"
+                    error={
+                      !!form?.formState?.errors?.assessment_functionalities
+                    }
+                    helperText={
+                      form?.formState?.errors?.assessment_functionalities
+                        ?.message
+                    }
+                  />
+                )}
+              />
             )}
           />
         </FormControl>
@@ -499,6 +518,14 @@ function AssessmentFunctionalities({
 }
 
 function EvidenceTypes({ form, resource = null }) {
+  const options = [
+    { value: "narratives", label: "Narratives" },
+    { value: "indicators", label: "Indicators" },
+    { value: "list_of_contributions", label: "List Of Contributions" },
+    { value: "badges", label: "Badges" },
+    { value: "other", label: "Other" },
+  ];
+
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -506,29 +533,42 @@ function EvidenceTypes({ form, resource = null }) {
       </AccordionSummary>
       <AccordionDetails>
         <FormControl fullWidth>
-          <InputLabel>Evidence Types</InputLabel>
           <Controller
             name="evidence_types"
             control={form?.control}
             defaultValue={resource?.evidence_types || []}
             render={({ field }) => (
-              <Select
+              <Autocomplete
                 multiple
-                label="Evidence Types"
-                value={field.value || []}
-                onChange={(event) => {
-                  const value = event.target.value;
-                  field.onChange(Array.isArray(value) ? value : []);
-                }}
-              >
-                <MenuItem value="narratives">Narratives</MenuItem>
-                <MenuItem value="indicators">Indicators</MenuItem>
-                <MenuItem value="list_of_contributions">
-                  List Of Contributions
-                </MenuItem>
-                <MenuItem value="badges">Badges</MenuItem>
-                <MenuItem value="other">Other</MenuItem>
-              </Select>
+                options={options}
+                freeSolo
+                value={Array.isArray(field.value) ? field.value : []}
+                onChange={(_, newValue) => field.onChange(newValue)}
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Chip
+                      key={option?.value}
+                      label={option?.label}
+                      {...getTagProps({ index })}
+                      sx={{
+                        borderRadius: "12px",
+                        backgroundColor: "#f4f6f8",
+                      }}
+                    />
+                  ))
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Evidence Types"
+                    placeholder="Type and press Enter to add"
+                    error={!!form?.formState?.errors?.evidence_types}
+                    helperText={
+                      form?.formState?.errors?.evidence_types?.message
+                    }
+                  />
+                )}
+              />
             )}
           />
         </FormControl>

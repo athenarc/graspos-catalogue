@@ -58,7 +58,6 @@ async def get_openaire_data(source: str) -> dict:
             "detail": f"Request failed: {str(e)}",
             "openaire_object": {}
         }
-    re
 
 
 async def get_zenodo_data(source: str) -> dict:
