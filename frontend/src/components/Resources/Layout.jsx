@@ -171,7 +171,7 @@ export default function ResourcesGridLayout({ user }) {
     <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <Box
         sx={{
-          width: { xs: 0, md: 350 },
+          width: { xs: 0, md: 400 },
           flexShrink: 0,
         }}
       >

@@ -26,20 +26,10 @@ import WizardForm from "./ResourceWizard.jsx";
 import AlertMessage from "../Helpers/AlertMessage.jsx";
 
 const resourceTypesList = [
-  { match: ["dataset"], value: "dataset", label: "Dataset" },
-  { match: ["tool"], value: "tool", label: "Tool" },
-  { match: ["software"], value: "tool", label: "Tool" },
-  {
-    match: ["document"],
-    value: "document",
-    label: "Templates & Guidelines",
-  },
-  {
-    match: ["publication"],
-    value: "document",
-    label: "Templates & Guidelines",
-  },
-  { match: ["service"], value: "service", label: "Service" },
+  { value: "dataset", label: "Dataset" },
+  { value: "tool", label: "Tool" },
+  { value: "document", label: "Templates & Guidelines" },
+  { value: "service", label: "Service" },
 ];
 
 export default function ResourceForm() {
@@ -48,7 +38,10 @@ export default function ResourceForm() {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("info");
   const [data, setData] = useState(null);
-  const [resourceType, setResourceType] = useState("dataset");
+  const [resourceType, setResourceType] = useState({
+    value: "dataset",
+    label: "Dataset",
+  });
   const [canCreate, setCanCreate] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
   const [delayActive, setDelayActive] = useState(false);
@@ -82,7 +75,7 @@ export default function ResourceForm() {
   const openaire = useOpenaire();
 
   const stepFields = {
-    0: [resourceType === "service" ? "url" : "doi"], // basic info
+    0: [resourceType?.value === "service" ? "url" : "doi"], // basic info
     1: [], // governance step
     2: [], // support step
     3: ["geographical_coverage", "covered_fields", "covered_research_products"], // coverage step
@@ -115,9 +108,9 @@ export default function ResourceForm() {
   }, [data]);
 
   const getMutation = () => {
-    if (resourceType === "tool") return createTool;
-    if (resourceType === "document") return createDocument;
-    if (resourceType === "service") return createService;
+    if (resourceType?.value === "tool") return createTool;
+    if (resourceType?.value === "document") return createDocument;
+    if (resourceType?.value === "service") return createService;
     return createDataset;
   };
 
@@ -130,7 +123,7 @@ export default function ResourceForm() {
       { data },
       {
         onSuccess: () => {
-          setMessage(`${resourceType} has been created successfully!`);
+          setMessage(`${resourceType?.label} has been added successfully!`);
           navigate("..");
         },
         onError: (error) => {
@@ -157,18 +150,10 @@ export default function ResourceForm() {
         onSuccess: (data) => {
           setError("source", null);
 
-          const recordType =
-            data?.data?.metadata?.resource_type?.type?.toLowerCase();
-
-          if (recordType) {
-            const matchedType = resourceTypesList?.find((item) =>
-              item?.match?.some((m) => recordType?.includes(m?.toLowerCase()))
-            );
-
-            if (matchedType) {
-              setResourceType(matchedType?.value);
-            }
+          if (data?.data?.mapped_resource_type) {
+            setResourceType(data?.data?.mapped_resource_type);
           }
+
           setMessage("Zenodo record found. Loading...");
           setStatus("success");
           setData(data?.data);
@@ -268,6 +253,7 @@ export default function ResourceForm() {
       { data: { source: sourceValue } },
       {
         onSuccess: (data) => {
+          setResourceType(data?.data?.mapped_resource_type);
           setError("source", null);
           setStatus("success");
           setMessage("OpenAIRE record found. Loading...");
@@ -368,7 +354,7 @@ export default function ResourceForm() {
                 <WizardForm
                   form={form}
                   stepFields={stepFields}
-                  resourceType={resourceType}
+                  resourceType={resourceType?.value}
                   resourceTypesList={resourceTypesList}
                   setResourceType={setResourceType}
                   data={data}

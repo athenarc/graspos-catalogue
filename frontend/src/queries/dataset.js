@@ -32,10 +32,25 @@ export function useDatasets(filters = {}) {
         if (typeof value === "object" && value !== null) {
           // If the value is an object (like "licenses"), loop through its properties
           Object.entries(value).forEach(([subKey, subValue]) => {
-            if (key == "tags") {
+            if (
+              key == "tags" ||
+              key == "assessment_values" ||
+              key == "evidence_types" ||
+              key == "covered_fields" ||
+              key == "covered_research_products" ||
+              key == "language" ||
+              key == "access_right"
+            ) {
               value.forEach((arrayValue) => {
                 params.append(
-                  key.replace(key, key.replace(/s+$/, "")),
+                  key != "covered_fields" &&
+                    key != "covered_research_products" &&
+                    key != "evidence_types" &&
+                    key != "assessment_values" &&
+                    key != "language" &&
+                    key != "access_right"
+                    ? key.replace(key, key.replace(/s+$/, ""))
+                    : key,
                   arrayValue
                 );
               });
@@ -91,14 +106,15 @@ export function useDatasets(filters = {}) {
     enabled: true, // Ensure this fires by default if filters change
   });
 }
-export function useDatasetUniqueFieldValues(field, enabled) {
+
+export function useDatasetUniqueFieldValues(field, enabled, scope = "zenodo") {
   return useQuery({
-    queryKey: ["dataset-unique-field-values", field],
+    queryKey: ["dataset-unique-field-values", field, scope],
     enabled: enabled && !!field,
     retry: false,
     queryFn: () =>
       axiosInstance
-        .get(`/dataset/fields/unique`, { params: { field } })
+        .get(`/dataset/fields/unique`, { params: { field, scope } })
         .then((res) => res),
   });
 }

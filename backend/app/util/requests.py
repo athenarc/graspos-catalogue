@@ -58,7 +58,6 @@ async def get_openaire_data(source: str) -> dict:
             "detail": f"Request failed: {str(e)}",
             "openaire_object": {}
         }
-    re
 
 
 async def get_zenodo_data(source: str) -> dict:
@@ -85,8 +84,13 @@ async def get_zenodo_data(source: str) -> dict:
             resource["source"] = source.strip()
             del resource["id"]
 
-            return {"status": 200, "zenodo_object": resource}
+            indicators = await get_openaire_citation_data(
+                doi=resource["conceptdoi"] if "conceptdoi" in resource else "")
+            print(indicators)
+            if indicators["status"] == 200:
+                resource["indicators"] = indicators["openaire_citation"]
 
+            return {"status": 200, "zenodo_object": resource}
         elif str(response.status_code).startswith("5"):
             return {
                 "status": response.status_code,
@@ -114,4 +118,70 @@ async def get_zenodo_data(source: str) -> dict:
             "status": 503,
             "detail": f"Request failed: {str(e)}",
             "zenodo_object": {}
+        }
+
+
+import httpx
+from typing import Any, Dict, Optional
+
+
+async def get_openaire_citation_data(doi: str) -> Dict[str, Any]:
+    """
+    Fetch citation indicators from the OpenAIRE API for a given DOI.
+
+    Args:
+        doi (str): The DOI identifier.
+
+    Returns:
+        dict: {
+            "status": int,
+            "openaire_citation": dict,
+            "detail": Optional[str]
+        }
+    """
+    if not doi:
+        return {
+            "status": 400,
+            "openaire_citation": {},
+            "detail": "Missing DOI"
+        }
+
+    url = f"https://api.openaire.eu/graph/v2/researchProducts?pid={doi}"
+
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            res = await client.get(url)
+
+        if res.status_code != 200:
+            return {
+                "status": res.status_code,
+                "openaire_citation": {},
+                "detail": f"OpenAIRE returned status {res.status_code}"
+            }
+
+        data = res.json()
+
+        results = data.get("results", [])
+
+        if not results:
+            return {
+                "status": 200,
+                "openaire_citation": {},
+                "detail": "No results found"
+            }
+
+        indicators = results[0].get("indicators", {})
+        return {"status": 200, "openaire_citation": indicators, "detail": None}
+
+    except httpx.RequestError as e:
+        return {
+            "status": 503,
+            "openaire_citation": {},
+            "detail": f"Request failed: {str(e)}"
+        }
+    except Exception as e:
+        return {
+            "status": 500,
+            "openaire_citation": {},
+            "detail": f"Unexpected error: {str(e)}"
         }

@@ -17,9 +17,10 @@ import TagAutoCompleteFilter from "./Filters/TagAutocompleteFilter";
 import GrasposVerifiedFilter from "./Filters/GrasposFilterSwitch";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import CloseIcon from "@mui/icons-material/Close";
-import ServiceTypeAutocompleteFilter from "./Filters/ServiceTypeFilter";
 import TrlFilter from "./Filters/TrlFilter";
 import AssessmentFunctionalitiesFilter from "./Filters/AssessmentFunctionalitiesFilter";
+import LanguageFilter from "./Filters/LanguageFilter";
+import AccessRightFilter from "./Filters/AccessRightFilter";
 
 export default function LocalFiltersStack({
   filters,
@@ -88,7 +89,13 @@ export default function LocalFiltersStack({
             marginLeft: "0 !important;",
           }}
         >
-          <SortFilter filters={filters} onFilterChange={handleChangeFilters} />
+          {selectedResource !== 3 && (
+            <SortFilter
+              filters={filters}
+              onFilterChange={handleChangeFilters}
+              selectedResource={selectedResource}
+            />
+          )}
         </Box>
       </Stack>
 
@@ -153,7 +160,6 @@ export default function LocalFiltersStack({
           </Box>
         </DialogContent>
         <DialogContent
-          dividers
           sx={{
             display: "flex",
             gap: 3,
@@ -176,6 +182,37 @@ export default function LocalFiltersStack({
                   />
                 </>
               )}
+            </Box>
+          )}
+        </DialogContent>
+        <DialogContent
+          dividers
+          sx={{
+            display: "flex",
+            gap: 3,
+            alignItems: "stretch",
+          }}
+        >
+          {(selectedResource === 0 ||
+            selectedResource === 2 ||
+            selectedResource === 1) && (
+            <Box flex={1} display="flex" flexDirection="column" gap={2}>
+              <LanguageFilter
+                fieldToSearch="mapped_language"
+                field="language"
+                scope="zenodo"
+                selectedFilters={filters}
+                onFilterChange={handleChangeFilters}
+                selectedResource={selectedResource}
+              />
+              <AccessRightFilter
+                fieldToSearch="access_right"
+                field="access_right"
+                scope="zenodo"
+                selectedFilters={filters}
+                onFilterChange={handleChangeFilters}
+                selectedResource={selectedResource}
+              />
             </Box>
           )}
         </DialogContent>

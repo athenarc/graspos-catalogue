@@ -1,14 +1,16 @@
+import { useEffect } from "react";
 import {
   CircularProgress,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
 } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
 import { useTrls } from "@queries/trl";
 import { Controller } from "react-hook-form";
 import AlertHelperText from "@helpers/AlertHelperText";
-import { useEffect } from "react";
 
 export default function TrlFormField({
   form,
@@ -54,6 +56,20 @@ export default function TrlFormField({
                 fullWidth
                 disabled={!!searchedResource?.metadata?.trl}
                 onChange={(e) => field?.onChange(e?.target?.value)}
+                endAdornment={
+                  field.value && (
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        field.onChange("");
+                      }}
+                      sx={{ mr: 2 }}
+                    >
+                      <ClearIcon fontSize="small" />
+                    </IconButton>
+                  )
+                }
               >
                 {trls?.data?.map((trl) => (
                   <MenuItem key={trl._id} value={trl._id}>
