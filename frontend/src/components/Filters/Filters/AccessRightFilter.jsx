@@ -37,7 +37,6 @@ export default function AccessRightFilter({
   const { data: serviceData, isLoading: isServiceLoading } =
     useServiceUniqueFieldValues(fieldToSearch, selectedResource === 3, scope);
 
-  // Συγκεντρώνουμε τα options
   useEffect(() => {
     if (
       isDatasetLoading ||
@@ -87,7 +86,7 @@ export default function AccessRightFilter({
   return (
     <Stack direction="column">
       <Typography variant="h6" gutterBottom>
-        {field.charAt(0).toUpperCase() + field.slice(1)}
+        {field.charAt(0).toUpperCase() + field.slice(1).replaceAll("_", " ")}
       </Typography>
       <Divider sx={{ mb: 2 }} />
 
@@ -97,7 +96,7 @@ export default function AccessRightFilter({
         options={options}
         value={selectedFields}
         onChange={handleChange}
-        getOptionLabel={(option) => option} // απλά string
+        getOptionLabel={(option) => option}
         renderTags={(value, getTagProps) =>
           value.map((option, index) => (
             <Chip label={option} {...getTagProps({ index })} key={option} />

@@ -89,7 +89,13 @@ export default function LocalFiltersStack({
             marginLeft: "0 !important;",
           }}
         >
-          <SortFilter filters={filters} onFilterChange={handleChangeFilters} />
+          {selectedResource !== 3 && (
+            <SortFilter
+              filters={filters}
+              onFilterChange={handleChangeFilters}
+              selectedResource={selectedResource}
+            />
+          )}
         </Box>
       </Stack>
 
