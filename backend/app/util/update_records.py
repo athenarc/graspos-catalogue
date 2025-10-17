@@ -27,8 +27,8 @@ async def update_openaire_records(
 
     for record in records:
 
-        if not record.metadata.version:
-            continue
+        # if not record.metadata.version:
+        #     continue
 
         openaire_update = {
             "openaire": record,
@@ -113,8 +113,8 @@ async def update_zenodo_records(user_id=None, zenodo_id=None):
 
     for record in records:
 
-        if not record.zenodo_id:
-            continue
+        # if not record.zenodo_id:
+        #     continue
 
         zenodo_update = {
             "zenodo": record,
