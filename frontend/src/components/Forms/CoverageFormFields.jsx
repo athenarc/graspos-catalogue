@@ -398,7 +398,7 @@ function CoveredResearchProducts({ form, resource = null }) {
       placeholder="Enter covered research products for the resource"
       fieldTitle="Covered Research Products *"
       required
-      defaultValue={resource?.covered_fields || []}
+      defaultValue={resource?.covered_research_products || []}
     />
   );
 }
@@ -590,7 +590,7 @@ export default function CoverageFormFields({
   resource = null,
 }) {
   const resource_type = resource?.resource_type || resourceType;
-
+  console.log(resource_type);
   return (
     <Stack direction="column" spacing={2}>
       <ScopeStages form={form} resource={resource} />
