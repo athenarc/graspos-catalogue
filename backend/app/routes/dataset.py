@@ -83,7 +83,7 @@ async def get_all_datasets(
     # Access right filtering
     if access_right:
         filters.append({"zenodo.metadata.access_right": {"$in": access_right}})
-        
+
     # Assessment values filtering
     if assessment_values:
         filters.append({"assessment_values": {"$in": assessment_values}})
@@ -151,8 +151,13 @@ async def get_all_datasets(
     # Sorting and querying datasets
     if sort_field and sort_direction:
         zenodo_sort_field = f"zenodo.stats.{sort_field}"
-        if sort_field == "dates":
+
+        if sort_field == "citations":
+            zenodo_sort_field = "zenodo.indicators.citationImpact.citationCount"
+
+        elif sort_field == "dates":
             zenodo_sort_field = "zenodo.metadata.publication_date"
+
         sort_order = 1 if sort_direction.lower() == "asc" else -1
 
         datasets = await Dataset.find(query_filter, fetch_links=True).sort([
@@ -160,7 +165,6 @@ async def get_all_datasets(
         ]).to_list()
     else:
         datasets = await Dataset.find(query_filter, fetch_links=True).to_list()
-    datasets = await Dataset.find(query_filter, fetch_links=True).to_list()
 
     return datasets
 

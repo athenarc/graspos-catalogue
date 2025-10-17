@@ -68,6 +68,8 @@ const menuItems = [
   },
   { value: "dates|desc", label: "Publication date ↓", resources: [0, 1, 2] },
   { value: "dates|asc", label: "Publication date ↑", resources: [0, 1, 2] },
+  { value: "citations|desc", label: "Citations ↓", resources: [0, 1, 2] },
+  { value: "citations|asc", label: "Citations ↑", resources: [0, 1, 2] },
 ];
 
 export default function SortFilter({

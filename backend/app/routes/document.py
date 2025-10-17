@@ -150,16 +150,22 @@ async def get_all_documents(
 
     # Sorting logic
     if sort_field and sort_direction:
-        zenodo_sort_field = "zenodo.metadata.stats." + sort_field
-        if sort_field == "dates":
+        zenodo_sort_field = f"zenodo.stats.{sort_field}"
+
+        if sort_field == "citations":
+            zenodo_sort_field = "zenodo.indicators.citations.total"
+        elif sort_field == "dates":
             zenodo_sort_field = "zenodo.metadata.publication_date"
+
         sort_order = 1 if sort_direction.lower() == "asc" else -1
+
         documents = await Documents.find(query_filter, fetch_links=True).sort([
             (zenodo_sort_field, sort_order)
         ]).to_list()
     else:
         documents = await Documents.find(query_filter,
                                          fetch_links=True).to_list()
+
     return documents
 
 

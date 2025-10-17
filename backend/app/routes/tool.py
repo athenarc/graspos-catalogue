@@ -169,6 +169,8 @@ async def get_all_tools(
     # Sorting
     if sort_field and sort_direction:
         zenodo_sort_field = "zenodo.stats." + sort_field
+        if sort_field == "citations":
+            zenodo_sort_field = "zenodo.indicators.citationImpact.citationCount"
         if sort_field == "dates":
             zenodo_sort_field = "zenodo.metadata.publication_date"
         sort_order = 1 if sort_direction.lower() == "asc" else -1

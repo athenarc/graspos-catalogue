@@ -173,6 +173,7 @@ class Zenodo(BaseModel):
     stats: object | None = None
     state: str | None = None
     submitted: bool | None = None
+    indicators: dict | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
 
