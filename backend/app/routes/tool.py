@@ -25,6 +25,12 @@ async def get_all_tools(
         assessment: Optional[List[str]] = Query(None),
         geographical_coverage: Optional[List[str]] = Query(None),
         tag: Optional[List[str]] = Query(None),
+        language: Optional[List[str]] = Query(None),
+        access_right: Optional[List[str]] = Query(None),
+        assessment_values: Optional[List[str]] = Query(None),
+        evidence_types: Optional[List[str]] = Query(None),
+        covered_fields: Optional[List[str]] = Query(None),
+        covered_research_products: Optional[List[str]] = Query(None),
         graspos: Optional[bool] = Query(None),
         trl: Optional[List[str]] = Query(None),
         assessment_functionalities: Optional[List[str]] = Query(None),
@@ -51,6 +57,14 @@ async def get_all_tools(
     if tag:
         filters.append({"zenodo.metadata.keywords": {"$in": tag}})
 
+    # Language filter
+    if language:
+        filters.append({"zenodo.metadata.language": {"$in": language}})
+
+    # Access right filtering
+    if access_right:
+        filters.append({"zenodo.metadata.access_right": {"$in": access_right}})
+
     # License filter
     if license:
         filters.append({"zenodo.metadata.license.id": {"$in": license}})
@@ -69,6 +83,25 @@ async def get_all_tools(
     if trl:
         trl_cleaned = [re.sub(r"^\d+ - ", "", str(s)) for s in trl]
         filters.append({"trl.european_description": {"$in": trl_cleaned}})
+
+    # Assessment values filtering
+    if assessment_values:
+        filters.append({"assessment_values": {"$in": assessment_values}})
+
+    # Evidence types filtering
+    if evidence_types:
+        filters.append({"evidence_types": {"$in": evidence_types}})
+
+    # Covered fields filtering
+    if covered_fields:
+        filters.append({"covered_fields": {"$in": covered_fields}})
+
+    # Covered research products filtering
+    if covered_research_products:
+        filters.append(
+            {"covered_research_products": {
+                "$in": covered_research_products
+            }})
 
     # Assessment Functionalities filter
     if assessment_functionalities:
@@ -136,6 +169,8 @@ async def get_all_tools(
     # Sorting
     if sort_field and sort_direction:
         zenodo_sort_field = "zenodo.stats." + sort_field
+        if sort_field == "citations":
+            zenodo_sort_field = "zenodo.indicators.citationImpact.citationCount"
         if sort_field == "dates":
             zenodo_sort_field = "zenodo.metadata.publication_date"
         sort_order = 1 if sort_direction.lower() == "asc" else -1

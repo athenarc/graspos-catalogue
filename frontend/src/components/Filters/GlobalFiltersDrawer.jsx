@@ -46,10 +46,10 @@ export default function ResourcesFiltersDrawer({
 
       <Drawer
         sx={{
-          width: 350,
+          width: 400,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
-            width: 350,
+            width: 400,
             height: "100vh",
             boxSizing: "border-box",
             display: "flex",

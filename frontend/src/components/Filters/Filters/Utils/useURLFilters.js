@@ -18,6 +18,12 @@ const getDefaultFilters = () => ({
     endDate: null,
   },
   text: "",
+  assessment_values: [],
+  evidence_types: [],
+  covered_fields: [],
+  covered_research_products: [],
+  language: [],
+  access_right: [],
 });
 
 // Define which filters are global vs local
@@ -26,6 +32,10 @@ const GLOBAL_FILTER_KEYS = new Set([
   "scopes",
   "geographical_coverage",
   "assessments",
+  "assessment_values",
+  "evidence_types",
+  "covered_fields",
+  "covered_research_products",
 ]);
 
 const LOCAL_FILTER_KEYS = new Set([
@@ -38,6 +48,8 @@ const LOCAL_FILTER_KEYS = new Set([
   "sortDirection",
   "dateRange",
   "trl",
+  "language",
+  "access_right",
 ]);
 
 const normalizeToLocalMidnight = (date) => {
@@ -98,8 +110,26 @@ export function useURLFilters(resourceMap) {
     searchParams.getAll("assessment_functionalities").forEach((value) => {
       newFilters.assessment_functionalities.push(value);
     });
+    searchParams.getAll("covered_fields").forEach((value) => {
+      newFilters.covered_fields.push(value);
+    });
+    searchParams.getAll("covered_research_products").forEach((value) => {
+      newFilters.covered_research_products.push(value);
+    });
+    searchParams.getAll("evidence_types").forEach((value) => {
+      newFilters.evidence_types.push(value);
+    });
+    searchParams.getAll("assessment_values").forEach((value) => {
+      newFilters.assessment_values.push(value);
+    });
+    searchParams.getAll("language").forEach((value) => {
+      newFilters.language.push(value);
+    });
     searchParams.getAll("tag").forEach((value) => {
       newFilters.tags.push(value);
+    });
+    searchParams.getAll("access_right").forEach((value) => {
+      newFilters.access_right.push(value);
     });
     searchParams.getAll("service_type").forEach((value) => {
       newFilters.service_type.push(value);
@@ -164,11 +194,29 @@ export function useURLFilters(resourceMap) {
           );
         }
       );
+      filters.language?.forEach((language) => {
+        searchParams.append("language", language);
+      });
+      filters.access_right?.forEach((access_right) => {
+        searchParams.append("access_right", access_right);
+      });
       filters.service_type?.forEach((service_type) => {
         searchParams.append("service_type", service_type);
       });
       filters.trl?.forEach((trl) => {
         searchParams.append("trl", trl);
+      });
+      filters.covered_fields?.forEach((field) => {
+        searchParams.append("covered_fields", field);
+      });
+      filters.covered_research_products?.forEach((product) => {
+        searchParams.append("covered_research_products", product);
+      });
+      filters.evidence_types?.forEach((type) => {
+        searchParams.append("evidence_types", type);
+      });
+      filters.assessment_values?.forEach((value) => {
+        searchParams.append("assessment_values", value);
       });
       searchParams.set("sort_field", filters.sortField);
       searchParams.set("sort_direction", filters.sortDirection);
@@ -222,6 +270,10 @@ export function useURLFilters(resourceMap) {
     reset.scopes = filters.scopes;
     reset.geographical_coverage = filters.geographical_coverage;
     reset.assessments = filters.assessments;
+    reset.assessment_values = filters.assessment_values;
+    reset.evidence_types = filters.evidence_types;
+    reset.covered_fields = filters.covered_fields;
+    reset.covered_research_products = filters.covered_research_products;
     setFilters(reset);
     setShouldUpdateURL(true);
     setShouldFetchAll(false); // selecting a tab = local change

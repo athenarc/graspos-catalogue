@@ -5,6 +5,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import HistoryIcon from "@mui/icons-material/History";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 
 import { formatDate } from "../../../../utils/utils";
 import PersonIcon from "@mui/icons-material/Person";
@@ -147,9 +148,14 @@ export default function ResourceItemFooter({ resource, type }) {
                     <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
                   </Tooltip>
                   <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-                    {resource?.trl?.trl_id ? resource?.trl?.trl_id + " - " + resource?.trl?.european_description : "N/A"}
+                    {resource?.trl?.trl_id
+                      ? resource?.trl?.trl_id +
+                        " - " +
+                        resource?.trl?.european_description
+                      : "N/A"}
                   </Typography>
-                </Stack>)}
+                </Stack>
+              )}
             </Stack>
           </>
         )}
@@ -159,7 +165,11 @@ export default function ResourceItemFooter({ resource, type }) {
               <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
             </Tooltip>
             <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-              {resource?.trl?.trl_id ? resource?.trl?.trl_id + " - " + resource?.trl?.european_description : "N/A"}
+              {resource?.trl?.trl_id
+                ? resource?.trl?.trl_id +
+                  " - " +
+                  resource?.trl?.european_description
+                : "N/A"}
             </Typography>
             <Tooltip title="Version">
               <HistoryIcon sx={{ fontSize: "1.1rem" }} />
@@ -223,22 +233,31 @@ export default function ResourceItemFooter({ resource, type }) {
           </AvatarGroup>
         )}
       </Stack>
-      <Stack direction="row" spacing={2} alignItems="center">
+      {type !== "service" && (
         <Stack direction="row" spacing={2} alignItems="center">
-          <Tooltip title="Downloads on Zenodo">
-            <DownloadIcon sx={{ fontSize: "1.1rem" }} />
-          </Tooltip>
-          <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-            {resource?.zenodo?.stats?.unique_downloads ?? "N/A"}
-          </Typography>
-          <Tooltip title="Views on Zenodo">
-            <VisibilityIcon sx={{ fontSize: "1.1rem" }} />
-          </Tooltip>
-          <Typography variant="body2" sx={{ fontSize: "0.95rem", mr: 2 }}>
-            {resource?.zenodo?.stats?.unique_views ?? "N/A"}
-          </Typography>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Tooltip title="Downloads on Zenodo">
+              <DownloadIcon sx={{ fontSize: "1.1rem" }} />
+            </Tooltip>
+            <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
+              {resource?.zenodo?.stats?.unique_downloads ?? "N/A"}
+            </Typography>
+            <Tooltip title="Views on Zenodo">
+              <VisibilityIcon sx={{ fontSize: "1.1rem" }} />
+            </Tooltip>
+            <Typography variant="body2" sx={{ fontSize: "0.95rem", mr: 2 }}>
+              {resource?.zenodo?.stats?.unique_views ?? "N/A"}
+            </Typography>
+            <Tooltip title="Citations">
+              <FormatQuoteIcon sx={{ fontSize: "1.1rem" }} />
+            </Tooltip>
+            <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
+              {resource?.zenodo?.indicators?.citationImpact?.citationCount ??
+                "N/A"}
+            </Typography>
+          </Stack>
         </Stack>
-      </Stack>
+      )}
     </Stack>
   );
 }

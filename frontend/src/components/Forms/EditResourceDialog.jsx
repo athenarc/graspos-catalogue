@@ -85,7 +85,9 @@ export default function EditResourceDialog({
 
   const handleFormSubmit = (data) => {
     const geoIds = (data.geographical_coverage || []).map((geo) => geo._id);
-    onSave({ ...data, geographical_coverage: geoIds });
+    const trl = data?.trl == "" ? null : data?.trl;
+
+    onSave({ ...data, geographical_coverage: geoIds, trl: trl });
   };
 
   return (

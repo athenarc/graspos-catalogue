@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List, Any
 from beanie import Document, Link, PydanticObjectId
-from pydantic import BaseModel, EmailStr, HttpUrl
+from pydantic import BaseModel, EmailStr, HttpUrl, model_validator
 import pymongo
 from pymongo import IndexModel
 
@@ -161,6 +161,12 @@ class OpenAIREBase(BaseModel):
     created: Optional[datetime] = datetime.now()
     modified: Optional[datetime] = datetime.now()
     metadata: OpenaireMetadata | None = None
+    mapped_resource_type: dict | None = None
+
+    @model_validator(mode="after")
+    def set_mapped_resource_type(self):
+        self.mapped_resource_type = {"value": "service", "label": "Service"}
+        return self
 
 
 class OpenAIREView(BaseModel):
@@ -188,7 +194,7 @@ class OpenAIRE(Document, OpenAIREBase, OpenAIREView):
                 },
                 default_language="english",
             )
-        ] 
+        ]
 
     class Config:
         json_schema_extra = {

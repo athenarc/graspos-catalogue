@@ -25,6 +25,12 @@ async def get_all_documents(
         assessment: Optional[List[str]] = Query(None),
         geographical_coverage: Optional[List[str]] = Query(None),
         tag: Optional[List[str]] = Query(None),
+        language: Optional[List[str]] = Query(None),
+        access_right: Optional[List[str]] = Query(None),
+        assessment_values: Optional[List[str]] = Query(None),
+        evidence_types: Optional[List[str]] = Query(None),
+        covered_fields: Optional[List[str]] = Query(None),
+        covered_research_products: Optional[List[str]] = Query(None),
         graspos: Optional[bool] = Query(None),
         sort_field: Optional[str] = Query(None),
         sort_direction: Optional[str] = Query(None),
@@ -58,12 +64,44 @@ async def get_all_documents(
 
     # Geographical Coverage filtering
     if geographical_coverage:
-        geographical_coverage_ids = [PydanticObjectId(s) for s in geographical_coverage]
-        filters.append({"geographical_coverage._id": {"$in": geographical_coverage_ids}})
+        geographical_coverage_ids = [
+            PydanticObjectId(s) for s in geographical_coverage
+        ]
+        filters.append(
+            {"geographical_coverage._id": {
+                "$in": geographical_coverage_ids
+            }})
 
     # Tag filter
     if tag:
         filters.append({"zenodo.metadata.keywords": {"$in": tag}})
+
+    # Language filtering
+    if language:
+        filters.append({"zenodo.metadata.language": {"$in": language}})
+
+    # Access right filtering
+    if access_right:
+        filters.append({"zenodo.metadata.access_right": {"$in": access_right}})
+
+    # Assessment values filtering
+    if assessment_values:
+        filters.append({"assessment_values": {"$in": assessment_values}})
+
+    # Evidence types filtering
+    if evidence_types:
+        filters.append({"evidence_types": {"$in": evidence_types}})
+
+    # Covered fields filtering
+    if covered_fields:
+        filters.append({"covered_fields": {"$in": covered_fields}})
+
+    # Covered research products filtering
+    if covered_research_products:
+        filters.append(
+            {"covered_research_products": {
+                "$in": covered_research_products
+            }})
 
     # GraspOS verified filter
     if graspos:
@@ -112,16 +150,22 @@ async def get_all_documents(
 
     # Sorting logic
     if sort_field and sort_direction:
-        zenodo_sort_field = "zenodo.metadata.stats." + sort_field
-        if sort_field == "dates":
+        zenodo_sort_field = f"zenodo.stats.{sort_field}"
+
+        if sort_field == "citations":
+            zenodo_sort_field = "zenodo.indicators.citations.total"
+        elif sort_field == "dates":
             zenodo_sort_field = "zenodo.metadata.publication_date"
+
         sort_order = 1 if sort_direction.lower() == "asc" else -1
+
         documents = await Documents.find(query_filter, fetch_links=True).sort([
             (zenodo_sort_field, sort_order)
         ]).to_list()
     else:
         documents = await Documents.find(query_filter,
                                          fetch_links=True).to_list()
+
     return documents
 
 
@@ -151,14 +195,19 @@ async def create_document(
 
 
 @router.get("/fields/unique")
-async def get_unique_metadata_values(field: str = Query(
-    ..., description="Field name inside zenodo.metadata")):
+async def get_unique_metadata_values(
+        field: str = Query(..., description="Field name inside document"),
+        scope: str = Query(...,
+                           description="Field name inside zenodo.metadata")):
     """
-    Return unique values from the given field in Zenodo metadata across all documents.
+    Return unique values from the given field in Zenodo metadata across all tools.
     """
     try:
-        unique_values = await Documents.get_unique_field_values_from_zenodo(
-            field)
+        if scope == "local":
+            unique_values = await Documents.get_unique_field_values(field)
+        else:
+            unique_values = await Documents.get_unique_field_values_from_zenodo(
+                field)
         return {f"unique_{field}": unique_values}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

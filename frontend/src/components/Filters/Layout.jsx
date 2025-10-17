@@ -3,6 +3,7 @@ import ResourcesFiltersDrawer from "./GlobalFiltersDrawer";
 import ScopeFacetFilter from "./Filters/ScopeFacetFilter";
 import GeographicalCoverageFacetFilter from "./Filters/GeographicalCoverageFacetFilter";
 import AssessmentFacetFilter from "./Filters/AssessmentSubjectFilter";
+import UniqueAutocompleteFieldFilter from "./Filters/GlobalAutocompleteFilter";
 
 function ResourceFilters({ handleChangeFilters, selectedFilters }) {
   return (
@@ -16,6 +17,34 @@ function ResourceFilters({ handleChangeFilters, selectedFilters }) {
         onFilterChange={handleChangeFilters}
       />
       <GeographicalCoverageFacetFilter
+        selectedFilters={selectedFilters}
+        onFilterChange={handleChangeFilters}
+      />
+      <UniqueAutocompleteFieldFilter
+        field="assessment_values"
+        label="Assessment Values"
+        scope="local"
+        selectedFilters={selectedFilters}
+        onFilterChange={handleChangeFilters}
+      />
+      <UniqueAutocompleteFieldFilter
+        field="evidence_types"
+        label="Evidence Types"
+        scope="local"
+        selectedFilters={selectedFilters}
+        onFilterChange={handleChangeFilters}
+      />
+      <UniqueAutocompleteFieldFilter
+        field="covered_fields"
+        label="Covered Fields"
+        scope="local"
+        selectedFilters={selectedFilters}
+        onFilterChange={handleChangeFilters}
+      />
+      <UniqueAutocompleteFieldFilter
+        field="covered_research_products"
+        label="Covered Research Products"
+        scope="local"
         selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />
