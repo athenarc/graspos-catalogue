@@ -63,14 +63,15 @@ const assessmentFunctionalityMenuItems = [
 ];
 
 const functionalityLabelMap = Object.fromEntries(
-  assessmentFunctionalityMenuItems.map((i) => [i.value, i.label])
+  assessmentFunctionalityMenuItems?.map((i) => [i.value, i.label])
 );
 
 function ExpandableChips({ items = [], labelMap = null }) {
+  const itemsArray = Array.isArray(items) ? items : [items];
   return (
     <Stack>
       <Stack direction="row" flexWrap="wrap">
-        {items?.map((item, idx) => (
+        {itemsArray.map((item, idx) => (
           <Chip
             key={idx}
             label={labelMap?.[item] || item}
@@ -133,7 +134,7 @@ function ResourceItemChipsSection({
             <Typography variant="caption" sx={{ mr: 0.3 }}>
               {expanded
                 ? "Show less"
-                : `Show all (${items.length - limit} more)`}
+                : `Show all (${items?.length - limit} more)`}
             </Typography>
             <ExpandMoreIcon
               sx={{
@@ -157,7 +158,7 @@ function ResourceItemChipsSection({
 }
 
 // --- Keywords ---
-export function ResourceItemKeywords({ resource }) {
+export function ResourceItemKeywords({ resource, showIcon = true }) {
   const keywords =
     resource?.zenodo?.metadata?.keywords ||
     resource?.openaire?.metadata?.tags ||
@@ -175,10 +176,10 @@ export function ResourceItemKeywords({ resource }) {
   return (
     <Stack direction="row" alignItems="center" spacing={1} flexWrap="wrap">
       <Tooltip title="Tags">
-        <LocalOfferIcon fontSize="small" color="action" />
+        {showIcon && <LocalOfferIcon fontSize="small" color="action" />}
       </Tooltip>
       <Stack direction="row" flexWrap="wrap" spacing={1}>
-        {keywords.map((k) => (
+        {keywords?.map((k) => (
           <Chip
             key={k}
             label={k}
@@ -217,7 +218,7 @@ export default function ResourceItemContent({ resource }) {
       icon: <AssessmentIcon fontSize="small" color="action" />,
       items: resource?.metadata?.evidence_types || [],
       labelMap: Object.fromEntries(
-        evidenceTypesMenuItems.map((i) => [i.value, i.label])
+        evidenceTypesMenuItems?.map((i) => [i.value, i.label])
       ),
       displayTab: true,
     },
@@ -248,6 +249,13 @@ export default function ResourceItemContent({ resource }) {
       title: "Covered Research Products",
       icon: <AssessmentIcon fontSize="small" color="action" />,
       items: resource?.metadata?.covered_research_products || [],
+      labelMap: null,
+      displayTab: true,
+    },
+    temporal_coverage: {
+      title: "Temporal Coverage",
+      icon: <AssessmentIcon fontSize="small" color="action" />,
+      items: resource?.metadata?.temporal_coverage || [],
       labelMap: null,
       displayTab: true,
     },
@@ -301,7 +309,7 @@ export default function ResourceItemContent({ resource }) {
             minWidth: 220,
           }}
         >
-          {visibleTabs.map(
+          {visibleTabs?.map(
             ([key, { title, icon, displayTab }], index) =>
               displayTab && (
                 <Tab
@@ -318,7 +326,7 @@ export default function ResourceItemContent({ resource }) {
         </Tabs>
 
         {/* Tab Panels */}
-        {visibleTabs.map(
+        {visibleTabs?.map(
           ([key, { title, items, labelMap, displayTab }], index) =>
             displayTab && (
               <TabPanel key={key} value={value} index={index}>

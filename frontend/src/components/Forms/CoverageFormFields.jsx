@@ -516,6 +516,17 @@ export function AssessmentFunctionalities({
   );
 }
 
+function TemporalCoverage({ form, resource = null }) {
+  return (
+    <TextField
+      label="Temporal Coverage"
+      {...form.register("temporal_coverage")}
+      fullWidth
+      defaultValue={resource?.temporal_coverage || ""}
+    />
+  );
+}
+
 function EvidenceTypes({ form, resource = null }) {
   const options = [
     { value: "narratives", label: "Narratives" },
@@ -590,7 +601,6 @@ export default function CoverageFormFields({
   resource = null,
 }) {
   const resource_type = resource?.resource_type || resourceType;
-  console.log(resource_type);
   return (
     <Stack direction="column" spacing={2}>
       <ScopeStages form={form} resource={resource} />
@@ -607,6 +617,7 @@ export default function CoverageFormFields({
           resource_type={resource_type}
         />
       )}
+      <TemporalCoverage form={form} resource={resource} />
     </Stack>
   );
 }
