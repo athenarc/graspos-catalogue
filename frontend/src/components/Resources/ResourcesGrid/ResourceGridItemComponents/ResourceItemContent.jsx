@@ -231,10 +231,8 @@ export default function ResourceItemContent({ resource }) {
         {stripHtml(description)}
       </Typography>
 
-      {/* Keywords */}
       <ResourceItemKeywords resource={resource} />
 
-      {/* Tabs + Panels */}
       <Box
         sx={{
           display: "flex",
@@ -270,7 +268,6 @@ export default function ResourceItemContent({ resource }) {
           )}
         </Tabs>
 
-        {/* Tab Panels */}
         {visibleTabs?.map(
           ([key, { title, items, labelMap, displayTab }], index) =>
             displayTab && (
