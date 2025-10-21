@@ -68,8 +68,10 @@ class ZenodoMetadata(BaseModel):
             },
             "Document": {
                 "types": ["publication", "document"],
-                "subtypes":
-                ["publication", "journal", "other", "document", "article"],
+                "subtypes": [
+                    "publication", "journal", "other", "document", "article",
+                    "report"
+                ],
             },
             "Service": {
                 "types": ["service"],
