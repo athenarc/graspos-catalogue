@@ -9,6 +9,7 @@ import { useUserInformation } from "../queries/data";
 import { useQueryClient } from "@tanstack/react-query";
 import { setLogoutCallback } from "../queries/interceptor";
 import { Box, CircularProgress, Typography } from "@mui/material";
+import LoadingComponent from "./Helpers/LoadingComponent";
 
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
@@ -137,22 +138,7 @@ export const AuthProvider = ({ children }) => {
 
   // ---- LOADING SCREEN ----
   if (isLoadingAuth) {
-    return (
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        height="100vh"
-        gap={2}
-        sx={{ backgroundColor: "#f9fafc" }}
-      >
-        <CircularProgress size={64} sx={{ color: "#20477B" }} />
-        <Typography variant="h6" sx={{ color: "#20477B" }}>
-          Loading ...
-        </Typography>
-      </Box>
-    );
+    return <LoadingComponent />;
   }
 
   return (
