@@ -6,6 +6,10 @@ import {
   StatisticsCard,
   CoverageCard,
   SupportCard,
+  AuthorsCard,
+  ContributorsCard,
+  GovernanceSustainabilityFundingCard,
+  EquityEthicalCard,
 } from "../ResourcesGrid/ResourcePageComponents/ResourcePageCards";
 import { ResourceBasicInformation } from "../ResourcesGrid/ResourcePageComponents/ResourcePageBasicInformation";
 
@@ -32,6 +36,22 @@ export function Service({ resourceId }) {
     <>
       <Grid size={{ xs: 12, lg: 8 }}>
         <ResourceBasicInformation resource={service} type={"service"} />
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid size={{ xs: 12, lg: 6 }}>
+            <AuthorsCard resource={service} />
+          </Grid>
+          <Grid size={{ xs: 12, lg: 6 }}>
+            <GovernanceSustainabilityFundingCard resource={service} />
+          </Grid>
+        </Grid>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid size={{ xs: 12, lg: 6 }}>
+            <ContributorsCard resource={service} />
+          </Grid>
+          <Grid size={{ xs: 12, lg: 6 }}>
+            <EquityEthicalCard resource={service} />
+          </Grid>
+        </Grid>
       </Grid>
       <Grid size={{ xs: 12, lg: 4 }}>
         <Stack direction="column" spacing={2}>

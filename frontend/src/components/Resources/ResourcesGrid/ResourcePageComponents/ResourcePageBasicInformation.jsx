@@ -25,6 +25,11 @@ export function ResourcePageTitle({ resource, type }) {
     resource?.data?.data?.zenodo?.title ||
     resource?.data?.data?.openaire?.metadata?.name ||
     "Title";
+  const resourceType =
+    resource?.data?.data?.resource_type?.toLowerCase() === "document"
+      ? "Templates & Guidelines"
+      : resource?.data?.data?.resource_type?.toLowerCase();
+
   return (
     <Stack
       direction="row"
@@ -41,7 +46,7 @@ export function ResourcePageTitle({ resource, type }) {
           borderRadius: 1,
         }}
       >
-        {type?.[0].toUpperCase() + type?.slice(1)}
+        {resourceType?.[0]?.toUpperCase() + resourceType?.slice(1)}
       </Typography>
       <Typography
         variant="h5"
@@ -130,27 +135,87 @@ export function ResourceVisibility({ resource }) {
   );
 }
 
-export function ResourcePageDescription({ resource }) {
+import { useState, useRef, useEffect } from "react";
+import { Button } from "@mui/material";
+
+export function ResourcePageDescription({ resource, initialLines = 10 }) {
+  const [expanded, setExpanded] = useState(false);
+  const [truncatedHtml, setTruncatedHtml] = useState("");
+
+  const description =
+    resource?.data?.data?.zenodo?.metadata?.description ||
+    resource?.data?.data?.openaire?.metadata?.description ||
+    "No description available.";
+
+  useEffect(() => {
+    if (!description) return;
+
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = sanitizeHtml(description);
+
+    let lineCount = 0;
+    const truncatedNodes = [];
+
+    tempDiv.childNodes.forEach((node) => {
+      if (lineCount >= initialLines) return;
+
+      const textLines = node.textContent
+        .split("\n")
+        .filter((l) => l.trim() !== "");
+      const remainingLines = initialLines - lineCount;
+
+      if (textLines.length <= remainingLines) {
+        truncatedNodes.push(node.outerHTML || node.textContent);
+        lineCount += textLines.length;
+      } else {
+        const tempNode = node.cloneNode(true);
+        tempNode.textContent = textLines.slice(0, remainingLines).join("\n");
+        truncatedNodes.push(tempNode.outerHTML);
+        lineCount += remainingLines;
+      }
+    });
+
+    setTruncatedHtml(truncatedNodes.join(""));
+  }, [description, initialLines]);
+
+  if (!description) return null;
+
   return (
-    <Typography
-      variant="body2"
+    <Box
       sx={{
-        margin: 0,
-        fontFamily: "inherit",
+        position: "relative",
+        mt: 2,
         borderRadius: 1,
         padding: 2,
         borderColor: "divider",
         borderStyle: "solid",
         borderWidth: 1,
       }}
-      dangerouslySetInnerHTML={{
-        __html: sanitizeHtml(
-          resource?.data?.data?.zenodo?.metadata?.description ||
-            resource?.data?.data?.openaire?.metadata?.description ||
-            "No description available."
-        ),
-      }}
-    />
+    >
+      <Typography
+        variant="body2"
+        sx={{
+          margin: 0,
+          fontFamily: "inherit",
+        }}
+      >
+        <span
+          dangerouslySetInnerHTML={{
+            __html: expanded ? sanitizeHtml(description) : truncatedHtml,
+          }}
+        />
+      </Typography>
+
+      {description.split("\n").length > initialLines && (
+        <Button
+          size="small"
+          onClick={() => setExpanded(!expanded)}
+          sx={{ mt: 1, float: "right" }}
+        >
+          {expanded ? "Display less" : "Display more"}
+        </Button>
+      )}
+    </Box>
   );
 }
 

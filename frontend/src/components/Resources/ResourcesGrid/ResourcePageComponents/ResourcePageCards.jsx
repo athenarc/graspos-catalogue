@@ -37,6 +37,11 @@ import {
 
 import LinkIcon from "@mui/icons-material/Link";
 
+const summaryStyles = {
+  color: "#fff",
+  backgroundColor: "text.secondary",
+};
+
 const cardStyles = {
   lineHeight: 1.5,
   flexDirection: "column",
@@ -52,12 +57,11 @@ const cardStyles = {
 export function FieldRow({ label, fieldArray, mapFn }) {
   const formatFieldArray = (fieldArray) => {
     if (!fieldArray || fieldArray?.length === 0) return "-";
-
     const formatted = fieldArray?.map((item) => {
       if (mapFn) return mapFn(item);
 
       if (typeof item === "object" && item !== null) {
-        return item?.label || item?.value || "";
+        return item?.label || item?.value || item?.name || "";
       }
 
       return item;
@@ -83,64 +87,147 @@ export function FieldRow({ label, fieldArray, mapFn }) {
     </Box>
   );
 }
+const accordionCardStyles = {
+  boxShadow: 2,
+  borderRadius: 2,
+  "&:before": { display: "none" }, // αφαιρεί default γραμμή
+};
 
-export function ContributorsCard({ resource, type }) {
+export function EquityEthicalCard({ resource }) {
+  return (
+    <Accordion defaultExpanded={false} sx={accordionCardStyles} disableGutters>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon sx={{ color: "#fff" }} />}
+        sx={summaryStyles}
+      >
+        <Typography
+          variant="h6"
+          sx={{ fontWeight: "bold", textAlign: "center" }}
+        >
+          Equity & Ethical Considerations
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails
+        sx={{ textAlign: resource?.isLoading ? "center" : "left" }}
+      >
+        {resource?.isLoading && <CircularProgress size="3rem" />}
+        {resource?.isSuccess && (
+          <Stack direction="column" spacing={1}>
+            <FieldRow
+              label="Equity Considerations"
+              fieldArray={resource?.data?.data?.equity_considerations}
+            />
+            <FieldRow
+              label="Ethical Considerations"
+              fieldArray={resource?.data?.data?.ethical_considerations}
+            />
+          </Stack>
+        )}
+      </AccordionDetails>
+    </Accordion>
+  );
+}
+
+export function GovernanceSustainabilityFundingCard({ resource }) {
+  return (
+    <Accordion defaultExpanded={false} sx={accordionCardStyles} disableGutters>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon sx={{ color: "#fff" }} />}
+        sx={summaryStyles}
+      >
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+          Governance, Sustainability & Funding
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails
+        sx={{ textAlign: resource?.isLoading ? "center" : "left" }}
+      >
+        {resource?.isLoading && <CircularProgress size="3rem" />}
+        {resource?.isSuccess && (
+          <Stack direction="column" spacing={1}>
+            <FieldRow
+              label="Governance Model"
+              fieldArray={resource?.data?.data?.governance_model}
+            />
+            <FieldRow
+              label="Governance Bodies"
+              fieldArray={resource?.data?.data?.governance_model}
+            />
+            <FieldRow
+              label="Funding"
+              fieldArray={resource?.data?.data?.zenodo?.metadata?.grants}
+            />
+            <FieldRow
+              label="Sustainability Goals"
+              fieldArray={resource?.data?.data?.sustainability_goals}
+            />
+          </Stack>
+        )}
+      </AccordionDetails>
+    </Accordion>
+  );
+}
+
+export function ContributorsCard({ resource }) {
   const contributors =
     resource?.data?.data?.openaire?.metadata?.resourceOrganisation || "N/A";
+
   return (
-    <Card sx={cardStyles}>
-      <CardHeader
-        sx={{ pb: 1 }}
-        title={<Typography variant="h5">Contributors</Typography>}
-      ></CardHeader>
-      <CardContent
-        sx={{
-          textAlign: [resource.isLoading ? "center" : "left"],
-          pt: 1,
-        }}
+    <Accordion defaultExpanded={false} sx={accordionCardStyles} disableGutters>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon sx={{ color: "#fff" }} />}
+        sx={summaryStyles}
       >
-        {resource.isLoading && <CircularProgress size="3rem" />}
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+          Contributors
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails
+        sx={{ textAlign: resource?.isLoading ? "center" : "left" }}
+      >
+        {resource?.isLoading && <CircularProgress size="3rem" />}
         <Stack direction="column" spacing={1}>
           <Stack direction="row" spacing={1} alignItems="center">
             <Tooltip title="Service Type">
               <AccountBalanceIcon sx={{ color: "text.secondary" }} />
             </Tooltip>
             <Typography variant="body2" color="text.secondary">
-              {contributors || "N/A"}
+              {contributors}
             </Typography>
           </Stack>
         </Stack>
-      </CardContent>
-    </Card>
+      </AccordionDetails>
+    </Accordion>
   );
 }
 
-export function AuthorsCard({ resource, type = null }) {
+export function AuthorsCard({ resource }) {
   const authors = resource?.data?.data?.zenodo?.metadata?.creators || [];
-  const contributors =
-    resource?.data?.data?.openaire?.metadata?.resourceOrganisation || "N/A";
+
   return (
-    <Card sx={cardStyles}>
-      <CardHeader
-        sx={{ pb: 1 }}
-        title={<Typography variant="h5">Authors</Typography>}
-      ></CardHeader>
-      <CardContent
-        sx={{
-          textAlign: [resource.isLoading ? "center" : "left"],
-          pt: 1,
-        }}
+    <Accordion defaultExpanded={false} sx={accordionCardStyles} disableGutters>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon sx={{ color: "#fff" }} />}
+        sx={summaryStyles}
       >
-        {resource.isLoading && <CircularProgress size="3rem" />}
-        {resource && (
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+          Authors
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails
+        sx={{ textAlign: resource?.isLoading ? "center" : "left" }}
+      >
+        {resource?.isLoading && <CircularProgress size="3rem" />}
+        {authors?.length > 0 && (
           <Stack direction="column" spacing={1}>
-            {authors.map((author) => (
+            {authors?.map((author) => (
               <Stack direction="column" key={author?.name} spacing={0.5}>
                 <Stack direction="row" alignItems="center">
                   {author?.orcid ? (
-                    <Link
-                      to={"https://orcid.org/" + author?.orcid}
+                    <a
+                      href={`https://orcid.org/${author?.orcid}`}
                       target="_blank"
+                      rel="noopener noreferrer"
                       style={{ textDecoration: "none" }}
                     >
                       <Stack direction="row" alignItems="center">
@@ -165,7 +252,7 @@ export function AuthorsCard({ resource, type = null }) {
                           src={orcidLogo}
                         />
                       </Stack>
-                    </Link>
+                    </a>
                   ) : (
                     <Typography variant="body1" fontWeight={500}>
                       {author?.name}
@@ -176,20 +263,17 @@ export function AuthorsCard({ resource, type = null }) {
                   <Typography
                     variant="body2"
                     color="text.secondary"
-                    sx={{
-                      fontSize: "0.875rem",
-                      fontStyle: "italic",
-                    }}
+                    sx={{ fontSize: "0.875rem", fontStyle: "italic" }}
                   >
-                    {author.affiliation}
+                    {author?.affiliation}
                   </Typography>
                 )}
               </Stack>
             ))}
           </Stack>
         )}
-      </CardContent>
-    </Card>
+      </AccordionDetails>
+    </Accordion>
   );
 }
 
@@ -461,7 +545,10 @@ export function SupportCard({ resource }) {
 
             return (
               <Accordion key={label} sx={{ boxShadow: 1, borderRadius: 2 }}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  disableGutters
+                >
                   <Typography sx={{ fontWeight: "bold" }}>{label}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
