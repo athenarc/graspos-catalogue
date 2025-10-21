@@ -445,7 +445,7 @@ export function SupportCard({ resource }) {
         }}
         title={
           <Typography variant="h5" textAlign="center">
-            Coverage
+            Support
           </Typography>
         }
       ></CardHeader>
