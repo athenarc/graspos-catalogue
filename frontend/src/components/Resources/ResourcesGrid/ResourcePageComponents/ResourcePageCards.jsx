@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   Button,
   Chip,
   CircularProgress,
@@ -28,7 +29,13 @@ import { useState } from "react";
 import EmailIcon from "@mui/icons-material/Email";
 import PersonIcon from "@mui/icons-material/Person";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import Inventory2Icon from "@mui/icons-material/Inventory2";
+import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
+import {
+  getLabelForAssessmentFunctionality,
+  getLabelForEvidenceType,
+} from "@helpers/MenuItems";
+
+import LinkIcon from "@mui/icons-material/Link";
 
 const cardStyles = {
   lineHeight: 1.5,
@@ -41,6 +48,42 @@ const cardStyles = {
   boxShadow: 0,
   color: "#555",
 };
+
+export function FieldRow({ label, fieldArray, mapFn }) {
+  const formatFieldArray = (fieldArray) => {
+    if (!fieldArray || fieldArray?.length === 0) return "-";
+
+    const formatted = fieldArray?.map((item) => {
+      if (mapFn) return mapFn(item);
+
+      if (typeof item === "object" && item !== null) {
+        return item?.label || item?.value || "";
+      }
+
+      return item;
+    });
+
+    return formatted?.join(", ");
+  };
+
+  return (
+    <Box>
+      <Typography sx={{ fontWeight: "bold", display: "inline" }}>
+        {label}:
+      </Typography>{" "}
+      <Typography
+        sx={{
+          display: "inline",
+          wordBreak: "break-word",
+          whiteSpace: "normal",
+        }}
+      >
+        {formatFieldArray(fieldArray)}
+      </Typography>
+    </Box>
+  );
+}
+
 export function ContributorsCard({ resource, type }) {
   const contributors =
     resource?.data?.data?.openaire?.metadata?.resourceOrganisation || "N/A";
@@ -298,6 +341,178 @@ export function DocumentationUrlCard({ resource }) {
   );
 }
 
+export function CoverageCard({ resource }) {
+  return (
+    <Card sx={cardStyles}>
+      <CardHeader
+        sx={{
+          textAlign: "center",
+          color: "#fff",
+          backgroundColor: "text.secondary",
+          display: "flex",
+          flex: "1",
+        }}
+        title={
+          <Typography variant="h5" textAlign="center">
+            Coverage
+          </Typography>
+        }
+      ></CardHeader>
+      <CardContent
+        sx={{
+          textAlign: [resource.isLoading ? "center" : "left"],
+          paddingBottom: "16px !important",
+        }}
+      >
+        {resource?.isLoading && <CircularProgress size="3rem" />}
+        {resource?.isSuccess && (
+          <Stack spacing={2}>
+            <FieldRow
+              label="Subjects"
+              fieldArray={resource?.data?.data?.assessments}
+            />
+            <FieldRow
+              label="Products"
+              fieldArray={resource?.data?.data?.covered_research_products}
+            />
+
+            <FieldRow
+              label="Evidence"
+              fieldArray={resource?.data?.data?.evidence_types}
+              mapFn={getLabelForEvidenceType}
+            />
+
+            <FieldRow
+              label="Fields"
+              fieldArray={resource?.data?.data?.covered_fields}
+            />
+
+            <FieldRow
+              label="Values"
+              fieldArray={resource?.data?.data?.assessment_values}
+            />
+            <FieldRow
+              label="Functionalities"
+              fieldArray={resource?.data?.data?.assessment_functionalities}
+              mapFn={getLabelForAssessmentFunctionality}
+            />
+            <FieldRow
+              label="Geographical Scope"
+              fieldArray={resource?.data?.data?.geographical_coverage}
+            />
+            <FieldRow
+              label="Temporal Coverage"
+              fieldArray={[resource?.data?.data?.temporal_coverage]}
+            />
+          </Stack>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Link as MuiLink,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import CircleIcon from "@mui/icons-material/Circle";
+
+export function SupportCard({ resource }) {
+  const data = resource?.data?.data || {};
+
+  const sections = [
+    { label: "Documentation", urls: data.documentation_urls },
+    { label: "Training material", urls: data.training_material_urls },
+    { label: "Support channel", urls: data.support_channels },
+  ];
+
+  return (
+    <Card sx={cardStyles}>
+      <CardHeader
+        sx={{
+          textAlign: "center",
+          color: "#fff",
+          backgroundColor: "text.secondary",
+          display: "flex",
+          flex: "1",
+        }}
+        title={
+          <Typography variant="h5" textAlign="center">
+            Coverage
+          </Typography>
+        }
+      ></CardHeader>
+      <CardContent
+        sx={{
+          textAlign: [resource.isLoading ? "center" : "left"],
+          paddingBottom: "16px !important",
+        }}
+      >
+        <Stack direction="column" spacing={2}>
+          {sections.map(({ label, urls }) => {
+            const urlArray = Array.isArray(urls) ? urls : urls ? [urls] : [];
+
+            return (
+              <Accordion key={label} sx={{ boxShadow: 1, borderRadius: 2 }}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography sx={{ fontWeight: "bold" }}>{label}</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {urlArray.length > 0 ? (
+                    <List dense>
+                      {urlArray.map((url, idx) => (
+                        <ListItem key={idx}>
+                          <ListItemIcon sx={{ minWidth: 28 }}>
+                            <CircleIcon sx={{ fontSize: 6 }} />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={
+                              <MuiLink
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                sx={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                {url}
+                                <LinkIcon
+                                  sx={{
+                                    ml: 0.5,
+                                    fontSize: 18,
+                                    color: "text.primary",
+                                    verticalAlign: "middle",
+                                  }}
+                                />
+                              </MuiLink>
+                            }
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                  ) : (
+                    <Typography color="text.secondary">
+                      No URLs available
+                    </Typography>
+                  )}
+                </AccordionDetails>
+              </Accordion>
+            );
+          })}
+        </Stack>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function TrlCard({ resource }) {
   const trl = resource?.data?.data?.trl || "";
   return (
@@ -421,14 +636,10 @@ export function StatisticsCard({ resource }) {
   }
   return (
     <Card sx={cardStyles}>
-      <CardHeader
-        sx={{ pb: 1 }}
-        title={<Typography variant="h5">Usage Statistics</Typography>}
-      />
       <CardContent
         sx={{
           textAlign: [resource.isLoading ? "center" : "left"],
-          pt: 1,
+          paddingBottom: "16px !important",
         }}
       >
         {resource.isLoading && <CircularProgress size="3rem" />}
@@ -489,6 +700,33 @@ export function StatisticsCard({ resource }) {
                   </Stack>
                 </Stack>
               </Stack>
+              {resource?.data?.data?.resource_type !== "service" && (
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="center"
+                  sx={{ width: "50%", py: 2 }}
+                >
+                  <Stack alignItems="center" spacing={1}>
+                    <Typography
+                      variant="h4"
+                      fontWeight="500"
+                      color="primary.main"
+                    >
+                      {resource?.data?.data?.zenodo?.indicators?.citationImpact
+                        ?.citationCount ?? "N/A"}
+                    </Typography>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <FormatQuoteIcon
+                        sx={{ fontSize: "1.1rem", color: "text.secondary" }}
+                      />
+                      <Typography variant="body2" color="text.secondary">
+                        citations
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                </Stack>
+              )}
             </Stack>
 
             <Stack direction="row" justifyContent={"center"}>

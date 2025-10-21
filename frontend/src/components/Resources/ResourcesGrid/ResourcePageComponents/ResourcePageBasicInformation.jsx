@@ -7,7 +7,6 @@ import {
   Tooltip,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import { ResourceItemScopes } from "../ResourceGridItemComponents/ResourceItemFooter";
 import LinkIcon from "@mui/icons-material/Link";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import HistoryIcon from "@mui/icons-material/History";
@@ -15,6 +14,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { sanitizeHtml, formatDate } from "../../../../utils/utils";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import LoadingComponent from "../../../Helpers/LoadingComponent";
+import { ResourceItemKeywords } from "../ResourceGridItemComponents/ResourceItemContent";
 
 export function ResourcePageTitle({ resource, type }) {
   const url =
@@ -105,6 +105,13 @@ export function ResourcePageBasicInformationHeader({ resource, type }) {
         <Typography>
           {resource?.data?.data?.zenodo?.metadata?.language || "N/A"}
         </Typography>
+      </Stack>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Typography sx={{ fontWeight: "bold" }}>keywords: </Typography>
+        <ResourceItemKeywords
+          resource={resource?.data?.data}
+          showIcon={false}
+        />
       </Stack>
     </Stack>
   );

@@ -3,11 +3,9 @@ import { RectangularVariants } from "../../Helpers/Skeleton";
 import ResourceGridItem from "../ResourcesGrid/ResourceGridItem";
 import { Grid2 as Grid, Stack } from "@mui/material";
 import {
-  AuthorsCard,
-  LicenseCard,
-  TagsCard,
   StatisticsCard,
-  GeographicCoverageCard,
+  CoverageCard,
+  SupportCard,
 } from "../ResourcesGrid/ResourcePageComponents/ResourcePageCards";
 import { ResourceBasicInformation } from "../ResourcesGrid/ResourcePageComponents/ResourcePageBasicInformation";
 
@@ -37,11 +35,9 @@ export function Tool({ resourceId }) {
       </Grid>
       <Grid size={{ xs: 12, lg: 4 }}>
         <Stack direction="column" spacing={2}>
-          <AuthorsCard resource={tool} />
-          <TagsCard resource={tool} />
-          <LicenseCard resource={tool} />
           <StatisticsCard resource={tool} />
-          <GeographicCoverageCard resource={tool} />
+          <CoverageCard resource={tool} />
+          <SupportCard resource={tool} />
         </Stack>
       </Grid>
     </>
