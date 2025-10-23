@@ -1,12 +1,20 @@
-import { CircularProgress, Stack, Typography, Tooltip } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Divider,
+  Stack,
+  Typography,
+  Tooltip,
+} from "@mui/material";
 import { Link } from "react-router-dom";
-import { ResourceItemScopes } from "../ResourceGridItemComponents/ResourceItemFooter";
-import LaunchIcon from "@mui/icons-material/Launch";
+import LinkIcon from "@mui/icons-material/Link";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import HistoryIcon from "@mui/icons-material/History";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { sanitizeHtml, formatDate } from "../../../../utils/utils";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
+import LoadingComponent from "../../../Helpers/LoadingComponent";
+import { ResourceItemKeywords } from "../ResourceGridItemComponents/ResourceItemContent";
 
 export function ResourcePageTitle({ resource, type }) {
   const url =
@@ -17,13 +25,99 @@ export function ResourcePageTitle({ resource, type }) {
     resource?.data?.data?.zenodo?.title ||
     resource?.data?.data?.openaire?.metadata?.name ||
     "Title";
+  const resourceType =
+    resource?.data?.data?.resource_type?.toLowerCase() === "document"
+      ? "Templates & Guidelines"
+      : resource?.data?.data?.resource_type?.toLowerCase();
+
   return (
-    <Stack direction="row" spacing={1} alignItems="center">
-      <Typography variant="h5" component="div">
+    <Stack
+      direction="row"
+      spacing={1}
+      alignItems="center"
+      justifyContent="flex-start"
+    >
+      <Typography
+        sx={{
+          fontWeight: "bold",
+          color: "#fff",
+          backgroundColor: "text.secondary",
+          px: 1,
+          borderRadius: 1,
+        }}
+      >
+        {resourceType?.[0]?.toUpperCase() + resourceType?.slice(1)}
+      </Typography>
+      <Typography
+        variant="h5"
+        sx={{ fontWeight: "bold", color: "rgb(174, 83, 142)" }}
+      >
+        {title}
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
         <Link to={url} target="_blank" rel="noopener noreferrer">
-          {title}
+          <Tooltip title="Open in new tab">
+            <LinkIcon sx={{ color: "text.primary", verticalAlign: "middle" }} />
+          </Tooltip>
         </Link>
       </Typography>
+    </Stack>
+  );
+}
+
+export function ResourcePageBasicInformationHeader({ resource, type }) {
+  return (
+    <Stack spacing={1} sx={{ px: 1 }}>
+      <Stack direction="row" spacing={1}>
+        <Typography sx={{ fontWeight: "bold" }}>version: </Typography>
+        <Typography>
+          {resource?.data?.data?.zenodo?.metadata?.version ||
+            resource?.data?.data?.openaire?.metadata?.version ||
+            "N/A"}
+        </Typography>
+
+        <Typography>
+          (
+          {formatDate(resource?.data?.data?.zenodo?.metadata?.publication_date)}
+          )
+        </Typography>
+      </Stack>
+      <Stack direction="row" spacing={1}>
+        <Typography sx={{ fontWeight: "bold" }}>doi: </Typography>
+        <Typography>{resource?.data?.data?.zenodo?.doi || "N/A"}</Typography>
+        <Typography>
+          (all versions: {resource?.data?.data?.zenodo?.conceptdoi || "N/A"})
+        </Typography>
+      </Stack>
+      <Stack direction="row" spacing={1}>
+        <Typography sx={{ fontWeight: "bold" }}>access rights: </Typography>
+        <Typography>
+          {resource?.data?.data?.zenodo?.metadata?.access_right || "N/A"}
+        </Typography>
+        <Divider orientation="vertical" flexItem />
+
+        <Typography sx={{ fontWeight: "bold" }}>license: </Typography>
+        <Typography>
+          {resource?.data?.data?.zenodo?.metadata?.license?.id || "N/A"}
+        </Typography>
+      </Stack>
+      <Stack direction="row" spacing={1}>
+        <Typography sx={{ fontWeight: "bold" }}>TRL: </Typography>
+        <Typography>{resource?.data?.data?.trl?.trl_id || "N/A"}</Typography>
+        <Divider orientation="vertical" flexItem />
+
+        <Typography sx={{ fontWeight: "bold" }}>language: </Typography>
+        <Typography>
+          {resource?.data?.data?.zenodo?.metadata?.language || "N/A"}
+        </Typography>
+      </Stack>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Typography sx={{ fontWeight: "bold" }}>keywords: </Typography>
+        <ResourceItemKeywords
+          resource={resource?.data?.data}
+          showIcon={false}
+        />
+      </Stack>
     </Stack>
   );
 }
@@ -41,22 +135,87 @@ export function ResourceVisibility({ resource }) {
   );
 }
 
-export function ResourcePageDescription({ resource }) {
+import { useState, useRef, useEffect } from "react";
+import { Button } from "@mui/material";
+
+export function ResourcePageDescription({ resource, initialLines = 10 }) {
+  const [expanded, setExpanded] = useState(false);
+  const [truncatedHtml, setTruncatedHtml] = useState("");
+
+  const description =
+    resource?.data?.data?.zenodo?.metadata?.description ||
+    resource?.data?.data?.openaire?.metadata?.description ||
+    "No description available.";
+
+  useEffect(() => {
+    if (!description) return;
+
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = sanitizeHtml(description);
+
+    let lineCount = 0;
+    const truncatedNodes = [];
+
+    tempDiv.childNodes.forEach((node) => {
+      if (lineCount >= initialLines) return;
+
+      const textLines = node.textContent
+        .split("\n")
+        .filter((l) => l.trim() !== "");
+      const remainingLines = initialLines - lineCount;
+
+      if (textLines.length <= remainingLines) {
+        truncatedNodes.push(node.outerHTML || node.textContent);
+        lineCount += textLines.length;
+      } else {
+        const tempNode = node.cloneNode(true);
+        tempNode.textContent = textLines.slice(0, remainingLines).join("\n");
+        truncatedNodes.push(tempNode.outerHTML);
+        lineCount += remainingLines;
+      }
+    });
+
+    setTruncatedHtml(truncatedNodes.join(""));
+  }, [description, initialLines]);
+
+  if (!description) return null;
+
   return (
-    <Typography
-      variant="body2"
+    <Box
       sx={{
-        margin: 0,
-        fontFamily: "inherit",
+        position: "relative",
+        mt: 2,
+        borderRadius: 1,
+        padding: 2,
+        borderColor: "divider",
+        borderStyle: "solid",
+        borderWidth: 1,
       }}
-      dangerouslySetInnerHTML={{
-        __html: sanitizeHtml(
-          resource?.data?.data?.zenodo?.metadata?.description ||
-            resource?.data?.data?.openaire?.metadata?.description ||
-            "No description available."
-        ),
-      }}
-    />
+    >
+      <Typography
+        variant="body2"
+        sx={{
+          margin: 0,
+          fontFamily: "inherit",
+        }}
+      >
+        <span
+          dangerouslySetInnerHTML={{
+            __html: expanded ? sanitizeHtml(description) : truncatedHtml,
+          }}
+        />
+      </Typography>
+
+      {description.split("\n").length > initialLines && (
+        <Button
+          size="small"
+          onClick={() => setExpanded(!expanded)}
+          sx={{ mt: 1, float: "right" }}
+        >
+          {expanded ? "Display less" : "Display more"}
+        </Button>
+      )}
+    </Box>
   );
 }
 
@@ -118,24 +277,19 @@ export function ResourceBasicInformation({ resource, type }) {
     resource?.data?.data?.openaire?.metadata?.version ||
     "N/A";
   return (
-    <Stack spacing={3}>
-      <Stack direction="column" spacing={2}>
-        <ResourcePageTitle resource={resource} type={type} />
-        <Stack direction="row" spacing={2} alignItems="center">
-          {type !== "service" && (
-            <ResourcePagePublicationDate resource={resource} />
-          )}
-          <ResourcePageVersion resource={resource} />
-          {type === "dataset" && <ResourceVisibility resource={resource} />}
-          {type === "service" && (
-            <ResourcePageServiceType resource={resource} />
-          )}
+    <>
+      {resource.isLoading && (
+        <LoadingComponent loadingMessage="Loading resource ..." />
+      )}
+      {resource?.isSuccess && (
+        <Stack spacing={2} sx={{ width: "100%" }}>
+          <ResourcePageTitle resource={resource} type={type} />
 
-          <ResourceItemScopes resource={resource?.data?.data} />
+          <ResourcePageBasicInformationHeader resource={resource} type={type} />
+
+          {resource && <ResourcePageDescription resource={resource} />}
         </Stack>
-      </Stack>
-      {resource.isLoading && <CircularProgress size="3rem" />}
-      {resource && <ResourcePageDescription resource={resource} />}
-    </Stack>
+      )}
+    </>
   );
 }
