@@ -90,10 +90,11 @@ export function FieldRow({ label, fieldArray, mapFn }) {
 const accordionCardStyles = {
   boxShadow: 2,
   borderRadius: 2,
-  "&:before": { display: "none" }, // αφαιρεί default γραμμή
+  "&:before": { display: "none" },
 };
 
 export function EquityEthicalCard({ resource }) {
+  console.log(resource?.data?.data?.zenodo?.metadata?.grants);
   return (
     <Accordion defaultExpanded={false} sx={accordionCardStyles} disableGutters>
       <AccordionSummary
@@ -154,12 +155,14 @@ export function GovernanceSustainabilityFundingCard({ resource }) {
               fieldArray={resource?.data?.data?.governance_model}
             />
             <FieldRow
-              label="Funding"
-              fieldArray={resource?.data?.data?.zenodo?.metadata?.grants}
-            />
-            <FieldRow
               label="Sustainability Goals"
               fieldArray={resource?.data?.data?.sustainability_goals}
+            />
+            <FieldRow
+              label="Funds"
+              fieldArray={resource?.data?.data?.zenodo?.metadata?.grants?.map(
+                (grant) => grant?.acronym
+              )}
             />
           </Stack>
         )}
@@ -170,7 +173,9 @@ export function GovernanceSustainabilityFundingCard({ resource }) {
 
 export function ContributorsCard({ resource }) {
   const contributors =
-    resource?.data?.data?.openaire?.metadata?.resourceOrganisation || "N/A";
+    resource?.data?.data?.openaire?.metadata?.resourceOrganisation ||
+    resource?.data?.data?.zenodo?.metadata?.contributors ||
+    [];
 
   return (
     <Accordion defaultExpanded={false} sx={accordionCardStyles} disableGutters>
@@ -188,12 +193,12 @@ export function ContributorsCard({ resource }) {
         {resource?.isLoading && <CircularProgress size="3rem" />}
         <Stack direction="column" spacing={1}>
           <Stack direction="row" spacing={1} alignItems="center">
-            <Tooltip title="Service Type">
-              <AccountBalanceIcon sx={{ color: "text.secondary" }} />
-            </Tooltip>
-            <Typography variant="body2" color="text.secondary">
-              {contributors}
-            </Typography>
+            <FieldRow
+              label="Contributors"
+              fieldArray={
+                Array.isArray(contributors) ? contributors : [contributors]
+              }
+            />
           </Stack>
         </Stack>
       </AccordionDetails>
