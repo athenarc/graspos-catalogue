@@ -222,6 +222,14 @@ export function AuthorsCard({ resource }) {
         sx={{ textAlign: resource?.isLoading ? "center" : "left" }}
       >
         {resource?.isLoading && <CircularProgress size="3rem" />}
+        {authors?.length === 0 && (
+          <Typography
+            variant="body2"
+            sx={{ color: "text.secondary", fontStyle: "italic" }}
+          >
+            No authors available
+          </Typography>
+        )}
         {authors?.length > 0 && (
           <Stack direction="column" spacing={1}>
             {authors?.map((author) => (
