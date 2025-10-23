@@ -1,4 +1,12 @@
 import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Link as MuiLink,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
   Avatar,
   Box,
   Button,
@@ -28,7 +36,8 @@ import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp
 import { useState } from "react";
 import EmailIcon from "@mui/icons-material/Email";
 import PersonIcon from "@mui/icons-material/Person";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import CircleIcon from "@mui/icons-material/Circle";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import {
   getLabelForAssessmentFunctionality,
@@ -505,19 +514,6 @@ export function CoverageCard({ resource }) {
   );
 }
 
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Link as MuiLink,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import CircleIcon from "@mui/icons-material/Circle";
-
 export function SupportCard({ resource }) {
   const data = resource?.data?.data || {};
 
@@ -668,7 +664,7 @@ export function TagsCard({ resource }) {
         {resource && (
           <Stack direction="column" justifyContent="center">
             {keywords?.length > 0 ? (
-              <Grid container spacing={1}>
+              <Grid container spacing={2}>
                 {keywords?.map((keyword) => (
                   <Grid key={keyword}>
                     <Chip
