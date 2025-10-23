@@ -94,7 +94,6 @@ const accordionCardStyles = {
 };
 
 export function EquityEthicalCard({ resource }) {
-  console.log(resource?.data?.data?.zenodo?.metadata?.grants);
   return (
     <Accordion defaultExpanded={false} sx={accordionCardStyles} disableGutters>
       <AccordionSummary
