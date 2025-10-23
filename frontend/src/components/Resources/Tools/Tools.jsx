@@ -32,13 +32,15 @@ export function Tools({ tools, user }) {
 
 export function Tool({ resourceId }) {
   const tool = useTool(resourceId);
+  const contributors = tool?.data?.data?.zenodo?.metadata?.contributors ?? [];
+  const authors = tool?.data?.data?.zenodo?.metadata?.creators ?? [];
   return (
     <>
       <Grid size={{ xs: 12, lg: 8 }}>
         <ResourceBasicInformation resource={tool} type={"tool"} />
         <Grid container spacing={2} sx={{ mt: 2 }}>
           <Grid size={{ xs: 12, lg: 6 }}>
-            <AuthorsCard resource={tool} />
+            <AuthorsCard resource={tool} people={authors} label="Authors" />
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }}>
             <GovernanceSustainabilityFundingCard resource={tool} />
@@ -46,7 +48,11 @@ export function Tool({ resourceId }) {
         </Grid>
         <Grid container spacing={2} sx={{ mt: 2 }}>
           <Grid size={{ xs: 12, lg: 6 }}>
-            <ContributorsCard resource={tool} />
+            <AuthorsCard
+              resource={tool}
+              people={contributors}
+              label="Contributors"
+            />
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }}>
             <EquityEthicalCard resource={tool} />
