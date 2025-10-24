@@ -5,72 +5,24 @@ import {
   Tabs,
   Tab,
   Chip,
-  Divider,
   Box,
-  Collapse,
 } from "@mui/material";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState } from "react";
 import { stripHtml } from "../../../../utils/utils";
-
-const evidenceTypesMenuItems = [
-  { value: "indicators", label: "Indicators" },
-  { value: "narratives", label: "Narratives" },
-  { value: "list_of_contributions", label: "List of Contributions" },
-  { value: "badges", label: "Badges" },
-  { value: "other", label: "Other" },
-];
-
-const assessmentFunctionalityMenuItems = [
-  {
-    value: "scholarly_data_enrichment_missing_attributes",
-    label: "Scholarly data enrichment: Missing attributes",
-  },
-  {
-    value: "scholarly_data_enrichment_indicators",
-    label: "Scholarly data enrichment: Indicators",
-  },
-  {
-    value: "scholarly_data_enrichment_semantics",
-    label: "Scholarly data enrichment: Missing links & semantics",
-  },
-  {
-    value: "open_science_monitoring_researchers",
-    label: "Open Science monitoring: Researchers",
-  },
-  {
-    value: "open_science_monitoring_institutions",
-    label: "Open Science monitoring: Institutions",
-  },
-  {
-    value: "open_science_monitoring_countries",
-    label: "Open Science monitoring: Countries",
-  },
-  {
-    value: "open_science_monitoring_general",
-    label: "Open Science monitoring: General",
-  },
-  {
-    value: "data",
-    label: "Data",
-  },
-  {
-    value: "other",
-    label: "Other",
-  },
-];
-
-const functionalityLabelMap = Object.fromEntries(
-  assessmentFunctionalityMenuItems.map((i) => [i.value, i.label])
-);
+import {
+  getLabelForAssessmentFunctionality,
+  getLabelForEvidenceType,
+} from "@helpers/MenuItems";
 
 function ExpandableChips({ items = [], labelMap = null }) {
+  const itemsArray = Array.isArray(items) ? items : [items];
   return (
     <Stack>
       <Stack direction="row" flexWrap="wrap">
-        {items?.map((item, idx) => (
+        {itemsArray.map((item, idx) => (
           <Chip
             key={idx}
             label={labelMap?.[item] || item}
@@ -88,7 +40,6 @@ function ExpandableChips({ items = [], labelMap = null }) {
   );
 }
 
-// --- Generic Section Component ---
 function ResourceItemChipsSection({
   title,
   items = [],
@@ -133,7 +84,7 @@ function ResourceItemChipsSection({
             <Typography variant="caption" sx={{ mr: 0.3 }}>
               {expanded
                 ? "Show less"
-                : `Show all (${items.length - limit} more)`}
+                : `Show all (${items?.length - limit} more)`}
             </Typography>
             <ExpandMoreIcon
               sx={{
@@ -156,8 +107,7 @@ function ResourceItemChipsSection({
   );
 }
 
-// --- Keywords ---
-export function ResourceItemKeywords({ resource }) {
+export function ResourceItemKeywords({ resource, showIcon = true }) {
   const keywords =
     resource?.zenodo?.metadata?.keywords ||
     resource?.openaire?.metadata?.tags ||
@@ -175,10 +125,10 @@ export function ResourceItemKeywords({ resource }) {
   return (
     <Stack direction="row" alignItems="center" spacing={1} flexWrap="wrap">
       <Tooltip title="Tags">
-        <LocalOfferIcon fontSize="small" color="action" />
+        {showIcon && <LocalOfferIcon fontSize="small" color="action" />}
       </Tooltip>
       <Stack direction="row" flexWrap="wrap" spacing={1}>
-        {keywords.map((k) => (
+        {keywords?.map((k) => (
           <Chip
             key={k}
             label={k}
@@ -193,7 +143,6 @@ export function ResourceItemKeywords({ resource }) {
   );
 }
 
-// --- Main Content ---
 function TabPanel({ children, value, index }) {
   return (
     <Box role="tabpanel" hidden={value !== index} sx={{ flex: 1, p: 2 }}>
@@ -202,7 +151,6 @@ function TabPanel({ children, value, index }) {
   );
 }
 
-// --- Main Content ---
 export default function ResourceItemContent({ resource }) {
   const description =
     resource?.zenodo?.metadata?.description ||
@@ -216,16 +164,14 @@ export default function ResourceItemContent({ resource }) {
       title: "Evidence Types",
       icon: <AssessmentIcon fontSize="small" color="action" />,
       items: resource?.metadata?.evidence_types || [],
-      labelMap: Object.fromEntries(
-        evidenceTypesMenuItems.map((i) => [i.value, i.label])
-      ),
+      labelMap: getLabelForEvidenceType,
       displayTab: true,
     },
     assessment_functionalities: {
       title: "Assessment Functionalities",
       icon: <AssessmentIcon fontSize="small" color="action" />,
       items: resource?.metadata?.assessment_functionalities || [],
-      labelMap: functionalityLabelMap,
+      labelMap: getLabelForAssessmentFunctionality,
       displayTab:
         resource?.resource_type.toLowerCase() === "service" ||
         resource?.resource_type.toLowerCase() === "tool",
@@ -248,6 +194,13 @@ export default function ResourceItemContent({ resource }) {
       title: "Covered Research Products",
       icon: <AssessmentIcon fontSize="small" color="action" />,
       items: resource?.metadata?.covered_research_products || [],
+      labelMap: null,
+      displayTab: true,
+    },
+    temporal_coverage: {
+      title: "Temporal Coverage",
+      icon: <AssessmentIcon fontSize="small" color="action" />,
+      items: resource?.metadata?.temporal_coverage || [],
       labelMap: null,
       displayTab: true,
     },
@@ -278,10 +231,8 @@ export default function ResourceItemContent({ resource }) {
         {stripHtml(description)}
       </Typography>
 
-      {/* Keywords */}
       <ResourceItemKeywords resource={resource} />
 
-      {/* Tabs + Panels */}
       <Box
         sx={{
           display: "flex",
@@ -301,7 +252,7 @@ export default function ResourceItemContent({ resource }) {
             minWidth: 220,
           }}
         >
-          {visibleTabs.map(
+          {visibleTabs?.map(
             ([key, { title, icon, displayTab }], index) =>
               displayTab && (
                 <Tab
@@ -317,8 +268,7 @@ export default function ResourceItemContent({ resource }) {
           )}
         </Tabs>
 
-        {/* Tab Panels */}
-        {visibleTabs.map(
+        {visibleTabs?.map(
           ([key, { title, items, labelMap, displayTab }], index) =>
             displayTab && (
               <TabPanel key={key} value={value} index={index}>
