@@ -33,13 +33,17 @@ export function Documents({ documents, user }) {
 
 export function Document({ resourceId }) {
   const document = useDocument(resourceId);
+  const contributors =
+    document?.data?.data?.zenodo?.metadata?.contributors ?? [];
+  const authors = document?.data?.data?.zenodo?.metadata?.creators ?? [];
+
   return (
     <>
       <Grid size={{ xs: 12, lg: 8 }}>
         <ResourceBasicInformation resource={document} />
         <Grid container spacing={2} sx={{ mt: 2 }}>
           <Grid size={{ xs: 12, lg: 6 }}>
-            <AuthorsCard resource={document} />
+            <AuthorsCard resource={document} people={authors} label="Authors" />
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }}>
             <GovernanceSustainabilityFundingCard resource={document} />
@@ -47,7 +51,11 @@ export function Document({ resourceId }) {
         </Grid>
         <Grid container spacing={2} sx={{ mt: 2 }}>
           <Grid size={{ xs: 12, lg: 6 }}>
-            <ContributorsCard resource={document} />
+            <AuthorsCard
+              resource={document}
+              people={contributors}
+              label="Contributors"
+            />
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }}>
             <EquityEthicalCard resource={document} />

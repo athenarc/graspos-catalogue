@@ -12,6 +12,7 @@ import {
   EquityEthicalCard,
 } from "../ResourcesGrid/ResourcePageComponents/ResourcePageCards";
 import { ResourceBasicInformation } from "../ResourcesGrid/ResourcePageComponents/ResourcePageBasicInformation";
+import { useEffect } from "react";
 
 export function Services({ services, user }) {
   return (
@@ -32,13 +33,18 @@ export function Services({ services, user }) {
 
 export function Service({ resourceId }) {
   const service = useService(resourceId);
+  const contributors =
+    service?.data?.data?.openaire?.metadata?.resourceOrganisation ?? [];
+
+  const authors = service?.data?.data?.openaire?.metadata?.creators ?? [];
+
   return (
     <>
       <Grid size={{ xs: 12, lg: 8 }}>
         <ResourceBasicInformation resource={service} type={"service"} />
         <Grid container spacing={2} sx={{ mt: 2 }}>
           <Grid size={{ xs: 12, lg: 6 }}>
-            <AuthorsCard resource={service} />
+            <AuthorsCard resource={service} people={authors} label="Authors" />
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }}>
             <GovernanceSustainabilityFundingCard resource={service} />
@@ -46,7 +52,17 @@ export function Service({ resourceId }) {
         </Grid>
         <Grid container spacing={2} sx={{ mt: 2 }}>
           <Grid size={{ xs: 12, lg: 6 }}>
-            <ContributorsCard resource={service} />
+            <AuthorsCard
+              resource={service}
+              people={
+                Array.isArray(contributors)
+                  ? contributors
+                  : [contributors].map((contributor) => ({
+                      name: contributor,
+                    }))
+              }
+              label="Contributors"
+            />
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }}>
             <EquityEthicalCard resource={service} />

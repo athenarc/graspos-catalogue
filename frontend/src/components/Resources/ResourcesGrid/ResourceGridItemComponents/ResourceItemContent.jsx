@@ -123,11 +123,20 @@ export function ResourceItemKeywords({ resource, showIcon = true }) {
     );
 
   return (
-    <Stack direction="row" alignItems="center" spacing={1} flexWrap="wrap">
-      <Tooltip title="Tags">
-        {showIcon && <LocalOfferIcon fontSize="small" color="action" />}
-      </Tooltip>
-      <Stack direction="row" flexWrap="wrap" spacing={1}>
+    <Stack
+      direction="row"
+      alignItems="center"
+      flexWrap="wrap"
+      spacing={2}
+      sx={{ mx: "0px !important;" }}
+    >
+      <Stack
+        direction="row"
+        flexWrap="wrap"
+        spacing={1}
+        gap={1}
+        sx={{ mx: "0px !important;" }}
+      >
         {keywords?.map((k) => (
           <Chip
             key={k}
@@ -135,7 +144,7 @@ export function ResourceItemKeywords({ resource, showIcon = true }) {
             color="primary"
             variant="outlined"
             size="small"
-            sx={{ mr: 0.5, mb: 0.5 }}
+            sx={{ marginLeft: "0px !important;" }}
           />
         ))}
       </Stack>

@@ -32,13 +32,16 @@ export function Datasets({ datasets, user }) {
 
 export function Dataset({ resourceId }) {
   const dataset = useDataset(resourceId);
+  const contributors =
+    dataset?.data?.data?.zenodo?.metadata?.contributors ?? [];
+  const authors = dataset?.data?.data?.zenodo?.metadata?.creators ?? [];
   return (
     <>
       <Grid size={{ xs: 12, lg: 8 }}>
         <ResourceBasicInformation resource={dataset} type={"dataset"} />
         <Grid container spacing={2} sx={{ mt: 2 }}>
           <Grid size={{ xs: 12, lg: 6 }}>
-            <AuthorsCard resource={dataset} />
+            <AuthorsCard resource={dataset} people={authors} label="Authors" />
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }}>
             <GovernanceSustainabilityFundingCard resource={dataset} />
@@ -46,7 +49,11 @@ export function Dataset({ resourceId }) {
         </Grid>
         <Grid container spacing={2} sx={{ mt: 2 }}>
           <Grid size={{ xs: 12, lg: 6 }}>
-            <ContributorsCard resource={dataset} />
+            <AuthorsCard
+              resource={dataset}
+              people={contributors}
+              label="Contributors"
+            />
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }}>
             <EquityEthicalCard resource={dataset} />
