@@ -229,7 +229,7 @@ export function AuthorsCard({ resource, people = [], label = "Authors" }) {
         sx={{ textAlign: resource?.isLoading ? "center" : "left" }}
       >
         {resource?.isLoading && <CircularProgress size="3rem" />}
-        {people?.length === 0 && (
+        {resource?.isSuccess && people?.length === 0 && (
           <Typography
             variant="body2"
             sx={{ color: "text.secondary", fontStyle: "italic" }}
@@ -237,7 +237,7 @@ export function AuthorsCard({ resource, people = [], label = "Authors" }) {
             No {label} available
           </Typography>
         )}
-        {people?.length > 0 && (
+        {resource?.isSuccess && people?.length > 0 && (
           <Stack direction="column" spacing={1}>
             {people?.map((person) => (
               <Stack direction="column" key={person?.name} spacing={0.5}>
@@ -545,62 +545,65 @@ export function SupportCard({ resource }) {
           paddingBottom: "16px !important",
         }}
       >
-        <Stack direction="column" spacing={2}>
-          {sections.map(({ label, urls }) => {
-            const urlArray = Array.isArray(urls) ? urls : urls ? [urls] : [];
+        {resource?.isLoading && <CircularProgress size="3rem" />}
+        {resource?.isSuccess && (
+          <Stack direction="column" spacing={2}>
+            {sections.map(({ label, urls }) => {
+              const urlArray = Array.isArray(urls) ? urls : urls ? [urls] : [];
 
-            return (
-              <Accordion key={label} sx={{ boxShadow: 1, borderRadius: 2 }}>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  disableGutters
-                >
-                  <Typography sx={{ fontWeight: "bold" }}>{label}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  {urlArray.length > 0 ? (
-                    <List dense>
-                      {urlArray.map((url, idx) => (
-                        <ListItem key={idx}>
-                          <ListItemIcon sx={{ minWidth: 28 }}>
-                            <CircleIcon sx={{ fontSize: 6 }} />
-                          </ListItemIcon>
-                          <ListItemText
-                            primary={
-                              <MuiLink
-                                href={url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                sx={{
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                {url}
-                                <LinkIcon
+              return (
+                <Accordion key={label} sx={{ boxShadow: 1, borderRadius: 2 }}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    disableGutters
+                  >
+                    <Typography sx={{ fontWeight: "bold" }}>{label}</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    {urlArray.length > 0 ? (
+                      <List dense>
+                        {urlArray.map((url, idx) => (
+                          <ListItem key={idx}>
+                            <ListItemIcon sx={{ minWidth: 28 }}>
+                              <CircleIcon sx={{ fontSize: 6 }} />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary={
+                                <MuiLink
+                                  href={url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
                                   sx={{
-                                    ml: 0.5,
-                                    fontSize: 18,
-                                    color: "text.primary",
-                                    verticalAlign: "middle",
+                                    display: "inline-flex",
+                                    alignItems: "center",
                                   }}
-                                />
-                              </MuiLink>
-                            }
-                          />
-                        </ListItem>
-                      ))}
-                    </List>
-                  ) : (
-                    <Typography color="text.secondary">
-                      No URLs available
-                    </Typography>
-                  )}
-                </AccordionDetails>
-              </Accordion>
-            );
-          })}
-        </Stack>
+                                >
+                                  {url}
+                                  <LinkIcon
+                                    sx={{
+                                      ml: 0.5,
+                                      fontSize: 18,
+                                      color: "text.primary",
+                                      verticalAlign: "middle",
+                                    }}
+                                  />
+                                </MuiLink>
+                              }
+                            />
+                          </ListItem>
+                        ))}
+                      </List>
+                    ) : (
+                      <Typography color="text.secondary">
+                        No URLs available
+                      </Typography>
+                    )}
+                  </AccordionDetails>
+                </Accordion>
+              );
+            })}
+          </Stack>
+        )}
       </CardContent>
     </Card>
   );
@@ -731,12 +734,12 @@ export function StatisticsCard({ resource }) {
     <Card sx={cardStyles}>
       <CardContent
         sx={{
-          textAlign: [resource.isLoading ? "center" : "left"],
+          textAlign: [resource?.isLoading ? "center" : "left"],
           paddingBottom: "16px !important",
         }}
       >
-        {resource.isLoading && <CircularProgress size="3rem" />}
-        {resource && (
+        {resource?.isLoading && <CircularProgress size="3rem" />}
+        {resource?.isSuccess && (
           <>
             <Stack
               direction="row"
