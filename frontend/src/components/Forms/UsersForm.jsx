@@ -16,7 +16,7 @@ import {
   Tooltip,
   CircularProgress,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import SaveIcon from "@mui/icons-material/Save";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
@@ -92,12 +92,12 @@ function UserForm({ user }) {
         <CardContent
           sx={{
             cursor: "pointer",
-            px: 2,
-            py: 1.5,
+            p: 2,
             bgcolor: "#f9fafc",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            paddingBottom: "16px !important",
           }}
           onClick={() => setOpen((prev) => !prev)}
         >
@@ -143,7 +143,7 @@ function UserForm({ user }) {
 
         <Collapse in={open} timeout="auto" unmountOnExit>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <CardContent sx={{ pt: 1, pb: 0 }}>
+            <CardContent sx={{ pt: 1, paddingBottom: "16px !important" }}>
               <Stack spacing={2}>
                 {(notificationStatus === "success" ||
                   notificationStatus === "error") && (
@@ -241,8 +241,17 @@ export default function UsersPanelForm() {
   const { user } = useAuth();
   const users = useUsers();
   const [open, setOpen] = useState(true);
+  const [search, setSearch] = useState("");
 
   const handleClose = () => setOpen(false);
+
+  // Φιλτράρει τη λίστα χρηστών ανά username
+  const filteredUsers = useMemo(() => {
+    if (!users?.data?.data) return [];
+    return users.data.data.filter((u) =>
+      u.username.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [users, search]);
 
   return (
     user && (
@@ -280,10 +289,33 @@ export default function UsersPanelForm() {
             dividers
             sx={{ maxHeight: "75vh", overflowY: "auto", p: 2 }}
           >
+            <Stack direction="row" justifyContent="flex-start" mb={2}>
+              {/* Search Input */}
+              <TextField
+                slotProps={{
+                  input: {
+                    style: {
+                      borderRadius: "19px",
+                      backgroundColor: "#fff",
+                    },
+                  },
+                }}
+                size="small"
+                variant="outlined"
+                placeholder="Search users by username"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </Stack>
             <Stack spacing={2}>
-              {users?.data?.data?.map((u) => (
+              {filteredUsers.map((u) => (
                 <UserForm key={u?.id} user={u} />
               ))}
+              {filteredUsers.length === 0 && (
+                <Typography textAlign="center" color="text.secondary">
+                  No users found.
+                </Typography>
+              )}
             </Stack>
           </DialogContent>
         )}
