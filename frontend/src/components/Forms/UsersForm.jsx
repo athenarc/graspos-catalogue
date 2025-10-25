@@ -242,16 +242,32 @@ export default function UsersPanelForm() {
   const users = useUsers();
   const [open, setOpen] = useState(true);
   const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState({
+    verified: false,
+    admin: false,
+    disabled: false,
+  });
 
   const handleClose = () => setOpen(false);
 
-  // Φιλτράρει τη λίστα χρηστών ανά username
+  const handleFilterChange = (name) => (event) => {
+    setFilters((prev) => ({ ...prev, [name]: event.target.checked }));
+  };
+
   const filteredUsers = useMemo(() => {
     if (!users?.data?.data) return [];
-    return users.data.data.filter((u) =>
-      u.username.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [users, search]);
+    return users.data.data.filter((u) => {
+      const matchesSearch = u.username
+        .toLowerCase()
+        .includes(search.toLowerCase());
+      const matchesVerified = !filters.verified || !!u.email_confirmed_at;
+      const matchesAdmin = !filters.admin || !!u.super_user;
+      const matchesDisabled = !filters.disabled || !!u.disabled;
+      return (
+        matchesSearch && matchesVerified && matchesAdmin && matchesDisabled
+      );
+    });
+  }, [users, search, filters]);
 
   return (
     user && (
@@ -289,24 +305,49 @@ export default function UsersPanelForm() {
             dividers
             sx={{ maxHeight: "75vh", overflowY: "auto", p: 2 }}
           >
-            <Stack direction="row" justifyContent="flex-start" mb={2}>
-              {/* Search Input */}
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={2}
+              alignItems="center"
+              mb={2}
+            >
               <TextField
-                slotProps={{
-                  input: {
-                    style: {
-                      borderRadius: "19px",
-                      backgroundColor: "#fff",
-                    },
-                  },
-                }}
+                fullWidth
                 size="small"
                 variant="outlined"
-                placeholder="Search users by username"
+                placeholder="Search by username"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={filters.verified}
+                    onChange={handleFilterChange("verified")}
+                  />
+                }
+                label="Verified"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={filters.admin}
+                    onChange={handleFilterChange("admin")}
+                  />
+                }
+                label="Admin"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={filters.disabled}
+                    onChange={handleFilterChange("disabled")}
+                  />
+                }
+                label="Disabled"
+              />
             </Stack>
+
             <Stack spacing={2}>
               {filteredUsers.map((u) => (
                 <UserForm key={u?.id} user={u} />
