@@ -13,6 +13,9 @@ export default function ArrayInputField({
   required = false,
   defaultValue = [],
   disabled = false,
+  conditionalValidation = false,
+  validationPattern = null,
+  validateFn = null,
 }) {
   const { fields, append, remove, replace } = useFieldArray({
     control: form?.control,
@@ -31,7 +34,7 @@ export default function ArrayInputField({
       }
       didInit.current = true;
     }
-  }, [defaultValue, replace, append, form, name, required]);
+  }, [defaultValue, replace, append, form, name, required, fields.length]);
 
   return (
     <Stack direction="column" spacing={2}>
@@ -41,14 +44,33 @@ export default function ArrayInputField({
             <Controller
               name={`${name}.${index}`}
               control={form?.control}
-              rules={
-                required && {
-                  required: `${label} field is required and cannot be empty`,
-                  validate: (value) =>
-                    value?.trim() !== "" ||
-                    `${label} field is required and cannot be empty`,
-                }
-              }
+              rules={{
+                validate: (value) => {
+                  const trimmed = value?.trim?.() ?? "";
+
+                  if (validateFn) return validateFn(trimmed);
+
+                  if (!conditionalValidation) {
+                    if (required && trimmed === "")
+                      return `${label} is required`;
+                    if (validationPattern && trimmed !== "") {
+                      return (
+                        validationPattern.test(trimmed) || `${label} is invalid`
+                      );
+                    }
+                    return true;
+                  }
+
+                  if (trimmed === "") return true;
+
+                  if (validationPattern)
+                    return (
+                      validationPattern.test(trimmed) || `${label} is invalid`
+                    );
+
+                  return true;
+                },
+              }}
               render={({ field }) => (
                 <>
                   <TextField
