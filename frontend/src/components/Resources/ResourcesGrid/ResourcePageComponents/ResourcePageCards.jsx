@@ -2,11 +2,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Link as MuiLink,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
+  CardActionArea,
   Avatar,
   Box,
   Button,
@@ -26,6 +22,7 @@ import {
   TableRow,
   TableHead,
   TableContainer,
+  Paper,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import orcidLogo from "../../../../assets/orcid.logo.icon.svg";
@@ -39,12 +36,14 @@ import PersonIcon from "@mui/icons-material/Person";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CircleIcon from "@mui/icons-material/Circle";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
+import DescriptionIcon from "@mui/icons-material/Description";
+import SchoolIcon from "@mui/icons-material/School";
+import ForumIcon from "@mui/icons-material/Forum";
+import LinkIcon from "@mui/icons-material/Link";
 import {
   getLabelForAssessmentFunctionality,
   getLabelForEvidenceType,
 } from "@helpers/MenuItems";
-
-import LinkIcon from "@mui/icons-material/Link";
 
 const summaryStyles = {
   color: "#fff",
@@ -513,6 +512,13 @@ export function CoverageCard({ resource }) {
     </Card>
   );
 }
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+
+const sectionIcons = {
+  Documentation: <DescriptionIcon color="primary" />,
+  "Training material": <SchoolIcon color="secondary" />,
+  "Support channel": <ForumIcon color="info" />,
+};
 
 export function SupportCard({ resource }) {
   const data = resource?.data?.data || {};
@@ -526,6 +532,11 @@ export function SupportCard({ resource }) {
   return (
     <Card sx={cardStyles}>
       <CardHeader
+        title={
+          <Typography variant="h5" sx={{ fontWeight: 600 }}>
+            Support
+          </Typography>
+        }
         sx={{
           textAlign: "center",
           color: "#fff",
@@ -533,68 +544,90 @@ export function SupportCard({ resource }) {
           display: "flex",
           flex: "1",
         }}
-        title={
-          <Typography variant="h5" textAlign="center">
-            Support
-          </Typography>
-        }
-      ></CardHeader>
-      <CardContent
-        sx={{
-          textAlign: [resource.isLoading ? "center" : "left"],
-          paddingBottom: "16px !important",
-        }}
-      >
-        {resource?.isLoading && <CircularProgress size="3rem" />}
+      />
+
+      <CardContent sx={{ py: 2 }}>
+        {resource?.isLoading && (
+          <Box display="flex" justifyContent="center" py={3}>
+            <CircularProgress size="3rem" />
+          </Box>
+        )}
+
         {resource?.isSuccess && (
-          <Stack direction="column" spacing={2}>
+          <Stack spacing={2}>
             {sections.map(({ label, urls }) => {
               const urlArray = Array.isArray(urls) ? urls : urls ? [urls] : [];
 
               return (
-                <Accordion key={label} sx={{ boxShadow: 1, borderRadius: 2 }}>
+                <Accordion
+                  key={label}
+                  disableGutters
+                  sx={{
+                    borderRadius: 2,
+                    "&:before": { display: "none" },
+                    boxShadow: 1,
+                    overflow: "hidden",
+                  }}
+                >
                   <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
-                    disableGutters
+                    sx={{
+                      bgcolor: "action.hover",
+                      "& .MuiAccordionSummary-content": {
+                        alignItems: "center",
+                        gap: 1.5,
+                      },
+                    }}
                   >
-                    <Typography sx={{ fontWeight: "bold" }}>{label}</Typography>
+                    {sectionIcons[label]}
+                    <Typography fontWeight="bold">{label}</Typography>
                   </AccordionSummary>
-                  <AccordionDetails>
+
+                  <AccordionDetails sx={{ p: 2 }}>
                     {urlArray.length > 0 ? (
-                      <List dense>
-                        {urlArray.map((url, idx) => (
-                          <ListItem key={idx}>
-                            <ListItemIcon sx={{ minWidth: 28 }}>
-                              <CircleIcon sx={{ fontSize: 6 }} />
-                            </ListItemIcon>
-                            <ListItemText
-                              primary={
-                                <MuiLink
-                                  href={url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  sx={{
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  {url}
-                                  <LinkIcon
-                                    sx={{
-                                      ml: 0.5,
-                                      fontSize: 18,
-                                      color: "text.primary",
-                                      verticalAlign: "middle",
-                                    }}
-                                  />
-                                </MuiLink>
-                              }
-                            />
-                          </ListItem>
-                        ))}
-                      </List>
+                      <Stack spacing={1}>
+                        {urlArray.map((url, idx) => {
+                          let displayText = url.replace(/^https?:\/\//, "");
+                          if (displayText.length > 60)
+                            displayText = displayText.slice(0, 60) + "…";
+
+                          return (
+                            <Paper
+                              key={idx}
+                              variant="outlined"
+                              sx={{
+                                borderRadius: 2,
+                                overflow: "hidden",
+                                "&:hover": { boxShadow: 2 },
+                              }}
+                            >
+                              <CardActionArea
+                                component="a"
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  px: 2,
+                                  py: 1,
+                                }}
+                              >
+                                <Typography fontWeight={500}>
+                                  {displayText}
+                                </Typography>
+                                <OpenInNewIcon fontSize="small" />
+                              </CardActionArea>
+                            </Paper>
+                          );
+                        })}
+                      </Stack>
                     ) : (
-                      <Typography color="text.secondary">
+                      <Typography
+                        color="text.secondary"
+                        sx={{ fontStyle: "italic", py: 1 }}
+                      >
                         No URLs available
                       </Typography>
                     )}
@@ -604,7 +637,15 @@ export function SupportCard({ resource }) {
             })}
           </Stack>
         )}
+
+        {resource?.isError && (
+          <Typography color="error" textAlign="center">
+            Failed to load support data.
+          </Typography>
+        )}
       </CardContent>
+
+      <Divider />
     </Card>
   );
 }
