@@ -1,19 +1,20 @@
+import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import {
   Box,
-  CircularProgress,
+  Button,
   Divider,
   Stack,
   Typography,
   Tooltip,
 } from "@mui/material";
-import { Link } from "react-router-dom";
 import LinkIcon from "@mui/icons-material/Link";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import HistoryIcon from "@mui/icons-material/History";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { sanitizeHtml, formatDate } from "../../../../utils/utils";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
-import LoadingComponent from "../../../Helpers/LoadingComponent";
+import LoadingComponent from "@helpers/LoadingComponent";
 import { ResourceItemKeywords } from "../ResourceGridItemComponents/ResourceItemContent";
 
 export function ResourcePageTitle({ resource, type }) {
@@ -31,37 +32,43 @@ export function ResourcePageTitle({ resource, type }) {
       : resource?.data?.data?.resource_type?.toLowerCase();
 
   return (
-    <Stack
-      direction="row"
-      spacing={1}
-      alignItems="center"
-      justifyContent="flex-start"
-    >
-      <Typography
-        sx={{
-          fontWeight: "bold",
-          color: "#fff",
-          backgroundColor: "text.secondary",
-          px: 1,
-          borderRadius: 1,
-        }}
+    <>
+      <Stack
+        direction="row"
+        spacing={1}
+        alignItems="center"
+        justifyContent="flex-start"
       >
-        {resourceType?.[0]?.toUpperCase() + resourceType?.slice(1)}
-      </Typography>
-      <Typography
-        variant="h5"
-        sx={{ fontWeight: "bold", color: "rgb(174, 83, 142)" }}
-      >
-        {title}
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-        <Link to={url} target="_blank" rel="noopener noreferrer">
-          <Tooltip title="Open in new tab">
-            <LinkIcon sx={{ color: "text.primary", verticalAlign: "middle" }} />
-          </Tooltip>
-        </Link>
-      </Typography>
-    </Stack>
+        <Typography
+          variant="h5"
+          sx={{ fontWeight: "bold", color: "rgb(174, 83, 142)" }}
+        >
+          {title}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          <Link to={url} target="_blank" rel="noopener noreferrer">
+            <Tooltip title="Open resource in new tab">
+              <LinkIcon
+                sx={{ color: "text.primary", verticalAlign: "middle" }}
+              />
+            </Tooltip>
+          </Link>
+        </Typography>
+      </Stack>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Typography
+          sx={{
+            fontWeight: "bold",
+            color: "#fff",
+            backgroundColor: "text.secondary",
+            px: 1,
+            borderRadius: 1,
+          }}
+        >
+          {resourceType?.[0]?.toUpperCase() + resourceType?.slice(1)}
+        </Typography>
+      </Stack>
+    </>
   );
 }
 
@@ -112,7 +119,7 @@ export function ResourcePageBasicInformationHeader({ resource, type }) {
         </Typography>
       </Stack>
       <Stack direction="row" spacing={1} alignItems="center">
-        <Typography sx={{ fontWeight: "bold" }}>keywords: </Typography>
+        <Typography sx={{ fontWeight: "bold", pr: 1 }}>keywords: </Typography>
         <ResourceItemKeywords
           resource={resource?.data?.data}
           showIcon={false}
@@ -134,9 +141,6 @@ export function ResourceVisibility({ resource }) {
     </Stack>
   );
 }
-
-import { useState, useRef, useEffect } from "react";
-import { Button } from "@mui/material";
 
 export function ResourcePageDescription({ resource, initialLines = 10 }) {
   const [expanded, setExpanded] = useState(false);
