@@ -22,6 +22,7 @@ import GovernanceFormFields from "./GovernanceFormFields";
 import CoverageFormFields from "./CoverageFormFields";
 import EthicsFormFields from "./EthicsFormFields";
 import SupportFormFields from "./SupportFormFields";
+import SearchedResourceFormFields from "./SearchedResourceFormFields";
 
 const tabs = [
   "Basic Information",
@@ -134,6 +135,11 @@ export default function EditResourceDialog({
               {resource?.resource_type === "service" && (
                 <ServiceFormFields form={form} resource={resource} />
               )}
+              <SearchedResourceFormFields
+                form={form}
+                searchedResource={resource?.zenodo || resource?.openaire}
+                resourceType={resource?.resource_type}
+              />
             </>
           )}
 
