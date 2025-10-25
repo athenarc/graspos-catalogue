@@ -1,13 +1,16 @@
 import { Box, CircularProgress, Typography } from "@mui/material";
 
-export default function LoadingComponent({ loadingMessage = "Loading ..." }) {
+export default function LoadingComponent({
+  loadingMessage = "Loading ...",
+  height = "100vh",
+}) {
   return (
     <Box
       display="flex"
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
-      height="100vh"
+      height={height}
       gap={2}
       sx={{
         backgroundColor: "#f9fafc",

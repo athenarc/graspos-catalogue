@@ -1,30 +1,34 @@
 import {
+  Card,
+  CardContent,
   CardActions,
+  Dialog,
+  DialogTitle,
+  DialogContent,
   Typography,
   Stack,
   TextField,
   Button,
   FormControlLabel,
   Checkbox,
-  Dialog,
   IconButton,
-  DialogContent,
-  DialogTitle,
-  Paper,
+  Collapse,
   Tooltip,
+  CircularProgress,
 } from "@mui/material";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import SaveIcon from "@mui/icons-material/Save";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
-import CloseIcon from "@mui/icons-material/Close";
-import { Controller, useForm } from "react-hook-form";
-import { useState } from "react";
-import { useUpdateUser, useForgotPassword, useUsers } from "@queries/data";
-import Notification from "@helpers/Notification";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../AuthContext";
 import VerifiedIcon from "@mui/icons-material/Verified";
+import Notification from "@helpers/Notification";
+import { useUpdateUser, useForgotPassword, useUsers } from "@queries/data";
+import { useAuth } from "../AuthContext";
+import LoadingComponent from "@helpers/LoadingComponent";
+import CloseIcon from "@mui/icons-material/Close";
 
 function UserForm({ user }) {
+  const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [notificationStatus, setNotificationStatus] = useState("idle");
 
@@ -32,33 +36,31 @@ function UserForm({ user }) {
     register,
     handleSubmit,
     reset,
-    control,
     formState: { errors },
   } = useForm({
     defaultValues: {
       ...user,
       super_user: !!user?.super_user,
       disabled: !!user?.disabled,
-      verified: !!(user?.email_confirmed_at !== null),
+      verified: !!user?.email_confirmed_at,
     },
   });
 
   const updateUser = useUpdateUser();
   const passwordReset = useForgotPassword();
+  const disableForm = passwordReset.isPending || updateUser.isPending;
 
   const handlePasswordReset = () => {
     setNotificationStatus("loading");
     passwordReset.mutate(
       { data: { email: user?.email } },
       {
-        onSuccess: (data) => {
-          setMessage("User email with password reset link sent!");
+        onSuccess: () => {
+          setMessage("Password reset email sent!");
           setNotificationStatus("success");
         },
-        onError: (error) => {
-          setMessage(
-            error?.response?.data?.detail || "Failed to reset password"
-          );
+        onError: (err) => {
+          setMessage(err?.response?.data?.detail || "Failed to reset password");
           setNotificationStatus("error");
         },
       }
@@ -71,11 +73,11 @@ function UserForm({ user }) {
       { data },
       {
         onSuccess: () => {
-          setMessage("User information updated successfully!");
+          setMessage("User updated successfully!");
           setNotificationStatus("success");
         },
-        onError: (error) => {
-          setMessage(error?.response?.data?.detail || "Failed to update user");
+        onError: (err) => {
+          setMessage(err?.response?.data?.detail || "Failed to update user");
           setNotificationStatus("error");
         },
       }
@@ -83,196 +85,208 @@ function UserForm({ user }) {
   };
 
   const handleResetForm = () => reset(user);
-  const disableForm = passwordReset.isPending || updateUser.isPending;
 
   return (
-    <Paper elevation={3} sx={{ mb: 3, p: 2 }}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={2}>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            sx={{
-              px: 2,
-              py: 1.5,
-              borderRadius: 2,
-              backgroundColor: "#f9fafc",
-              border: "1px solid #e0e0e0",
-            }}
-          >
-            {/* Left: Username + Verified */}
-            <Stack direction="row" alignItems="center" spacing={1.2}>
-              <Typography variant="h6" fontWeight="600" color="text.primary">
-                {user?.username}
-              </Typography>
-
-              {user?.email_confirmed_at && (
-                <Tooltip title="Email Verified">
-                  <VerifiedIcon
-                    sx={{
-                      color: "#1e88e5",
-                      fontSize: 22,
-                      verticalAlign: "middle",
-                    }}
-                  />
-                </Tooltip>
-              )}
-            </Stack>
-
-            {/* Right: Checkboxes */}
-            <Stack direction="row" spacing={2}>
+    <Card elevation={3} sx={{ mb: 2 }}>
+      <Stack spacing={1}>
+        <CardContent
+          sx={{
+            cursor: "pointer",
+            px: 2,
+            py: 1.5,
+            bgcolor: "#f9fafc",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+          onClick={() => setOpen((prev) => !prev)}
+        >
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Typography variant="h6" fontWeight={600}>
+              {user?.username}
+            </Typography>
+            {user?.email_confirmed_at && (
+              <Tooltip title="Email Verified">
+                <VerifiedIcon sx={{ color: "#1e88e5", fontSize: 22 }} />
+              </Tooltip>
+            )}
+          </Stack>
+          <Stack direction="row" spacing={2}>
+            <Tooltip title="Admin privileges">
               <FormControlLabel
-                disabled={disableForm}
+                label="Admin"
                 control={
                   <Checkbox
                     {...register("super_user")}
-                    defaultChecked={user?.super_user}
+                    disabled={disableForm}
                     color="primary"
+                    checked={!!user?.super_user}
                   />
                 }
-                label={
-                  <Typography variant="body2" fontWeight="500">
-                    Admin
-                  </Typography>
-                }
               />
-
+            </Tooltip>
+            <Tooltip title="User disabled">
               <FormControlLabel
-                disabled={disableForm}
+                label="Disabled"
                 control={
                   <Checkbox
                     {...register("disabled")}
-                    defaultChecked={user?.disabled}
+                    disabled={disableForm}
                     color="error"
+                    checked={!!user?.disabled}
                   />
                 }
-                label={
-                  <Typography variant="body2" fontWeight="500">
-                    Disabled
-                  </Typography>
-                }
               />
-            </Stack>
+            </Tooltip>
           </Stack>
+        </CardContent>
 
-          {/* Notification */}
-          {(notificationStatus === "success" ||
-            notificationStatus === "error") && (
-            <Notification
-              requestStatus={notificationStatus}
-              message={message}
-            />
-          )}
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <CardContent sx={{ pt: 1, pb: 0 }}>
+              <Stack spacing={2}>
+                {(notificationStatus === "success" ||
+                  notificationStatus === "error") && (
+                  <Notification
+                    message={message}
+                    requestStatus={notificationStatus}
+                  />
+                )}
 
-          <Stack direction="row" spacing={2}>
-            <TextField
-              disabled={disableForm}
-              label="First Name"
-              fullWidth
-              {...register("first_name")}
-              error={!!errors.first_name}
-              helperText={errors.first_name?.message || ""}
-            />
-            <TextField
-              disabled={disableForm}
-              label="Last Name"
-              fullWidth
-              {...register("last_name")}
-              error={!!errors.last_name}
-              helperText={errors.last_name?.message || ""}
-            />
-          </Stack>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                  <TextField
+                    fullWidth
+                    label="First Name"
+                    {...register("first_name")}
+                    disabled={disableForm}
+                    error={!!errors.first_name}
+                    helperText={errors.first_name?.message || ""}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Last Name"
+                    {...register("last_name")}
+                    disabled={disableForm}
+                    error={!!errors.last_name}
+                    helperText={errors.last_name?.message || ""}
+                  />
+                </Stack>
 
-          <Stack direction="row" spacing={2}>
-            <TextField
-              label="Username"
-              fullWidth
-              disabled
-              {...register("username")}
-              error={!!errors.username}
-              helperText={errors.username?.message || ""}
-            />
-            <TextField
-              disabled={true}
-              label="Email"
-              fullWidth
-              {...register("email")}
-              error={!!errors.email}
-              helperText={errors.email?.message || ""}
-            />
-          </Stack>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                  <TextField
+                    fullWidth
+                    label="Username"
+                    {...register("username")}
+                    disabled
+                  />
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    {...register("email")}
+                    disabled
+                  />
+                </Stack>
+              </Stack>
+            </CardContent>
 
-          <CardActions sx={{ justifyContent: "flex-end", gap: 1 }}>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={handleResetForm}
-              disabled={disableForm}
+            <CardActions
+              sx={{ justifyContent: "flex-end", gap: 1, pb: 2, px: 2 }}
             >
-              Reset Form
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={handlePasswordReset}
-              endIcon={<RestartAltIcon />}
-              disabled={disableForm}
-            >
-              {passwordReset.isLoading ? "Resetting..." : "Reset Password"}
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              startIcon={<SaveIcon />}
-              disabled={disableForm}
-              sx={{ backgroundColor: "#20477B" }}
-            >
-              {updateUser.isLoading ? "Saving..." : "Save"}
-            </Button>
-          </CardActions>
-        </Stack>
-      </form>
-    </Paper>
+              <Button
+                variant="outlined"
+                onClick={handleResetForm}
+                disabled={disableForm}
+              >
+                Reset Form
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={handlePasswordReset}
+                endIcon={
+                  passwordReset.isLoading ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : (
+                    <RestartAltIcon />
+                  )
+                }
+                disabled={disableForm}
+              >
+                {passwordReset.isLoading ? "Resetting..." : "Reset Password"}
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                startIcon={
+                  updateUser.isLoading ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : (
+                    <SaveIcon />
+                  )
+                }
+                disabled={disableForm}
+                sx={{ backgroundColor: "#20477B" }}
+              >
+                {updateUser.isLoading ? "Saving..." : "Save"}
+              </Button>
+            </CardActions>
+          </form>
+        </Collapse>
+      </Stack>
+    </Card>
   );
 }
 
 export default function UsersPanelForm() {
   const { user } = useAuth();
   const users = useUsers();
-  const navigate = useNavigate();
+  const [open, setOpen] = useState(true);
 
-  const handleClose = () => navigate(-1);
+  const handleClose = () => setOpen(false);
 
   return (
     user && (
-      <Dialog onClose={handleClose} open={true} maxWidth="md" fullWidth>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        fullWidth
+        maxWidth="md"
+        scroll="paper"
+      >
         <DialogTitle
           sx={{
-            backgroundColor: "#20477B",
+            bgcolor: "#20477B",
             color: "white",
             textAlign: "center",
+            position: "relative",
           }}
         >
           Users
+          <IconButton
+            aria-label="close"
+            onClick={handleClose}
+            sx={{ position: "absolute", right: 8, top: 8, color: "white" }}
+          >
+            <CloseIcon />
+          </IconButton>
         </DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleClose}
-          sx={{ position: "absolute", right: 8, top: 8, color: "white" }}
-        >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent
-          dividers
-          sx={{ maxHeight: "80vh", overflowY: "auto", p: 2 }}
-        >
-          <Stack direction="column" spacing={2}>
-            {users?.data?.data?.map((u) => (
-              <UserForm key={u?.id} user={u} />
-            ))}
-          </Stack>
-        </DialogContent>
+
+        {users?.isLoading && (
+          <LoadingComponent loadingMessage="Loading users..." height="400px" />
+        )}
+
+        {users?.isSuccess && (
+          <DialogContent
+            dividers
+            sx={{ maxHeight: "75vh", overflowY: "auto", p: 2 }}
+          >
+            <Stack spacing={2}>
+              {users?.data?.data?.map((u) => (
+                <UserForm key={u?.id} user={u} />
+              ))}
+            </Stack>
+          </DialogContent>
+        )}
       </Dialog>
     )
   );
