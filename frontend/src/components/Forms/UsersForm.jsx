@@ -16,6 +16,7 @@ import {
   Tooltip,
   CircularProgress,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import SaveIcon from "@mui/icons-material/Save";
@@ -247,8 +248,14 @@ export default function UsersPanelForm() {
     admin: false,
     disabled: false,
   });
-
-  const handleClose = () => setOpen(false);
+  const navigate = useNavigate();
+  function handleClose() {
+    if (window.history.state && window.history.state.idx > 0) {
+      navigate(-1);
+    } else {
+      navigate("..");
+    }
+  }
 
   const handleFilterChange = (name) => (event) => {
     setFilters((prev) => ({ ...prev, [name]: event.target.checked }));
@@ -272,7 +279,7 @@ export default function UsersPanelForm() {
   return (
     user && (
       <Dialog
-        open={open}
+        open={true}
         onClose={handleClose}
         fullWidth
         maxWidth="md"
