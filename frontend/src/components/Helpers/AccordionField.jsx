@@ -18,6 +18,8 @@ export default function AccordionField({
   defaultValue = [],
   checkbox = false,
   isChecked = false,
+  conditionalValidation = false,
+  validationPattern = null,
 }) {
   const hasError = !!form?.formState?.errors?.[name];
   return (
@@ -59,6 +61,8 @@ export default function AccordionField({
               required={required}
               defaultValue={defaultValue}
               disabled={isChecked}
+              conditionalValidation={conditionalValidation}
+              validationPattern={validationPattern}
             />
           </Grid>
         </Grid>
