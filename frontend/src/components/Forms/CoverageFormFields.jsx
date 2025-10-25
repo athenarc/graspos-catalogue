@@ -12,10 +12,7 @@ import {
   AccordionDetails,
   Chip,
   Box,
-  Select,
-  MenuItem,
   FormControl,
-  InputLabel,
   Alert,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -107,7 +104,6 @@ function ScopeStages({ form, resource = null }) {
   const scopesQuery = useScopes();
   const [selectedScopes, setSelectedScopes] = useState([]);
 
-  // Initial load: set selected scopes from resource
   useEffect(() => {
     if (resource?.scopes) {
       const ids = resource.scopes.map((s) => s.id);
@@ -290,12 +286,12 @@ function GeographicScope({ form, resource = null }) {
                     onChange={(_, value) => field.onChange(value)}
                     renderTags={(value, getTagProps) =>
                       value.map((option, index) => {
-                        const tagProps = getTagProps({ index });
+                        const { key, ...restTagProps } = getTagProps({ index });
                         return (
                           <Chip
                             key={option?._id || option?.code}
                             label={`${option?.label} (${option?.code})`}
-                            {...tagProps}
+                            {...restTagProps}
                             sx={{
                               borderRadius: "12px",
                               backgroundColor: "#f4f6f8",
@@ -344,11 +340,7 @@ function GeographicScope({ form, resource = null }) {
 export function CoveredFields({ form, resource = null }) {
   const name = "covered_fields";
   const defaultValue = resource?.covered_fields || [];
-
-  // Watch the array value from the form
   const coveredFields = useWatch({ control: form.control, name });
-
-  // Determine if "Field Agnostic" is currently selected
   const isFieldAgnosticChecked = coveredFields?.includes("Field Agnostic");
 
   const handleCheckboxChange = (event) => {

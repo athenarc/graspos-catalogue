@@ -7,7 +7,6 @@ import {
   Chip,
   Box,
 } from "@mui/material";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState } from "react";
@@ -19,13 +18,18 @@ import {
 
 function ExpandableChips({ items = [], labelMap = null }) {
   const itemsArray = Array.isArray(items) ? items : [items];
+
   return (
     <Stack>
       <Stack direction="row" flexWrap="wrap">
         {itemsArray.map((item, idx) => (
           <Chip
             key={idx}
-            label={labelMap?.[item] || item}
+            label={
+              typeof labelMap === "function"
+                ? labelMap(item)
+                : labelMap?.[item]?.label || item
+            }
             variant="outlined"
             size="small"
             sx={{
@@ -223,7 +227,6 @@ export default function ResourceItemContent({ resource }) {
   };
 
   const tabsEntries = Object.entries(allTabsMapping);
-
   return (
     <Stack spacing={2}>
       {/* Description */}
