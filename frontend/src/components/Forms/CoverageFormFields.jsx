@@ -286,12 +286,12 @@ function GeographicScope({ form, resource = null }) {
                     onChange={(_, value) => field.onChange(value)}
                     renderTags={(value, getTagProps) =>
                       value.map((option, index) => {
-                        const tagProps = getTagProps({ index });
+                        const { key, ...restTagProps } = getTagProps({ index });
                         return (
                           <Chip
                             key={option?._id || option?.code}
                             label={`${option?.label} (${option?.code})`}
-                            {...tagProps}
+                            {...restTagProps}
                             sx={{
                               borderRadius: "12px",
                               backgroundColor: "#f4f6f8",
