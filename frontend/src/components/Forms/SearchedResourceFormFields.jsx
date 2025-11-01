@@ -15,6 +15,7 @@ import { enGB } from "date-fns/locale";
 import DynamicFieldGroupSmart from "@helpers/DynamicFieldGroup";
 import AlertHelperText from "@helpers/AlertHelperText";
 import TrlFormField from "./TrlFormField";
+import { sanitizeHtml } from "../../utils/utils";
 
 export function DescriptionTextArea({
   searchedResource,
@@ -27,13 +28,17 @@ export function DescriptionTextArea({
         required: "Description is required",
       })}
       error={!!form?.formState?.errors?.description}
-      helperText={form?.formState?.errors?.description?.message ?? " "}
+      helperText={form?.formState?.errors?.description?.message ?? ""}
       fullWidth
       multiline
-      rows={4}
+      rows={5}
       label="Description"
       disabled={disabled}
       value={searchedResource?.metadata?.description || ""}
+      sx={{
+        backgroundColor: "#fafafa",
+        borderRadius: 1,
+      }}
     />
   );
 }
@@ -45,9 +50,9 @@ export function PublicationDatePickerField({
 }) {
   const publicationDate = searchedResource?.metadata?.publication_date
     ? new Date(
-      searchedResource.metadata.publication_date.$date ||
-      searchedResource.metadata.publication_date
-    )
+        searchedResource.metadata.publication_date.$date ||
+          searchedResource.metadata.publication_date
+      )
     : null;
 
   return (
@@ -64,6 +69,12 @@ export function PublicationDatePickerField({
               form?.formState?.errors?.publication_date?.message ?? "",
           },
         }}
+        sx={{
+          minWidth: 200,
+          flex: 1,
+          backgroundColor: "#fafafa",
+          "& .MuiOutlinedInput-root": { borderRadius: 1 },
+        }}
       />
     </LocalizationProvider>
   );
@@ -78,21 +89,23 @@ export function SearchedResourceTextField({
   fullWidth = true,
 }) {
   return (
-    <>
+    <Stack spacing={2} sx={{ minWidth: 200, flex: 1 }}>
       <TextField
         {...form?.register(name, { required })}
-        error={!!form?.formState?.errors?.searched_resource}
-        helperText=" "
+        error={!!form?.formState?.errors?.[name]}
         label={name.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
         fullWidth={fullWidth}
         disabled={disabled}
         value={value || ""}
-        sx={{ flex: 1 }}
+        sx={{
+          backgroundColor: "#fafafa",
+          "& .MuiOutlinedInput-root": { borderRadius: 1 },
+        }}
       />
-      {form?.formState?.errors?.searched_resource && (
-        <AlertHelperText error={form?.formState?.errors?.searched_resource} />
+      {form?.formState?.errors?.[name] && (
+        <AlertHelperText error={form?.formState?.errors?.[name]} />
       )}
-    </>
+    </Stack>
   );
 }
 
@@ -110,7 +123,12 @@ export function AccessRightsSelect({
       disabled={disabled}
       value={accessRight}
       fullWidth={fullWidth}
-      sx={{ flex: 1 }}
+      sx={{
+        minWidth: 200,
+        flex: 1,
+        backgroundColor: "#fafafa",
+        borderRadius: 1,
+      }}
     >
       <MenuItem value="open">Open Access</MenuItem>
       <MenuItem value="embargoed">Embargoed Access</MenuItem>
@@ -147,9 +165,7 @@ export default function SearchedResourceFormFields({
     return value && (Array.isArray(value) ? value.length > 0 : true);
   });
 
-  const handleTabChange = (event, newValue) => {
-    setTabIndex(newValue);
-  };
+  const handleTabChange = (event, newValue) => setTabIndex(newValue);
 
   const title = searchedResource?.metadata?.title || "";
   const name = searchedResource?.metadata?.name || "";
@@ -158,20 +174,28 @@ export default function SearchedResourceFormFields({
   return (
     searchedResource && (
       <Stack
-        spacing={2}
-        sx={{ flex: 1, p: 2, border: "1px solid #ccc", borderRadius: 1 }}
+        spacing={3}
+        sx={{
+          flex: 1,
+          p: 3,
+          borderRadius: 2,
+          boxShadow: 1,
+          backgroundColor: "#fff",
+        }}
       >
-        <Typography variant="h6" sx={{ mb: 2 }}>
-          Searched Resource Information
-        </Typography>
+        <Typography variant="h6">Searched Resource Information</Typography>
 
-        <Stack direction="row" spacing={2}>
+        {/* Top row: title/name, doi, publication date */}
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={2}
+          flexWrap="wrap"
+        >
           <SearchedResourceTextField
             name={resourceType === "service" ? "name" : "title"}
             value={resourceType === "service" ? name : title}
             form={form}
             disabled={disabled}
-            fullWidth
             required
           />
           {resourceType !== "service" && (
@@ -180,7 +204,6 @@ export default function SearchedResourceFormFields({
               value={searchedResource?.metadata?.doi}
               form={form}
               disabled={disabled}
-              fullWidth={false}
             />
           )}
           {publicationDate && (
@@ -192,22 +215,18 @@ export default function SearchedResourceFormFields({
           )}
         </Stack>
 
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{ marginTop: "0px !important;" }}
-        >
-          <DescriptionTextArea
-            searchedResource={searchedResource}
-            form={form}
-            disabled={disabled}
-          />
-        </Stack>
+        {/* Description */}
+        <DescriptionTextArea
+          searchedResource={searchedResource}
+          form={form}
+          disabled={disabled}
+        />
 
+        {/* Language and TRL */}
         <Stack
-          direction="row"
+          direction={{ xs: "column", sm: "row" }}
           spacing={2}
-          sx={{ marginTop: "0px !important;" }}
+          flexWrap="wrap"
         >
           <SearchedResourceTextField
             name="language"
@@ -224,52 +243,57 @@ export default function SearchedResourceFormFields({
           )}
         </Stack>
 
+        {/* Access, license, version */}
         <Stack
-          direction="row"
+          direction={{ xs: "column", sm: "row" }}
           spacing={2}
-          sx={{ marginTop: "0px !important;" }}
+          flexWrap="wrap"
         >
           <AccessRightsSelect
             searchedResource={searchedResource}
             form={form}
             disabled={disabled}
-            fullWidth={false}
           />
-
           <SearchedResourceTextField
-            value={searchedResource?.metadata?.license?.id}
             name="license"
+            value={searchedResource?.metadata?.license?.id}
             form={form}
-            fullWidth={false}
           />
-
           <SearchedResourceTextField
-            value={searchedResource?.metadata?.version}
             name="version"
+            value={searchedResource?.metadata?.version}
             form={form}
-            fullWidth={false}
           />
         </Stack>
 
-        <Stack
-          direction="column"
-          spacing={1}
-          sx={{ marginTop: "0px !important;" }}
-        >
-          <Tabs value={tabIndex} onChange={handleTabChange}>
-            {allTabs.map((tabName, index) => (
+        {/* Tabs for dynamic fields */}
+        <Stack direction="column" spacing={1}>
+          <Tabs
+            value={tabIndex}
+            onChange={handleTabChange}
+            variant="scrollable"
+            scrollButtons="auto"
+          >
+            {allTabs.map((tabName) => (
               <Tab
                 key={tabName}
                 label={
-                  tabName !== "grants"
-                    ? tabName.charAt(0).toUpperCase() + tabName.slice(1)
-                    : "Funding"
+                  tabName === "grants"
+                    ? "Funding"
+                    : tabName.charAt(0).toUpperCase() + tabName.slice(1)
                 }
               />
             ))}
           </Tabs>
 
-          <Box sx={{ p: 2 }}>
+          <Box
+            sx={{
+              p: 2,
+              border: "1px solid #eee",
+              borderRadius: 2,
+              backgroundColor: "#fafafa",
+            }}
+          >
             {visibleTabs?.map((tabName, index) => (
               <Box
                 key={tabName}
