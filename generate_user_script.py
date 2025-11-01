@@ -115,14 +115,14 @@ assessment_subject = """db.assessments.insertMany([
     modified_at: new Date()
   },
   {
-    name: "Researcher team/group",
+    name: "Researcher Team/Group",
     description: "Assessment of researcher teams or groups...",
     bg_color: "#77AEA5",
     created_at: new Date(),
     modified_at: new Date()
   },
   {
-    name: "Research organization",
+    name: "Research Οrganization",
     description: "Assessment of research performing organizations...",
     bg_color: "#7C9497",
     created_at: new Date(),
@@ -132,6 +132,20 @@ assessment_subject = """db.assessments.insertMany([
     name: "Country",
     description: "Assessment of the full body of research conducted by researchers from specific countries...",
     bg_color: "#9B907E",
+    created_at: new Date(),
+    modified_at: new Date()
+  },
+    {
+    name: "Project",
+    description: "Assessment of individual research projects and their outputs.",
+    bg_color: "#5A9BD5",
+    created_at: new Date(),
+    modified_at: new Date()
+  },
+  {
+    name: "Research Product",
+    description: "Assessment of research products such as publications, datasets, or tools.",
+    bg_color: "#F4B400",
     created_at: new Date(),
     modified_at: new Date()
   }

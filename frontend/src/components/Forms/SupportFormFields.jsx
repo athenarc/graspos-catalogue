@@ -10,10 +10,6 @@ function SupportChannels({ form, resource = null }) {
       label="Support Channels"
       placeholder="Enter a URL or email"
       defaultValue={resource?.support_channels || []}
-      conditionalValidation
-      validationPattern={
-        /^https?:\/\/([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/
-      }
     />
   );
 }

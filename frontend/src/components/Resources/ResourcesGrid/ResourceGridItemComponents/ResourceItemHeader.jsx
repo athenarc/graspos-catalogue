@@ -162,6 +162,30 @@ export function ResourceActionsMenu({ resource, type, user }) {
               </ListItemIcon>
               <ListItemText>Reject {type.toLowerCase()}</ListItemText>
             </MenuItem>
+
+            <Tooltip
+              title={
+                !user.super_user && resource?.owner !== user.id
+                  ? "You don't have permission"
+                  : ""
+              }
+            >
+              <span>
+                <MenuItem
+                  onClick={handleOpenEditResource}
+                  disabled={
+                    !user ||
+                    updateResources.isPending ||
+                    (!user.super_user && resource?.owner !== user.id)
+                  }
+                >
+                  <ListItemIcon>
+                    <EditIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Edit</ListItemText>
+                </MenuItem>
+              </span>
+            </Tooltip>
           </>
         ) : (
           user && (

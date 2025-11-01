@@ -1,3 +1,29 @@
+import FlagIcon from "@mui/icons-material/Flag";
+import PersonIcon from "@mui/icons-material/Person";
+import GroupIcon from "@mui/icons-material/Group";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import ProductionQuantityLimitsIcon from "@mui/icons-material/ProductionQuantityLimits";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
+
+const renderIcon = (name) => {
+  switch (name) {
+    case "Researcher":
+      return <PersonIcon fontSize="small" />;
+    case "Researcher Team/Group":
+      return <GroupIcon fontSize="small" />;
+    case "Research Organization":
+      return <AccountBalanceIcon fontSize="small" />;
+    case "Country":
+      return <FlagIcon fontSize="small" />;
+    case "Research Product":
+      return <ProductionQuantityLimitsIcon fontSize="small" />;
+    case "Project":
+      return <AccountTreeIcon fontSize="small" />;
+    default:
+      return <FlagIcon fontSize="small" color="text.primary" />;
+  }
+};
+
 const evidenceTypesMenuItems = [
   { value: "indicators", label: "Indicators" },
   { value: "narratives", label: "Narratives" },
@@ -64,4 +90,5 @@ export {
   functionalityLabelMap,
   getLabelForAssessmentFunctionality,
   getLabelForEvidenceType,
+  renderIcon,
 };
