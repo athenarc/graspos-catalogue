@@ -10,14 +10,12 @@ import {
   Stack,
 } from "@mui/material";
 
-import { useAssessments } from "@queries/assessment"; 
+import { useAssessments } from "@queries/assessment";
 import { useEffect, useState } from "react";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import FlagIcon from "@mui/icons-material/Flag";
-import PersonIcon from "@mui/icons-material/Person";
-import GroupIcon from "@mui/icons-material/Group";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+
 import { FilterVariants } from "@helpers/Skeleton";
+import { renderIcon } from "@helpers/MenuItems";
 
 export default function AssessmentFacetFilter({
   selectedFilters,
@@ -61,19 +59,6 @@ export default function AssessmentFacetFilter({
     onFilterChange({ assessments: updatedAssessments });
   };
 
-  const renderIcon = (name) => {
-    switch (name) {
-      case "Researcher":
-        return <PersonIcon fontSize="small" />;
-      case "Researcher team/group":
-        return <GroupIcon fontSize="small" />;
-      case "Research organization":
-        return <AccountBalanceIcon fontSize="small" />;
-      default:
-        return <FlagIcon fontSize="small" color="text.primary" />;
-    }
-  };
-
   return (
     <Card>
       <Stack
@@ -98,27 +83,27 @@ The SCOPE framework for research evaluation is a five-stage model for evaluating
         ) : assessmentData?.data?.length > 0 ? (
           assessmentData.data.map((assessment) => (
             <ListItem
-              key={assessment._id}
-              onClick={() => handleToggle(assessment._id)}
+              key={assessment?._id}
+              onClick={() => handleToggle(assessment?._id)}
               sx={{ p: 0 }}
             >
               <Checkbox
                 edge="start"
-                checked={!!selectedAssessments[assessment._id]}
+                checked={!!selectedAssessments[assessment?._id]}
                 tabIndex={-1}
                 disableRipple
                 sx={{ p: 1 }}
               />
               <ListItemText
-                primary={assessment.name}
+                primary={assessment?.name}
                 sx={{ mr: 1 }}
                 primaryTypographyProps={{
                   noWrap: true,
                   sx: { fontSize: "0.875rem" },
                 }}
               />
-              <Tooltip title={assessment.description}>
-                {renderIcon(assessment.name)}
+              <Tooltip title={assessment?.description}>
+                {renderIcon(assessment?.name)}
               </Tooltip>
             </ListItem>
           ))
