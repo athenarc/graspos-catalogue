@@ -12,7 +12,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { enGB } from "date-fns/locale";
-import DynamicFieldGroup from "@helpers/DynamicFieldGroup";
+import DynamicFieldGroupSmart from "@helpers/DynamicFieldGroup";
 import AlertHelperText from "@helpers/AlertHelperText";
 import TrlFormField from "./TrlFormField";
 
@@ -275,7 +275,7 @@ export default function SearchedResourceFormFields({
                 key={tabName}
                 sx={{ display: tabIndex === index ? "block" : "none" }}
               >
-                <DynamicFieldGroup
+                <DynamicFieldGroupSmart
                   key={tabName}
                   form={form}
                   searchedResource={searchedResource}
