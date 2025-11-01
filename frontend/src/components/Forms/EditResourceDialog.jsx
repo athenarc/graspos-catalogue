@@ -90,7 +90,11 @@ export default function EditResourceDialog({
 
     onSave({ ...data, geographical_coverage: geoIds, trl: trl });
   };
-
+  const resourceSource = resource?.zenodo
+    ? "zenodo"
+    : resource?.openaire
+    ? "openaire"
+    : "unknown";
   return (
     <>
       <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
@@ -136,6 +140,7 @@ export default function EditResourceDialog({
                 <ServiceFormFields form={form} resource={resource} />
               )}
               <SearchedResourceFormFields
+                resourceSource={resourceSource}
                 form={form}
                 searchedResource={resource?.zenodo || resource?.openaire}
                 resourceType={resource?.resource_type}
