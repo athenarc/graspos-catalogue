@@ -59,11 +59,8 @@ export default function DynamicFieldGroup({
   const hasMultiple = fields.length > 1;
 
   return (
-    <Stack spacing={2} sx={{ mb: 3 }}>
+    <Stack spacing={2} sx={{ mb: 0 }}>
       <Stack direction="row" alignItems="center" spacing={1}>
-        <Typography variant="subtitle1" fontWeight="bold">
-          {fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}
-        </Typography>
         {!disabled && (
           <Button
             size="small"
@@ -114,7 +111,7 @@ export default function DynamicFieldGroup({
           variant="text"
           startIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           onClick={() => setExpanded(!expanded)}
-          sx={{ alignSelf: "flex-start", textTransform: "none" }}
+          sx={{ alignSelf: "flex-start", textTransform: "none", marginTop: "0px !important;" }}
         >
           {expanded ? "Hide" : `Show All (${fields.length})`}
         </Button>
