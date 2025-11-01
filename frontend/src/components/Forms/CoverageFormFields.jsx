@@ -29,6 +29,7 @@ import { useCountries } from "@queries/countries.js";
 import { useAssessments } from "@queries/assessment.js";
 import AccordionField from "../Helpers/AccordionField";
 import AlertHelperText from "../Helpers/AlertHelperText";
+import { renderIcon } from "@helpers/MenuItems";
 
 function CheckboxArrayField({
   items,
@@ -42,21 +43,6 @@ function CheckboxArrayField({
       ? selectedItems.filter((i) => i !== id)
       : [...selectedItems, id];
     setSelectedItems(newSelected); // ενημερώνει το state
-  };
-
-  const renderIcon = (name) => {
-    switch (name) {
-      case "Researcher":
-        return <PersonIcon fontSize="small" sx={{ mr: 0.5 }} />;
-      case "Researcher team/group":
-        return <GroupIcon fontSize="small" sx={{ mr: 0.5 }} />;
-      case "Research organization":
-        return <AccountBalanceIcon fontSize="small" sx={{ mr: 0.5 }} />;
-      default:
-        return (
-          <FlagIcon fontSize="small" sx={{ mr: 0.5, color: "text.primary" }} />
-        );
-    }
   };
 
   return (
