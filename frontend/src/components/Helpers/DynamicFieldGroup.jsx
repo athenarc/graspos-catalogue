@@ -97,7 +97,7 @@ export default function DynamicFieldGroupSmart({
                     errors?.metadata?.[fieldName]?.[idx]?.value?.message || ""
                   }
                   sx={{
-                    backgroundColor: "#fafafa",
+                    backgroundColor: "#fff",
                     "& .MuiOutlinedInput-root": {
                       borderRadius: 1,
                     },
@@ -133,7 +133,7 @@ export default function DynamicFieldGroupSmart({
   }
 
   // ---------- Array of objects ----------
-  const [expandedRows, setExpandedRows] = useState(fields.map(() => true));
+  const [expandedRows, setExpandedRows] = useState(fields.map(() => false));
   const toggleRow = (index) => {
     const newExpanded = [...expandedRows];
     newExpanded[index] = !newExpanded[index];
