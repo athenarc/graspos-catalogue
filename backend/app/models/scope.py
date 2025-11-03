@@ -20,6 +20,7 @@ class ScopeView(BaseModel):
     name: str
     description: str | None = None
     bg_color: str | None = None
+    usage_count: int = 0
 
 
 class ScopeCreate(BaseModel):

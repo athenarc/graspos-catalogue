@@ -11,13 +11,15 @@ import {
   Stack,
 } from "@mui/material";
 
-import { useScopes } from "@queries/scope"; 
 import { useEffect, useState } from "react";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { FilterVariants } from "@helpers/Skeleton";
+import { useScopesWithCount } from "@queries/scope";
 
 export default function ScopeFacetFilter({ selectedFilters, onFilterChange }) {
-  const { data: scopeData, isLoading } = useScopes();
+  const { data: scopeData, isLoading } = useScopesWithCount();
+  const { data: scopeCounts } = useScopesWithCount();
+
   const [selectedScopes, setSelectedScopes] = useState(
     selectedFilters?.scopes || {}
   );
@@ -77,34 +79,53 @@ The SCOPE framework for research evaluation is a five-stage model for evaluating
           scopeData.data.map((scope) => (
             <ListItem
               key={scope._id}
-              onClick={() => handleToggle(scope._id)}
+              onClick={() => handleToggle(scope?._id)}
               sx={{ p: 0 }}
             >
-              <Checkbox
-                edge="start"
-                checked={!!selectedScopes[scope._id]}
-                tabIndex={-1}
-                disableRipple
-                sx={{ p: 1 }}
-              />
-              <ListItemText
-                primary={scope.name}
-                sx={{ mr: 1 }}
-                primaryTypographyProps={{
-                  noWrap: true,
-                  sx: { fontSize: "0.875rem" },
+              <div
+                style={{
+                  flexGrow: 1,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  minWidth: 0,
+                  marginRight: 8,
                 }}
-              />
-              <Tooltip title={scope.description}>
+              >
+                <Checkbox
+                  edge="start"
+                  checked={!!selectedScopes[scope?._id]}
+                  tabIndex={-1}
+                  disableRipple
+                  sx={{ p: 1 }}
+                />
+                <ListItemText
+                  primary={scope?.name}
+                  sx={{ mr: 1 }}
+                  primaryTypographyProps={{
+                    noWrap: true,
+                    sx: { fontSize: "0.875rem" },
+                  }}
+                />
+
+                <Typography
+                  variant="body2"
+                  sx={{ flexShrink: 0, ml: 1, whiteSpace: "nowrap" }}
+                  title={`Resource count: ${scope?.usage_count}`}
+                >
+                  ({scope?.usage_count})
+                </Typography>
+              </div>
+              <Tooltip title={scope?.description}>
                 <Avatar
                   sx={{
                     width: 18,
                     height: 18,
                     fontSize: 12,
-                    backgroundColor: scope.bg_color ?? "#EB611F",
+                    backgroundColor: scope?.bg_color ?? "#EB611F",
                   }}
                 >
-                  {scope.name?.toUpperCase()[0]}
+                  {scope?.name?.toUpperCase()[0]}
                 </Avatar>
               </Tooltip>
             </ListItem>
