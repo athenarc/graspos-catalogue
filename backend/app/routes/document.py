@@ -217,14 +217,13 @@ async def get_unique_metadata_values(
             responses={404: {
                 "detail": "Documents does not exist"
             }})
-async def get_document(document_id: PydanticObjectId) -> Documents:
+async def get_document(document_id: PydanticObjectId):
 
     document = await Documents.get(document_id, fetch_links=True)
 
     if not document:
 
-        return HTTPException(status_code=404,
-                             detail="Documents does not exist")
+        raise HTTPException(status_code=404, detail="Documents does not exist")
 
     return document
 

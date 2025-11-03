@@ -226,13 +226,13 @@ async def get_unique_metadata_values(
 
 
 @router.get("/{tool_id}", responses={404: {"detail": "Tool does not exist"}})
-async def get_tool(tool_id: PydanticObjectId) -> Tool:
+async def get_tool(tool_id: PydanticObjectId):
 
     tool = await Tool.get(tool_id, fetch_links=True)
 
     if not tool:
 
-        return HTTPException(status_code=404, detail="Tool does not exist")
+        raise HTTPException(status_code=404, detail="Tool does not exist")
 
     return tool
 
