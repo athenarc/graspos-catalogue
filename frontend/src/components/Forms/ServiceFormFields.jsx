@@ -1,13 +1,12 @@
-import { Stack, TextField, FormHelperText, Alert } from "@mui/material";
-import TrlFormField from "./TrlFormField";
-import AlertHelperText from "../Helpers/AlertHelperText";
+import { Stack, TextField } from "@mui/material";
+import AlertHelperText from "@helpers/AlertHelperText";
 
 export default function ServiceFormFields({ form, resource = null }) {
   const error = form?.formState?.errors?.url;
 
   return (
-    <Stack direction="column" sx={{ mt: 2 }}>
-      <Stack direction="row" spacing={2}>
+    <Stack direction="row" useFlexGap spacing={2} alignItems="flex-start">
+      <Stack flex={1}>
         <TextField
           {...form?.register("url", {
             value: resource?.url,
