@@ -1,4 +1,17 @@
+import zenodoLogo from "@assets/zenodo-logo.jpeg";
+import openaireLogo from "@assets/openaire-logo.png";
+import grasposLogo from "@assets/graspos_menu_logo.png";
 import DOMPurify from "dompurify";
+
+const logos = {
+  zenodo: zenodoLogo,
+  openaire: openaireLogo,
+  graspos: grasposLogo,
+};
+
+export function getLogoUrl(logoName) {
+  return logos[logoName.toLowerCase()] || "";
+}
 
 export function formatDate(dateString) {
   if (!dateString) return "N/A";

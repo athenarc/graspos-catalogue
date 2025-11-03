@@ -100,8 +100,8 @@ export default function ResourceForm() {
   }, [JSON.stringify(watchedValues)]);
 
   useEffect(() => {
-    if (data && data.source) {
-      setValue("source", data.source);
+    if (data && data?.source) {
+      setValue("source", data?.source);
     } else {
       setValue("source", "");
     }
@@ -358,6 +358,13 @@ export default function ResourceForm() {
                   resourceTypesList={resourceTypesList}
                   setResourceType={setResourceType}
                   data={data}
+                  resourceSource={
+                    zenodo.isSuccess
+                      ? "zenodo"
+                      : openaire.isSuccess
+                      ? "openaire"
+                      : "unknown"
+                  }
                 />
               )}
               {message && (

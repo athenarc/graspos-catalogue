@@ -1,170 +1,264 @@
 import { useEffect, useState } from "react";
-import { useFieldArray } from "react-hook-form";
 import {
   Stack,
   TextField,
   Button,
   IconButton,
-  Typography,
   Collapse,
+  Typography,
+  Card,
+  CardHeader,
+  CardContent,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import AlertHelperText from "./AlertHelperText";
+import { useFieldArray } from "react-hook-form";
 
-/**
- * Generic repeatable metadata field group
- * Supports objects and primitive arrays
- */
-export default function DynamicFieldGroup({
+export default function DynamicFieldGroupSmart({
   form,
   searchedResource,
   fieldName,
-  fieldSchema, // optional fallback schema: e.g. { name: "", affiliation: "", orcid: "" }
+  fieldSchema,
   disabled = true,
 }) {
   const metadata = searchedResource?.metadata ?? {};
-  const existingData = metadata[fieldName] || [];
-
-  const { control, register, formState } = form || {};
+  const { control, register, formState, getValues } = form || {};
   const { fields, append, remove } = useFieldArray({
     control,
     name: `metadata.${fieldName}`,
   });
 
-  const [expanded, setExpanded] = useState(false);
-
+  const errors = formState?.errors;
+  const existingData = metadata?.[fieldName] || [];
   const isPrimitiveArray =
-    existingData.length > 0 && typeof existingData[0] !== "object";
+    existingData?.length > 0 && typeof existingData[0] !== "object";
   const subfieldKeys = fieldSchema
     ? Object.keys(fieldSchema)
-    : existingData.length > 0
-      ? isPrimitiveArray
-        ? ["value"]
-        : Object.keys(existingData[0])
-      : ["value"];
+    : existingData?.length > 0
+    ? isPrimitiveArray
+      ? ["value"]
+      : Object.keys(existingData[0])
+    : ["value"];
 
+  // Initial append if form empty
   useEffect(() => {
-    const currentValues = form.getValues(`metadata.${fieldName}`) || [];
-    if (existingData.length > 0 && currentValues.length === 0) {
-      const dataToAppend = existingData.map((item) =>
-        typeof item === "object" ? item : { value: item }
+    const currentValues = getValues?.(`metadata.${fieldName}`) || [];
+    if (currentValues?.length === 0 && existingData?.length > 0) {
+      append(
+        existingData.map((item) =>
+          typeof item === "object" ? item : { value: item }
+        )
       );
-      append(dataToAppend);
     }
-  }, []);
-  const errors = formState?.errors;
-  const hasMultiple = fields.length > 1;
+  }, [append, existingData, fieldName, getValues]);
 
-  return (
-    <Stack spacing={2} sx={{ mb: 3 }}>
-      <Stack direction="row" alignItems="center" spacing={1}>
-        <Typography variant="subtitle1" fontWeight="bold">
-          {fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}
-        </Typography>
+  // ---------- Primitive array ----------
+  if (isPrimitiveArray) {
+    return (
+      <Stack spacing={2}>
+        {fields?.length === 0 && (
+          <Typography variant="body2" color="text.secondary">
+            No {fieldName.slice(0, -1)} added yet.
+          </Typography>
+        )}
+
+        <Stack
+          spacing={2}
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+            gap: 2,
+          }}
+        >
+          {fields?.map((field, idx) => {
+            const fieldPath = `metadata.${fieldName}.${idx}.value`;
+            return (
+              <Stack
+                key={fieldPath}
+                direction="row"
+                spacing={2}
+                alignItems="center"
+                sx={{ marginTop: "0px !important;" }}
+              >
+                <TextField
+                  disabled={disabled}
+                  {...(register ? register(fieldPath) : {})}
+                  value={field?.value ?? ""}
+                  fullWidth
+                  size="small"
+                  margin="dense"
+                  variant="outlined"
+                  label={`${fieldName} ${idx + 1}`}
+                  placeholder=""
+                  error={!!errors?.metadata?.[fieldName]?.[idx]?.value}
+                  helperText={
+                    errors?.metadata?.[fieldName]?.[idx]?.value?.message || ""
+                  }
+                  sx={{
+                    backgroundColor: "#fff",
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 1,
+                    },
+                  }}
+                />
+                {!disabled && (
+                  <IconButton
+                    size="small"
+                    color="error"
+                    onClick={() => remove(idx)}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                )}
+              </Stack>
+            );
+          })}
+        </Stack>
+
         {!disabled && (
           <Button
-            size="small"
             startIcon={<AddIcon />}
-            onClick={() =>
-              append(
-                isPrimitiveArray
-                  ? { value: "" }
-                  : Object.fromEntries(subfieldKeys.map((k) => [k, ""]))
-              )
-            }
+            size="small"
+            variant="outlined"
+            onClick={() => append({ value: "" })}
+            sx={{ alignSelf: "flex-start" }}
           >
             Add {fieldName.slice(0, -1)}
           </Button>
         )}
       </Stack>
+    );
+  }
 
-      {fields.length > 0 &&
-        renderDynamicRow({
-          index: 0,
-          fieldName,
-          subfieldKeys,
-          register,
-          errors,
-          remove,
-          disabled,
-        })}
+  // ---------- Array of objects ----------
+  const [expandedRows, setExpandedRows] = useState(fields.map(() => false));
+  const toggleRow = (index) => {
+    const newExpanded = [...expandedRows];
+    newExpanded[index] = !newExpanded[index];
+    setExpandedRows(newExpanded);
+  };
 
-      {hasMultiple && (
-        <Collapse in={expanded} sx={{ marginTop: "0px !important;" }}>
-          {fields.slice(1).map((_, index) =>
-            renderDynamicRow({
-              index: index + 1,
-              fieldName,
-              subfieldKeys,
-              register,
-              errors,
-              remove,
-              disabled,
-            })
-          )}
+  const [showExtra, setShowExtra] = useState(false);
+  const toggleExtra = () => setShowExtra((v) => !v);
+
+  const renderHeader = (field) => (
+    <Typography variant="body2" color="text.secondary" noWrap>
+      {subfieldKeys
+        ?.map((k) => `${field?.[k] ?? ""}`)
+        ?.filter(Boolean)
+        ?.join(" | ")}
+    </Typography>
+  );
+
+  const renderRow = (index) => {
+    const field = fields[index];
+    return (
+      <Card
+        key={field?.id || index}
+        variant="outlined"
+        sx={{
+          mb: 2,
+          borderRadius: 1,
+          transition: "0.3s",
+          boxShadow: 1,
+          "&:hover": { boxShadow: 4, borderColor: "primary.main" },
+        }}
+      >
+        <CardHeader
+          title={null}
+          subheader={renderHeader(field)}
+          action={
+            <Stack direction="row" spacing={1}>
+              {!disabled && (
+                <IconButton
+                  size="small"
+                  color="error"
+                  onClick={() => remove(index)}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              )}
+              <IconButton size="small" onClick={() => toggleRow(index)}>
+                {expandedRows[index] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </IconButton>
+            </Stack>
+          }
+        />
+        <Collapse in={expandedRows[index]} timeout="auto">
+          <CardContent sx={{ px: 2, pt: 0, paddingBottom: "16px !important;" }}>
+            <Stack spacing={2}>
+              {subfieldKeys.map((key) => {
+                const fieldPath = `metadata.${fieldName}.${index}.${key}`;
+                return (
+                  <TextField
+                    key={fieldPath}
+                    disabled={disabled}
+                    {...(register ? register(fieldPath) : {})}
+                    label={key}
+                    fullWidth
+                    size="small"
+                    margin="dense"
+                    variant="outlined"
+                    error={!!errors?.metadata?.[fieldName]?.[index]?.[key]}
+                    helperText={
+                      errors?.metadata?.[fieldName]?.[index]?.[key]?.message ||
+                      ""
+                    }
+                    sx={{
+                      backgroundColor: "#fafafa",
+                      "& .MuiOutlinedInput-root": { borderRadius: 1 },
+                    }}
+                  />
+                );
+              })}
+            </Stack>
+          </CardContent>
+        </Collapse>
+      </Card>
+    );
+  };
+
+  return (
+    <Stack spacing={2}>
+      {fields?.length === 0 && (
+        <Typography variant="body2" color="text.secondary" fontStyle="italic">
+          No {fieldName} added yet.
+        </Typography>
+      )}
+      {fields.slice(0, 5).map((_, idx) => renderRow(idx))}
+
+      {fields?.length > 5 && (
+        <Collapse in={showExtra} timeout="auto">
+          {fields.slice(5).map((_, idx) => renderRow(idx + 5))}
         </Collapse>
       )}
 
-      {hasMultiple && (
+      {!disabled && (
+        <Button
+          startIcon={<AddIcon />}
+          size="small"
+          variant="outlined"
+          onClick={() =>
+            append(Object.fromEntries(subfieldKeys?.map((k) => [k, ""])))
+          }
+          sx={{ alignSelf: "flex-start" }}
+        >
+          Add {fieldName.slice(0, -1)}
+        </Button>
+      )}
+
+      {fields?.length > 5 && (
         <Button
           size="small"
           variant="text"
-          startIcon={expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          onClick={() => setExpanded(!expanded)}
-          sx={{ alignSelf: "flex-start", textTransform: "none" }}
+          startIcon={showExtra ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          onClick={toggleExtra}
+          sx={{ textTransform: "none", alignSelf: "flex-start" }}
         >
-          {expanded ? "Hide" : `Show All (${fields.length})`}
+          {showExtra ? "Hide" : `Show All (${fields.length - 3} more)`}
         </Button>
-      )}
-    </Stack>
-  );
-}
-
-function renderDynamicRow({
-  index,
-  fieldName,
-  subfieldKeys,
-  register,
-  errors,
-  remove,
-  disabled = true,
-}) {
-  return (
-    <Stack
-      key={index}
-      direction="row"
-      spacing={2}
-      alignItems="center"
-      sx={{ mt: 0 }}
-    >
-      {subfieldKeys.map((key) => (
-        <Stack key={key} spacing={1} sx={{ flexGrow: 1 }}>
-          <TextField
-            key={key === "value" ? `${fieldName.slice(0, -1)}-${index + 1}` : `${key}-${index + 1}`}
-            disabled={disabled}
-            {...register(`metadata.${fieldName}.${index}.${key}`)}
-            label={
-              key === "value" ? fieldName.slice(0, -1) : key
-            }
-            fullWidth
-            error={!!errors?.metadata?.[fieldName]?.[index]?.[key]}
-            helperText=" "
-          />
-          {errors?.metadata?.[fieldName]?.[index]?.[key] && (
-            <AlertHelperText
-              key={`error-${fieldName}-${index}-${key}`}
-              error={errors?.metadata?.[fieldName]?.[index]?.[key]}
-            />
-          )}
-        </Stack>
-      ))}
-      {!disabled && subfieldKeys.length > 0 && (
-        <IconButton key={`remove-${fieldName}-${index}`} color="error" onClick={() => remove(index)}>
-          <DeleteIcon />
-        </IconButton>
       )}
     </Stack>
   );
