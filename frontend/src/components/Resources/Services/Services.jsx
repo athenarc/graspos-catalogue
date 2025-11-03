@@ -12,23 +12,39 @@ import {
   EquityEthicalCard,
 } from "../ResourcesGrid/ResourcePageComponents/ResourcePageCards";
 import { ResourceBasicInformation } from "../ResourcesGrid/ResourcePageComponents/ResourcePageBasicInformation";
-import { useEffect } from "react";
+import ResourceMessage from "@helpers/ResourceMessage";
 
 export function Services({ services, user }) {
-  return (
-    <>
-      {services?.isLoading && <RectangularVariants count={2} />}
-      {services?.isFetched &&
-        services?.data?.map((service) => (
-          <ResourceGridItem
-            key={service._id}
-            resource={service}
-            type={"service"}
-            user={user}
-          />
-        ))}
-    </>
-  );
+  if (services?.isLoading) {
+    return <RectangularVariants width="100%" height={300} count={4} />;
+  }
+
+  if (services?.isError) {
+    return (
+      <ResourceMessage
+        message={
+          services?.error?.response?.data?.detail ??
+          "An error occurred while fetching services."
+        }
+        status="error"
+      />
+    );
+  }
+
+  if (services?.isSuccess && services?.data?.length === 0) {
+    return <ResourceMessage message="No services found." status="info" />;
+  }
+
+  if (services?.isSuccess) {
+    return services?.data?.map((service) => (
+      <ResourceGridItem
+        key={services?._id}
+        resource={service}
+        type={"Service"}
+        user={user}
+      />
+    ));
+  }
 }
 
 export function Service({ resourceId }) {
@@ -38,52 +54,64 @@ export function Service({ resourceId }) {
 
   const authors = service?.data?.data?.openaire?.metadata?.creators ?? [];
 
-  return (
-    <>
-      <Grid size={{ xs: 12, lg: 8 }}>
-        <ResourceBasicInformation resource={service} type={"service"} />
-        <Grid container spacing={2} sx={{ mt: 2 }}>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <AuthorsCard resource={service} people={authors} label="Authors" />
+  if (service?.isError) {
+    const errorMessage = service?.error?.status?.toString()?.startsWith("4")
+      ? "Service not found."
+      : "An error occurred while fetching the service.";
+    return <ResourceMessage message={errorMessage} status="error" />;
+  }
+  if (service?.isSuccess) {
+    return (
+      <Grid container spacing={2} sx={{ p: 2 }}>
+        <Grid size={{ xs: 12, lg: 8 }}>
+          <ResourceBasicInformation resource={service} type={"service"} />
+          <Grid container spacing={2} sx={{ mt: 2 }}>
+            <Grid size={{ xs: 12, lg: 6 }}>
+              <AuthorsCard
+                resource={service}
+                people={authors}
+                label="Authors"
+              />
+            </Grid>
+            <Grid size={{ xs: 12, lg: 6 }}>
+              <GovernanceSustainabilityFundingCard resource={service} />
+            </Grid>
           </Grid>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <GovernanceSustainabilityFundingCard resource={service} />
+          <Grid container spacing={2} sx={{ mt: 2 }}>
+            <Grid size={{ xs: 12, lg: 6 }}>
+              <AuthorsCard
+                resource={service}
+                people={
+                  Array.isArray(contributors)
+                    ? contributors
+                    : [contributors].map((contributor) => ({
+                        name: contributor,
+                      }))
+                }
+                label="Contributors"
+              />
+            </Grid>
+            <Grid size={{ xs: 12, lg: 6 }}>
+              <EquityEthicalCard resource={service} />
+            </Grid>
           </Grid>
         </Grid>
-        <Grid container spacing={2} sx={{ mt: 2 }}>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <AuthorsCard
-              resource={service}
-              people={
-                Array.isArray(contributors)
-                  ? contributors
-                  : [contributors].map((contributor) => ({
-                      name: contributor,
-                    }))
-              }
-              label="Contributors"
-            />
-          </Grid>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <EquityEthicalCard resource={service} />
-          </Grid>
+        <Grid size={{ xs: 12, lg: 4 }}>
+          <Stack
+            direction="column"
+            spacing={3}
+            sx={{
+              top: 24,
+              width: "100%",
+              margin: "0 auto",
+            }}
+          >
+            <StatisticsCard resource={service} />
+            <CoverageCard resource={service} />
+            <SupportCard resource={service} />
+          </Stack>
         </Grid>
       </Grid>
-      <Grid size={{ xs: 12, lg: 4 }}>
-        <Stack
-          direction="column"
-          spacing={3}
-          sx={{
-            top: 24,
-            width: "100%",
-            margin: "0 auto",
-          }}
-        >
-          <StatisticsCard resource={service} />
-          <CoverageCard resource={service} />
-          <SupportCard resource={service} />
-        </Stack>
-      </Grid>
-    </>
-  );
+    );
+  }
 }
