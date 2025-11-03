@@ -10,18 +10,18 @@ import {
   Stack,
 } from "@mui/material";
 
-import { useAssessments } from "@queries/assessment";
 import { useEffect, useState } from "react";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 import { FilterVariants } from "@helpers/Skeleton";
 import { renderIcon } from "@helpers/MenuItems";
+import { useAssessmentsWithCount } from "@queries/assessment";
 
 export default function AssessmentFacetFilter({
   selectedFilters,
   onFilterChange,
 }) {
-  const { data: assessmentData, isLoading } = useAssessments();
+  const { data: assessmentData, isLoading } = useAssessmentsWithCount();
   const [selectedAssessments, setSelectedAssessments] = useState(
     selectedFilters?.assessments || {}
   );
@@ -94,14 +94,32 @@ The SCOPE framework for research evaluation is a five-stage model for evaluating
                 disableRipple
                 sx={{ p: 1 }}
               />
-              <ListItemText
-                primary={assessment?.name}
-                sx={{ mr: 1 }}
-                primaryTypographyProps={{
-                  noWrap: true,
-                  sx: { fontSize: "0.875rem" },
+              <div
+                style={{
+                  flexGrow: 1,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  minWidth: 0,
+                  marginRight: 8,
                 }}
-              />
+              >
+                <ListItemText
+                  primary={assessment?.name}
+                  sx={{ mr: 1 }}
+                  primaryTypographyProps={{
+                    noWrap: true,
+                    sx: { fontSize: "0.875rem" },
+                  }}
+                />
+                <Typography
+                  variant="body2"
+                  sx={{ flexShrink: 0, ml: 1, whiteSpace: "nowrap" }}
+                  title={`Resource count: ${assessment?.usage_count}`}
+                >
+                  ({assessment?.usage_count})
+                </Typography>
+              </div>
               <Tooltip title={assessment?.description}>
                 {renderIcon(assessment?.name)}
               </Tooltip>
