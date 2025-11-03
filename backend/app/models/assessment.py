@@ -7,9 +7,8 @@ class Assessment(BaseModel):
     name: str
     description: str | None = None
     bg_color: str | None = Field(
-        default=None, 
-        description="Hex color code for background, e.g. #0072CE"
-    )
+        default=None,
+        description="Hex color code for background, e.g. #0072CE")
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
 
@@ -18,6 +17,7 @@ class AssessmentView(BaseModel):
     name: str
     description: str | None = None
     bg_color: str | None = None
+    usage_count: int = 0
 
 
 class AssessmentCreate(BaseModel):
@@ -31,7 +31,8 @@ class AssessmentPatch(BaseModel):
     bg_color: str | None = None
 
 
-class Assessment(Document, Assessment, AssessmentView, AssessmentCreate, AssessmentPatch):
+class Assessment(Document, Assessment, AssessmentView, AssessmentCreate,
+                 AssessmentPatch):
 
     class Settings:
         name = "assessments"
@@ -40,7 +41,8 @@ class Assessment(Document, Assessment, AssessmentView, AssessmentCreate, Assessm
         json_schema_extra = {
             "example": {
                 "name": "Start",
-                "description": "Begin evaluation by stating your personal values about the subject, avoiding external influences or relying solely on available data sources to prevent the 'Streetlight Effect'.",
+                "description":
+                "Begin evaluation by stating your personal values about the subject, avoiding external influences or relying solely on available data sources to prevent the 'Streetlight Effect'.",
                 "bg_color": "#0072CE",
                 "created_at": "01/01/2020",
                 "updated_at": "01/01/2020",

@@ -8,3 +8,14 @@ export function useScopes(field) {
     queryFn: () => axiosInstance.get(`scope`).then((res) => res),
   });
 }
+
+export function useScopesWithCount() {
+  return useQuery({
+    queryKey: ["scopes-with-count"],
+    retry: false,
+    queryFn: () =>
+      axiosInstance
+        .get(`scope/scopes-with-count`)
+        .then((res) => res),
+  });
+}
