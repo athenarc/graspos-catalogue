@@ -25,7 +25,7 @@ import {
   Paper,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import orcidLogo from "../../../../assets/orcid.logo.icon.svg";
+import orcidLogo from "@assets/orcid.logo.icon.svg";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DownloadIcon from "@mui/icons-material/Download";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
@@ -34,16 +34,21 @@ import { useState } from "react";
 import EmailIcon from "@mui/icons-material/Email";
 import PersonIcon from "@mui/icons-material/Person";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import CircleIcon from "@mui/icons-material/Circle";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import DescriptionIcon from "@mui/icons-material/Description";
 import SchoolIcon from "@mui/icons-material/School";
 import ForumIcon from "@mui/icons-material/Forum";
-import LinkIcon from "@mui/icons-material/Link";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import {
   getLabelForAssessmentFunctionality,
   getLabelForEvidenceType,
 } from "@helpers/MenuItems";
+
+const sectionIcons = {
+  Documentation: <DescriptionIcon color="primary" />,
+  "Training material": <SchoolIcon color="secondary" />,
+  "Support channel": <ForumIcon color="info" />,
+};
 
 const summaryStyles = {
   color: "#fff",
@@ -60,6 +65,12 @@ const cardStyles = {
   backgroundColor: "#f8faff",
   boxShadow: 0,
   color: "#555",
+};
+
+const accordionCardStyles = {
+  boxShadow: 2,
+  borderRadius: 2,
+  "&:before": { display: "none" },
 };
 
 export function FieldRow({ label, fieldArray, mapFn }) {
@@ -95,11 +106,6 @@ export function FieldRow({ label, fieldArray, mapFn }) {
     </Box>
   );
 }
-const accordionCardStyles = {
-  boxShadow: 2,
-  borderRadius: 2,
-  "&:before": { display: "none" },
-};
 
 export function EquityEthicalCard({ resource }) {
   return (
@@ -512,13 +518,6 @@ export function CoverageCard({ resource }) {
     </Card>
   );
 }
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-
-const sectionIcons = {
-  Documentation: <DescriptionIcon color="primary" />,
-  "Training material": <SchoolIcon color="secondary" />,
-  "Support channel": <ForumIcon color="info" />,
-};
 
 export function SupportCard({ resource }) {
   const data = resource?.data?.data || {};

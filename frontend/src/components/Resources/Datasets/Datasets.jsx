@@ -65,7 +65,6 @@ export function Dataset({ resourceId }) {
           direction="column"
           spacing={3}
           sx={{
-            position: "sticky",
             top: 24,
             width: "100%",
             margin: "0 auto",

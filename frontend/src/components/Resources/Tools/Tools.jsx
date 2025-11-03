@@ -60,7 +60,15 @@ export function Tool({ resourceId }) {
         </Grid>
       </Grid>
       <Grid size={{ xs: 12, lg: 4 }}>
-        <Stack direction="column" spacing={2}>
+        <Stack
+          direction="column"
+          spacing={3}
+          sx={{
+            top: 24,
+            width: "100%",
+            margin: "0 auto",
+          }}
+        >
           <StatisticsCard resource={tool} />
           <CoverageCard resource={tool} />
           <SupportCard resource={tool} />
