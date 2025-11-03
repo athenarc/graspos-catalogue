@@ -6,11 +6,74 @@ from datetime import datetime
 
 from beanie import PydanticObjectId
 
+from models.dataset import Dataset
+from models.document import Documents
+from models.service import Service
+from models.tool import Tool
 from models.scope import Scope, ScopeCreate, ScopeView, ScopePatch
 from models.user import User
 from util.current_user import current_user, current_user_mandatory
 
 router = APIRouter(prefix="/api/v1/scope", tags=["Scope"])
+
+
+@router.get("/scopes-with-count", response_model=List[ScopeView])
+async def get_scopes_with_count():
+
+    pipeline = [{
+        "$match": {
+            "approved": True
+        }
+    }, {
+        "$unwind": "$scopes"
+    }, {
+        "$group": {
+            "_id": "$scopes",
+            "count": {
+                "$sum": 1
+            }
+        }
+    }]
+
+    agg_datasets = await Dataset.get_motor_collection().aggregate(
+        pipeline).to_list(None)
+
+    agg_tools = await Tool.get_motor_collection().aggregate(pipeline).to_list(
+        None)
+
+    agg_documents = await Documents.get_motor_collection().aggregate(
+        pipeline).to_list(None)
+
+    agg_services = await Service.get_motor_collection().aggregate(
+        pipeline).to_list(None)
+
+    counts = {}
+
+    def merge_counts(agg_results):
+        for item in agg_results:
+            # _id είναι DBRef - παίρνουμε το id
+            scope_id = str(item["_id"].id)
+            counts[scope_id] = counts.get(scope_id, 0) + int(item["count"])
+
+    merge_counts(agg_datasets)
+    merge_counts(agg_tools)
+    merge_counts(agg_documents)
+    merge_counts(agg_services)
+
+    scopes = await Scope.find_all().to_list()
+
+    data = []
+    for scope in scopes:
+        count = counts.get(str(scope.id), 0)
+        data.append(
+            ScopeView(id=str(scope.id),
+                      name=scope.name,
+                      description=scope.description,
+                      bg_color=scope.bg_color,
+                      usage_count=count))
+
+    data.sort(key=lambda x: x.usage_count, reverse=True)
+    return data
 
 
 @router.get("", response_model=List[Scope], status_code=status.HTTP_200_OK)
