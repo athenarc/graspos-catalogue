@@ -1,6 +1,7 @@
 import zenodoLogo from "@assets/zenodo-logo.jpeg";
 import openaireLogo from "@assets/openaire-logo.png";
 import grasposLogo from "@assets/graspos_menu_logo.png";
+import DOMPurify from "dompurify";
 
 const logos = {
   zenodo: zenodoLogo,
