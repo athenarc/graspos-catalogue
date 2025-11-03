@@ -1,9 +1,4 @@
-import {
-  Box,
-  Grid2 as Grid,
-  IconButton,
-  Paper,
-} from "@mui/material";
+import { Box, Grid2 as Grid, IconButton, Paper } from "@mui/material";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useState } from "react";
@@ -43,7 +38,6 @@ export function ResourcePage() {
         backgroundColor: "#fafafa",
       }}
     >
-      {/* Sticky Action Bar */}
       <Paper
         elevation={1}
         sx={{
@@ -72,13 +66,12 @@ export function ResourcePage() {
         </IconButton>
 
         <Box>
-          {resource && (
+          {resource && user && (
             <ResourceActionsMenu resource={resource} type={type} user={user} />
           )}
         </Box>
       </Paper>
 
-      {/* Scrollable content */}
       <Box
         sx={{
           flexGrow: 1,
