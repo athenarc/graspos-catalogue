@@ -79,7 +79,7 @@ export default function ArrayInputField({
                     disabled={disabled}
                     placeholder={placeholder || `${label} ${index + 1}`}
                     error={!!form?.formState?.errors?.[name]?.[index]}
-                    helperText=" "
+                    helperText=""
                   />
                   {form?.formState?.errors?.[name]?.[index] && (
                     <AlertHelperText

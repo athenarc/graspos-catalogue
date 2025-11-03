@@ -25,7 +25,7 @@ export default function ServiceFormFields({
           label="URL"
           defaultValue={resource?.url || ""}
           placeholder="URL of the resource"
-          helperText=" "
+          helperText=""
           error={!!error}
           fullWidth
         />
