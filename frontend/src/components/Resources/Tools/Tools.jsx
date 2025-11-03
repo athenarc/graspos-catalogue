@@ -12,6 +12,7 @@ import {
 } from "../ResourcesGrid/ResourcePageComponents/ResourcePageCards";
 import { ResourceBasicInformation } from "../ResourcesGrid/ResourcePageComponents/ResourcePageBasicInformation";
 import ResourceMessage from "@helpers/ResourceMessage";
+import { useEffect } from "react";
 
 export function Tools({ tools, user }) {
   if (tools?.isLoading) {
@@ -46,8 +47,14 @@ export function Tools({ tools, user }) {
   }
 }
 
-export function Tool({ resourceId }) {
+export function Tool({ resourceId, handleSetResource }) {
   const tool = useTool(resourceId);
+  useEffect(() => {
+    if (tool?.isSuccess) {
+      handleSetResource(tool?.data?.data);
+    }
+  }, [tool, handleSetResource]);
+
   const contributors = tool?.data?.data?.zenodo?.metadata?.contributors ?? [];
   const authors = tool?.data?.data?.zenodo?.metadata?.creators ?? [];
 

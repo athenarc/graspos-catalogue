@@ -12,6 +12,7 @@ import {
 import { ResourceBasicInformation } from "../ResourcesGrid/ResourcePageComponents/ResourcePageBasicInformation";
 import ResourceMessage from "@helpers/ResourceMessage";
 import { RectangularVariants } from "../../Helpers/Skeleton";
+import { useEffect } from "react";
 
 export function Datasets({ datasets, user }) {
   if (datasets?.isLoading) {
@@ -46,8 +47,14 @@ export function Datasets({ datasets, user }) {
   }
 }
 
-export function Dataset({ resourceId }) {
-  const dataset = useDataset(resourceId);
+export function Dataset({ resourceId, handleSetResource }) {
+  const dataset = useDataset(resourceId); 
+
+  useEffect(() => {
+    if (dataset?.isSuccess) {
+      handleSetResource(dataset?.data?.data);
+    }
+  }, [dataset, handleSetResource]);
 
   const contributors =
     dataset?.data?.data?.zenodo?.metadata?.contributors ?? [];

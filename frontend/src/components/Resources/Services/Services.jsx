@@ -13,6 +13,7 @@ import {
 } from "../ResourcesGrid/ResourcePageComponents/ResourcePageCards";
 import { ResourceBasicInformation } from "../ResourcesGrid/ResourcePageComponents/ResourcePageBasicInformation";
 import ResourceMessage from "@helpers/ResourceMessage";
+import { useEffect } from "react";
 
 export function Services({ services, user }) {
   if (services?.isLoading) {
@@ -47,8 +48,13 @@ export function Services({ services, user }) {
   }
 }
 
-export function Service({ resourceId }) {
+export function Service({ resourceId, handleSetResource }) {
   const service = useService(resourceId);
+  useEffect(() => {
+    if (service?.isSuccess) {
+      handleSetResource(service?.data?.data);
+    }
+  }, [service, handleSetResource]);
   const contributors =
     service?.data?.data?.openaire?.metadata?.resourceOrganisation ?? [];
 

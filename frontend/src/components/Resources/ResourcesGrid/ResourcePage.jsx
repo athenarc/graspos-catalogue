@@ -1,64 +1,106 @@
-import { Box, Button, Grid2 as Grid, Stack } from "@mui/material";
-import { Link, useLocation, useParams } from "react-router-dom";
+import {
+  Box,
+  Grid2 as Grid,
+  IconButton,
+  Paper,
+} from "@mui/material";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useState } from "react";
 import { Dataset } from "../Datasets/Datasets";
 import { Document } from "../Documents/Documents";
 import { Tool } from "../Tools/Tools";
 import { Service } from "../Services/Services";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { ResourceActionsMenu } from "./ResourceGridItemComponents/ResourceItemHeader";
+import { useAuth } from "../../AuthContext";
+
+export function ResourcePageMenu() {
+  return <div>Resource Page Menu</div>;
+}
 
 export function ResourcePage() {
   const { resourceId } = useParams();
   const location = useLocation();
-
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [resource, setResource] = useState(null);
+  const type = location?.pathname.includes("datasets")
+    ? "Dataset"
+    : location?.pathname.includes("documents")
+    ? "Document"
+    : location?.pathname.includes("tools")
+    ? "Tool"
+    : location?.pathname.includes("services")
+    ? "Service"
+    : "Resource";
   return (
     <Box
       sx={{
-        height: "calc(100vh - 112px)",
-        overflowY: "auto",
         display: "flex",
-        justifyContent: "center",
-        px: { xs: 2, md: 4, lg: 6, xl: 8 },
-        py: 2,
+        flexDirection: "column",
+        height: "100%",
+        overflow: "auto",
+        backgroundColor: "#fafafa",
       }}
     >
-      <Stack
-        spacing={2}
+      {/* Sticky Action Bar */}
+      <Paper
+        elevation={1}
         sx={{
-          width: "100%",
-          maxWidth: { sm: "700px", md: "1000px", lg: "1400px", xl: "1600px" },
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+          borderRadius: 0,
+          borderBottom: "1px solid #e0e0e0",
+          p: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          backgroundColor: "#fff",
         }}
       >
-        <Button
+        <IconButton
+          onClick={() => navigate(-1)}
           color="primary"
-          variant="outlined"
-          component={Link}
-          to={-1}
-          startIcon={<ArrowBackIcon />}
-          sx={{ width: "fit-content", backgroundColor: "#fff" }}
-        >
-          Back
-        </Button>
-        <Grid
-          container
-          spacing={4}
           sx={{
-            minHeight: "100%",
+            border: "1px solid",
+            borderColor: "divider",
+            "&:hover": { backgroundColor: "primary.light", color: "#fff" },
           }}
         >
-          {location.pathname.includes("dataset") && (
-            <Dataset resourceId={resourceId} />
+          <ArrowBackIcon />
+        </IconButton>
+
+        <Box>
+          {resource && (
+            <ResourceActionsMenu resource={resource} type={type} user={user} />
           )}
-          {location.pathname.includes("documents") && (
-            <Document resourceId={resourceId} />
+        </Box>
+      </Paper>
+
+      {/* Scrollable content */}
+      <Box
+        sx={{
+          flexGrow: 1,
+          px: { xs: 2, md: 4, lg: 6, xl: 8 },
+          py: 2,
+        }}
+      >
+        <Grid container spacing={4}>
+          {location?.pathname.includes("dataset") && (
+            <Dataset resourceId={resourceId} handleSetResource={setResource} />
           )}
-          {location.pathname.includes("tools") && (
-            <Tool resourceId={resourceId} />
+          {location?.pathname.includes("documents") && (
+            <Document resourceId={resourceId} handleSetResource={setResource} />
           )}
-          {location.pathname.includes("services") && (
-            <Service resourceId={resourceId} />
+          {location?.pathname.includes("tools") && (
+            <Tool resourceId={resourceId} handleSetResource={setResource} />
+          )}
+          {location?.pathname.includes("services") && (
+            <Service resourceId={resourceId} handleSetResource={setResource} />
           )}
         </Grid>
-      </Stack>
+      </Box>
     </Box>
   );
 }

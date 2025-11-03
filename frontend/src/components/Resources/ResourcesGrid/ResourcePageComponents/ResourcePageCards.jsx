@@ -75,6 +75,9 @@ const accordionCardStyles = {
 
 export function FieldRow({ label, fieldArray, mapFn }) {
   const formatFieldArray = (fieldArray) => {
+    if (Array.isArray(fieldArray) === false) {
+      return fieldArray || "-";
+    }
     if (!fieldArray || fieldArray?.length === 0) return "-";
     const formatted = fieldArray?.map((item) => {
       if (mapFn) return mapFn(item);
@@ -101,7 +104,7 @@ export function FieldRow({ label, fieldArray, mapFn }) {
           whiteSpace: "normal",
         }}
       >
-        {formatFieldArray(fieldArray)}
+        {fieldArray && formatFieldArray(fieldArray)}
       </Typography>
     </Box>
   );
@@ -165,11 +168,11 @@ export function GovernanceSustainabilityFundingCard({ resource }) {
             />
             <FieldRow
               label="Governance Bodies"
-              fieldArray={resource?.data?.data?.governance_model}
+              fieldArray={resource?.data?.data?.governance_bodies}
             />
             <FieldRow
-              label="Sustainability Goals"
-              fieldArray={resource?.data?.data?.sustainability_goals}
+              label="Sustainability Plan"
+              fieldArray={resource?.data?.data?.sustainability_plan}
             />
             <FieldRow
               label="Funds"
