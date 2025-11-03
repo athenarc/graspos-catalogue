@@ -8,7 +8,7 @@ from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
 from util.current_user import current_user, current_user_mandatory
 from util.requests import get_zenodo_data
-from typing import List, Optional
+from typing import List, Optional, Union
 from datetime import datetime
 import logging
 from beanie.operators import In
@@ -218,13 +218,13 @@ async def get_unique_metadata_values(
             responses={404: {
                 "detail": "Dataset does not exist"
             }})
-async def get_dataset(dataset_id: PydanticObjectId) -> Dataset:
+async def get_dataset(dataset_id: PydanticObjectId):
 
     dataset = await Dataset.get(dataset_id, fetch_links=True)
 
     if not dataset:
 
-        return HTTPException(status_code=404, detail="Dataset does not exist")
+        raise HTTPException(status_code=404, detail="Dataset does not exist")
 
     return dataset
 

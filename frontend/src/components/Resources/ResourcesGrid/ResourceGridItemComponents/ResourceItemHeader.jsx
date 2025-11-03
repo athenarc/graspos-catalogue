@@ -142,54 +142,38 @@ export function ResourceActionsMenu({ resource, type, user }) {
   };
 
   return (
-    <>
-      <IconButton onClick={handleClick} size="small">
-        <MoreVertIcon fontSize="small" />
-      </IconButton>
+    resource && (
+      <>
+        <IconButton onClick={handleClick} size="small">
+          <MoreVertIcon fontSize="small" />
+        </IconButton>
 
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-        {!resource?.approved && user?.super_user ? (
-          <>
-            <MenuItem onClick={() => handleUpdate(true)} disabled={queryState}>
-              <ListItemIcon>
-                <Check fontSize="small" color="success" />
-              </ListItemIcon>
-              <ListItemText>Approve {type.toLowerCase()}</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={() => handleUpdate(false)} disabled={queryState}>
-              <ListItemIcon>
-                <ClearIcon fontSize="small" color="error" />
-              </ListItemIcon>
-              <ListItemText>Reject {type.toLowerCase()}</ListItemText>
-            </MenuItem>
-
-            <Tooltip
-              title={
-                !user.super_user && resource?.owner !== user.id
-                  ? "You don't have permission"
-                  : ""
-              }
-            >
-              <span>
-                <MenuItem
-                  onClick={handleOpenEditResource}
-                  disabled={
-                    !user ||
-                    updateResources.isPending ||
-                    (!user.super_user && resource?.owner !== user.id)
-                  }
-                >
-                  <ListItemIcon>
-                    <EditIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText>Edit</ListItemText>
-                </MenuItem>
-              </span>
-            </Tooltip>
-          </>
-        ) : (
-          user && (
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          {!resource?.approved && user?.super_user ? (
             <>
+              <MenuItem
+                onClick={() => handleUpdate(true)}
+                disabled={queryState}
+              >
+                <ListItemIcon>
+                  <Check fontSize="small" color="success" />
+                </ListItemIcon>
+                <ListItemText>Approve {type.toLowerCase()}</ListItemText>
+              </MenuItem>
+              <MenuItem
+                onClick={() => handleUpdate(false)}
+                disabled={queryState}
+              >
+                <ListItemIcon>
+                  <ClearIcon fontSize="small" color="error" />
+                </ListItemIcon>
+                <ListItemText>Reject {type.toLowerCase()}</ListItemText>
+              </MenuItem>
+
               <Tooltip
                 title={
                   !user.super_user && resource?.owner !== user.id
@@ -213,7 +197,10 @@ export function ResourceActionsMenu({ resource, type, user }) {
                   </MenuItem>
                 </span>
               </Tooltip>
-              {user?.super_user && (
+            </>
+          ) : (
+            user && (
+              <>
                 <Tooltip
                   title={
                     !user.super_user && resource?.owner !== user.id
@@ -223,13 +210,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
                 >
                   <span>
                     <MenuItem
-                      onClick={() =>
-                        handleUpdateResource({
-                          zenodo_id: resource?.zenodo?.id || null,
-                          openaire_id: resource?.openaire?.id || null,
-                          source: resource?.zenodo?.source,
-                        })
-                      }
+                      onClick={handleOpenEditResource}
                       disabled={
                         !user ||
                         updateResources.isPending ||
@@ -237,73 +218,103 @@ export function ResourceActionsMenu({ resource, type, user }) {
                       }
                     >
                       <ListItemIcon>
-                        <RefreshIcon fontSize="small" />
+                        <EditIcon fontSize="small" />
                       </ListItemIcon>
-                      <ListItemText>
-                        {updateResources.isPending ? "Syncing..." : "Sync"}
-                      </ListItemText>
+                      <ListItemText>Edit</ListItemText>
                     </MenuItem>
                   </span>
                 </Tooltip>
-              )}
-              <Tooltip
-                title={
-                  !user.super_user && resource?.owner !== user.id
-                    ? "You don't have permission"
-                    : ""
-                }
-              >
-                <span>
-                  <MenuItem
-                    onClick={handleDeleteClick}
-                    disabled={
-                      !user ||
-                      updateResources.isPending ||
-                      (!user.super_user && resource?.owner !== user.id)
+                {user?.super_user && (
+                  <Tooltip
+                    title={
+                      !user.super_user && resource?.owner !== user.id
+                        ? "You don't have permission"
+                        : ""
                     }
                   >
-                    <ListItemIcon>
-                      <DeleteIcon fontSize="small" color="error" />
-                    </ListItemIcon>
-                    <ListItemText>Delete</ListItemText>
-                  </MenuItem>
-                </span>
-              </Tooltip>
-            </>
-          )
-        )}
-      </Menu>
+                    <span>
+                      <MenuItem
+                        onClick={() =>
+                          handleUpdateResource({
+                            zenodo_id: resource?.zenodo?.id || null,
+                            openaire_id: resource?.openaire?.id || null,
+                            source: resource?.zenodo?.source,
+                          })
+                        }
+                        disabled={
+                          !user ||
+                          updateResources.isPending ||
+                          (!user.super_user && resource?.owner !== user.id)
+                        }
+                      >
+                        <ListItemIcon>
+                          <RefreshIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText>
+                          {updateResources.isPending ? "Syncing..." : "Sync"}
+                        </ListItemText>
+                      </MenuItem>
+                    </span>
+                  </Tooltip>
+                )}
+                <Tooltip
+                  title={
+                    !user.super_user && resource?.owner !== user.id
+                      ? "You don't have permission"
+                      : ""
+                  }
+                >
+                  <span>
+                    <MenuItem
+                      onClick={handleDeleteClick}
+                      disabled={
+                        !user ||
+                        updateResources.isPending ||
+                        (!user.super_user && resource?.owner !== user.id)
+                      }
+                    >
+                      <ListItemIcon>
+                        <DeleteIcon fontSize="small" color="error" />
+                      </ListItemIcon>
+                      <ListItemText>Delete</ListItemText>
+                    </MenuItem>
+                  </span>
+                </Tooltip>
+              </>
+            )
+          )}
+        </Menu>
 
-      <DeleteConfirmationDialog
-        open={confirmDelete}
-        onClose={() => setConfirmDelete(false)}
-        onConfirm={handleConfirmDelete}
-        type={type}
-        resource={resource}
-        mutation={deleteMutation}
-      />
-
-      <EditResourceDialog
-        // resourceType={type.toLowerCase()}
-        resource={resource}
-        open={editResourceOpen}
-        onClose={handleCloseEditResource}
-        scopesQuery={scopesQuery}
-        countriesQuery={countriesQuery}
-        assessmentsQuery={assessmentsQuery}
-        selectedScopes={selectedScopes}
-        onToggleScope={handleToggleScope}
-        mutation={patchResourceQuery}
-        onSave={handlePatchResource}
-      />
-
-      {(updateResources?.isSuccess || updateResources?.isError) && (
-        <Notification
-          requestStatus={updateResources?.status}
-          message={message}
+        <DeleteConfirmationDialog
+          open={confirmDelete}
+          onClose={() => setConfirmDelete(false)}
+          onConfirm={handleConfirmDelete}
+          type={type}
+          resource={resource}
+          mutation={deleteMutation}
         />
-      )}
-    </>
+
+        <EditResourceDialog
+          resource={resource}
+          open={editResourceOpen}
+          onClose={handleCloseEditResource}
+          scopesQuery={scopesQuery}
+          countriesQuery={countriesQuery}
+          assessmentsQuery={assessmentsQuery}
+          selectedScopes={selectedScopes}
+          onToggleScope={handleToggleScope}
+          mutation={patchResourceQuery}
+          onSave={handlePatchResource}
+        />
+
+        {(updateResources?.isSuccess || updateResources?.isError) && (
+          <Notification
+            requestStatus={updateResources?.status}
+            message={message}
+          />
+        )}
+      </>
+    )
   );
 }
 
@@ -338,6 +349,7 @@ export function ResourceItemCommunities({ resource }) {
 export default function ResourceItemHeader({ resource, type, user }) {
   const title =
     resource?.zenodo?.title || resource?.openaire?.metadata?.name || "Untitled";
+
   return (
     <Stack
       direction="row"

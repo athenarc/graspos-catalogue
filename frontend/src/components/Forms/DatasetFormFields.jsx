@@ -24,7 +24,7 @@ export default function DatasetFormFields({ form, resource = null }) {
           defaultValue={resource?.url || ""}
           placeholder="URL of the resource"
           error={!!form?.formState?.errors?.url}
-          helperText={form?.formState?.errors?.url?.message ?? " "}
+          helperText={form?.formState?.errors?.url?.message ?? ""}
           fullWidth
         />
       </Stack>
