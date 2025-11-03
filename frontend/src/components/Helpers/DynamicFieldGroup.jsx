@@ -222,6 +222,11 @@ export default function DynamicFieldGroupSmart({
 
   return (
     <Stack spacing={2}>
+      {fields?.length === 0 && (
+        <Typography variant="body2" color="text.secondary" fontStyle="italic">
+          No {fieldName} added yet.
+        </Typography>
+      )}
       {fields.slice(0, 5).map((_, idx) => renderRow(idx))}
 
       {fields?.length > 5 && (
