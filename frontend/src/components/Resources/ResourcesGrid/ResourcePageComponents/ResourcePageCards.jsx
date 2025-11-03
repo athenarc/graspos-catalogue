@@ -116,7 +116,7 @@ export function EquityEthicalCard({ resource }) {
         </Typography>
       </AccordionSummary>
       <AccordionDetails
-        sx={{ textAlign: resource?.isLoading ? "center" : "left" }}
+        sx={{ textAlign: resource?.isLoading ? "center" : "left", p: 2 }}
       >
         {resource?.isLoading && <CircularProgress size="3rem" />}
         {resource?.isSuccess && (
@@ -148,7 +148,7 @@ export function GovernanceSustainabilityFundingCard({ resource }) {
         </Typography>
       </AccordionSummary>
       <AccordionDetails
-        sx={{ textAlign: resource?.isLoading ? "center" : "left" }}
+        sx={{ textAlign: resource?.isLoading ? "center" : "left", p: 2 }}
       >
         {resource?.isLoading && <CircularProgress size="3rem" />}
         {resource?.isSuccess && (
@@ -195,7 +195,7 @@ export function ContributorsCard({ resource }) {
         </Typography>
       </AccordionSummary>
       <AccordionDetails
-        sx={{ textAlign: resource?.isLoading ? "center" : "left" }}
+        sx={{ textAlign: resource?.isLoading ? "center" : "left", p: 2 }}
       >
         {resource?.isLoading && <CircularProgress size="3rem" />}
         <Stack direction="column" spacing={1}>
@@ -225,7 +225,7 @@ export function AuthorsCard({ resource, people = [], label = "Authors" }) {
         </Typography>
       </AccordionSummary>
       <AccordionDetails
-        sx={{ textAlign: resource?.isLoading ? "center" : "left" }}
+        sx={{ textAlign: resource?.isLoading ? "center" : "left", p: 2 }}
       >
         {resource?.isLoading && <CircularProgress size="3rem" />}
         {resource?.isSuccess && people?.length === 0 && (

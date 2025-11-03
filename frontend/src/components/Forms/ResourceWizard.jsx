@@ -38,6 +38,7 @@ export default function WizardForm({
   resourceTypesList,
   setResourceType,
   data,
+  resourceSource = "unknown",
 }) {
   const [activeStep, setActiveStep] = useState(0);
 
@@ -98,6 +99,7 @@ export default function WizardForm({
               form={form}
               searchedResource={data}
               resourceType={resourceType}
+              resourceSource={resourceSource}
             />
           </Stack>
         )}

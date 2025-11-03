@@ -288,6 +288,7 @@ export default function ResourceItemContent({ resource }) {
                   title={title}
                   items={resource?.[key] || []}
                   labelMap={labelMap}
+                  limit={20}
                 />
               </TabPanel>
             )

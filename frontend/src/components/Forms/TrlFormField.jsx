@@ -19,6 +19,7 @@ export default function TrlFormField({
   required = false,
   resource = null,
   searchedResource = null,
+  disabled = false,
 }) {
   const { data: trls, isLoading, isSuccess } = useTrls();
   const hasError = !!form?.formState?.errors?.[name];
@@ -56,6 +57,7 @@ export default function TrlFormField({
                 fullWidth
                 disabled={!!searchedResource?.metadata?.trl}
                 onChange={(e) => field?.onChange(e?.target?.value)}
+                sx={{ backgroundColor: "#fff" }}
                 endAdornment={
                   field.value && (
                     <IconButton
@@ -64,9 +66,9 @@ export default function TrlFormField({
                         e.stopPropagation();
                         field.onChange("");
                       }}
-                      sx={{ mr: 2 }}
+                      sx={{ mr: 2}}
                     >
-                      <ClearIcon fontSize="small" />
+                      {!disabled && <ClearIcon fontSize="small" />}
                     </IconButton>
                   )
                 }
