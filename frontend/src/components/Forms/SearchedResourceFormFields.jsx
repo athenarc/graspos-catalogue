@@ -17,7 +17,7 @@ import { enGB } from "date-fns/locale";
 import DynamicFieldGroupSmart from "@helpers/DynamicFieldGroup";
 import AlertHelperText from "@helpers/AlertHelperText";
 import TrlFormField from "./TrlFormField";
-import { getLogoUrl } from "../../utils/utils";
+import { getLogoUrl } from "@utils/utils";
 
 export function SearchedResourceTextField({
   value,
@@ -163,8 +163,6 @@ export default function SearchedResourceFormFields({
   const title = searchedResource?.metadata?.title || "";
   const name = searchedResource?.metadata?.name || "";
   const publicationDate = searchedResource?.metadata?.publication_date;
-
-  // Define logos
   const sourceLogo = getLogoUrl(resourceSource);
 
   return (
@@ -178,9 +176,9 @@ export default function SearchedResourceFormFields({
           boxShadow: 1,
           backgroundColor: "#fff",
           marginTop: "0px !important;",
+          mt: 2,
         }}
       >
-        {/* Top bar with "powered by" logo */}
         <Stack
           direction={{ xs: "column", sm: "row" }}
           justifyContent="space-between"
@@ -261,7 +259,6 @@ export default function SearchedResourceFormFields({
             backgroundColor: "#fafafa",
           }}
         >
-          {/* Basic Tab */}
           {tabIndex === 0 && (
             <Stack spacing={2}>
               <Stack
@@ -343,7 +340,6 @@ export default function SearchedResourceFormFields({
             </Stack>
           )}
 
-          {/* Dynamic tabs */}
           {allDynamicTabs.map(
             (tabName, idx) =>
               tabIndex === idx + 1 && (

@@ -212,13 +212,13 @@ async def get_unique_metadata_values(
             responses={404: {
                 "detail": "Service does not exist"
             }})
-async def get_service(service_id: PydanticObjectId) -> Service:
+async def get_service(service_id: PydanticObjectId):
 
     service = await Service.get(service_id, fetch_links=True)
 
     if not service:
 
-        return HTTPException(status_code=404, detail="Service does not exist")
+        raise HTTPException(status_code=404, detail="Service does not exist")
 
     return service
 

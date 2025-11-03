@@ -1,12 +1,7 @@
-import { Stack, TextField, FormHelperText, Alert } from "@mui/material";
-import TrlFormField from "./TrlFormField";
-import AlertHelperText from "../Helpers/AlertHelperText";
+import { Stack, TextField } from "@mui/material";
+import AlertHelperText from "@helpers/AlertHelperText";
 
-export default function ServiceFormFields({
-  form,
-  resource = null,
-  searchedResource = null,
-}) {
+export default function ServiceFormFields({ form, resource = null }) {
   const error = form?.formState?.errors?.url;
 
   return (
@@ -25,7 +20,7 @@ export default function ServiceFormFields({
           label="URL"
           defaultValue={resource?.url || ""}
           placeholder="URL of the resource"
-          helperText=" "
+          helperText=""
           error={!!error}
           fullWidth
         />
