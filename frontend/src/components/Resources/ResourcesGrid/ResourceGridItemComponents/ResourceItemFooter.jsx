@@ -8,10 +8,7 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 
 import { formatDate } from "../../../../utils/utils";
-import PersonIcon from "@mui/icons-material/Person";
-import GroupIcon from "@mui/icons-material/Group";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import FlagIcon from "@mui/icons-material/Flag";
+import { renderIcon } from "@helpers/MenuItems";
 
 export function ResourceItemScopes({ resource }) {
   const SIZE = 18;
@@ -52,19 +49,6 @@ export function ResourceItemAssessments({ resource }) {
   const SIZE = 18;
   const FONT_SIZE = 12;
 
-  const getAssessmentIcon = (name) => {
-    switch (name) {
-      case "Researcher":
-        return <PersonIcon fontSize="inherit" />;
-      case "Researcher team/group":
-        return <GroupIcon fontSize="inherit" />;
-      case "Research organization":
-        return <AccountBalanceIcon fontSize="inherit" />;
-      default:
-        return <FlagIcon fontSize="inherit" />;
-    }
-  };
-
   return (
     <AvatarGroup
       sx={{ ml: 0 }}
@@ -90,7 +74,7 @@ export function ResourceItemAssessments({ resource }) {
               color: "text.primary",
             }}
           >
-            {getAssessmentIcon(assessment?.name)}
+            {renderIcon(assessment?.name)}
           </Avatar>
         </Tooltip>
       ))}
