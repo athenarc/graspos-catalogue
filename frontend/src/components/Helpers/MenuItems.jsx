@@ -8,19 +8,19 @@ import AccountTreeIcon from "@mui/icons-material/AccountTree";
 const renderIcon = (name) => {
   switch (name) {
     case "Researcher":
-      return <PersonIcon fontSize="small" />;
+      return <PersonIcon fontSize="inherit" />;
     case "Researcher Team/Group":
-      return <GroupIcon fontSize="small" />;
+      return <GroupIcon fontSize="inherit" />;
     case "Research Organization":
-      return <AccountBalanceIcon fontSize="small" />;
+      return <AccountBalanceIcon fontSize="inherit" />;
     case "Country":
-      return <FlagIcon fontSize="small" />;
+      return <FlagIcon fontSize="inherit" />;
     case "Research Product":
-      return <ProductionQuantityLimitsIcon fontSize="small" />;
+      return <ProductionQuantityLimitsIcon fontSize="inherit" />;
     case "Project":
-      return <AccountTreeIcon fontSize="small" />;
+      return <AccountTreeIcon fontSize="inherit" />;
     default:
-      return <FlagIcon fontSize="small" color="text.primary" />;
+      return <FlagIcon fontSize="inherit" color="text.primary" />;
   }
 };
 
