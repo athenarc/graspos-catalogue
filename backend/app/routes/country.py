@@ -15,22 +15,23 @@ router = APIRouter(prefix="/api/v1/country", tags=["Country"])
 
 @router.get("/geographical-coverage-with-count",
             response_model=List[GeoCoverageWithCount])
-async def get_geographical_coverage_with_count():
-
-    pipeline = [{
-        "$match": {
-            "approved": True
-        }
-    }, {
-        "$unwind": "$geographical_coverage"
-    }, {
-        "$group": {
-            "_id": "$geographical_coverage",
-            "count": {
-                "$sum": 1
+async def get_geographical_coverage_with_count(
+        user: Optional[User] = Depends(current_user)):
+    match_stage = {"$match": {"approved": True}}
+    pipeline = [
+        match_stage if user is None or not user.super_user else {
+            "$match": {}
+        }, {
+            "$unwind": "$geographical_coverage"
+        }, {
+            "$group": {
+                "_id": "$geographical_coverage",
+                "count": {
+                    "$sum": 1
+                }
             }
         }
-    }]
+    ]
 
     agg_datasets = await Dataset.get_motor_collection().aggregate(
         pipeline).to_list(None)
@@ -48,7 +49,6 @@ async def get_geographical_coverage_with_count():
 
     def merge_counts(agg_results):
         for item in agg_results:
-            # _id είναι DBRef - παίρνουμε το id
             geo_id = str(item["_id"].id)
             counts[geo_id] = counts.get(geo_id, 0) + int(item["count"])
 
