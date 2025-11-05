@@ -15,23 +15,25 @@ from util.current_user import current_user, current_user_mandatory
 
 router = APIRouter(prefix="/api/v1/assessment", tags=["Assessment"])
 
-@router.get("/assessment-with-count", response_model=List[AssessmentView])
-async def get_assessments_with_count():
-    
-    pipeline = [{
-        "$match": {
-            "approved": True
-        }
-    }, {
-        "$unwind": "$assessments"
-    }, {
-        "$group": {
-            "_id": "$assessments",
-            "count": {
-                "$sum": 1
+
+@router.get("/assessment-with-count", response_model=List[Assessment])
+async def get_assessments_with_count(
+        user: Optional[User] = Depends(current_user)):
+    match_stage = {"$match": {"approved": True}}
+    pipeline = [
+        match_stage if user is None or not user.super_user else {
+            "$match": {}
+        }, {
+            "$unwind": "$assessments"
+        }, {
+            "$group": {
+                "_id": "$assessments",
+                "count": {
+                    "$sum": 1
+                }
             }
         }
-    }]
+    ]
 
     agg_datasets = await Dataset.get_motor_collection().aggregate(
         pipeline).to_list(None)
@@ -49,9 +51,9 @@ async def get_assessments_with_count():
 
     def merge_counts(agg_results):
         for item in agg_results:
-            # _id είναι DBRef - παίρνουμε το id
             assessment_id = str(item["_id"].id)
-            counts[assessment_id] = counts.get(assessment_id, 0) + int(item["count"])
+            counts[assessment_id] = counts.get(assessment_id, 0) + int(
+                item["count"])
 
     merge_counts(agg_datasets)
     merge_counts(agg_tools)
@@ -61,11 +63,12 @@ async def get_assessments_with_count():
     data = []
     for assessment in await Assessment.find_all().to_list():
         count = counts.get(str(assessment.id), 0)
-        data.append(AssessmentView(id=str(assessment.id),
-                                    name=assessment.name,
-                                    description=assessment.description,
-                                    bg_color=assessment.bg_color,
-                                    usage_count=count))
+        data.append(
+            Assessment(_id=str(assessment.id),
+                       name=assessment.name,
+                       description=assessment.description,
+                       bg_color=assessment.bg_color,
+                       usage_count=count))
 
     data.sort(key=lambda x: x.usage_count, reverse=True)
     return data

@@ -17,23 +17,23 @@ from util.current_user import current_user, current_user_mandatory
 router = APIRouter(prefix="/api/v1/scope", tags=["Scope"])
 
 
-@router.get("/scopes-with-count", response_model=List[ScopeView])
-async def get_scopes_with_count():
-
-    pipeline = [{
-        "$match": {
-            "approved": True
-        }
-    }, {
-        "$unwind": "$scopes"
-    }, {
-        "$group": {
-            "_id": "$scopes",
-            "count": {
-                "$sum": 1
+@router.get("/scopes-with-count", response_model=List[Scope])
+async def get_scopes_with_count(user: Optional[User] = Depends(current_user)):
+    match_stage = {"$match": {"approved": True}}
+    pipeline = [
+        match_stage if user is None or not user.super_user else {
+            "$match": {}
+        }, {
+            "$unwind": "$scopes"
+        }, {
+            "$group": {
+                "_id": "$scopes",
+                "count": {
+                    "$sum": 1
+                }
             }
         }
-    }]
+    ]
 
     agg_datasets = await Dataset.get_motor_collection().aggregate(
         pipeline).to_list(None)
@@ -51,7 +51,6 @@ async def get_scopes_with_count():
 
     def merge_counts(agg_results):
         for item in agg_results:
-            # _id είναι DBRef - παίρνουμε το id
             scope_id = str(item["_id"].id)
             counts[scope_id] = counts.get(scope_id, 0) + int(item["count"])
 
@@ -66,11 +65,11 @@ async def get_scopes_with_count():
     for scope in scopes:
         count = counts.get(str(scope.id), 0)
         data.append(
-            ScopeView(id=str(scope.id),
-                      name=scope.name,
-                      description=scope.description,
-                      bg_color=scope.bg_color,
-                      usage_count=count))
+            Scope(_id=str(scope.id),
+                  name=scope.name,
+                  description=scope.description,
+                  bg_color=scope.bg_color,
+                  usage_count=count))
 
     data.sort(key=lambda x: x.usage_count, reverse=True)
     return data
