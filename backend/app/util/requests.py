@@ -86,7 +86,7 @@ async def get_zenodo_data(source: str) -> dict:
 
             indicators = await get_openaire_citation_data(
                 doi=resource["conceptdoi"] if "conceptdoi" in resource else "")
-            print(indicators)
+
             if indicators["status"] == 200:
                 resource["indicators"] = indicators["openaire_citation"]
 
