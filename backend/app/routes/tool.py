@@ -125,7 +125,10 @@ async def get_all_tools(
     if graspos:
         filters.append({
             "zenodo.metadata.communities.id": {
-                "$in": ["graspos-tools", "graspos-datasets"]
+                "$in": [
+                    "graspos-tools", "graspos-datasets",
+                    "graspos-assessment-process-resources"
+                ]
             }
         })
 
