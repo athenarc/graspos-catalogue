@@ -19,7 +19,7 @@ export default function GrasposVerifiedFilter({
             color="primary"
           />
         }
-        label="GraspOS Verified"
+        label="GraspOS Core"
         sx={{ mr: 1 }}
       />
       <Tooltip title="By toggling on resources that are only part of GraspOS communities will be displayed">
