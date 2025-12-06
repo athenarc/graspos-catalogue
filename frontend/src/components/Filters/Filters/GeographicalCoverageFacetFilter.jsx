@@ -48,7 +48,13 @@ export default function GeographicalCoverageFacetFilter({
       <ListItem
         key={geo?.id}
         style={style}
-        sx={{ p: 0, m: 0, display: "flex", alignItems: "center" }}
+        sx={{
+          p: 0,
+          m: 0,
+          display: "flex",
+          alignItems: "center",
+          cursor: "pointer",
+        }}
         disableGutters
         onClick={() => handleToggle(geo?.id)}
       >

@@ -82,48 +82,48 @@ The SCOPE framework for research evaluation is a five-stage model for evaluating
           <FilterVariants count={5} />
         ) : assessmentData?.data?.length > 0 ? (
           assessmentData.data.map((assessment) => (
-            <ListItem
-              key={assessment?._id}
-              onClick={() => handleToggle(assessment?._id)}
-              sx={{ p: 0 }}
-            >
-              <Checkbox
-                edge="start"
-                checked={!!selectedAssessments[assessment?._id]}
-                tabIndex={-1}
-                disableRipple
-                sx={{ p: 1 }}
-              />
-              <div
-                style={{
-                  flexGrow: 1,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  minWidth: 0,
-                  marginRight: 8,
-                }}
+            <Tooltip title={assessment?.description} key={assessment?._id}>
+              <ListItem
+                key={assessment?._id}
+                onClick={() => handleToggle(assessment?._id)}
+                sx={{ p: 0, cursor: "pointer" }}
               >
-                <ListItemText
-                  primary={assessment?.name}
-                  sx={{ mr: 1 }}
-                  primaryTypographyProps={{
-                    noWrap: true,
-                    sx: { fontSize: "0.875rem" },
-                  }}
+                <Checkbox
+                  edge="start"
+                  checked={!!selectedAssessments[assessment?._id]}
+                  tabIndex={-1}
+                  disableRipple
+                  sx={{ p: 1 }}
                 />
-                <Typography
-                  variant="body2"
-                  sx={{ flexShrink: 0, ml: 1, whiteSpace: "nowrap" }}
-                  title={`Resource count: ${assessment?.usage_count}`}
+                <div
+                  style={{
+                    flexGrow: 1,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    minWidth: 0,
+                    marginRight: 8,
+                  }}
                 >
-                  ({assessment?.usage_count})
-                </Typography>
-              </div>
-              <Tooltip title={assessment?.description}>
+                  <ListItemText
+                    primary={assessment?.name}
+                    sx={{ mr: 1 }}
+                    primaryTypographyProps={{
+                      noWrap: true,
+                      sx: { fontSize: "0.875rem" },
+                    }}
+                  />
+                  <Typography
+                    variant="body2"
+                    sx={{ flexShrink: 0, ml: 1, whiteSpace: "nowrap" }}
+                    title={`Resource count: ${assessment?.usage_count}`}
+                  >
+                    ({assessment?.usage_count})
+                  </Typography>
+                </div>
                 {renderIcon(assessment?.name)}
-              </Tooltip>
-            </ListItem>
+              </ListItem>
+            </Tooltip>
           ))
         ) : (
           <Typography sx={{ p: 2 }}>No assessments available</Typography>

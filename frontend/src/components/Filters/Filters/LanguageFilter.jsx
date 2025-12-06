@@ -5,7 +5,6 @@ import {
   Stack,
   Typography,
   Divider,
-  alpha,
 } from "@mui/material";
 import { useDatasetUniqueFieldValues } from "@queries/dataset";
 import { useDocumentUniqueFieldValues } from "@/queries/document";
@@ -13,7 +12,7 @@ import { useToolUniqueFieldValues } from "@/queries/tool";
 import { useServiceUniqueFieldValues } from "@/queries/service";
 import { useEffect, useState } from "react";
 
-export default function LicenseAutocompleteFilter({
+export default function LanguageAutocompleteFilter({
   selectedResource,
   selectedFilters,
   onFilterChange,
