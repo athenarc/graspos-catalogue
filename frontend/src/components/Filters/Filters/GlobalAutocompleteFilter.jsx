@@ -15,6 +15,42 @@ import { useToolUniqueFieldValues } from "@queries/tool";
 import { useDatasetUniqueFieldValues } from "@queries/dataset";
 import { useDocumentUniqueFieldValues } from "@queries/document";
 
+const mapEvidenceTypes = (options) => {
+  return options.map((option) => {
+    switch (option) {
+      case "narratives":
+        return "Narratives";
+      case "indicators":
+        return "Indicators";
+      case "list_of_contributions":
+        return "List Of Contributions";
+      case "badges":
+        return "Badges";
+      case "other":
+        return "Other";
+      default:
+        return option;
+    }
+  });
+};
+
+const mapOptionEvidenceValueToType = (option) => {
+  switch (option) {
+    case "narratives":
+      return "Narratives";
+    case "indicators":
+      return "Indicators";
+    case "list_of_contributions":
+      return "List Of Contributions";
+    case "badges":
+      return "Badges";
+    case "other":
+      return "Other";
+    default:
+      return option;
+  }
+};
+
 export default function UniqueAutocompleteFieldFilter({
   field,
   label,
@@ -96,10 +132,14 @@ export default function UniqueAutocompleteFieldFilter({
           options={options}
           value={selectedValues}
           onChange={handleChange}
-          getOptionLabel={(option) => option?.replace(/_/g, " ")}
+          getOptionLabel={(option) => mapOptionEvidenceValueToType(option)}
           renderTags={(value, getTagProps) =>
             value.map((option, index) => (
-              <Chip key={option} label={option} {...getTagProps({ index })} />
+              <Chip
+                key={option}
+                label={mapOptionEvidenceValueToType(option)}
+                {...getTagProps({ index })}
+              />
             ))
           }
           renderInput={(params) => (
