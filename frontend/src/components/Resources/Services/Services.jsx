@@ -112,7 +112,6 @@ export function Service({ resourceId, handleSetResource }) {
               margin: "0 auto",
             }}
           >
-            <StatisticsCard resource={service} />
             <CoverageCard resource={service} />
             <SupportCard resource={service} />
           </Stack>
