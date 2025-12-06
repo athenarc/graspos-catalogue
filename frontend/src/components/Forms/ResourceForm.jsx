@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 import Notification from "@helpers/Notification.jsx";
 import { useCreateDataset } from "@queries/dataset.js";
 import { useCreateTool } from "@queries/tool.js";
-import { useCreateDocument } from "@/queries/document.js";
+import { useCreateDocument } from "@queries/document.js";
 import { useAuth } from "../AuthContext.jsx";
 import { useZenodo } from "@queries/zenodo.js";
 import { useCreateService } from "@queries/service.js";

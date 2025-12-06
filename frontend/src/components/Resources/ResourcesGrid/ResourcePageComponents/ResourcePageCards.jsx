@@ -527,7 +527,7 @@ export function SupportCard({ resource }) {
 
   const sections = [
     { label: "Documentation", urls: data.documentation_urls },
-    { label: "Training material", urls: data.training_material_urls },
+    { label: "Training material", urls: data.training_materials },
     { label: "Support channel", urls: data.support_channels },
   ];
 
