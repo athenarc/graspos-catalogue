@@ -10,7 +10,7 @@ import {
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState } from "react";
-import { stripHtml } from "../../../../utils/utils";
+import { stripHtml } from "@utils/utils";
 import {
   getLabelForAssessmentFunctionality,
   getLabelForEvidenceType,

@@ -1,5 +1,5 @@
 import { Stack, TextField } from "@mui/material";
-import AccordionField from "../Helpers/AccordionField";
+import AccordionField from "@helpers/AccordionField";
 
 function GovernanceModel({ form, resource = null }) {
   return (

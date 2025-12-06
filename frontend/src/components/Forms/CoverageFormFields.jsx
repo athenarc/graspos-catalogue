@@ -16,9 +16,6 @@ import {
   Alert,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import PersonIcon from "@mui/icons-material/Person";
-import GroupIcon from "@mui/icons-material/Group";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import FlagIcon from "@mui/icons-material/Flag";
 
 import { useEffect, useState } from "react";
@@ -27,8 +24,8 @@ import { Controller, useWatch } from "react-hook-form";
 import { useScopes } from "@queries/scope.js";
 import { useCountries } from "@queries/countries.js";
 import { useAssessments } from "@queries/assessment.js";
-import AccordionField from "../Helpers/AccordionField";
-import AlertHelperText from "../Helpers/AlertHelperText";
+import AccordionField from "@helpers/AccordionField";
+import AlertHelperText from "@helpers/AlertHelperText";
 import { renderIcon } from "@helpers/MenuItems";
 
 function CheckboxArrayField({

@@ -13,7 +13,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import Notification from "@helpers/Notification";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import DatasetFormFields from "./DatasetFormFields";
 import DocumentFormFields from "./DocumentsFormFields";
 import ToolFormFields from "./ToolFormFields";

@@ -23,7 +23,7 @@ import { useCreateService } from "@queries/service.js";
 import { useOpenaire } from "@queries/openaire.js";
 import ResourceFormSearch from "./ResourceFormSearch.jsx";
 import WizardForm from "./ResourceWizard.jsx";
-import AlertMessage from "../Helpers/AlertMessage.jsx";
+import AlertMessage from "@helpers/AlertMessage.jsx";
 
 const resourceTypesList = [
   { value: "dataset", label: "Dataset" },

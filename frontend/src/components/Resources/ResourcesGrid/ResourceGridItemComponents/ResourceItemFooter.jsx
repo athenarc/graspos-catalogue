@@ -7,7 +7,7 @@ import HistoryIcon from "@mui/icons-material/History";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 
-import { formatDate } from "../../../../utils/utils";
+import { formatDate } from "@utils/utils";
 import { renderIcon } from "@helpers/MenuItems";
 
 export function ResourceItemScopes({ resource }) {

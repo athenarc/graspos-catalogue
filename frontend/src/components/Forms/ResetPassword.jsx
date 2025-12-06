@@ -5,12 +5,8 @@ import {
   DialogTitle,
   Button,
   IconButton,
-  TextField,
-  Stack,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -19,7 +15,6 @@ import SaveIcon from "@mui/icons-material/Save";
 import Notification from "@helpers/Notification";
 import { useAuth } from "../AuthContext";
 import Password from "./Fields/Password";
-import AlertMessage from "../Helpers/AlertMessage";
 
 export default function ResetPassword() {
   const { user } = useAuth();

@@ -17,7 +17,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useRegister } from "@queries/data";
 import { useEffect, useState, useRef } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
-import AlertHelperText from "../Helpers/AlertHelperText";
+import AlertHelperText from "@helpers/AlertHelperText";
 import Password from "./Fields/Password";
 
 const SITE_KEY = process.env.REACT_APP_CAPTCHA_SITE_KEY;

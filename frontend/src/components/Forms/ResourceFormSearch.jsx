@@ -6,7 +6,6 @@ import {
   IconButton,
   CircularProgress,
   Stack,
-  Typography,
   Fade,
 } from "@mui/material";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";

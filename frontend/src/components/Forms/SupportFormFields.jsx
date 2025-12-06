@@ -1,5 +1,5 @@
 import { Stack } from "@mui/material";
-import AccordionField from "../Helpers/AccordionField";
+import AccordionField from "@helpers/AccordionField";
 
 function SupportChannels({ form, resource = null }) {
   return (
