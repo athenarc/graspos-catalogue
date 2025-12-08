@@ -7,6 +7,7 @@ import {
   TextField,
   Card,
   CardContent,
+  Tooltip,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
@@ -14,6 +15,10 @@ import { useServiceUniqueFieldValues } from "@queries/service";
 import { useToolUniqueFieldValues } from "@queries/tool";
 import { useDatasetUniqueFieldValues } from "@queries/dataset";
 import { useDocumentUniqueFieldValues } from "@queries/document";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+<Tooltip title="The research entities of which the assessment can be supported by the resources.">
+  <HelpOutlineIcon />
+</Tooltip>;
 
 const mapEvidenceTypes = (options) => {
   return options.map((option) => {
@@ -57,6 +62,7 @@ export default function UniqueAutocompleteFieldFilter({
   scope = "local",
   selectedFilters,
   onFilterChange,
+  tooltip,
 }) {
   const [options, setOptions] = useState([]);
 
@@ -110,20 +116,30 @@ export default function UniqueAutocompleteFieldFilter({
 
   return (
     <Card>
-      <Typography
-        variant="h6"
-        sx={{
-          px: 1,
-          fontSize: "19px",
-          backgroundColor: "lightblue",
-          color: "white",
-          display: "flex",
-          alignItems: "center",
-        }}
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ px: 1, backgroundColor: "lightblue", color: "white" }}
       >
-        By {label}
-      </Typography>
-
+        <Typography
+          variant="h6"
+          sx={{
+            fontSize: "19px",
+            backgroundColor: "lightblue",
+            color: "white",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          By {label}
+        </Typography>
+        {tooltip && (
+          <Tooltip title={tooltip}>
+            <HelpOutlineIcon sx={{ color: "white" }} />
+          </Tooltip>
+        )}
+      </Stack>
       <Divider />
       <CardContent sx={{ p: 2, maxHeight: 200, overflow: "hidden" }}>
         <Autocomplete

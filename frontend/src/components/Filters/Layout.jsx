@@ -23,6 +23,7 @@ function ResourceFilters({ handleChangeFilters, selectedFilters }) {
       <UniqueAutocompleteFieldFilter
         field="assessment_values"
         label="Assessment Values"
+        tooltip="Values that can be supported by a research assessment event using the resources."
         scope="local"
         selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
@@ -31,6 +32,7 @@ function ResourceFilters({ handleChangeFilters, selectedFilters }) {
         field="evidence_types"
         label="Evidence Types"
         scope="local"
+        tooltip="The types of assessment evidence that the resources is offering or leveraging."
         selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />
@@ -38,6 +40,7 @@ function ResourceFilters({ handleChangeFilters, selectedFilters }) {
         field="covered_fields"
         label="Covered Fields"
         scope="local"
+        tooltip="The fields that the resources cover."
         selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />
@@ -45,6 +48,7 @@ function ResourceFilters({ handleChangeFilters, selectedFilters }) {
         field="covered_research_products"
         label="Covered Research Products"
         scope="local"
+        tooltip="The research products that the resources cover."
         selectedFilters={selectedFilters}
         onFilterChange={handleChangeFilters}
       />

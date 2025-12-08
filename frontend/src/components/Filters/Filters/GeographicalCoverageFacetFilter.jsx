@@ -11,12 +11,14 @@ import {
   CardContent,
   InputAdornment,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useCountriesWithCount } from "@queries/countries";
 import { FixedSizeList } from "react-window";
 import ClearIcon from "@mui/icons-material/Clear";
 import { FilterVariants } from "@helpers/Skeleton";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 export default function GeographicalCoverageFacetFilter({
   selectedFilters,
@@ -114,6 +116,11 @@ export default function GeographicalCoverageFacetFilter({
         sx={{ px: 1, backgroundColor: "lightblue", color: "white" }}
       >
         <Typography variant="h6">By geographical coverage</Typography>
+        <Tooltip
+          title="Geographical areas that the resources cover."
+        >
+          <HelpOutlineIcon />
+        </Tooltip>
       </Stack>
 
       <Divider />
