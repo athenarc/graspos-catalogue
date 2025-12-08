@@ -103,12 +103,26 @@ async def get_all_documents(
                 "$in": covered_research_products
             }})
 
-    # GraspOS verified filter
+    # GraspOS funded filtering - match with url https://cordis.europa.eu/projects/101095129 or with word graspos in lowercase in acronym
     if graspos:
         filters.append({
-            "zenodo.metadata.communities.id": {
-                "$in": ["graspos-tools", "graspos-datasets", "graspos-assessment-process-resources"]
-            }
+            "$or": [
+                {
+                    "zenodo.metadata.grants.url": {
+                        "$in": [
+                            "https://cordis.europa.eu/projects/101095129",
+                            "http://cordis.europa.eu/projects/101095129"
+                        ]
+                    }
+                },
+                {
+                    # lowercase match for acronym containing "graspos"
+                    "zenodo.metadata.grants.acronym": {
+                        "$regex": "graspos",
+                        "$options": "i"  # i = case-insensitive
+                    }
+                }
+            ]
         })
 
     # Date range filters
