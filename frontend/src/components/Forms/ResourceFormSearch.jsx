@@ -12,6 +12,16 @@ import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect } from "react";
 
+const ZENODO_RECORD_REGEX = /https:\/\/zenodo\.org\/records\/\d+/;
+const ZENODO_DOI_REGEX = /\d{2}\.\d{4}\/zenodo\.\d+/;
+const OPENAIRE_REGEX =
+  /https:\/\/catalogue\.openaire\.eu\/service\/[a-zA-Z0-9_.-]+\/overview/;
+
+// Create ONE regex that combines them all
+const COMBINED_REGEX = new RegExp(
+  `${ZENODO_RECORD_REGEX.source}|${ZENODO_DOI_REGEX.source}|${OPENAIRE_REGEX.source}`
+);
+
 export default function ResourceFormSearch({
   form,
   onZenodoSearch,
@@ -54,11 +64,7 @@ export default function ResourceFormSearch({
     setStatus?.("info");
     setMessage?.("Searching for resource metadata...");
 
-    if (
-      source.match(
-        /https:\/\/graspos-services\.athenarc\.gr\/service\/[a-zA-Z0-9_.-]+\/overview/
-      )
-    ) {
+    if (source.match(OPENAIRE_REGEX)) {
       onOpenaireSearch(source);
     } else {
       onZenodoSearch(source);
@@ -88,8 +94,7 @@ export default function ResourceFormSearch({
           {...form?.register("source", {
             required: "Please enter a Zenodo or OpenAIRE link or DOI.",
             pattern: {
-              value:
-                /(?:https:\/\/zenodo\.org\/records\/\d+|\d{2}\.\d{4}\/zenodo\.\d+|https:\/\/graspos-services\.athenarc\.gr\/service\/[a-zA-Z0-9_.-]+\/overview)/,
+              value: COMBINED_REGEX,
               message:
                 "That doesn’t look like a valid Zenodo or OpenAIRE source.",
             },
