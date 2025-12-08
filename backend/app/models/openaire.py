@@ -87,12 +87,13 @@ class OpenaireMetadata(BaseModel):
     resourceGeographicLocations: List[str]
     mainContact: Contact
     publicContacts: List[Contact]
-    certifications: List[str]
+    certifications: Optional[List[Optional[str]]] = None
+    relatedPlatforms: Optional[List[Optional[str]]] = None
+
     standards: List[str]
     openSourceTechnologies: List[str]
     requiredResources: List[str]
     relatedResources: List[str]
-    relatedPlatforms: List[str]
     fundingBody: List[str]
     fundingPrograms: List[str]
     grantProjectNames: List[str]
