@@ -20,7 +20,7 @@ async def get_openaire_data(source: str) -> dict:
                 data["metadata"] = data
                 data["metadata"]["communities"] = [{
                     "id": "graspos-services"
-                }] if "graspos" in source.lower() else []
+                }] if "catalogue.openaire.eu" in source.lower() else []
                 trl_entry = None
                 if "trl" in data["metadata"]:
 
