@@ -1,13 +1,11 @@
-import { useService } from "../../../queries/service";
-import { RectangularVariants } from "../../Helpers/Skeleton";
+import { useService } from "@queries/service";
+import { RectangularVariants } from "@helpers/Skeleton";
 import ResourceGridItem from "../ResourcesGrid/ResourceGridItem";
 import { Grid2 as Grid, Stack } from "@mui/material";
 import {
-  StatisticsCard,
   CoverageCard,
   SupportCard,
   AuthorsCard,
-  ContributorsCard,
   GovernanceSustainabilityFundingCard,
   EquityEthicalCard,
 } from "../ResourcesGrid/ResourcePageComponents/ResourcePageCards";
@@ -112,7 +110,6 @@ export function Service({ resourceId, handleSetResource }) {
               margin: "0 auto",
             }}
           >
-            <StatisticsCard resource={service} />
             <CoverageCard resource={service} />
             <SupportCard resource={service} />
           </Stack>

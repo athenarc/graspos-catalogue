@@ -19,10 +19,10 @@ export default function GrasposVerifiedFilter({
             color="primary"
           />
         }
-        label="GraspOS Core"
+        label="Funded by GraspOS"
         sx={{ mr: 1 }}
       />
-      <Tooltip title="By toggling on resources that are only part of GraspOS communities will be displayed">
+      <Tooltip title="By toggling on, resources that are funded by GraspOS project will be displayed.">
         <InfoOutlinedIcon fontSize="small" />
       </Tooltip>
     </Stack>

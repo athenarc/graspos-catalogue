@@ -57,6 +57,19 @@ class ZenodoMetadata(BaseModel):
 
     mapped_resource_type: dict | None = None
 
+    @field_validator("communities", mode="before")
+    def validate_communities(cls, v):
+        """Validate that the resource is part of graspos community.
+         ️   Communities is an array of objects with 'id' field and value that contains 'graspos'."""
+        if v is None:
+            return v
+        for community in v:
+            if isinstance(community, dict):
+                community_id = community.get("id", "")
+                if "graspos" in community_id.lower():
+                    return v
+        raise ValueError("Resource is not part of graspos community")
+
     @field_validator("resource_type")
     def validate_resource_type(cls, v):
         mapping = {

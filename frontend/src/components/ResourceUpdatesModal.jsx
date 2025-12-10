@@ -13,7 +13,7 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
-import { useUpdates, useUpdateResources } from "../queries/update";
+import { useUpdates, useUpdateResources } from "@queries/update";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import CloseIcon from "@mui/icons-material/Close";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";

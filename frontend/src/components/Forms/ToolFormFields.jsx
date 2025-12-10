@@ -1,4 +1,4 @@
-import { Stack, TextField } from "@mui/material";
+import { Stack } from "@mui/material";
 import TrlFormField from "./TrlFormField";
 
 export default function ToolFormFields({ form, resource = null }) {

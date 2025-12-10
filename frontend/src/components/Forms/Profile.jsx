@@ -9,12 +9,10 @@ import {
   Stack,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useUpdateUser } from "../../queries/data";
+import { useUpdateUser } from "@queries/data";
 import SaveIcon from "@mui/icons-material/Save";
 import Notification from "@helpers/Notification";
 import { useAuth } from "../AuthContext";
