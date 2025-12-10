@@ -18,47 +18,47 @@ class Contact(BaseModel):
 
 
 class ScientificDomain(BaseModel):
-    scientificDomain: str
-    scientificSubdomain: str
+    scientificDomain: Optional[str] = None
+    scientificSubdomain: Optional[str] = None
 
 
 class Category(BaseModel):
-    category: str
-    subcategory: str
+    category: Optional[str] = None
+    subcategory: Optional[str] = None
 
 
 class Benefit(BaseModel):
-    benefitsTitle: str
-    benefitsText: str
+    benefitsTitle: Optional[str] = None
+    benefitsText: Optional[str] = None
     benefitsImage: Optional[str] = ""
 
 
 class Feature(BaseModel):
-    featuresTitle: str
-    featuresText: str
+    featuresTitle: Optional[str] = None
+    featuresText: Optional[str] = None
     featuresImage: Optional[str] = None
 
 
 class OpenAireChangeLogEntry(BaseModel):
-    type: str
-    value: str
+    type: Optional[str] = None
+    value: Optional[str] = None
 
 
 class OpenAireChangeLog(BaseModel):
-    changeLogVersion: str
-    changeDate: str
-    logs: List[OpenAireChangeLogEntry]
+    changeLogVersion: Optional[str] = None
+    changeDate: Optional[str] = None
+    logs: Optional[List[OpenAireChangeLogEntry]] = None
 
 
 class PaymentCategory(BaseModel):
-    paymentTitle: str
+    paymentTitle: Optional[str] = None
     paymentSubtitle: Optional[str] = None
     paymentBilling: Optional[str] = None
     paymentPrice: Optional[str] = None
-    paymentIncludes: List[str]
-    paymentButtonText: str
-    paymentURL: str
-    paymentHighlight: bool
+    paymentIncludes: Optional[List[str]] = None
+    paymentButtonText: Optional[str] = None
+    paymentURL: Optional[str] = None
+    paymentHighlight: Optional[bool] = None
 
 
 class UseCaseExtra(BaseModel):
@@ -69,34 +69,34 @@ class UseCaseExtra(BaseModel):
 
 
 class OpenaireMetadata(BaseModel):
-    openaireId: str
-    abbreviation: str
-    name: str
-    resourceOrganisation: str
-    resourceProviders: List[str]
-    webpage: HttpUrl
-    description: str
-    scientificDomains: List[ScientificDomain]
-    categories: List[Category]
-    targetUsers: List[str]
-    accessTypes: List[str]
-    accessModes: List[str]
-    tags: List[str]
-    geographicalAvailabilities: List[str]
-    languageAvailabilities: List[str]
-    resourceGeographicLocations: List[str]
-    mainContact: Contact
-    publicContacts: List[Contact]
+    openaireId: Optional[str] = None
+    abbreviation: Optional[str] = None
+    name: Optional[str] = None
+    resourceOrganisation: Optional[str] = None
+    resourceProviders: Optional[List[str]] = None
+    webpage: Optional[HttpUrl] = None
+    description: Optional[str] = None
+    scientificDomains: Optional[List[ScientificDomain]] = None
+    categories: Optional[List[Category]] = None
+    targetUsers: Optional[List[str]] = None
+    accessTypes: Optional[List[str]] = None
+    accessModes: Optional[List[str]] = None
+    tags: Optional[List[str]] = None
+    geographicalAvailabilities: Optional[List[str]] = None
+    languageAvailabilities: Optional[List[str]] = None
+    resourceGeographicLocations: Optional[List[str]] = None
+    mainContact: Optional[Contact] = None
+    publicContacts: Optional[List[Contact]] = None
     certifications: Optional[List[Optional[str]]] = None
     relatedPlatforms: Optional[List[Optional[str]]] = None
 
-    standards: List[str]
-    openSourceTechnologies: List[str]
-    requiredResources: List[str]
-    relatedResources: List[str]
-    fundingBody: List[str]
-    fundingPrograms: List[str]
-    grantProjectNames: List[str]
+    standards: Optional[List[str]] = None
+    openSourceTechnologies: Optional[List[str]] = None
+    requiredResources: Optional[List[str]] = None
+    relatedResources: Optional[List[str]] = None
+    fundingBody: Optional[List[str]] = None
+    fundingPrograms: Optional[List[str]] = None
+    grantProjectNames: Optional[List[str]] = None
     communities: Optional[List[dict]] = None
 
     tagline: Optional[str] = None
@@ -158,7 +158,7 @@ class OpenaireMetadata(BaseModel):
 
 
 class OpenAIREBase(BaseModel):
-    source: str
+    source: Optional[str] = None
     created: Optional[datetime] = datetime.now()
     modified: Optional[datetime] = datetime.now()
     metadata: OpenaireMetadata | None = None
