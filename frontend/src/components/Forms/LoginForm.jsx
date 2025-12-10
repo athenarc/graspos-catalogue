@@ -13,10 +13,10 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useLogin } from "../../queries/data.js";
+import { useLogin } from "@queries/data.js";
 import LoginIcon from "@mui/icons-material/Login";
 import { useAuth } from "../AuthContext.jsx";
-import AlertHelperText from "../Helpers/AlertHelperText.jsx";
+import AlertHelperText from "@helpers/AlertHelperText.jsx";
 import Password from "./Fields/Password.jsx";
 
 export default function LoginForm() {

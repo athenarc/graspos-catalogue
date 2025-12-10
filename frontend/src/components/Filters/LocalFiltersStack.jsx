@@ -20,7 +20,7 @@ import TagAutoCompleteFilter from "./Filters/TagAutocompleteFilter";
 import GrasposVerifiedFilter from "./Filters/GrasposFilterSwitch";
 import TrlFilter from "./Filters/TrlFilter";
 import AssessmentFunctionalitiesFilter from "./Filters/AssessmentFunctionalitiesFilter";
-import LanguageFilter from "./Filters/LanguageFilter";
+import LanguageAutocompleteFilter from "./Filters/LanguageFilter";
 import AccessRightFilter from "./Filters/AccessRightFilter";
 
 export default function LocalFiltersStack({
@@ -148,7 +148,7 @@ export default function LocalFiltersStack({
               selectedResource === 1 ||
               selectedResource === 2) && (
               <Stack direction="column" spacing={2}>
-                <LanguageFilter
+                <LanguageAutocompleteFilter
                   fieldToSearch="mapped_language"
                   field="language"
                   scope="zenodo"

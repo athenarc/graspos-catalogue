@@ -12,7 +12,7 @@ import LinkIcon from "@mui/icons-material/Link";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import HistoryIcon from "@mui/icons-material/History";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { sanitizeHtml, formatDate } from "../../../../utils/utils";
+import { sanitizeHtml, formatDate } from "@utils/utils";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import LoadingComponent from "@helpers/LoadingComponent";
 import { ResourceItemKeywords } from "../ResourceGridItemComponents/ResourceItemContent";

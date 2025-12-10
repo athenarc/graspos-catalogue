@@ -1,11 +1,6 @@
 import {
   TextField,
   Stack,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormControl,
-  TextareaAutosize,
 } from "@mui/material";
 
 export default function DatasetFormFields({ form, resource = null }) {

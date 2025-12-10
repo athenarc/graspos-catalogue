@@ -77,46 +77,46 @@ The SCOPE framework for research evaluation is a five-stage model for evaluating
           <FilterVariants count={5} />
         ) : scopeData?.data?.length > 0 ? (
           scopeData.data.map((scope) => (
-            <ListItem
-              key={scope._id}
-              onClick={() => handleToggle(scope?._id)}
-              sx={{ p: 0 }}
-            >
-              <div
-                style={{
-                  flexGrow: 1,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  minWidth: 0,
-                  marginRight: 8,
-                }}
+            <Tooltip title={scope?.description} key={scope?._id}>
+              <ListItem
+                key={scope?._id}
+                onClick={() => handleToggle(scope?._id)}
+                sx={{ p: 0, cursor: "pointer" }}
               >
-                <Checkbox
-                  edge="start"
-                  checked={!!selectedScopes[scope?._id]}
-                  tabIndex={-1}
-                  disableRipple
-                  sx={{ p: 1 }}
-                />
-                <ListItemText
-                  primary={scope?.name}
-                  sx={{ mr: 1 }}
-                  primaryTypographyProps={{
-                    noWrap: true,
-                    sx: { fontSize: "0.875rem" },
+                <div
+                  style={{
+                    flexGrow: 1,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    minWidth: 0,
+                    marginRight: 8,
                   }}
-                />
-
-                <Typography
-                  variant="body2"
-                  sx={{ flexShrink: 0, ml: 1, whiteSpace: "nowrap" }}
-                  title={`Resource count: ${scope?.usage_count}`}
                 >
-                  ({scope?.usage_count})
-                </Typography>
-              </div>
-              <Tooltip title={scope?.description}>
+                  <Checkbox
+                    edge="start"
+                    checked={!!selectedScopes[scope?._id]}
+                    tabIndex={-1}
+                    disableRipple
+                    sx={{ p: 1 }}
+                  />
+                  <ListItemText
+                    primary={scope?.name}
+                    sx={{ mr: 1 }}
+                    primaryTypographyProps={{
+                      noWrap: true,
+                      sx: { fontSize: "0.875rem" },
+                    }}
+                  />
+
+                  <Typography
+                    variant="body2"
+                    sx={{ flexShrink: 0, ml: 1, whiteSpace: "nowrap" }}
+                    title={`Resource count: ${scope?.usage_count}`}
+                  >
+                    ({scope?.usage_count})
+                  </Typography>
+                </div>
                 <Avatar
                   sx={{
                     width: 18,
@@ -127,8 +127,8 @@ The SCOPE framework for research evaluation is a five-stage model for evaluating
                 >
                   {scope?.name?.toUpperCase()[0]}
                 </Avatar>
-              </Tooltip>
-            </ListItem>
+              </ListItem>
+            </Tooltip>
           ))
         ) : (
           <Typography sx={{ p: 2 }}>No scopes available</Typography>

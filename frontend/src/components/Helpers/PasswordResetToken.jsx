@@ -18,7 +18,7 @@ import AlertHelperText from "./AlertHelperText";
 
 import LoginIcon from "@mui/icons-material/Login";
 import CloseIcon from "@mui/icons-material/Close";
-import { useResetPassword } from "../../queries/data";
+import { useResetPassword } from "@queries/data";
 import Password from "../Forms/Fields/Password";
 
 export default function PasswordResetModal() {

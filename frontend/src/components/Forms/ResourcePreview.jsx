@@ -1,6 +1,6 @@
 import { Tooltip, Stack, Typography, Card, Box } from "@mui/material";
-import HistoryIcon from "@mui/icons-material/History"; // Add this import
-import AssignmentIcon from "@mui/icons-material/Assignment"; // Add this import
+import HistoryIcon from "@mui/icons-material/History";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import DOMPurify from "dompurify";
 import { Link } from "react-router-dom";

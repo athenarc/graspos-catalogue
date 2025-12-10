@@ -1,14 +1,13 @@
-import React, {
+import {
   createContext,
   useState,
   useContext,
   useEffect,
   useCallback,
 } from "react";
-import { useUserInformation } from "../queries/data";
+import { useUserInformation } from "@queries/data";
+import { setLogoutCallback } from "@queries/interceptor";
 import { useQueryClient } from "@tanstack/react-query";
-import { setLogoutCallback } from "../queries/interceptor";
-import { Box, CircularProgress, Typography } from "@mui/material";
 import LoadingComponent from "./Helpers/LoadingComponent";
 
 const AuthContext = createContext();

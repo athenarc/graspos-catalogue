@@ -1,10 +1,4 @@
 import {
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  Button,
-  IconButton,
-  DialogContent,
   Stack,
   InputLabel,
   Select,
@@ -26,9 +20,9 @@ import DocumentFormFields from "./DocumentsFormFields.jsx";
 import ToolFormFields from "./ToolFormFields.jsx";
 import ServiceFormFields from "./ServiceFormFields.jsx";
 import { useState, useEffect } from "react";
-import { useScopes } from "../../queries/scope.js";
-import { useCountries } from "../../queries/countries.js";
-import { useAssessments } from "../../queries/assessment.js";
+import { useScopes } from "@queries/scope.js";
+import { useCountries } from "@queries/countries.js";
+import { useAssessments } from "@queries/assessment.js";
 
 export default function ResourcePathsForm({
   data,

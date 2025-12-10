@@ -11,7 +11,7 @@ import {
 } from "../ResourcesGrid/ResourcePageComponents/ResourcePageCards";
 import { ResourceBasicInformation } from "../ResourcesGrid/ResourcePageComponents/ResourcePageBasicInformation";
 import ResourceMessage from "@helpers/ResourceMessage";
-import { RectangularVariants } from "../../Helpers/Skeleton";
+import { RectangularVariants } from "@helpers/Skeleton";
 import { useEffect } from "react";
 
 export function Datasets({ datasets, user }) {

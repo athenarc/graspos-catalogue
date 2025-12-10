@@ -16,6 +16,7 @@ async def get_openaire_data(source: str) -> dict:
 
                 data["openaireId"] = data.get("id")
                 data["source"] = source.strip()
+                data["api_url"] = transformed_url
                 data["metadata"] = data
                 data["metadata"]["communities"] = [{
                     "id": "graspos-services"
