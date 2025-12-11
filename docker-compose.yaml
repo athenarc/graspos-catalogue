@@ -39,6 +39,7 @@ services:
       - api_bridge
     profiles:
       - prod
+      - staging
 
   graspos-backend:
     container_name: graspos-backend
