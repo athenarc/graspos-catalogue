@@ -369,7 +369,7 @@ export default function ResourceItemHeader({ resource, type, user }) {
               fontWeight: "bold",
             }}
           >
-            <Link to={"/" + type.toLowerCase() + "s/" + resource?._id}>
+            <Link to={"/" + type.toLowerCase() + "s/" + resource?.resource_url_name}>
               {title}
             </Link>
           </Typography>

@@ -129,6 +129,14 @@ export function useTool(toolId) {
   });
 }
 
+export function useToolByUniqueName(resourceUniqueName) {
+  return useQuery({
+    queryKey: ["tool-" + String(resourceUniqueName)],
+    retry: false,
+    queryFn: () => axiosInstance.get(`tool/name/${resourceUniqueName}`),
+  });
+}
+
 export function useDeleteTool() {
   const queryClient = useQueryClient();
   return useMutation({

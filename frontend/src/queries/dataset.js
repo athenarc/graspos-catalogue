@@ -127,6 +127,14 @@ export function useDataset(datasetId) {
   });
 }
 
+export function useDatasetByUniqueName(uniqueName) {
+  return useQuery({
+    queryKey: ["dataset-" + String(uniqueName)],
+    retry: false,
+    queryFn: () => axiosInstance.get(`dataset/name/${uniqueName}`),
+  });
+}
+
 export function useDeleteDataset() {
   const queryClient = useQueryClient();
   return useMutation({

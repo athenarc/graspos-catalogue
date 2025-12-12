@@ -8,6 +8,8 @@ import {
   Button,
   Tabs,
   Tab,
+  Stack,
+  TextField,
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -23,6 +25,7 @@ import CoverageFormFields from "./CoverageFormFields";
 import EthicsFormFields from "./EthicsFormFields";
 import SupportFormFields from "./SupportFormFields";
 import SearchedResourceFormFields from "./SearchedResourceFormFields";
+import { useAuth } from "../AuthContext";
 
 const tabs = [
   "Basic Information",
@@ -39,14 +42,13 @@ export default function EditResourceDialog({
   mutation,
   onSave,
 }) {
+  const { user } = useAuth();
   const { isSuccess, isError, error, reset, isPending } = mutation;
   const form = useForm({
     mode: "onChange",
   });
 
   const {
-    handleSubmit,
-    setError,
     setValue,
     watch,
     getValues,
@@ -126,7 +128,29 @@ export default function EditResourceDialog({
           </Tabs>
 
           {tabIndex === 0 && (
-            <>
+            <Stack spacing={2} sx>
+              <Stack direction="row" spacing={2}>
+                <TextField
+                  {...form?.register("resource_url_name", {
+                    value: resource?.resource_url_name,
+                    required: "Please a name identifier for the resource.",
+                  })}
+                  label="Resource URL Name"
+                  // disable input if resource_url_name exists.
+                  // If user is super_user, allow editing.
+                  // If not super_user and resource_url_name exists, disable input.
+                  disabled={
+                    user?.super_user ? false : !!resource?.resource_url_name
+                  }
+                  defaultValue={resource?.resource_url_name || ""}
+                  placeholder="Unique name identifier for the resource"
+                  error={!!form?.formState?.errors?.resource_url_name}
+                  helperText={
+                    form?.formState?.errors?.resource_url_name?.message ?? ""
+                  }
+                  fullWidth
+                />
+              </Stack>
               {resource?.resource_type === "dataset" && (
                 <DatasetFormFields form={form} resource={resource} />
               )}
@@ -145,7 +169,7 @@ export default function EditResourceDialog({
                 searchedResource={resource?.zenodo || resource?.openaire}
                 resourceType={resource?.resource_type}
               />
-            </>
+            </Stack>
           )}
 
           {tabIndex === 1 && (

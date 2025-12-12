@@ -3,16 +3,16 @@
 from fastapi import APIRouter, HTTPException, Depends, Query, status
 from models.service import Service, ServicePatch
 from models.user import User
-from models.zenodo import Zenodo
 from models.openaire import OpenAIRE
 from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
 from util.current_user import current_user, current_user_mandatory
 from util.requests import get_openaire_data
 from typing import List, Optional
-from datetime import datetime
 from beanie import PydanticObjectId
 import logging, re
+from pymongo.errors import DuplicateKeyError
+from pydantic import ValidationError
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/service", tags=["Service"])
@@ -183,7 +183,15 @@ async def create_service(
     service.owner = user.id
     if user.super_user:
         service.approved = True
-    await service.create()
+
+    try:
+        await service.create()
+    except DuplicateKeyError as error:
+        raise HTTPException(
+            status_code=409,
+            detail="Service with this resource url name already exists.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
     return service
 
 
@@ -218,6 +226,21 @@ async def get_service(service_id: PydanticObjectId):
 
     if not service:
 
+        raise HTTPException(status_code=404, detail="Service does not exist")
+
+    return service
+
+
+@router.get("/name/{unique_name}",
+            responses={404: {
+                "detail": "Service does not exist"
+            }})
+async def get_service_by_unique_name(unique_name: str):
+
+    service = await Service.find_one(Service.resource_url_name == unique_name,
+                                     fetch_links=True)
+
+    if not service:
         raise HTTPException(status_code=404, detail="Service does not exist")
 
     return service

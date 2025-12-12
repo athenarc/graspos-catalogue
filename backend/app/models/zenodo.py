@@ -168,6 +168,7 @@ class ZenodoMetadata(BaseModel):
 
 class Zenodo(BaseModel):
     source: str | None = None
+    resource_url_name: str | None = None
     created: datetime | None = None
     modified: datetime | None = None
     zenodo_id: int | None = None

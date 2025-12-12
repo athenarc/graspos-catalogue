@@ -1,10 +1,11 @@
 """Tool models."""
 
-from beanie import Document
+from beanie import Document, Indexed
 from pydantic import BaseModel
 from beanie import Link
 from models.zenodo import Zenodo
 from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseResourceView
+from pymongo import IndexModel, TEXT
 
 
 class ToolBasicFields(BaseModel):
@@ -28,6 +29,15 @@ class Tool(Document, ToolView):
 
     class Settings:
         name = "tools"
+        indexes = [
+            IndexModel(
+                [
+                    ("resource_url_name", TEXT),
+                ],
+                name="resource_url_name_index",
+                unique=True,
+            ),
+        ]
 
     class Config:
         json_schema_extra = {

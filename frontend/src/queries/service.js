@@ -129,6 +129,14 @@ export function useService(serviceId) {
   });
 }
 
+export function useServiceByUniqueName(uniqueName) {
+  return useQuery({
+    queryKey: ["service-" + String(uniqueName)],
+    retry: false,
+    queryFn: () => axiosInstance.get(`service/name/${uniqueName}`),
+  });
+}
+
 export function useDeleteService() {
   const queryClient = useQueryClient();
   return useMutation({

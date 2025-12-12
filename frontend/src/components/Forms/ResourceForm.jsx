@@ -75,7 +75,7 @@ export default function ResourceForm() {
   const openaire = useOpenaire();
 
   const stepFields = {
-    0: [resourceType?.value === "service" ? "url" : "doi"], // basic info
+    0: [resourceType?.value === "service" ? "url" : "doi", "resource_url_name"], // basic info
     1: [], // governance step
     2: [], // support step
     3: ["geographical_coverage", "covered_fields", "covered_research_products"], // coverage step
@@ -127,9 +127,13 @@ export default function ResourceForm() {
           navigate("..");
         },
         onError: (error) => {
-          setMessage(error?.response?.detail || "Error occurred");
+          setStatus("error");
+          setMessage(error?.response?.data?.detail || "Error occurred");
+          form?.setError("resource_url_name", {
+            message: error?.response?.data?.detail || "Error occurred",
+          });
           setError("source", {
-            message: error?.response?.detail || "Error occurred",
+            message: error?.response?.data?.detail || "Error occurred",
           });
         },
       }

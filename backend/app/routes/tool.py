@@ -12,6 +12,8 @@ from util.requests import get_zenodo_data
 from typing import List, Optional
 from datetime import datetime
 import logging
+from pymongo.errors import DuplicateKeyError
+from pydantic import ValidationError
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/tool", tags=["Tool"])
@@ -215,7 +217,15 @@ async def create_tool(tool: Tool,
     tool.owner = user.id
     if user.super_user:
         tool.approved = True
-    await tool.create()
+    try:
+        await tool.create()
+    except DuplicateKeyError as error:
+        raise HTTPException(
+            status_code=409,
+            detail="Tool with this resource url name already exists.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
     return tool
 
 
@@ -237,6 +247,22 @@ async def get_unique_metadata_values(
         return {f"unique_{field}": unique_values}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/name/{unique_name}",
+            responses={404: {
+                "detail": "Tool does not exist"
+            }})
+async def get_tool_by_unique_name(unique_name: str):
+
+    tool = await Tool.find_one(Tool.resource_url_name == unique_name,
+                               fetch_links=True)
+
+    if not tool:
+
+        raise HTTPException(status_code=404, detail="Tool does not exist")
+
+    return tool
 
 
 @router.get("/{tool_id}", responses={404: {"detail": "Tool does not exist"}})

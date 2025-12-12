@@ -11,6 +11,7 @@ import {
   Select,
   MenuItem,
   Stack,
+  TextField,
 } from "@mui/material";
 
 import DatasetFormFields from "./DatasetFormFields";
@@ -53,9 +54,13 @@ export default function WizardForm({
     setActiveStep((prev) => prev - 1);
   };
   return (
-    <Stack spacing={2} sx={{ width: "100%" }}>
-      <FormProvider {...form}>
-        <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
+    <FormProvider {...form}>
+      <Stack
+        direction="column"
+        spacing={4}
+        sx={{ marginTop: "24px !important;" }}
+      >
+        <Stepper activeStep={activeStep}>
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
@@ -64,25 +69,40 @@ export default function WizardForm({
         </Stepper>
 
         {activeStep === 0 && (
-          <Stack spacing={2}>
-            <FormControl fullWidth>
-              <InputLabel>Resource type</InputLabel>
-              <Select
-                {...form?.register("resource_type")}
-                disabled
-                value={resourceType}
-                labelId="resource-type-select-label"
-                label="Resource type"
-                onChange={(e) => setResourceType(e.target.value)}
-              >
-                {resourceTypesList.map((type) => (
-                  <MenuItem key={type.value} value={type.value}>
-                    {type.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
+          <Stack spacing={2} sx>
+            <Stack direction="row" spacing={2}>
+              <FormControl fullWidth>
+                <InputLabel>Resource type</InputLabel>
+                <Select
+                  {...form?.register("resource_type")}
+                  disabled
+                  value={resourceType}
+                  labelId="resource-type-select-label"
+                  label="Resource type"
+                  onChange={(e) => setResourceType(e.target.value)}
+                >
+                  {resourceTypesList.map((type) => (
+                    <MenuItem key={type.value} value={type.value}>
+                      {type.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <TextField
+                {...form?.register("resource_url_name", {
+                  value: data?.resource_url_name,
+                  required: "Please a name identifier for the resource.",
+                })}
+                label="Unique name identifier for the resource"
+                defaultValue={data?.resource_url_name || ""}
+                placeholder="Unique name identifier for the resource"
+                error={!!form?.formState?.errors?.resource_url_name}
+                helperText={
+                  form?.formState?.errors?.resource_url_name?.message ?? ""
+                }
+                fullWidth
+              />
+            </Stack>
             {resourceType === "dataset" && (
               <DatasetFormFields form={form} searchedResource={data} />
             )}
@@ -148,7 +168,7 @@ export default function WizardForm({
             </Button>
           )}
         </Box>
-      </FormProvider>
-    </Stack>
+      </Stack>
+    </FormProvider>
   );
 }

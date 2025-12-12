@@ -12,6 +12,7 @@ from typing import List, Optional
 from datetime import datetime
 from beanie import PydanticObjectId
 import logging
+from pymongo.errors import DuplicateKeyError
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/document", tags=["Documents"])
@@ -204,7 +205,17 @@ async def create_document(
     document.owner = user.id
     if user.super_user:
         document.approved = True
-    await document.create()
+
+    try:
+        await document.create()
+
+    except DuplicateKeyError as error:
+        raise HTTPException(
+            status_code=409,
+            detail=
+            "Template/Guideline with this resource url name already exists.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
     return document
 
 
@@ -238,6 +249,21 @@ async def get_document(document_id: PydanticObjectId):
     if not document:
 
         raise HTTPException(status_code=404, detail="Documents does not exist")
+
+    return document
+
+
+@router.get("/name/{unique_name}",
+            responses={404: {
+                "detail": "Document does not exist"
+            }})
+async def get_document_by_unique_name(unique_name: str):
+
+    document = await Documents.find_one(
+        Documents.resource_url_name == unique_name, fetch_links=True)
+
+    if not document:
+        raise HTTPException(status_code=404, detail="Document does not exist")
 
     return document
 

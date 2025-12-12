@@ -57,10 +57,19 @@ function AppRoutes() {
       <Routes location={backgroundLocation || location}>
         <Route path="/" element={<AppLayout />}>
           {/* Public resources */}
-          <Route path="datasets/:resourceId" element={<ResourcePage />} />
-          <Route path="tools/:resourceId" element={<ResourcePage />} />
-          <Route path="documents/:resourceId" element={<ResourcePage />} />
-          <Route path="services/:resourceId" element={<ResourcePage />} />
+          <Route
+            path="datasets/:resourceUniqueName"
+            element={<ResourcePage />}
+          />
+          <Route path="tools/:resourceUniqueName" element={<ResourcePage />} />
+          <Route
+            path="documents/:resourceUniqueName"
+            element={<ResourcePage />}
+          />
+          <Route
+            path="services/:resourceUniqueName"
+            element={<ResourcePage />}
+          />
 
           {/* Guest-only routes */}
           <Route

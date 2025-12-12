@@ -18,6 +18,9 @@ async def get_openaire_data(source: str) -> dict:
                 data["source"] = source.strip()
                 data["api_url"] = transformed_url
                 data["metadata"] = data
+                data["resource_url_name"] = re.sub(r'\W+', '-',
+                                                   data.get("title",
+                                                            "")).lower()
                 data["metadata"]["communities"] = [{
                     "id": "graspos-services"
                 }] if "catalogue.openaire.eu" in source.lower() else []
@@ -83,6 +86,9 @@ async def get_zenodo_data(source: str) -> dict:
             resource = response.json()
             resource["zenodo_id"] = resource["id"]
             resource["source"] = source.strip()
+            resource["resource_url_name"] = re.sub(r'\W+', '-',
+                                                   resource.get("title",
+                                                                "")).lower()
             del resource["id"]
 
             indicators = await get_openaire_citation_data(

@@ -1,8 +1,11 @@
 """Document models."""
 
-from beanie import Document
+from beanie import Document, Indexed
 from pydantic import BaseModel
 from beanie import Link
+from pymongo import IndexModel
+
+from pymongo import IndexModel, TEXT
 from models.zenodo import Zenodo
 from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseResourceView
 
@@ -28,6 +31,15 @@ class Documents(Document, DocumentView):
 
     class Settings:
         name = "documents"
+        indexes = [
+            IndexModel(
+                [
+                    ("resource_url_name", TEXT),
+                ],
+                name="resource_url_name_index",
+                unique=True,
+            ),
+        ]
 
     class Config:
         json_schema_extra = {

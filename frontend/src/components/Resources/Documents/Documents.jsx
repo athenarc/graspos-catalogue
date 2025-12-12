@@ -1,4 +1,4 @@
-import { useDocument } from "@queries/document";
+import { useDocumentByUniqueName } from "@queries/document";
 import { RectangularVariants } from "@helpers/Skeleton";
 import ResourceGridItem from "../ResourcesGrid/ResourceGridItem";
 import { Grid2 as Grid, Stack } from "@mui/material";
@@ -49,8 +49,8 @@ export function Documents({ documents, user }) {
     ));
   }
 }
-export function Document({ resourceId, handleSetResource }) {
-  const document = useDocument(resourceId);
+export function Document({ resourceUniqueName, handleSetResource }) {
+  const document = useDocumentByUniqueName(resourceUniqueName);
 
   useEffect(() => {
     if (document?.isSuccess) {
