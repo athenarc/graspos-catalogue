@@ -42,14 +42,17 @@ class UserUpdate(BaseModel):
     organization: str | None = None
     orcid: str | None = None
     disabled: bool | None = False
+    email_confirmed_at: datetime | None = None
 
 
 class UserPasswordUpdate(UserUpdate):
     password: str | None = None
 
+
 class UserPasswordReset(BaseModel):
     """User password reset model."""
     id: PydanticObjectId
+
 
 class UserOut(UserUpdate):
     """User fields returned to the client."""

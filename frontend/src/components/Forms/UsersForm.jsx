@@ -47,7 +47,6 @@ function UserForm({ user }) {
       verified: !!user?.email_confirmed_at,
     },
   });
-  console.log("UserForm user:", user);
   const updateUser = useUpdateUser();
   const passwordReset = useForgotPassword();
   const disableForm = passwordReset.isPending || updateUser.isPending;
@@ -71,6 +70,14 @@ function UserForm({ user }) {
 
   const onSubmit = (data) => {
     setNotificationStatus("loading");
+    if (
+      data.email_confirmed_at &&
+      typeof data.email_confirmed_at === "boolean"
+    ) {
+      data.email_confirmed_at = new Date().toISOString();
+    } else {
+      data.email_confirmed_at = null;
+    }
     updateUser.mutate(
       { data },
       {
@@ -79,7 +86,11 @@ function UserForm({ user }) {
           setNotificationStatus("success");
         },
         onError: (err) => {
-          setMessage(err?.response?.data?.detail || "Failed to update user");
+          let errorMessage =
+            typeof err?.response?.data?.detail === "string"
+              ? err.response.data.detail
+              : err?.response?.data?.detail?.msg || "Failed to update user";
+          setMessage(errorMessage);
           setNotificationStatus("error");
         },
       }
@@ -120,36 +131,67 @@ function UserForm({ user }) {
             )}
           </Stack>
           <Stack direction="row" spacing={2}>
-            <Tooltip title="Admin privileges">
-              <Controller
-                name="super_user"
-                control={control}
-                render={({ field }) => (
-                  <Checkbox
-                    {...field}
-                    checked={field.value ?? false}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={(e) => field.onChange(e.target.checked)}
-                    disabled={disableForm}
-                    color="primary"
+            <Tooltip title="Verified user">
+              <FormControlLabel
+                label="Verified"
+                control={
+                  <Controller
+                    name="email_confirmed_at"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        {...field}
+                        checked={field.value ?? false}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        disabled={disableForm}
+                        color="primary"
+                      />
+                    )}
                   />
-                )}
+                }
+              />
+            </Tooltip>
+            <Tooltip title="Admin privileges">
+              <FormControlLabel
+                label="Admin"
+                control={
+                  <Controller
+                    name="super_user"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        {...field}
+                        checked={field.value ?? false}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        disabled={disableForm}
+                        color="primary"
+                      />
+                    )}
+                  />
+                }
               />
             </Tooltip>
             <Tooltip title="User disabled">
-              <Controller
-                name="disabled"
-                control={control}
-                render={({ field }) => (
-                  <Checkbox
-                    {...field}
-                    checked={field.value ?? false}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={(e) => field.onChange(e.target.checked)}
-                    disabled={disableForm}
-                    color="error"
+              <FormControlLabel
+                label="Disabled"
+                control={
+                  <Controller
+                    name="disabled"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        {...field}
+                        checked={field.value ?? false}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        disabled={disableForm}
+                        color="error"
+                      />
+                    )}
                   />
-                )}
+                }
               />
             </Tooltip>
           </Stack>
@@ -257,7 +299,7 @@ export default function UsersPanelForm() {
   const [open, setOpen] = useState(true);
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState({
-    verified: false,
+    email_confirmed_at: false,
     admin: false,
     disabled: false,
   });
