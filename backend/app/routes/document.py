@@ -213,7 +213,8 @@ async def create_document(
         raise HTTPException(
             status_code=409,
             detail=
-            "Template/Guideline with this resource url name already exists.")
+            "Template/Guideline with this resource url name already exists. Please choose another one."
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
     return document

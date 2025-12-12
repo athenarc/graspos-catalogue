@@ -189,7 +189,9 @@ async def create_service(
     except DuplicateKeyError as error:
         raise HTTPException(
             status_code=409,
-            detail="Service with this resource url name already exists.")
+            detail=
+            "Service with this resource url name already exists. Please choose another one."
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
     return service

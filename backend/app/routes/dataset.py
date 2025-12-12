@@ -211,7 +211,9 @@ async def create_dataset(dataset: Dataset,
     except DuplicateKeyError as error:
         raise HTTPException(
             status_code=409,
-            detail="Dataset with this resource url name already exists.")
+            detail=
+            "Dataset with this resource url name already exists. Please choose another one."
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
     return dataset

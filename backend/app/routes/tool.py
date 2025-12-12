@@ -222,7 +222,9 @@ async def create_tool(tool: Tool,
     except DuplicateKeyError as error:
         raise HTTPException(
             status_code=409,
-            detail="Tool with this resource url name already exists.")
+            detail=
+            "Tool with this resource url name already exists. Please choose another one."
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
