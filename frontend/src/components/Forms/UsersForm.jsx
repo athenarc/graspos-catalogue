@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState, useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import SaveIcon from "@mui/icons-material/Save";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -37,6 +37,7 @@ function UserForm({ user }) {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -46,7 +47,7 @@ function UserForm({ user }) {
       verified: !!user?.email_confirmed_at,
     },
   });
-
+  console.log("UserForm user:", user);
   const updateUser = useUpdateUser();
   const passwordReset = useForgotPassword();
   const disableForm = passwordReset.isPending || updateUser.isPending;
@@ -85,7 +86,13 @@ function UserForm({ user }) {
     );
   };
 
-  const handleResetForm = () => reset(user);
+  const handleResetForm = () =>
+    reset({
+      ...user,
+      super_user: !!user.super_user,
+      disabled: !!user.disabled,
+      verified: !!user.email_confirmed_at,
+    });
 
   return (
     <Card elevation={3} sx={{ mb: 2 }}>
@@ -114,29 +121,35 @@ function UserForm({ user }) {
           </Stack>
           <Stack direction="row" spacing={2}>
             <Tooltip title="Admin privileges">
-              <FormControlLabel
-                label="Admin"
-                control={
+              <Controller
+                name="super_user"
+                control={control}
+                render={({ field }) => (
                   <Checkbox
-                    {...register("super_user")}
+                    {...field}
+                    checked={field.value ?? false}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={(e) => field.onChange(e.target.checked)}
                     disabled={disableForm}
                     color="primary"
-                    checked={!!user?.super_user}
                   />
-                }
+                )}
               />
             </Tooltip>
             <Tooltip title="User disabled">
-              <FormControlLabel
-                label="Disabled"
-                control={
+              <Controller
+                name="disabled"
+                control={control}
+                render={({ field }) => (
                   <Checkbox
-                    {...register("disabled")}
+                    {...field}
+                    checked={field.value ?? false}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={(e) => field.onChange(e.target.checked)}
                     disabled={disableForm}
                     color="error"
-                    checked={!!user?.disabled}
                   />
-                }
+                )}
               />
             </Tooltip>
           </Stack>
