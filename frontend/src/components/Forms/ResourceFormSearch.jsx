@@ -34,6 +34,20 @@ export default function ResourceFormSearch({
 }) {
   const sourceValue = form?.getValues("source")?.trim();
 
+  useEffect(() => {
+    return () => {
+      setStatus("info");
+      setMessage(
+        <div style={{ lineHeight: 1.6 }}>
+          <p style={{ marginBottom: 8, marginTop: 0 }}>
+            Please provide the direct link to your resource hosted on{" "}
+            <b>Zenodo</b> or the <b>OpenAIRE Catalogue</b>. Only URLs from these
+            platforms are currently accepted.
+          </p>
+        </div>
+      );
+    };
+  }, [setStatus, setMessage]);
   // Disable search button if input is empty, invalid, loading or has data
   const disableSearch =
     isLoading ||
@@ -45,8 +59,6 @@ export default function ResourceFormSearch({
     const subscription = form?.watch((value, { name, type }) => {
       if (name === "source" && type === "change") {
         form.clearErrors("source");
-        // setStatus?.(null);
-        // setMessage?.("");
       }
     });
     return () => subscription.unsubscribe();
