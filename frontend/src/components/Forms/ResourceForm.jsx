@@ -35,7 +35,15 @@ const resourceTypesList = [
 export default function ResourceForm() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(
+    <div style={{ lineHeight: 1.6 }}>
+      <p style={{ marginBottom: 8, marginTop: 0 }}>
+        Please provide the direct link to your resource hosted on <b>Zenodo</b>{" "}
+        or the <b>OpenAIRE Catalogue</b>. Only URLs from these platforms are
+        currently accepted.
+      </p>
+    </div>
+  );
   const [status, setStatus] = useState("info");
   const [data, setData] = useState(null);
   const [resourceType, setResourceType] = useState({
