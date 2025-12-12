@@ -92,6 +92,24 @@ export default function WizardForm({
                 {...form?.register("resource_url_name", {
                   value: data?.resource_url_name,
                   required: "Please a name identifier for the resource.",
+                  // Use only letters, numbers, hyphens and dashes (no spaces)
+                  pattern: {
+                    value: /^[a-zA-Z0-9-_]+$/,
+                    message:
+                      "Only letters, numbers, hyphens and dashes are allowed (no spaces).",
+                  },
+                  // Minimum length of 3 characters
+                  minLength: {
+                    value: 3,
+                    message:
+                      "The unique name identifier must be at least 3 characters long.",
+                  },
+                  // Maximum length of 50 characters
+                  maxLength: {
+                    value: 50,
+                    message:
+                      "The unique name identifier cannot exceed 50 characters.",
+                  },
                 })}
                 label="Unique name identifier for the resource"
                 defaultValue={data?.resource_url_name || ""}
