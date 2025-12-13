@@ -96,17 +96,20 @@ export default function AssessmentFunctionalities({
                   field?.onChange(newValue?.map((opt) => opt?.value))
                 }
                 renderTags={(selected, getTagProps) =>
-                  selected.map((option, index) => (
-                    <Chip
-                      key={option?.value}
-                      label={option?.label}
-                      {...getTagProps({ index })}
-                      sx={{
-                        borderRadius: "12px",
-                        backgroundColor: "#f4f6f8",
-                      }}
-                    />
-                  ))
+                  selected.map((option, index) => {
+                    const { key, ...restTagProps } = getTagProps({ index });
+                    return (
+                      <Chip
+                        key={option?.value}
+                        label={option?.label}
+                        {...restTagProps}
+                        sx={{
+                          borderRadius: "12px",
+                          backgroundColor: "#f4f6f8",
+                        }}
+                      />
+                    );
+                  })
                 }
                 renderInput={(params) => (
                   <TextField
