@@ -1,16 +1,15 @@
+import { useEffect, useState } from "react";
 import {
   Autocomplete,
   TextField,
   Chip,
   Stack,
-  Paper,
   Typography,
   Divider,
 } from "@mui/material";
 import { useDatasetUniqueFieldValues } from "@queries/dataset";
 import { useDocumentUniqueFieldValues } from "@/queries/document";
 import { useToolUniqueFieldValues } from "@/queries/tool";
-import { useEffect, useState } from "react";
 import { useServiceUniqueFieldValues } from "@/queries/service";
 
 export default function LicenseAutocompleteFilter({

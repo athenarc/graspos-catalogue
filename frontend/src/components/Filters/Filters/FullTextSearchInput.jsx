@@ -1,5 +1,6 @@
-import { Divider, Stack, Typography, Card, TextField } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
+
+import { Divider, Stack, Typography, Card, TextField } from "@mui/material";
 
 export default function TextFilter({ selectedFilters, onFilterChange }) {
   const [textValue, setTextValue] = useState(selectedFilters?.text || "");

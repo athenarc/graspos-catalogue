@@ -1,8 +1,9 @@
+import { useEffect, useState } from "react";
+
 import {
   Autocomplete,
   TextField,
   Chip,
-  Paper,
   Stack,
   Divider,
   Typography,
@@ -10,7 +11,6 @@ import {
 import { useDatasetUniqueFieldValues } from "@queries/dataset";
 import { useDocumentUniqueFieldValues } from "@queries/document";
 import { useToolUniqueFieldValues } from "@queries/tool";
-import { useEffect, useState } from "react";
 import { useServiceUniqueFieldValues } from "@queries/service";
 
 export default function TagAutoCompleteFilter({

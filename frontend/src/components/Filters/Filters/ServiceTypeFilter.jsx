@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import {
   Autocomplete,
   TextField,
@@ -6,7 +8,7 @@ import {
   Typography,
   Divider,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+
 import { useServiceUniqueFieldValues } from "@queries/service";
 
 export default function ServiceTypeAutocompleteFilter({
