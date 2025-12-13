@@ -104,11 +104,11 @@ export default function WizardForm({
                     message:
                       "The unique name identifier must be at least 3 characters long.",
                   },
-                  // Maximum length of 50 characters
+                  // Maximum length of 100 characters
                   maxLength: {
-                    value: 50,
+                    value: 100,
                     message:
-                      "The unique name identifier cannot exceed 50 characters.",
+                      "The unique name identifier cannot exceed 100 characters.",
                   },
                 })}
                 label="Unique name identifier for the resource"
