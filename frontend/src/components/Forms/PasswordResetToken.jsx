@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useForm } from "react-hook-form";
+
 import {
   Button,
   CircularProgress,
@@ -10,11 +14,9 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import AlertMessage from "./AlertMessage";
-import AlertHelperText from "./AlertHelperText";
+
+import AlertMessage from "@helpers/AlertMessage";
+import AlertHelperText from "@helpers/AlertHelperText";
 
 import LoginIcon from "@mui/icons-material/Login";
 import CloseIcon from "@mui/icons-material/Close";
@@ -43,7 +45,6 @@ export default function PasswordResetModal() {
   const password = watch("password");
   const passwordConfirmation = watch("passwordConfirmation");
 
-  // --- Live validation για password match ---
   useEffect(() => {
     if (!isSubmitted) return;
     if (passwordConfirmation && password !== passwordConfirmation) {
@@ -56,7 +57,6 @@ export default function PasswordResetModal() {
     }
   }, [password, passwordConfirmation, setError, clearErrors, isSubmitted]);
 
-  // --- Submit handler ---
   const onSubmit = (data) => {
     setGlobalError(null);
     data.token = token;

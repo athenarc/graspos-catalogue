@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Button,
   CircularProgress,
@@ -10,10 +11,9 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
-import AlertMessage from "./AlertMessage";
-import AlertHelperText from "./AlertHelperText";
+import AlertMessage from "@helpers/AlertMessage";
+import AlertHelperText from "@helpers/AlertHelperText";
 import CloseIcon from "@mui/icons-material/Close";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { useForgotPassword } from "@queries/data";

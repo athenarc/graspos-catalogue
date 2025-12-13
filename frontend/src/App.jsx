@@ -23,8 +23,8 @@ import { ResourcePage } from "./components/Resources/ResourcesGrid/ResourcePage"
 import { queryClient } from "@queries/queryClient";
 
 import EmailVerificationPage from "@helpers/EmailVerification";
-import PasswordResetModal from "@helpers/PasswordResetToken";
-import ForgotPasswordModal from "@helpers/PasswordResetEmail";
+import PasswordResetModal from "@forms/PasswordResetToken";
+import ForgotPasswordModal from "@forms/PasswordResetEmail";
 import ResetPasswordForm from "@forms/ResetPasswordForm";
 
 // ----------------------
