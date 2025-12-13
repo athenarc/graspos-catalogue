@@ -128,7 +128,7 @@ export default function EditResourceDialog({
           </Tabs>
 
           {tabIndex === 0 && (
-            <Stack spacing={2} sx>
+            <Stack spacing={2}>
               <Stack direction="row" spacing={2}>
                 <TextField
                   {...form?.register("resource_url_name", {

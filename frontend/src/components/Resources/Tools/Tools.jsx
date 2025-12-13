@@ -38,7 +38,7 @@ export function Tools({ tools, user }) {
   if (tools?.isSuccess) {
     return tools?.data?.map((tool) => (
       <ResourceGridItem
-        key={tools?._id}
+        key={tool?._id}
         resource={tool}
         type={"Tool"}
         user={user}
