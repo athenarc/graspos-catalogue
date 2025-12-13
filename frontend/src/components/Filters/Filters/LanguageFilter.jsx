@@ -105,11 +105,12 @@ export default function LanguageAutocompleteFilter({
         }}
         renderTags={(value, getTagProps) =>
           value.map((option, index) => {
+            const { key, ...restTagProps } = getTagProps({ index });
             return (
               <Chip
                 key={option?.alpha_3}
                 label={option?.name || option?.alpha_3}
-                {...getTagProps({ index })}
+                {...restTagProps}
               />
             );
           })

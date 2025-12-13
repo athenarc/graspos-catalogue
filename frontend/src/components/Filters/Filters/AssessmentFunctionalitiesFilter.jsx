@@ -126,13 +126,16 @@ export default function AssessmentFunctionalitiesFilter({
         onChange={handleChange}
         getOptionLabel={(option) => getLabelForAssessmentFunctionality(option)}
         renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <Chip
-              label={getLabelForAssessmentFunctionality(option)}
-              {...getTagProps({ index })}
-              key={option}
-            />
-          ))
+          value.map((option, index) => {
+            const { key, ...restTagProps } = getTagProps({ index });
+            return (
+              <Chip
+                label={getLabelForAssessmentFunctionality(option)}
+                {...restTagProps}
+                key={option}
+              />
+            );
+          })
         }
         renderInput={(params) => (
           <TextField

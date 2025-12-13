@@ -50,9 +50,16 @@ export default function ServiceTypeAutocompleteFilter({
         onChange={handleChange}
         getOptionLabel={(option) => option}
         renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <Chip label={option} {...getTagProps({ index })} key={option} />
-          ))
+          value.map((option, index) => {
+            const { key, ...restTagProps } = getTagProps({ index });
+            return (
+              <Chip
+                label={option}
+                {...restTagProps}
+                key={option + "-" + index}
+              />
+            );
+          })
         }
         renderInput={(params) => (
           <TextField

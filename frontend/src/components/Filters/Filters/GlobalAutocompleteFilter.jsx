@@ -150,13 +150,16 @@ export default function UniqueAutocompleteFieldFilter({
           onChange={handleChange}
           getOptionLabel={(option) => mapOptionEvidenceValueToType(option)}
           renderTags={(value, getTagProps) =>
-            value.map((option, index) => (
-              <Chip
-                key={option}
-                label={mapOptionEvidenceValueToType(option)}
-                {...getTagProps({ index })}
-              />
-            ))
+            value.map((option, index) => {
+              const { key, ...restTagProps } = getTagProps({ index });
+              return (
+                <Chip
+                  key={option + "-" + index}
+                  label={mapOptionEvidenceValueToType(option)}
+                  {...restTagProps}
+                />
+              );
+            })
           }
           renderInput={(params) => (
             <TextField
