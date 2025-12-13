@@ -52,7 +52,6 @@ export default function ResourceForm() {
   });
   const [canCreate, setCanCreate] = useState(false);
   const [showWizard, setShowWizard] = useState(false);
-  const [delayActive, setDelayActive] = useState(false);
 
   const form = useForm({
     mode: "onChange",
@@ -74,6 +73,7 @@ export default function ResourceForm() {
     getValues,
     formState: { errors },
   } = form;
+
   const createDataset = useCreateDataset();
   const createTool = useCreateTool();
   const createDocument = useCreateDocument();
@@ -171,11 +171,9 @@ export default function ResourceForm() {
           setData(data?.data);
           setValue("source", data?.data?.source);
           setShowWizard(false);
-          setDelayActive(true);
 
           setTimeout(() => {
             setShowWizard(true);
-            setDelayActive(false);
             setStatus("info");
             setMessage("");
           }, 2000);
@@ -272,10 +270,8 @@ export default function ResourceForm() {
           setData(data?.data);
           setValue("source", data?.data?.source);
           setShowWizard(false);
-          setDelayActive(true);
           setTimeout(() => {
             setShowWizard(true);
-            setDelayActive(false);
             setStatus("info");
             setMessage("");
           }, 2000);
@@ -311,105 +307,103 @@ export default function ResourceForm() {
 
   return (
     user && (
-      <>
-        <Dialog
-          component="form"
-          onClose={handleClose}
-          open={true}
-          noValidate
-          onSubmit={handleSubmit(onSubmit)}
-          fullWidth
-          maxWidth={showWizard ? "lg" : "sm"}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-            }
+      <Dialog
+        component="form"
+        onClose={handleClose}
+        open={true}
+        noValidate
+        onSubmit={handleSubmit(onSubmit)}
+        fullWidth
+        maxWidth={showWizard ? "lg" : "sm"}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+          }
+        }}
+      >
+        <DialogTitle
+          sx={{
+            backgroundColor: "#20477B",
+            color: "white",
+            textAlign: "center",
           }}
         >
-          <DialogTitle
-            sx={{
-              backgroundColor: "#20477B",
-              color: "white",
-              textAlign: "center",
-            }}
-          >
-            Add Resource
-          </DialogTitle>
-          <IconButton
-            aria-label="close"
-            onClick={handleClose}
-            sx={(theme) => ({
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: theme.palette.grey[500],
-            })}
-          >
-            <CloseIcon sx={{ color: "white" }} />
-          </IconButton>
-          <DialogContent sx={{ p: 4 }}>
-            <Stack spacing={2}>
-              <ResourceFormSearch
-                form={form}
-                onZenodoSearch={onZenodoSearch}
-                onOpenaireSearch={onOpenaireSearch}
-                handleReset={handleReset}
-                isLoading={zenodo.isPending || openaire.isPending}
-                isSuccess={zenodo.isSuccess || openaire.isSuccess}
-                data={data}
-                resourceType={resourceType}
-                setStatus={setStatus}
-                setMessage={setMessage}
-              />
+          Add Resource
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={(theme) => ({
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <CloseIcon sx={{ color: "white" }} />
+        </IconButton>
+        <DialogContent sx={{ p: 4 }}>
+          <Stack spacing={2}>
+            <ResourceFormSearch
+              form={form}
+              onZenodoSearch={onZenodoSearch}
+              onOpenaireSearch={onOpenaireSearch}
+              handleReset={handleReset}
+              isLoading={zenodo.isPending || openaire.isPending}
+              isSuccess={zenodo.isSuccess || openaire.isSuccess}
+              data={data}
+              resourceType={resourceType}
+              setStatus={setStatus}
+              setMessage={setMessage}
+            />
 
-              {showWizard && data && (
-                <WizardForm
-                  form={form}
-                  stepFields={stepFields}
-                  resourceType={resourceType?.value}
-                  resourceTypesList={resourceTypesList}
-                  setResourceType={setResourceType}
-                  data={data}
-                  resourceSource={
-                    zenodo.isSuccess
-                      ? "zenodo"
-                      : openaire.isSuccess
-                      ? "openaire"
-                      : "unknown"
-                  }
-                />
-              )}
-              {message && (
-                <AlertMessage severity={status} sx={{ position: "relative" }}>
-                  {message}
-                </AlertMessage>
-              )}
-            </Stack>
-          </DialogContent>
-          {data && showWizard && (
-            <DialogActions sx={{ p: 2, pt: 0 }}>
-              <Tooltip title="You need to fill in all required fields to create the resource">
-                <span>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    disabled={!data || !canCreate}
-                    loading={mutation?.isPending}
-                    loadingPosition="end"
-                    endIcon={<AddIcon />}
-                    sx={{ backgroundColor: "#20477B" }}
-                  >
-                    {mutation?.isPending ? "Adding..." : "Add"}
-                  </Button>
-                </span>
-              </Tooltip>
-            </DialogActions>
-          )}
-        </Dialog>
+            {showWizard && data && (
+              <WizardForm
+                form={form}
+                stepFields={stepFields}
+                resourceType={resourceType?.value}
+                resourceTypesList={resourceTypesList}
+                setResourceType={setResourceType}
+                data={data}
+                resourceSource={
+                  zenodo.isSuccess
+                    ? "zenodo"
+                    : openaire.isSuccess
+                    ? "openaire"
+                    : "unknown"
+                }
+              />
+            )}
+            {message && (
+              <AlertMessage severity={status} sx={{ position: "relative" }}>
+                {message}
+              </AlertMessage>
+            )}
+          </Stack>
+        </DialogContent>
+        {data && showWizard && (
+          <DialogActions sx={{ p: 2, pt: 0 }}>
+            <Tooltip title="You need to fill in all required fields to create the resource">
+              <span>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={!data || !canCreate}
+                  loading={mutation?.isPending}
+                  loadingPosition="end"
+                  endIcon={<AddIcon />}
+                  sx={{ backgroundColor: "#20477B" }}
+                >
+                  {mutation?.isPending ? "Adding..." : "Add"}
+                </Button>
+              </span>
+            </Tooltip>
+          </DialogActions>
+        )}
         {(mutation?.isSuccess || mutation?.isError) && (
           <Notification requestStatus={mutation?.status} message={message} />
         )}
-      </>
+      </Dialog>
     )
   );
 }
