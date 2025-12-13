@@ -1,6 +1,6 @@
 import AccordionField from "@helpers/AccordionField";
 
-export default function AssessmentValues({ form }) {
+export default function AssessmentValues({ form, resource = null }) {
   return (
     <AccordionField
       form={form}
@@ -8,6 +8,7 @@ export default function AssessmentValues({ form }) {
       label="Assessment Values"
       placeholder="Enter assessment values for the resource"
       fieldTitle="Assessment Values"
+      defaultValue={resource?.assessment_values || []}
     />
   );
 }
