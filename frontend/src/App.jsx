@@ -13,18 +13,19 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "./components/AuthContext";
 import AppLayout from "./components/Layout/AppLayout";
 
-import LoginForm from "./components/Forms/LoginForm";
-import RegisterForm from "./components/Forms/RegisterForm";
-import ProfileForm from "./components/Forms/Profile";
-import UsersPanelForm from "./components/Forms/UsersForm";
+import LoginForm from "@forms/LoginForm";
+import RegisterForm from "@forms/RegisterForm";
+import ProfileForm from "@forms/ProfileForm";
+import UsersPanelForm from "@forms/UsersForm";
+import ResourceForm from "@forms/ResourceForm";
 import UpdatesModal from "./components/ResourceUpdatesModal";
 import { ResourcePage } from "./components/Resources/ResourcesGrid/ResourcePage";
-import { queryClient } from "./queries/queryClient";
-import ResourceForm from "./components/Forms/ResourceForm";
+import { queryClient } from "@queries/queryClient";
+
 import EmailVerificationPage from "@helpers/EmailVerification";
 import PasswordResetModal from "@helpers/PasswordResetToken";
 import ForgotPasswordModal from "@helpers/PasswordResetEmail";
-import ResetPassword from "./components/Forms/ResetPassword";
+import ResetPasswordForm from "@forms/ResetPasswordForm";
 
 // ----------------------
 // Helper route wrappers
@@ -100,7 +101,7 @@ function AppRoutes() {
           />
           <Route
             path="profile/reset-password"
-            element={<ProtectedRoute element={<ResetPassword />} />}
+            element={<ProtectedRoute element={<ResetPasswordForm />} />}
           />
           <Route
             path="resource/add"
@@ -150,7 +151,7 @@ function AppRoutes() {
           />
           <Route
             path="/profile/reset-password"
-            element={<ProtectedRoute element={<ResetPassword />} />}
+            element={<ProtectedRoute element={<ResetPasswordForm />} />}
           />
           <Route
             path="/profile"

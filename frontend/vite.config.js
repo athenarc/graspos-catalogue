@@ -41,6 +41,8 @@ export default defineConfig(({ mode }) => {
         "@utils": "/src/utils",
         "@assets": "/src/assets",
         "@helpers": "/src/components/Helpers",
+        "@forms": "/src/components/Forms",
+        "@fields": "/src/components/Forms/Fields",
       },
     },
   };

@@ -19,7 +19,7 @@ import AlertHelperText from "./AlertHelperText";
 import LoginIcon from "@mui/icons-material/Login";
 import CloseIcon from "@mui/icons-material/Close";
 import { useResetPassword } from "@queries/data";
-import Password from "../Forms/Fields/Password";
+import PasswordFormFields from "@fields/PasswordFormFields";
 
 export default function PasswordResetModal() {
   const { token } = useParams();
@@ -147,7 +147,7 @@ export default function PasswordResetModal() {
             />
             {!!errors?.email && <AlertHelperText error={errors?.email} />}
 
-            <Password
+            <PasswordFormFields
               form={{ register, formState: { errors }, watch, setError }}
               confirmPassword
               confirmPasswordRules={{

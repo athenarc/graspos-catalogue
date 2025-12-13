@@ -14,14 +14,14 @@ import {
   TextField,
 } from "@mui/material";
 
-import DatasetFormFields from "./DatasetFormFields";
-import DocumentFormFields from "./DocumentsFormFields";
-import ToolFormFields from "./ToolFormFields";
-import ServiceFormFields from "./ServiceFormFields";
-import GovernanceFormFields from "./GovernanceFormFields";
-import SupportFormFields from "./SupportFormFields";
-import CoverageFormFields from "./CoverageFormFields";
-import EthicsFormFields from "./EthicsFormFields";
+import DatasetFormFields from "@fields/Datasets/DatasetFormFields";
+import DocumentFormFields from "@fields/Documents/DocumentsFormFields";
+import ToolFormFields from "@fields/Tools/ToolFormFields";
+import ServiceFormFields from "@fields/Services/ServiceFormFields";
+import GovernanceFormFields from "@fields/GovernanceFormFields";
+import SupportFormFields from "@fields/SupportFormFields";
+import CoverageFormFields from "@fields/CoverageFormFields";
+import EthicsFormFields from "@fields/EthicsFormFields";
 import SearchedResourceFormFields from "./SearchedResourceFormFields";
 
 const steps = [

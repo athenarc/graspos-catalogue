@@ -1,5 +1,5 @@
 import { TextField, Stack } from "@mui/material";
-import AccordionField from "../Helpers/AccordionField";
+import AccordionField from "../../Helpers/AccordionField";
 
 function PrivacyPolicy({ form, resource = null }) {
   return (

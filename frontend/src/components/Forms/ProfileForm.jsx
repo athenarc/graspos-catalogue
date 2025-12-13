@@ -1,3 +1,4 @@
+import { useForm } from "react-hook-form";
 import {
   Dialog,
   DialogActions,
@@ -11,12 +12,10 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
 import { useUpdateUser } from "@queries/data";
 import SaveIcon from "@mui/icons-material/Save";
 import Notification from "@helpers/Notification";
 import { useAuth } from "../AuthContext";
-import Password from "./Fields/Password";
 
 export default function ProfileForm() {
   const { user } = useAuth();
@@ -27,8 +26,6 @@ export default function ProfileForm() {
     register,
     handleSubmit,
     reset,
-    setError,
-    watch,
     formState: { errors },
   } = form;
 
