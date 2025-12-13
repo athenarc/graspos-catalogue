@@ -1,6 +1,6 @@
 import { Outlet, useParams } from "react-router-dom";
 import MenuBar from "./MenuBar";
-import ResourcesGridLayout from "../Resources/Layout";
+import ResourcesGridLayout from "./ResourcesLayout";
 import { Box } from "@mui/material";
 
 export default function BaseLayout({ handleLogout, user, handleLogin }) {

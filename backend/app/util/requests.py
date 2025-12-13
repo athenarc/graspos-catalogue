@@ -19,7 +19,7 @@ async def get_openaire_data(source: str) -> dict:
                 data["api_url"] = transformed_url
                 data["metadata"] = data
                 data["resource_url_name"] = re.sub(r'\W+', '-',
-                                                   data.get("title",
+                                                   data["metadata"].get("name",
                                                             "")).lower()
                 data["metadata"]["communities"] = [{
                     "id": "graspos-services"
