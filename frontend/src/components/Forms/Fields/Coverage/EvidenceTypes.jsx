@@ -10,15 +10,10 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Controller } from "react-hook-form";
+import { evidenceTypesMenuItems } from "@helpers/MenuItems";
 
 export default function EvidenceTypes({ form, resource = null }) {
-  const options = [
-    { value: "narratives", label: "Narratives" },
-    { value: "indicators", label: "Indicators" },
-    { value: "list_of_contributions", label: "List Of Contributions" },
-    { value: "badges", label: "Badges" },
-    { value: "other", label: "Other" },
-  ];
+  const options = evidenceTypesMenuItems;
 
   return (
     <Accordion>

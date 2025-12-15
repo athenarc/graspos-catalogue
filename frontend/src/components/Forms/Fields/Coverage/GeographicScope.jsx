@@ -19,6 +19,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FlagIcon from "@mui/icons-material/Flag";
 
 import { useCountries } from "@queries/countries.js";
+import AlertHelperText from "@helpers/AlertHelperText";
 
 export default function GeographicScope({ form, resource = null }) {
   const countries = useCountries();

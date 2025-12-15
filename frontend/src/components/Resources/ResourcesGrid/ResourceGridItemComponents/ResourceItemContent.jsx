@@ -14,6 +14,8 @@ import { stripHtml } from "@utils/utils";
 import {
   getLabelForAssessmentFunctionality,
   getLabelForEvidenceType,
+  getLabelForCoveredResearchProducts,
+  getLabelForCoveredFields,
 } from "@helpers/MenuItems";
 
 function ExpandableChips({ items = [], labelMap = null }) {
@@ -200,14 +202,14 @@ export default function ResourceItemContent({ resource }) {
       title: "Covered Fields",
       icon: <AssessmentIcon fontSize="small" color="action" />,
       items: resource?.metadata?.covered_fields || [],
-      labelMap: null,
+      labelMap: getLabelForCoveredFields,
       displayTab: true,
     },
     covered_research_products: {
       title: "Covered Research Products",
       icon: <AssessmentIcon fontSize="small" color="action" />,
       items: resource?.metadata?.covered_research_products || [],
-      labelMap: null,
+      labelMap: getLabelForCoveredResearchProducts,
       displayTab: true,
     },
     temporal_coverage: {
