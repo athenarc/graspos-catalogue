@@ -490,7 +490,7 @@ function getLabelForEvidenceType(value) {
   const item = evidenceTypesMenuItems.find((i) => i.value === value);
   return item ? item.label : value;
 }
-
+ 
 export {
   evidenceTypesMenuItems,
   assessmentFunctionalityMenuItems,
