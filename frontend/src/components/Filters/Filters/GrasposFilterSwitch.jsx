@@ -1,4 +1,4 @@
-import { Stack, Card, Switch, FormControlLabel, Tooltip } from "@mui/material";
+import { Stack, Switch, FormControlLabel, Tooltip } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 export default function GrasposVerifiedFilter({

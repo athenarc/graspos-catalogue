@@ -1,8 +1,9 @@
+import { useEffect, useState } from "react";
+
 import {
   Autocomplete,
   TextField,
   Chip,
-  Paper,
   Stack,
   Divider,
   Typography,
@@ -10,7 +11,6 @@ import {
 import { useDatasetUniqueFieldValues } from "@queries/dataset";
 import { useDocumentUniqueFieldValues } from "@queries/document";
 import { useToolUniqueFieldValues } from "@queries/tool";
-import { useEffect, useState } from "react";
 import { useServiceUniqueFieldValues } from "@queries/service";
 
 export default function TagAutoCompleteFilter({
@@ -95,9 +95,16 @@ export default function TagAutoCompleteFilter({
         onChange={handleChange}
         getOptionLabel={(option) => option}
         renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <Chip label={option} {...getTagProps({ index })} key={option} />
-          ))
+          value.map((option, index) => {
+            const { key, ...restTagProps } = getTagProps({ index });
+            return (
+              <Chip
+                label={option}
+                {...restTagProps}
+                key={option + "-" + index}
+              />
+            );
+          })
         }
         renderInput={(params) => (
           <TextField {...params} variant="outlined" placeholder="Select tags" />

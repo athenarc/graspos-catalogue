@@ -181,6 +181,8 @@ mongodb/db/*
 mongodb/docker-entrypoint-initdb.d/*
 !mongodb/docker-entrypoint-initdb.d/.gitkeep
 
+mongodb/old/*
+
 backend/test/*
 
 docker-compose-dev.yaml
@@ -195,3 +197,5 @@ openaire-example.json
 
 dumps/mongodb/*
 !dumps/mongodb/.gitkeep
+
+*test*

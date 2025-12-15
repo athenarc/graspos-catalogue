@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import {
   Autocomplete,
   TextField,
@@ -10,7 +12,6 @@ import { useDatasetUniqueFieldValues } from "@queries/dataset";
 import { useDocumentUniqueFieldValues } from "@/queries/document";
 import { useToolUniqueFieldValues } from "@/queries/tool";
 import { useServiceUniqueFieldValues } from "@/queries/service";
-import { useEffect, useState } from "react";
 
 export default function AccessRightFilter({
   selectedResource,
@@ -98,9 +99,10 @@ export default function AccessRightFilter({
         onChange={handleChange}
         getOptionLabel={(option) => option}
         renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <Chip label={option} {...getTagProps({ index })} key={option} />
-          ))
+          value.map((option, index) => {
+            const { key, ...restTagProps } = getTagProps({ index });
+            return <Chip label={option} {...restTagProps} key={option} />;
+          })
         }
         renderInput={(params) => (
           <TextField

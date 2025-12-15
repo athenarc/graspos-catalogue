@@ -12,9 +12,29 @@ from util.requests import get_zenodo_data
 from typing import List, Optional
 from datetime import datetime
 import logging
+from pymongo.errors import DuplicateKeyError
+from pydantic import ValidationError
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/tool", tags=["Tool"])
+
+
+def expand_hierarchical_filter(field_name: str,
+                               values: List[str]) -> List[dict]:
+    """
+    Expands hierarchical filters using prefix logic.
+    Works correctly for covered_fields & covered_research_products.
+    """
+    or_filters = []
+
+    for v in values:
+        # exact match
+        or_filters.append({field_name: v})
+
+        # prefix match (children)
+        or_filters.append({field_name: {"$regex": f"^{v}_"}})
+
+    return or_filters
 
 
 @router.get("", status_code=200, response_model=list[Tool])
@@ -93,16 +113,30 @@ async def get_all_tools(
         filters.append({"evidence_types": {"$in": evidence_types}})
 
     # Covered fields filtering
+    # if covered_fields:
+    #     filters.append({"covered_fields": {"$in": covered_fields}})
+
     if covered_fields:
-        filters.append({"covered_fields": {"$in": covered_fields}})
+        filters.append({
+            "$or":
+            expand_hierarchical_filter("covered_fields", covered_fields)
+        })
 
     # Covered research products filtering
+    # filters.append(
+    #     {"covered_research_products": {
+    #         "$in": covered_research_products
+    #     }})
     if covered_research_products:
-        filters.append(
-            {"covered_research_products": {
-                "$in": covered_research_products
-            }})
-
+        print(
+            "covered_research_products filter applied: ",
+            expand_hierarchical_filter("covered_research_products",
+                                       covered_research_products))
+        filters.append({
+            "$or":
+            expand_hierarchical_filter("covered_research_products",
+                                       covered_research_products)
+        })
     # Assessment Functionalities filter
     if assessment_functionalities:
         filters.append({
@@ -215,7 +249,17 @@ async def create_tool(tool: Tool,
     tool.owner = user.id
     if user.super_user:
         tool.approved = True
-    await tool.create()
+    try:
+        await tool.create()
+    except DuplicateKeyError as error:
+        raise HTTPException(
+            status_code=409,
+            detail=
+            "Tool with this resource url name already exists. Please choose another one."
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
     return tool
 
 
@@ -237,6 +281,22 @@ async def get_unique_metadata_values(
         return {f"unique_{field}": unique_values}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/name/{unique_name}",
+            responses={404: {
+                "detail": "Tool does not exist"
+            }})
+async def get_tool_by_unique_name(unique_name: str):
+
+    tool = await Tool.find_one(Tool.resource_url_name == unique_name,
+                               fetch_links=True)
+
+    if not tool:
+
+        raise HTTPException(status_code=404, detail="Tool does not exist")
+
+    return tool
 
 
 @router.get("/{tool_id}", responses={404: {"detail": "Tool does not exist"}})

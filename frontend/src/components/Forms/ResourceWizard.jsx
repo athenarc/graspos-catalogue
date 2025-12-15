@@ -11,16 +11,17 @@ import {
   Select,
   MenuItem,
   Stack,
+  TextField,
 } from "@mui/material";
 
-import DatasetFormFields from "./DatasetFormFields";
-import DocumentFormFields from "./DocumentsFormFields";
-import ToolFormFields from "./ToolFormFields";
-import ServiceFormFields from "./ServiceFormFields";
-import GovernanceFormFields from "./GovernanceFormFields";
-import SupportFormFields from "./SupportFormFields";
-import CoverageFormFields from "./CoverageFormFields";
-import EthicsFormFields from "./EthicsFormFields";
+import DatasetFormFields from "@fields/Datasets/DatasetFormFields";
+import DocumentFormFields from "@fields/Documents/DocumentsFormFields";
+import ToolFormFields from "@fields/Tools/ToolFormFields";
+import ServiceFormFields from "@fields/Services/ServiceFormFields";
+import GovernanceFormFields from "@fields/GovernanceFormFields";
+import SupportFormFields from "@fields/SupportFormFields";
+import CoverageFormFields from "@fields/CoverageFormFields";
+import EthicsFormFields from "@fields/EthicsFormFields";
 import SearchedResourceFormFields from "./SearchedResourceFormFields";
 
 const steps = [
@@ -53,9 +54,13 @@ export default function WizardForm({
     setActiveStep((prev) => prev - 1);
   };
   return (
-    <Stack spacing={2} sx={{ width: "100%" }}>
-      <FormProvider {...form}>
-        <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
+    <FormProvider {...form}>
+      <Stack
+        direction="column"
+        spacing={4}
+        sx={{ marginTop: "24px !important;" }}
+      >
+        <Stepper activeStep={activeStep}>
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
@@ -64,25 +69,58 @@ export default function WizardForm({
         </Stepper>
 
         {activeStep === 0 && (
-          <Stack spacing={2}>
-            <FormControl fullWidth>
-              <InputLabel>Resource type</InputLabel>
-              <Select
-                {...form?.register("resource_type")}
-                disabled
-                value={resourceType}
-                labelId="resource-type-select-label"
-                label="Resource type"
-                onChange={(e) => setResourceType(e.target.value)}
-              >
-                {resourceTypesList.map((type) => (
-                  <MenuItem key={type.value} value={type.value}>
-                    {type.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
+          <Stack spacing={2} sx>
+            <Stack direction="row" spacing={2}>
+              <FormControl fullWidth>
+                <InputLabel>Resource type</InputLabel>
+                <Select
+                  {...form?.register("resource_type")}
+                  disabled
+                  value={resourceType}
+                  labelId="resource-type-select-label"
+                  label="Resource type"
+                  onChange={(e) => setResourceType(e.target.value)}
+                >
+                  {resourceTypesList.map((type) => (
+                    <MenuItem key={type.value} value={type.value}>
+                      {type.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <TextField
+                {...form?.register("resource_url_name", {
+                  value: data?.resource_url_name,
+                  required: "Please a name identifier for the resource.",
+                  // Use only letters, numbers, hyphens and dashes (no spaces)
+                  pattern: {
+                    value: /^[a-zA-Z0-9-_]+$/,
+                    message:
+                      "Only letters, numbers, hyphens and dashes are allowed (no spaces).",
+                  },
+                  // Minimum length of 3 characters
+                  minLength: {
+                    value: 3,
+                    message:
+                      "The unique name identifier must be at least 3 characters long.",
+                  },
+                  // Maximum length of 100 characters
+                  maxLength: {
+                    value: 100,
+                    message:
+                      "The unique name identifier cannot exceed 100 characters.",
+                  },
+                })}
+                label="Unique name identifier for the resource"
+                defaultValue={data?.resource_url_name || ""}
+                placeholder="Unique name identifier for the resource"
+                error={!!form?.formState?.errors?.resource_url_name}
+                helperText={
+                  form?.formState?.errors?.resource_url_name?.message ?? ""
+                }
+                fullWidth
+              />
+            </Stack>
             {resourceType === "dataset" && (
               <DatasetFormFields form={form} searchedResource={data} />
             )}
@@ -148,7 +186,7 @@ export default function WizardForm({
             </Button>
           )}
         </Box>
-      </FormProvider>
-    </Stack>
+      </Stack>
+    </FormProvider>
   );
 }

@@ -16,7 +16,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { enGB } from "date-fns/locale";
 import DynamicFieldGroupSmart from "@helpers/DynamicFieldGroup";
 import AlertHelperText from "@helpers/AlertHelperText";
-import TrlFormField from "./TrlFormField";
+import TrlFormField from "@fields/Trl/TrlFormField";
 import { getLogoUrl } from "@utils/utils";
 
 export function SearchedResourceTextField({

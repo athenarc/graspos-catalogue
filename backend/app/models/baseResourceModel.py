@@ -50,6 +50,7 @@ class BaseResourceModel(BaseModel):
     trl: Optional[Link[TRLEntry]] | None = None
     created_at: datetime | None = datetime.now()
     modified_at: datetime | None = datetime.now()
+    resource_url_name: str | None = None
 
     # Governance, Sustainability and Funding Model fields
     adopted_standards: List[str] | None = None

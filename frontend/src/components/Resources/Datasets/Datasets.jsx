@@ -1,6 +1,6 @@
-import { useDataset } from "@queries/dataset";
+import { useDataset, useDatasetByUniqueName } from "@queries/dataset";
 import ResourceGridItem from "../ResourcesGrid/ResourceGridItem";
-import { Box, Grid2 as Grid, Stack } from "@mui/material";
+import { Grid2 as Grid, Stack } from "@mui/material";
 import {
   StatisticsCard,
   CoverageCard,
@@ -47,8 +47,8 @@ export function Datasets({ datasets, user }) {
   }
 }
 
-export function Dataset({ resourceId, handleSetResource }) {
-  const dataset = useDataset(resourceId); 
+export function Dataset({ resourceUniqueName, handleSetResource }) {
+  const dataset = useDatasetByUniqueName(resourceUniqueName);
 
   useEffect(() => {
     if (dataset?.isSuccess) {

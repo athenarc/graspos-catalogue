@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import {
   Divider,
   Typography,
@@ -11,7 +13,6 @@ import {
   Stack,
 } from "@mui/material";
 
-import { useEffect, useState } from "react";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { FilterVariants } from "@helpers/Skeleton";
 import { useScopesWithCount } from "@queries/scope";

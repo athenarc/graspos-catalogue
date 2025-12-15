@@ -8,13 +8,32 @@ from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
 from util.current_user import current_user, current_user_mandatory
 from util.requests import get_zenodo_data
-from typing import List, Optional, Union
+from typing import List, Optional
 from datetime import datetime
 import logging
-from beanie.operators import In
+from pydantic import ValidationError
+from pymongo.errors import DuplicateKeyError
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
+
+
+def expand_hierarchical_filter(field_name: str,
+                               values: List[str]) -> List[dict]:
+    """
+    Expands hierarchical filters using prefix logic.
+    Works correctly for covered_fields & covered_research_products.
+    """
+    or_filters = []
+
+    for v in values:
+        # exact match
+        or_filters.append({field_name: v})
+
+        # prefix match (children)
+        or_filters.append({field_name: {"$regex": f"^{v}_"}})
+
+    return or_filters
 
 
 @router.get("", status_code=200, response_model=List[Dataset])
@@ -93,16 +112,30 @@ async def get_all_datasets(
         filters.append({"evidence_types": {"$in": evidence_types}})
 
     # Covered fields filtering
+    # if covered_fields:
+    #     filters.append({"covered_fields": {"$in": covered_fields}})
+
     if covered_fields:
-        filters.append({"covered_fields": {"$in": covered_fields}})
+        filters.append({
+            "$or":
+            expand_hierarchical_filter("covered_fields", covered_fields)
+        })
 
     # Covered research products filtering
+    # filters.append(
+    #     {"covered_research_products": {
+    #         "$in": covered_research_products
+    #     }})
     if covered_research_products:
-        filters.append(
-            {"covered_research_products": {
-                "$in": covered_research_products
-            }})
-
+        print(
+            "covered_research_products filter applied: ",
+            expand_hierarchical_filter("covered_research_products",
+                                       covered_research_products))
+        filters.append({
+            "$or":
+            expand_hierarchical_filter("covered_research_products",
+                                       covered_research_products)
+        })
     # GraspOS funded filtering - match with url https://cordis.europa.eu/projects/101095129 or with word graspos in lowercase in acronym
     if graspos:
         filters.append({
@@ -179,7 +212,7 @@ async def get_all_datasets(
         ]).to_list()
     else:
         datasets = await Dataset.find(query_filter, fetch_links=True).to_list()
-    print("The filter is:", query_filter)
+
     return datasets
 
 
@@ -205,7 +238,16 @@ async def create_dataset(dataset: Dataset,
     if user.super_user:
         dataset.approved = True
 
-    await dataset.create()
+    try:
+        await dataset.create()
+    except DuplicateKeyError as error:
+        raise HTTPException(
+            status_code=409,
+            detail=
+            "Dataset with this resource url name already exists. Please choose another one."
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
     return dataset
 
 
@@ -226,6 +268,22 @@ async def get_unique_metadata_values(
         return {f"unique_{field}": unique_values}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/name/{unique_name}",
+            responses={404: {
+                "detail": "Dataset does not exist"
+            }})
+async def get_dataset_by_unique_name(unique_name: str):
+
+    dataset = await Dataset.find_one(Dataset.resource_url_name == unique_name,
+                                     fetch_links=True)
+
+    if not dataset:
+
+        raise HTTPException(status_code=404, detail="Dataset does not exist")
+
+    return dataset
 
 
 @router.get("/{dataset_id}",

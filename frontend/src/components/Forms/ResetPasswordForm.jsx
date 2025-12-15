@@ -14,14 +14,13 @@ import { useUserResetPassword } from "@queries/data";
 import SaveIcon from "@mui/icons-material/Save";
 import Notification from "@helpers/Notification";
 import { useAuth } from "../AuthContext";
-import Password from "./Fields/Password";
+import PasswordFormFields from "@fields/PasswordFormFields";
 
-export default function ResetPassword() {
+export default function ResetPasswordForm() {
   const { user } = useAuth();
   const [message, setMessage] = useState("");
   const form = useForm();
   const {
-    register,
     handleSubmit,
     reset,
     setError,
@@ -97,7 +96,7 @@ export default function ResetPassword() {
         <CloseIcon sx={{ color: "white" }} />
       </IconButton>
       <DialogContent sx={{ p: 2 }}>
-        <Password
+        <PasswordFormFields
           form={form}
           previousPassword={true}
           confirmPassword

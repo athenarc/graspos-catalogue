@@ -8,21 +8,24 @@ import {
   Button,
   Tabs,
   Tab,
+  Stack,
+  TextField,
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import Notification from "@helpers/Notification";
 import { useForm } from "react-hook-form";
-import DatasetFormFields from "./DatasetFormFields";
-import DocumentFormFields from "./DocumentsFormFields";
-import ToolFormFields from "./ToolFormFields";
-import ServiceFormFields from "./ServiceFormFields";
-import GovernanceFormFields from "./GovernanceFormFields";
-import CoverageFormFields from "./CoverageFormFields";
-import EthicsFormFields from "./EthicsFormFields";
-import SupportFormFields from "./SupportFormFields";
+import DatasetFormFields from "@fields/Datasets/DatasetFormFields";
+import DocumentFormFields from "@fields/Documents/DocumentsFormFields";
+import ToolFormFields from "@fields/Tools/ToolFormFields";
+import ServiceFormFields from "@fields/Services/ServiceFormFields";
+import GovernanceFormFields from "@fields/GovernanceFormFields";
+import CoverageFormFields from "@fields/CoverageFormFields";
+import EthicsFormFields from "@fields/EthicsFormFields";
+import SupportFormFields from "@fields/SupportFormFields";
 import SearchedResourceFormFields from "./SearchedResourceFormFields";
+import { useAuth } from "../AuthContext";
 
 const tabs = [
   "Basic Information",
@@ -39,14 +42,13 @@ export default function EditResourceDialog({
   mutation,
   onSave,
 }) {
+  const { user } = useAuth();
   const { isSuccess, isError, error, reset, isPending } = mutation;
   const form = useForm({
     mode: "onChange",
   });
 
   const {
-    handleSubmit,
-    setError,
     setValue,
     watch,
     getValues,
@@ -126,7 +128,47 @@ export default function EditResourceDialog({
           </Tabs>
 
           {tabIndex === 0 && (
-            <>
+            <Stack spacing={2}>
+              <Stack direction="row" spacing={2}>
+                <TextField
+                  {...form?.register("resource_url_name", {
+                    value: resource?.resource_url_name,
+                    required: "Please a name identifier for the resource.",
+                    // Use only letters, numbers, hyphens and dashes (no spaces)
+                    pattern: {
+                      value: /^[a-zA-Z0-9-_]+$/,
+                      message:
+                        "Only letters, numbers, hyphens and dashes are allowed (no spaces).",
+                    },
+                    // Minimum length of 3 characters
+                    minLength: {
+                      value: 3,
+                      message:
+                        "The unique name identifier must be at least 3 characters long.",
+                    },
+                    // Maximum length of 100 characters
+                    maxLength: {
+                      value: 100,
+                      message:
+                        "The unique name identifier cannot exceed 100 characters.",
+                    },
+                  })}
+                  label="Resource URL Name"
+                  // disable input if resource_url_name exists.
+                  // If user is super_user, allow editing.
+                  // If not super_user and resource_url_name exists, disable input.
+                  disabled={
+                    user?.super_user ? false : !!resource?.resource_url_name
+                  }
+                  defaultValue={resource?.resource_url_name || ""}
+                  placeholder="Unique name identifier for the resource"
+                  error={!!form?.formState?.errors?.resource_url_name}
+                  helperText={
+                    form?.formState?.errors?.resource_url_name?.message ?? ""
+                  }
+                  fullWidth
+                />
+              </Stack>
               {resource?.resource_type === "dataset" && (
                 <DatasetFormFields form={form} resource={resource} />
               )}
@@ -145,7 +187,7 @@ export default function EditResourceDialog({
                 searchedResource={resource?.zenodo || resource?.openaire}
                 resourceType={resource?.resource_type}
               />
-            </>
+            </Stack>
           )}
 
           {tabIndex === 1 && (
@@ -183,7 +225,7 @@ export default function EditResourceDialog({
             variant="contained"
             endIcon={<SaveIcon />}
             sx={{ backgroundColor: "#20477B" }}
-            disabled={isPending}
+            disabled={isPending || !form?.formState?.isValid}
           >
             Save
           </Button>

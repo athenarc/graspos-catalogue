@@ -17,7 +17,7 @@ import { useLogin } from "@queries/data.js";
 import LoginIcon from "@mui/icons-material/Login";
 import { useAuth } from "../AuthContext.jsx";
 import AlertHelperText from "@helpers/AlertHelperText.jsx";
-import Password from "./Fields/Password.jsx";
+import PasswordFormFields from "@fields/PasswordFormFields.jsx";
 
 export default function LoginForm() {
   const {
@@ -108,7 +108,7 @@ export default function LoginForm() {
             />
 
             {errors?.username && <AlertHelperText error={errors?.username} />}
-            <Password
+            <PasswordFormFields
               form={{ register, formState: { errors } }}
               confirmPassword={false}
               previousPassword={false}

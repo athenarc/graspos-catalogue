@@ -1,4 +1,4 @@
-import { useTool } from "@queries/tool";
+import { useTool, useToolByUniqueName } from "@queries/tool";
 import { RectangularVariants } from "@helpers/Skeleton";
 import ResourceGridItem from "../ResourcesGrid/ResourceGridItem";
 import { Grid2 as Grid, Stack } from "@mui/material";
@@ -38,7 +38,7 @@ export function Tools({ tools, user }) {
   if (tools?.isSuccess) {
     return tools?.data?.map((tool) => (
       <ResourceGridItem
-        key={tools?._id}
+        key={tool?._id}
         resource={tool}
         type={"Tool"}
         user={user}
@@ -47,8 +47,8 @@ export function Tools({ tools, user }) {
   }
 }
 
-export function Tool({ resourceId, handleSetResource }) {
-  const tool = useTool(resourceId);
+export function Tool({ resourceUniqueName, handleSetResource }) {
+  const tool = useToolByUniqueName(resourceUniqueName);
   useEffect(() => {
     if (tool?.isSuccess) {
       handleSetResource(tool?.data?.data);

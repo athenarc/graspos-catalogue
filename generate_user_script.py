@@ -47,10 +47,18 @@ username = os.getenv("MONGO_SUPER_USER", "super_user")
 password_plain = os.getenv("MONGO_SUPER_USER_PASSWORD")
 if not password_plain:
     raise ValueError("MONGO_SUPER_USER_PASSWORD must be set in the .env file")
-salt_rounds = int(os.getenv("BCRYPT_SALT_ROUNDS", 12))
-salt = bcrypt.gensalt(rounds=salt_rounds)
+  
+salt = os.getenv("SALT")
+print("Using salt from .env file." if salt else
+      "No salt found in .env file. Generating new salt.")
+if not salt:
+  salt_rounds = int(os.getenv("BCRYPT_SALT_ROUNDS", 12))
+  salt = bcrypt.gensalt(rounds=salt_rounds)
+  salt = salt.decode("utf-8")
+
+  
 hashed_password = bcrypt.hashpw(password_plain.encode("utf-8"),
-                                salt).decode("utf-8")
+                                salt.encode("utf-8")).decode("utf-8")
 now_str = datetime.now().isoformat()
 
 user_insert = f"""
@@ -272,5 +280,5 @@ with open(output_path, "w", encoding="utf-8") as f:
     f.write(final_script.strip())
 
 # Store salt
-set_key(ENV_FILE, "SALT", salt.decode("utf-8"))
+set_key(ENV_FILE, "SALT", salt)
 print("✅ Mongo init script created.")

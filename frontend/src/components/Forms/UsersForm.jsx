@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState, useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import SaveIcon from "@mui/icons-material/Save";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -37,6 +37,7 @@ function UserForm({ user }) {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -46,7 +47,6 @@ function UserForm({ user }) {
       verified: !!user?.email_confirmed_at,
     },
   });
-
   const updateUser = useUpdateUser();
   const passwordReset = useForgotPassword();
   const disableForm = passwordReset.isPending || updateUser.isPending;
@@ -70,6 +70,14 @@ function UserForm({ user }) {
 
   const onSubmit = (data) => {
     setNotificationStatus("loading");
+    if (
+      data.email_confirmed_at &&
+      typeof data.email_confirmed_at === "boolean"
+    ) {
+      data.email_confirmed_at = new Date().toISOString();
+    } else {
+      data.email_confirmed_at = null;
+    }
     updateUser.mutate(
       { data },
       {
@@ -78,14 +86,24 @@ function UserForm({ user }) {
           setNotificationStatus("success");
         },
         onError: (err) => {
-          setMessage(err?.response?.data?.detail || "Failed to update user");
+          let errorMessage =
+            typeof err?.response?.data?.detail === "string"
+              ? err.response.data.detail
+              : err?.response?.data?.detail?.msg || "Failed to update user";
+          setMessage(errorMessage);
           setNotificationStatus("error");
         },
       }
     );
   };
 
-  const handleResetForm = () => reset(user);
+  const handleResetForm = () =>
+    reset({
+      ...user,
+      super_user: !!user.super_user,
+      disabled: !!user.disabled,
+      verified: !!user.email_confirmed_at,
+    });
 
   return (
     <Card elevation={3} sx={{ mb: 2 }}>
@@ -113,15 +131,44 @@ function UserForm({ user }) {
             )}
           </Stack>
           <Stack direction="row" spacing={2}>
+            <Tooltip title="Verified user">
+              <FormControlLabel
+                label="Verified"
+                control={
+                  <Controller
+                    name="email_confirmed_at"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        {...field}
+                        checked={field.value ?? false}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        disabled={disableForm}
+                        color="primary"
+                      />
+                    )}
+                  />
+                }
+              />
+            </Tooltip>
             <Tooltip title="Admin privileges">
               <FormControlLabel
                 label="Admin"
                 control={
-                  <Checkbox
-                    {...register("super_user")}
-                    disabled={disableForm}
-                    color="primary"
-                    checked={!!user?.super_user}
+                  <Controller
+                    name="super_user"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        {...field}
+                        checked={field.value ?? false}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        disabled={disableForm}
+                        color="primary"
+                      />
+                    )}
                   />
                 }
               />
@@ -130,11 +177,19 @@ function UserForm({ user }) {
               <FormControlLabel
                 label="Disabled"
                 control={
-                  <Checkbox
-                    {...register("disabled")}
-                    disabled={disableForm}
-                    color="error"
-                    checked={!!user?.disabled}
+                  <Controller
+                    name="disabled"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        {...field}
+                        checked={field.value ?? false}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        disabled={disableForm}
+                        color="error"
+                      />
+                    )}
                   />
                 }
               />
@@ -244,7 +299,7 @@ export default function UsersPanelForm() {
   const [open, setOpen] = useState(true);
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState({
-    verified: false,
+    email_confirmed_at: false,
     admin: false,
     disabled: false,
   });

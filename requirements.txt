@@ -1,0 +1,4 @@
+bcrypt==4.3.0
+python-dotenv==1.0.1
+iso3166==2.1.1
+pycountry==24.6.1

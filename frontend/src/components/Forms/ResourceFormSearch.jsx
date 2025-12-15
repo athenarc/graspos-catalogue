@@ -45,8 +45,6 @@ export default function ResourceFormSearch({
     const subscription = form?.watch((value, { name, type }) => {
       if (name === "source" && type === "change") {
         form.clearErrors("source");
-        // setStatus?.(null);
-        // setMessage?.("");
       }
     });
     return () => subscription.unsubscribe();

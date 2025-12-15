@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import {
   Autocomplete,
   TextField,
@@ -6,7 +8,7 @@ import {
   Typography,
   Divider,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+
 import { useServiceUniqueFieldValues } from "@queries/service";
 
 export default function ServiceTypeAutocompleteFilter({
@@ -50,9 +52,16 @@ export default function ServiceTypeAutocompleteFilter({
         onChange={handleChange}
         getOptionLabel={(option) => option}
         renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <Chip label={option} {...getTagProps({ index })} key={option} />
-          ))
+          value.map((option, index) => {
+            const { key, ...restTagProps } = getTagProps({ index });
+            return (
+              <Chip
+                label={option}
+                {...restTagProps}
+                key={option + "-" + index}
+              />
+            );
+          })
         }
         renderInput={(params) => (
           <TextField
