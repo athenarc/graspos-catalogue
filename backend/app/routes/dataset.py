@@ -18,6 +18,24 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/dataset", tags=["Dataset"])
 
 
+def expand_hierarchical_filter(field_name: str,
+                               values: List[str]) -> List[dict]:
+    """
+    Expands hierarchical filters using prefix logic.
+    Works correctly for covered_fields & covered_research_products.
+    """
+    or_filters = []
+
+    for v in values:
+        # exact match
+        or_filters.append({field_name: v})
+
+        # prefix match (children)
+        or_filters.append({field_name: {"$regex": f"^{v}_"}})
+
+    return or_filters
+
+
 @router.get("", status_code=200, response_model=List[Dataset])
 async def get_all_datasets(
         user: Optional[User] = Depends(current_user),
@@ -94,16 +112,30 @@ async def get_all_datasets(
         filters.append({"evidence_types": {"$in": evidence_types}})
 
     # Covered fields filtering
+    # if covered_fields:
+    #     filters.append({"covered_fields": {"$in": covered_fields}})
+
     if covered_fields:
-        filters.append({"covered_fields": {"$in": covered_fields}})
+        filters.append({
+            "$or":
+            expand_hierarchical_filter("covered_fields", covered_fields)
+        })
 
     # Covered research products filtering
+    # filters.append(
+    #     {"covered_research_products": {
+    #         "$in": covered_research_products
+    #     }})
     if covered_research_products:
-        filters.append(
-            {"covered_research_products": {
-                "$in": covered_research_products
-            }})
-
+        print(
+            "covered_research_products filter applied: ",
+            expand_hierarchical_filter("covered_research_products",
+                                       covered_research_products))
+        filters.append({
+            "$or":
+            expand_hierarchical_filter("covered_research_products",
+                                       covered_research_products)
+        })
     # GraspOS funded filtering - match with url https://cordis.europa.eu/projects/101095129 or with word graspos in lowercase in acronym
     if graspos:
         filters.append({
