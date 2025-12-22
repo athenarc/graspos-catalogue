@@ -125,6 +125,14 @@ export function useDocument(documentId) {
   });
 }
 
+export function useDocumentByUniqueName(uniqueName) {
+  return useQuery({
+    queryKey: ["document-" + String(uniqueName)],
+    retry: false,
+    queryFn: () => axiosInstance.get(`document/name/${uniqueName}`),
+  });
+}
+
 export function useDeleteDocument() {
   const queryClient = useQueryClient();
   return useMutation({

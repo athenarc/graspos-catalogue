@@ -1,3 +1,5 @@
+import { useMemo, useState } from "react";
+
 import {
   Divider,
   Typography,
@@ -13,7 +15,7 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import { useMemo, useState } from "react";
+
 import { useCountriesWithCount } from "@queries/countries";
 import { FixedSizeList } from "react-window";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -116,9 +118,7 @@ export default function GeographicalCoverageFacetFilter({
         sx={{ px: 1, backgroundColor: "lightblue", color: "white" }}
       >
         <Typography variant="h6">By geographical coverage</Typography>
-        <Tooltip
-          title="Geographical areas that the resources cover."
-        >
+        <Tooltip title="Geographical areas that the resources cover.">
           <HelpOutlineIcon />
         </Tooltip>
       </Stack>

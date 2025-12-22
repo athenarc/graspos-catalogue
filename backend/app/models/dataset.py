@@ -1,10 +1,11 @@
 """Dataset models."""
 
-from beanie import Document
+from beanie import Document, Indexed
 from pydantic import BaseModel
 from beanie import Link
 from models.zenodo import Zenodo
 from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseResourceView
+from pymongo import IndexModel, TEXT
 
 
 class DatasetBasicFields(BaseModel):
@@ -29,6 +30,15 @@ class Dataset(Document, DatasetView):
 
     class Settings:
         name = "datasets"
+        indexes = [
+            IndexModel(
+                [
+                    ("resource_url_name", TEXT),
+                ],
+                name="resource_url_name_index",
+                unique=True,
+            ),
+        ]
 
     class Config:
         json_schema_extra = {

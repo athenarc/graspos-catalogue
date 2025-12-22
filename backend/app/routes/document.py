@@ -12,9 +12,28 @@ from typing import List, Optional
 from datetime import datetime
 from beanie import PydanticObjectId
 import logging
+from pymongo.errors import DuplicateKeyError
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/document", tags=["Documents"])
+
+
+def expand_hierarchical_filter(field_name: str,
+                               values: List[str]) -> List[dict]:
+    """
+    Expands hierarchical filters using prefix logic.
+    Works correctly for covered_fields & covered_research_products.
+    """
+    or_filters = []
+
+    for v in values:
+        # exact match
+        or_filters.append({field_name: v})
+
+        # prefix match (children)
+        or_filters.append({field_name: {"$regex": f"^{v}_"}})
+
+    return or_filters
 
 
 @router.get("", status_code=200, response_model=list[Documents])
@@ -93,15 +112,30 @@ async def get_all_documents(
         filters.append({"evidence_types": {"$in": evidence_types}})
 
     # Covered fields filtering
+    # if covered_fields:
+    #     filters.append({"covered_fields": {"$in": covered_fields}})
+
     if covered_fields:
-        filters.append({"covered_fields": {"$in": covered_fields}})
+        filters.append({
+            "$or":
+            expand_hierarchical_filter("covered_fields", covered_fields)
+        })
 
     # Covered research products filtering
+    # filters.append(
+    #     {"covered_research_products": {
+    #         "$in": covered_research_products
+    #     }})
     if covered_research_products:
-        filters.append(
-            {"covered_research_products": {
-                "$in": covered_research_products
-            }})
+        print(
+            "covered_research_products filter applied: ",
+            expand_hierarchical_filter("covered_research_products",
+                                       covered_research_products))
+        filters.append({
+            "$or":
+            expand_hierarchical_filter("covered_research_products",
+                                       covered_research_products)
+        })
 
     # GraspOS funded filtering - match with url https://cordis.europa.eu/projects/101095129 or with word graspos in lowercase in acronym
     if graspos:
@@ -204,7 +238,18 @@ async def create_document(
     document.owner = user.id
     if user.super_user:
         document.approved = True
-    await document.create()
+
+    try:
+        await document.create()
+
+    except DuplicateKeyError as error:
+        raise HTTPException(
+            status_code=409,
+            detail=
+            "Template/Guideline with this resource url name already exists. Please choose another one."
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
     return document
 
 
@@ -238,6 +283,21 @@ async def get_document(document_id: PydanticObjectId):
     if not document:
 
         raise HTTPException(status_code=404, detail="Documents does not exist")
+
+    return document
+
+
+@router.get("/name/{unique_name}",
+            responses={404: {
+                "detail": "Document does not exist"
+            }})
+async def get_document_by_unique_name(unique_name: str):
+
+    document = await Documents.find_one(
+        Documents.resource_url_name == unique_name, fetch_links=True)
+
+    if not document:
+        raise HTTPException(status_code=404, detail="Document does not exist")
 
     return document
 

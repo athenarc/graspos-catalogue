@@ -3,8 +3,8 @@
 from beanie import Document
 from pydantic import BaseModel
 from beanie import Link
+from pymongo import IndexModel, TEXT
 from models.openaire import OpenAIRE
-from models.trl import TRLEntry
 from models.baseResourceModel import BaseResourceModel, BaseResourcePatch, BaseResourceView
 
 
@@ -32,6 +32,15 @@ class Service(Document, ServiceView):
 
     class Settings:
         name = "services"
+        indexes = [
+            IndexModel(
+                [
+                    ("resource_url_name", TEXT),
+                ],
+                name="resource_url_name_index",
+                unique=True,
+            ),
+        ]
 
     class Config:
         json_schema_extra = {

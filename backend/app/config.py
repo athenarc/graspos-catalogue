@@ -61,6 +61,11 @@ class Settings(BaseModel):
             "Missing environment variable: DEFAULT_USER_PASSWORD. "
             "Please set it in your .env file or environment.")
 
+    allowed_origins: str = config("REACT_APP_BACKEND_HOST") + (
+        ":" +
+        config("REACT_APP_HOST_PORT") if config("REACT_APP_PROD").lower()
+        != "prod" else "") + (config("REACT_APP_BASE_PATH")
+                              if config("REACT_APP_BASE_PATH") != "/" else "")
     # -------------------------------
     # MAIL SETTINGS
     # -------------------------------

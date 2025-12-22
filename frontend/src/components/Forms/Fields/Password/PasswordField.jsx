@@ -1,4 +1,3 @@
-// components/common/PasswordField.jsx
 import {
   FormControl,
   IconButton,

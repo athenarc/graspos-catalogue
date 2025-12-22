@@ -28,12 +28,13 @@ async def lifespan(app: FastAPI):
     await init_beanie(app.db,
                       document_models=[
                           Dataset, User, Documents, Tool, Zenodo, Update,
-                          Scope, GeographicalCoverage, Assessment, Service, OpenAIRE, TRLEntry
+                          Scope, GeographicalCoverage, Assessment, Service,
+                          OpenAIRE, TRLEntry
                       ])
     print("Startup complete")
+    print("allowed origins:", CONFIG.allowed_origins)
     yield
     print("Shutdown complete")
-
 
 app = FastAPI(
     title="GRASPOS Catalogue API",
@@ -63,13 +64,7 @@ app.include_router(register.router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost",
-        "http://localhost:5173/catalogue",
-        "https://graspos-infra.athenarc.gr",
-        "https://graspos-infra.athenarc.gr/catalogue",
-    ],
+    allow_origins=[CONFIG.allowed_origins],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

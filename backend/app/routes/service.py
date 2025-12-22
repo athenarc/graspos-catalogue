@@ -3,19 +3,37 @@
 from fastapi import APIRouter, HTTPException, Depends, Query, status
 from models.service import Service, ServicePatch
 from models.user import User
-from models.zenodo import Zenodo
 from models.openaire import OpenAIRE
 from models.update import Update
 from beanie import PydanticObjectId, DeleteRules
 from util.current_user import current_user, current_user_mandatory
 from util.requests import get_openaire_data
 from typing import List, Optional
-from datetime import datetime
 from beanie import PydanticObjectId
 import logging, re
+from pymongo.errors import DuplicateKeyError
+from pydantic import ValidationError
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/service", tags=["Service"])
+
+
+def expand_hierarchical_filter(field_name: str,
+                               values: List[str]) -> List[dict]:
+    """
+    Expands hierarchical filters using prefix logic.
+    Works correctly for covered_fields & covered_research_products.
+    """
+    or_filters = []
+
+    for v in values:
+        # exact match
+        or_filters.append({field_name: v})
+
+        # prefix match (children)
+        or_filters.append({field_name: {"$regex": f"^{v}_"}})
+
+    return or_filters
 
 
 @router.get("", status_code=200, response_model=list[Service])
@@ -100,15 +118,30 @@ async def get_all_services(
         filters.append({"evidence_types": {"$in": evidence_types}})
 
     # Covered fields filtering
+    # if covered_fields:
+    #     filters.append({"covered_fields": {"$in": covered_fields}})
+
     if covered_fields:
-        filters.append({"covered_fields": {"$in": covered_fields}})
+        filters.append({
+            "$or":
+            expand_hierarchical_filter("covered_fields", covered_fields)
+        })
 
     # Covered research products filtering
+    # filters.append(
+    #     {"covered_research_products": {
+    #         "$in": covered_research_products
+    #     }})
     if covered_research_products:
-        filters.append(
-            {"covered_research_products": {
-                "$in": covered_research_products
-            }})
+        print(
+            "covered_research_products filter applied: ",
+            expand_hierarchical_filter("covered_research_products",
+                                       covered_research_products))
+        filters.append({
+            "$or":
+            expand_hierarchical_filter("covered_research_products",
+                                       covered_research_products)
+        })
 
     # GraspOS verified filter
     if graspos:
@@ -183,7 +216,17 @@ async def create_service(
     service.owner = user.id
     if user.super_user:
         service.approved = True
-    await service.create()
+
+    try:
+        await service.create()
+    except DuplicateKeyError as error:
+        raise HTTPException(
+            status_code=409,
+            detail=
+            "Service with this resource url name already exists. Please choose another one."
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
     return service
 
 
@@ -218,6 +261,21 @@ async def get_service(service_id: PydanticObjectId):
 
     if not service:
 
+        raise HTTPException(status_code=404, detail="Service does not exist")
+
+    return service
+
+
+@router.get("/name/{unique_name}",
+            responses={404: {
+                "detail": "Service does not exist"
+            }})
+async def get_service_by_unique_name(unique_name: str):
+
+    service = await Service.find_one(Service.resource_url_name == unique_name,
+                                     fetch_links=True)
+
+    if not service:
         raise HTTPException(status_code=404, detail="Service does not exist")
 
     return service

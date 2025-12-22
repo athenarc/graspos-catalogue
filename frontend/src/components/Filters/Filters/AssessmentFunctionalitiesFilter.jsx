@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import {
   Autocomplete,
   TextField,
@@ -6,7 +8,7 @@ import {
   Typography,
   Divider,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+
 import { useServiceUniqueFieldValues } from "@queries/service";
 import { useToolUniqueFieldValues } from "@queries/tool";
 
@@ -126,13 +128,16 @@ export default function AssessmentFunctionalitiesFilter({
         onChange={handleChange}
         getOptionLabel={(option) => getLabelForAssessmentFunctionality(option)}
         renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <Chip
-              label={getLabelForAssessmentFunctionality(option)}
-              {...getTagProps({ index })}
-              key={option}
-            />
-          ))
+          value.map((option, index) => {
+            const { key, ...restTagProps } = getTagProps({ index });
+            return (
+              <Chip
+                label={getLabelForAssessmentFunctionality(option)}
+                {...restTagProps}
+                key={option}
+              />
+            );
+          })
         }
         renderInput={(params) => (
           <TextField

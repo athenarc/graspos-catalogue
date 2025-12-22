@@ -14,7 +14,7 @@ export function ResourcePageMenu() {
 }
 
 export function ResourcePage() {
-  const { resourceId } = useParams();
+  const { resourceUniqueName } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -81,16 +81,28 @@ export function ResourcePage() {
       >
         <Grid container spacing={4}>
           {location?.pathname.includes("dataset") && (
-            <Dataset resourceId={resourceId} handleSetResource={setResource} />
+            <Dataset
+              resourceUniqueName={resourceUniqueName}
+              handleSetResource={setResource}
+            />
           )}
           {location?.pathname.includes("documents") && (
-            <Document resourceId={resourceId} handleSetResource={setResource} />
+            <Document
+              resourceUniqueName={resourceUniqueName}
+              handleSetResource={setResource}
+            />
           )}
           {location?.pathname.includes("tools") && (
-            <Tool resourceId={resourceId} handleSetResource={setResource} />
+            <Tool
+              resourceUniqueName={resourceUniqueName}
+              handleSetResource={setResource}
+            />
           )}
           {location?.pathname.includes("services") && (
-            <Service resourceId={resourceId} handleSetResource={setResource} />
+            <Service
+              resourceUniqueName={resourceUniqueName}
+              handleSetResource={setResource}
+            />
           )}
         </Grid>
       </Box>

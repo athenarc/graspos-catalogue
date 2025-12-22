@@ -14,7 +14,7 @@ import { useTools } from "@queries/tool";
 import { useDocuments } from "@queries/document";
 import { useServices } from "@queries/service";
 import LocalFiltersStack from "../Filters/LocalFiltersStack";
-import ResourcesGrid from "./Resources";
+import ResourcesGrid from "../Resources/Resources";
 import { useURLFilters } from "../Filters/Filters/Utils/useURLFilters";
 import FiltersLayout from "../Filters/Layout";
 import GlobalSearchBar from "../Filters/Filters/GlobalSearchBar";

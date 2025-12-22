@@ -1,11 +1,8 @@
-// components/forms/Password.jsx
-import { Stack, TextField } from "@mui/material";
-import PasswordField from "@components/Forms/Fields/PasswordField";
-import AlertHelperText from "@helpers/AlertHelperText";
+import { Stack } from "@mui/material";
+import PasswordField from "@fields/Password/PasswordField";
 
-export default function Password({
+export default function PasswordFormFields({
   form,
-  passwordValidation = true,
   newPasswordValidation = true,
   currentPasswordValidation = true,
   confirmPassword = false,

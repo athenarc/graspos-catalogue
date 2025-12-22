@@ -1,5 +1,6 @@
-import { Grid2 as Grid, Stack, TextField } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
+import { Grid2 as Grid, Stack, TextField } from "@mui/material";
+
 export default function GlobalSearchBar({
   selectedFilters,
 

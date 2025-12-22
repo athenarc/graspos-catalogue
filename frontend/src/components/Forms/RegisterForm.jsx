@@ -18,7 +18,7 @@ import { useRegister } from "@queries/data";
 import { useEffect, useState, useRef } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import AlertHelperText from "@helpers/AlertHelperText";
-import Password from "./Fields/Password";
+import PasswordFormFields from "@fields/PasswordFormFields";
 
 const SITE_KEY = process.env.REACT_APP_CAPTCHA_SITE_KEY;
 
@@ -152,7 +152,7 @@ export default function RegisterForm() {
                 <AlertHelperText error={errors?.username} />
               )}
 
-              <Password
+              <PasswordFormFields
                 form={form}
                 confirmPassword
                 confirmPasswordRules={{
