@@ -169,6 +169,16 @@ export default function UniqueAutocompleteFieldFilter({
           onChange={handleChange}
           getOptionLabel={(option) => option.label}
           isOptionEqualToValue={(option, value) => option.value === value.value}
+          slotProps={{
+            listbox: {
+              sx: {
+                "& .MuiAutocomplete-option": {
+                  justifyContent: "flex-start",
+                  textAlign: "left",
+                },
+              },
+            },
+          }}
           renderTags={(value, getTagProps) =>
             value.map((option, index) => {
               const { key, ...rest } = getTagProps({ index });
