@@ -11,45 +11,8 @@ import {
 
 import { useServiceUniqueFieldValues } from "@queries/service";
 import { useToolUniqueFieldValues } from "@queries/tool";
+import { assessmentFunctionalityMenuItems } from "@helpers/MenuItems";
 
-const assessmentFunctionalityMenuItems = [
-  {
-    value: "scholarly_data_enrichment_missing_attributes",
-    label: "Scholarly data enrichment: Missing attributes",
-  },
-  {
-    value: "scholarly_data_enrichment_indicators",
-    label: "Scholarly data enrichment: Indicators",
-  },
-  {
-    value: "scholarly_data_enrichment_semantics",
-    label: "Scholarly data enrichment: Missing links & semantics",
-  },
-  {
-    value: "open_science_monitoring_researchers",
-    label: "Open Science monitoring: Researchers",
-  },
-  {
-    value: "open_science_monitoring_institutions",
-    label: "Open Science monitoring: Institutions",
-  },
-  {
-    value: "open_science_monitoring_countries",
-    label: "Open Science monitoring: Countries",
-  },
-  {
-    value: "open_science_monitoring_general",
-    label: "Open Science monitoring: General",
-  },
-  {
-    value: "data",
-    label: "Data",
-  },
-  {
-    value: "other",
-    label: "Other",
-  },
-];
 function getLabelForAssessmentFunctionality(value) {
   const item = assessmentFunctionalityMenuItems.find((i) => i.value === value);
   return item ? item.label : value;
