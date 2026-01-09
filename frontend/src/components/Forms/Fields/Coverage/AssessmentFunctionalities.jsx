@@ -20,8 +20,8 @@ export default function AssessmentFunctionalities({
 
   const filteredOptions = assessmentFunctionalityMenuItems.filter(
     (item) =>
-      item.resource_types.includes("all") ||
-      item.resource_types.includes(resource_type)
+      item?.resource_types.includes("all") ||
+      item?.resource_types.includes(resource_type)
   );
 
   return (
