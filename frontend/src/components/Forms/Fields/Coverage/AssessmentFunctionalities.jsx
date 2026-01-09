@@ -18,10 +18,10 @@ export default function AssessmentFunctionalities({
   resource_type = null,
 }) {
 
-  const filteredOptions = assessmentFunctionalityMenuItems.filter(
+  const filteredOptions = assessmentFunctionalityMenuItems?.filter(
     (item) =>
-      item?.resource_types.includes("all") ||
-      item?.resource_types.includes(resource_type)
+      item?.resource_types?.includes("all") ||
+      item?.resource_types?.includes(resource_type)
   );
 
   return (
