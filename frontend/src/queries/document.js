@@ -125,11 +125,11 @@ export function useDocument(documentId) {
   });
 }
 
-export function useDocumentByUniqueName(uniqueName) {
+export function useDocumentByUniqueSlug(uniqueSlug) {
   return useQuery({
-    queryKey: ["document-" + String(uniqueName)],
+    queryKey: ["document-" + String(uniqueSlug)],
     retry: false,
-    queryFn: () => axiosInstance.get(`document/name/${uniqueName}`),
+    queryFn: () => axiosInstance.get(`document/slug/${uniqueSlug}`),
   });
 }
 

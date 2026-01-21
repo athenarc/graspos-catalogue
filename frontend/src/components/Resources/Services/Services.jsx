@@ -1,4 +1,4 @@
-import { useServiceByUniqueName } from "@queries/service";
+import { useServiceByUniqueSlug } from "@queries/service";
 import { RectangularVariants } from "@helpers/Skeleton";
 import ResourceGridItem from "../ResourcesGrid/ResourceGridItem";
 import { Grid2 as Grid, Stack } from "@mui/material";
@@ -46,8 +46,8 @@ export function Services({ services, user }) {
   }
 }
 
-export function Service({ resourceUniqueName, handleSetResource }) {
-  const service = useServiceByUniqueName(resourceUniqueName);
+export function Service({ resourceUniqueSlug, handleSetResource }) {
+  const service = useServiceByUniqueSlug(resourceUniqueSlug);
   useEffect(() => {
     if (service?.isSuccess) {
       handleSetResource(service?.data?.data);

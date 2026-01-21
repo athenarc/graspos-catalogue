@@ -59,16 +59,16 @@ function AppRoutes() {
         <Route path="/" element={<AppLayout />}>
           {/* Public resources */}
           <Route
-            path="datasets/:resourceUniqueName"
+            path="datasets/:resourceUniqueSlug"
             element={<ResourcePage />}
           />
-          <Route path="tools/:resourceUniqueName" element={<ResourcePage />} />
+          <Route path="tools/:resourceUniqueSlug" element={<ResourcePage />} />
           <Route
-            path="documents/:resourceUniqueName"
+            path="documents/:resourceUniqueSlug"
             element={<ResourcePage />}
           />
           <Route
-            path="services/:resourceUniqueName"
+            path="services/:resourceUniqueSlug"
             element={<ResourcePage />}
           />
 

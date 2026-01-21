@@ -255,7 +255,7 @@ async def create_tool(tool: Tool,
         raise HTTPException(
             status_code=409,
             detail=
-            "Tool with this resource url name already exists. Please choose another one."
+            "Tool with this resource url slug already exists. Please choose another one."
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
@@ -283,13 +283,12 @@ async def get_unique_metadata_values(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/name/{unique_name}",
+@router.get("/slug/{unique_slug}",
             responses={404: {
                 "detail": "Tool does not exist"
             }})
-async def get_tool_by_unique_name(unique_name: str):
-
-    tool = await Tool.find_one(Tool.resource_url_name == unique_name,
+async def get_tool_by_unique_slug(unique_slug: str):
+    tool = await Tool.find_one(Tool.resource_url_slug == unique_slug,
                                fetch_links=True)
 
     if not tool:
