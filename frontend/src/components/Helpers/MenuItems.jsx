@@ -81,6 +81,7 @@ const assessmentFunctionalityMenuItems = [
 ];
 
 const coveredResearchProductsMenuItems = [
+  {value: "all_types", label: "All Types"},
   { value: "dataset", label: "Dataset" },
   { value: "dataset_dataset", label: "Dataset/Dataset", synonym: "0021" },
   {
