@@ -36,38 +36,47 @@ const assessmentFunctionalityMenuItems = [
   {
     value: "scholarly_data_enrichment_missing_attributes",
     label: "Scholarly data enrichment/Missing attributes",
+    resource_types: ["tool", "service"],
   },
   {
     value: "scholarly_data_enrichment_indicators",
     label: "Scholarly data enrichment/Indicators",
+    resource_types: ["tool", "service"],
   },
   {
     value: "scholarly_data_enrichment_semantics",
     label: "Scholarly data enrichment/Missing links & semantics",
+    resource_types: ["tool", "service"],
   },
   {
     value: "open_science_monitoring_researchers",
     label: "Open Science monitoring/Researchers",
+    resource_types: ["tool", "service"],
   },
   {
     value: "open_science_monitoring_institutions",
     label: "Open Science monitoring/Institutions",
+    resource_types: ["tool", "service"],
   },
   {
     value: "open_science_monitoring_countries",
     label: "Open Science monitoring/Countries",
+    resource_types: ["tool", "service"],
   },
   {
     value: "open_science_monitoring_general",
     label: "Open Science monitoring/General",
+    resource_types: ["tool", "service"],
   },
   {
     value: "data",
     label: "Data",
+    resource_types: ["tool", "service"],
   },
   {
     value: "other",
     label: "Other",
+    resource_types: ["tool", "service"],
   },
 ];
 
@@ -468,7 +477,7 @@ const coveredFieldsMenuItems = [
 ];
 
 const functionalityLabelMap = Object.fromEntries(
-  assessmentFunctionalityMenuItems?.map((i) => [i.value, i.label])
+  assessmentFunctionalityMenuItems?.map((i) => [i.value, i.label]),
 );
 
 function getLabelForAssessmentFunctionality(value) {
@@ -490,7 +499,7 @@ function getLabelForEvidenceType(value) {
   const item = evidenceTypesMenuItems.find((i) => i.value === value);
   return item ? item.label : value;
 }
- 
+
 export {
   evidenceTypesMenuItems,
   assessmentFunctionalityMenuItems,
