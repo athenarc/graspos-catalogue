@@ -1,4 +1,4 @@
-import { useTool, useToolByUniqueName } from "@queries/tool";
+import { useToolByUniqueSlug } from "@queries/tool";
 import { RectangularVariants } from "@helpers/Skeleton";
 import ResourceGridItem from "../ResourcesGrid/ResourceGridItem";
 import { Grid2 as Grid, Stack } from "@mui/material";
@@ -47,8 +47,8 @@ export function Tools({ tools, user }) {
   }
 }
 
-export function Tool({ resourceUniqueName, handleSetResource }) {
-  const tool = useToolByUniqueName(resourceUniqueName);
+export function Tool({ resourceUniqueSlug, handleSetResource }) {
+  const tool = useToolByUniqueSlug(resourceUniqueSlug);
   useEffect(() => {
     if (tool?.isSuccess) {
       handleSetResource(tool?.data?.data);

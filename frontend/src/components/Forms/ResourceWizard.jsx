@@ -89,8 +89,8 @@ export default function WizardForm({
                 </Select>
               </FormControl>
               <TextField
-                {...form?.register("resource_url_name", {
-                  value: data?.resource_url_name,
+                {...form?.register("resource_url_slug", {
+                  value: data?.resource_url_slug,
                   required: "Please a name identifier for the resource.",
                   // Use only letters, numbers, hyphens and dashes (no spaces)
                   pattern: {
@@ -104,19 +104,19 @@ export default function WizardForm({
                     message:
                       "The unique name identifier must be at least 3 characters long.",
                   },
-                  // Maximum length of 100 characters
+                  // Maximum length of 150 characters
                   maxLength: {
-                    value: 100,
+                    value: 150,
                     message:
-                      "The unique name identifier cannot exceed 100 characters.",
+                      "The unique name identifier cannot exceed 150 characters.",
                   },
                 })}
                 label="Unique name identifier for the resource"
-                defaultValue={data?.resource_url_name || ""}
+                defaultValue={data?.resource_url_slug || ""}
                 placeholder="Unique name identifier for the resource"
-                error={!!form?.formState?.errors?.resource_url_name}
+                error={!!form?.formState?.errors?.resource_url_slug}
                 helperText={
-                  form?.formState?.errors?.resource_url_name?.message ?? ""
+                  form?.formState?.errors?.resource_url_slug?.message ?? ""
                 }
                 fullWidth
               />

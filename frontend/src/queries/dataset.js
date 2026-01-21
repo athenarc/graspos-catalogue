@@ -127,11 +127,11 @@ export function useDataset(datasetId) {
   });
 }
 
-export function useDatasetByUniqueName(uniqueName) {
+export function useDatasetByUniqueSlug(uniqueSlug) {
   return useQuery({
-    queryKey: ["dataset-" + String(uniqueName)],
+    queryKey: ["dataset-" + String(uniqueSlug)],
     retry: false,
-    queryFn: () => axiosInstance.get(`dataset/name/${uniqueName}`),
+    queryFn: () => axiosInstance.get(`dataset/slug/${uniqueSlug}`),
   });
 }
 

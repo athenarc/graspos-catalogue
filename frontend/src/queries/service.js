@@ -129,11 +129,11 @@ export function useService(serviceId) {
   });
 }
 
-export function useServiceByUniqueName(uniqueName) {
+export function useServiceByUniqueSlug(uniqueSlug) {
   return useQuery({
-    queryKey: ["service-" + String(uniqueName)],
+    queryKey: ["service-" + String(uniqueSlug)],
     retry: false,
-    queryFn: () => axiosInstance.get(`service/name/${uniqueName}`),
+    queryFn: () => axiosInstance.get(`service/slug/${uniqueSlug}`),
   });
 }
 

@@ -18,7 +18,7 @@ async def get_openaire_data(source: str) -> dict:
                 data["source"] = source.strip()
                 data["api_url"] = transformed_url
                 data["metadata"] = data
-                data["resource_url_name"] = re.sub(r'\W+', '-',
+                data["resource_url_slug"] = re.sub(r'\W+', '-',
                                                    data["metadata"].get("name",
                                                             "")).lower()
                 data["metadata"]["communities"] = [{
@@ -86,7 +86,7 @@ async def get_zenodo_data(source: str) -> dict:
             resource = response.json()
             resource["zenodo_id"] = resource["id"]
             resource["source"] = source.strip()
-            resource["resource_url_name"] = re.sub(r'\W+', '-',
+            resource["resource_url_slug"] = re.sub(r'\W+', '-',
                                                    resource.get("title",
                                                                 "")).lower()
             del resource["id"]
