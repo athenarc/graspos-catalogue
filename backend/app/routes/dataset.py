@@ -241,10 +241,11 @@ async def create_dataset(dataset: Dataset,
     try:
         await dataset.create()
     except DuplicateKeyError as error:
+        print(error)
         raise HTTPException(
             status_code=409,
             detail=
-            "Dataset with this resource url name already exists. Please choose another one."
+            "Dataset with this resource url slug already exists. Please choose another one."
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
@@ -270,13 +271,12 @@ async def get_unique_metadata_values(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/name/{unique_name}",
+@router.get("/slug/{unique_slug}",
             responses={404: {
                 "detail": "Dataset does not exist"
             }})
-async def get_dataset_by_unique_name(unique_name: str):
-
-    dataset = await Dataset.find_one(Dataset.resource_url_name == unique_name,
+async def get_dataset_by_unique_name(unique_slug: str): 
+    dataset = await Dataset.find_one(Dataset.resource_url_slug == unique_slug,
                                      fetch_links=True)
 
     if not dataset:

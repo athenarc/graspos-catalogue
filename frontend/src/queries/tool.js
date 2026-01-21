@@ -7,7 +7,7 @@ export function useCreateTool() {
     mutationFn: ({ data }) => {
       return axiosInstance.post(
         process.env.REACT_APP_BACKEND_HOST + `tool/create`,
-        data
+        data,
       );
     },
     onSuccess: () => {
@@ -54,7 +54,7 @@ export function useTools(filters = {}) {
                     key != "access_right"
                     ? key.replace(key, key.replace(/s+$/, ""))
                     : key,
-                  arrayValue
+                  arrayValue,
                 );
               });
             }
@@ -129,11 +129,11 @@ export function useTool(toolId) {
   });
 }
 
-export function useToolByUniqueName(resourceUniqueName) {
+export function useToolByUniqueSlug(resourceUniqueSlug) {
   return useQuery({
-    queryKey: ["tool-" + String(resourceUniqueName)],
+    queryKey: ["tool-" + String(resourceUniqueSlug)],
     retry: false,
-    queryFn: () => axiosInstance.get(`tool/name/${resourceUniqueName}`),
+    queryFn: () => axiosInstance.get(`tool/slug/${resourceUniqueSlug}`),
   });
 }
 
@@ -142,7 +142,7 @@ export function useDeleteTool() {
   return useMutation({
     mutationFn: (document) => {
       return axiosInstance.delete(
-        process.env.REACT_APP_BACKEND_HOST + `tool/${document.id}`
+        process.env.REACT_APP_BACKEND_HOST + `tool/${document.id}`,
       );
     },
     onSuccess: () => {
@@ -158,7 +158,7 @@ export function useUpdateTool(id) {
     mutationFn: (data) => {
       return axiosInstance.patch(
         process.env.REACT_APP_BACKEND_HOST + `tool/${id}`,
-        data
+        data,
       );
     },
     onSuccess: () => {

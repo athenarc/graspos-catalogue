@@ -246,7 +246,7 @@ async def create_document(
         raise HTTPException(
             status_code=409,
             detail=
-            "Template/Guideline with this resource url name already exists. Please choose another one."
+            "Template/Guideline with this resource url slug already exists. Please choose another one."
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
@@ -287,14 +287,13 @@ async def get_document(document_id: PydanticObjectId):
     return document
 
 
-@router.get("/name/{unique_name}",
+@router.get("/slug/{unique_slug}",
             responses={404: {
                 "detail": "Document does not exist"
             }})
-async def get_document_by_unique_name(unique_name: str):
-
+async def get_document_by_unique_slug(unique_slug: str):
     document = await Documents.find_one(
-        Documents.resource_url_name == unique_name, fetch_links=True)
+        Documents.resource_url_slug == unique_slug, fetch_links=True)
 
     if not document:
         raise HTTPException(status_code=404, detail="Document does not exist")

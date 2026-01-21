@@ -223,7 +223,7 @@ async def create_service(
         raise HTTPException(
             status_code=409,
             detail=
-            "Service with this resource url name already exists. Please choose another one."
+            "Service with this resource url slug already exists. Please choose another one."
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
@@ -266,13 +266,12 @@ async def get_service(service_id: PydanticObjectId):
     return service
 
 
-@router.get("/name/{unique_name}",
+@router.get("/slug/{unique_slug}",
             responses={404: {
                 "detail": "Service does not exist"
             }})
-async def get_service_by_unique_name(unique_name: str):
-
-    service = await Service.find_one(Service.resource_url_name == unique_name,
+async def get_service_by_unique_slug(unique_slug: str):
+    service = await Service.find_one(Service.resource_url_slug == unique_slug,
                                      fetch_links=True)
 
     if not service:

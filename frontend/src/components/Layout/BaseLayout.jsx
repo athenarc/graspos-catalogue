@@ -4,7 +4,7 @@ import ResourcesGridLayout from "./ResourcesLayout";
 import { Box } from "@mui/material";
 
 export default function BaseLayout({ handleLogout, user, handleLogin }) {
-  const { resourceUniqueName } = useParams();
+  const { resourceUniqueSlug } = useParams();
 
   return (
     <Box
@@ -17,7 +17,7 @@ export default function BaseLayout({ handleLogout, user, handleLogin }) {
     >
       <MenuBar user={user} handleLogout={handleLogout} />
       <Box sx={{ flexGrow: 1, overflow: "auto" }}>
-        {!resourceUniqueName && <ResourcesGridLayout user={user} />}
+        {!resourceUniqueSlug && <ResourcesGridLayout user={user} />}
         <Outlet context={{ user: user, handleLogin: handleLogin }} />
       </Box>
     </Box>

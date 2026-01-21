@@ -31,13 +31,13 @@ class Dataset(Document, DatasetView):
     class Settings:
         name = "datasets"
         indexes = [
+            # Unique slug (for URLs, routing, PATCH by slug etc)
             IndexModel(
-                [
-                    ("resource_url_name", TEXT),
-                ],
-                name="resource_url_name_index",
+                [("resource_url_slug", 1)],
                 unique=True,
+                name="resource_url_slug_unique",
             ),
+
         ]
 
     class Config:

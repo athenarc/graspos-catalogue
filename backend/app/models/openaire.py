@@ -159,7 +159,8 @@ class OpenaireMetadata(BaseModel):
 
 class OpenAIREBase(BaseModel):
     source: Optional[str] = None
-    resource_url_name: str | None = None
+    # resource_url_name: str | None = None
+    resource_url_slug: str | None = None
     created: Optional[datetime] = datetime.now()
     modified: Optional[datetime] = datetime.now()
     metadata: OpenaireMetadata | None = None
