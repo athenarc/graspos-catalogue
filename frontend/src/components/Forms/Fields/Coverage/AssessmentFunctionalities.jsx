@@ -17,13 +17,11 @@ export default function AssessmentFunctionalities({
   resource = null,
   resource_type = null,
 }) {
-
   const filteredOptions = assessmentFunctionalityMenuItems?.filter(
     (item) =>
       item?.resource_types?.includes("all") ||
-      item?.resource_types?.includes(resource_type)
+      item?.resource_types?.includes(resource_type),
   );
-
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -45,7 +43,7 @@ export default function AssessmentFunctionalities({
                   option?.value === value?.value
                 }
                 value={filteredOptions?.filter((opt) =>
-                  field?.value?.includes(opt?.value)
+                  field?.value?.includes(opt?.value),
                 )}
                 onChange={(_, newValue) =>
                   field?.onChange(newValue?.map((opt) => opt?.value))
