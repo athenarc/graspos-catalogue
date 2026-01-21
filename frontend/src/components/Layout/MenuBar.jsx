@@ -27,7 +27,8 @@ export default function MenuBar({ handleLogout, user }) {
       justifyContent="center"
       sx={{
         backgroundColor: "#20477B",
-        boxShadow: "rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;",
+        boxShadow:
+          "rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;",
         width: "100%",
         position: "relative;",
         zIndex: "1202",
@@ -82,7 +83,18 @@ export default function MenuBar({ handleLogout, user }) {
         <Stack direction="row" justifyContent="flex-end">
           {!user && (
             <Stack direction="row" spacing={1}>
-              
+              <Link
+                to={"https://zenodo.org/records/17339365"}
+                target="_blank"
+                state={{ backgroundLocation: location }}
+              >
+                <Button
+                  variant="outlined"
+                  sx={{ color: "#fff", border: "none" }}
+                >
+                  Help
+                </Button>
+              </Link>
               <Link to={"login"} state={{ backgroundLocation: location }}>
                 <Button
                   variant="outlined"
