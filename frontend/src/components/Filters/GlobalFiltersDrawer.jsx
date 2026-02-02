@@ -1,8 +1,6 @@
 import {
   Drawer,
   Stack,
-  useMediaQuery,
-  useTheme,
   Fab,
   Button,
   Box,
@@ -33,7 +31,7 @@ export default function ResourcesFiltersDrawer({
           onClick={toggleDrawer}
           sx={{
             position: "fixed",
-            top: 124,
+            top: 186, // 124
             right: 24,
             width: 40,
             height: 40,
@@ -49,7 +47,7 @@ export default function ResourcesFiltersDrawer({
           width: 400,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
-            width: 400,
+            width: !isMobile ? 400 : '80%',
             height: "100vh",
             boxSizing: "border-box",
             display: "flex",
