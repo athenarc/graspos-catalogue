@@ -229,6 +229,7 @@ export default function ResourcesGridLayout({ user }) {
             documents={documents}
             tools={tools}
             services={services}
+            isMobile={isMobile}
           />
         </Box>
       </Box>

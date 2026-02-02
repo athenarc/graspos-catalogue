@@ -166,7 +166,7 @@ function TabPanel({ children, value, index }) {
   );
 }
 
-export default function ResourceItemContent({ resource }) {
+export default function ResourceItemContent({ resource, isMobile }) {
   const description =
     resource?.zenodo?.metadata?.description ||
     resource?.openaire?.metadata?.description ||
@@ -222,7 +222,7 @@ export default function ResourceItemContent({ resource }) {
   };
 
   const visibleTabs = Object.entries(allTabsMapping).filter(
-    ([, { displayTab }]) => displayTab
+    ([, { displayTab }]) => displayTab,
   );
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -278,7 +278,7 @@ export default function ResourceItemContent({ resource }) {
                   }
                   sx={{ alignItems: "flex-start", textAlign: "left" }}
                 />
-              )
+              ),
           )}
         </Tabs>
 
@@ -293,7 +293,7 @@ export default function ResourceItemContent({ resource }) {
                   limit={20}
                 />
               </TabPanel>
-            )
+            ),
         )}
       </Box>
     </Stack>
