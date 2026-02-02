@@ -26,6 +26,7 @@ function ResourcesTabs({
   handleChangeFilters,
   resourcesFetched,
   loadingStatus,
+  isMobile,
 }) {
   const renderLabel = (name) => {
     const displayName = name === "Documents" ? "Templates & Guidelines" : name;
@@ -59,7 +60,10 @@ function ResourcesTabs({
           value={selectedResource}
           onChange={handleSetSelectedResource}
           aria-label="resource tabs"
-          centered
+          variant={isMobile ? "scrollable" : "standard"}
+          scrollButtons={isMobile ? "auto" : false}
+          centered={!isMobile}
+          allowScrollButtonsMobile
         >
           <Tab label={renderLabel("Datasets")} />
           <Tab label={renderLabel("Tools")} />
@@ -105,7 +109,7 @@ export default function ResourcesGridLayout({ user }) {
       ? shouldFetchAll || selectedResource === 0
         ? { ...globalFilters, ...(selectedResource === 0 ? localFilters : {}) }
         : null
-      : { ...globalFilters }
+      : { ...globalFilters },
   );
 
   const tools = useTools(
@@ -113,7 +117,7 @@ export default function ResourcesGridLayout({ user }) {
       ? shouldFetchAll || selectedResource === 1
         ? { ...globalFilters, ...(selectedResource === 1 ? localFilters : {}) }
         : null
-      : { ...globalFilters }
+      : { ...globalFilters },
   );
 
   const documents = useDocuments(
@@ -121,7 +125,7 @@ export default function ResourcesGridLayout({ user }) {
       ? shouldFetchAll || selectedResource === 2
         ? { ...globalFilters, ...(selectedResource === 2 ? localFilters : {}) }
         : null
-      : { ...globalFilters }
+      : { ...globalFilters },
   );
 
   const services = useServices(
@@ -129,7 +133,7 @@ export default function ResourcesGridLayout({ user }) {
       ? shouldFetchAll || selectedResource === 3
         ? { ...globalFilters, ...(selectedResource === 3 ? localFilters : {}) }
         : null
-      : { ...globalFilters }
+      : { ...globalFilters },
   );
 
   const [resourcesFetched, setResourcesFetched] = useState({
@@ -200,6 +204,7 @@ export default function ResourcesGridLayout({ user }) {
           filters={filters}
           handleChangeFilters={handleChangeFilters}
           resourcesFetched={resourcesFetched}
+          isMobile={isMobile}
           loadingStatus={{
             Datasets: datasets.isLoading,
             Tools: tools.isLoading,
