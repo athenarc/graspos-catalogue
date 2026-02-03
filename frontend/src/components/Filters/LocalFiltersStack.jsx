@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
+  Chip,
   Divider,
 } from "@mui/material";
 import { useState } from "react";
@@ -22,42 +23,69 @@ import TrlFilter from "./Filters/TrlFilter";
 import AssessmentFunctionalitiesFilter from "./Filters/AssessmentFunctionalitiesFilter";
 import LanguageAutocompleteFilter from "./Filters/LanguageFilter";
 import AccessRightFilter from "./Filters/AccessRightFilter";
+import ExplorationPathsDrawer from "./ExplorationPathsDrawer";
 
 export default function LocalFiltersStack({
   filters,
   selectedResource,
   handleChangeFilters,
+  isMobile,
+  handleResetFilters,
 }) {
   const [filtersModalOpen, setFiltersModalOpen] = useState(false);
 
+  const activeFiltersCount = 0;
   return (
     <>
       <Stack
-        direction={{ xs: "column", sm: "row" }}
-        alignItems="center"
+        direction="row"
         spacing={2}
+        alignItems="center"
         sx={{ p: 1, mx: 3, mt: 1, mb: 0 }}
       >
-        <Box flex={1} display="flex" justifyContent="flex-start">
-          <GrasposVerifiedFilter
-            selectedFilters={filters}
-            onFilterChange={handleChangeFilters}
-          />
+        <Box flex={isMobile ? 0 : 1} display="flex" justifyContent="flex-start">
+          {!isMobile && (
+            <GrasposVerifiedFilter
+              selectedFilters={filters}
+              onFilterChange={handleChangeFilters}
+            />
+          )}
         </Box>
-
-        <Box flex={1} display="flex" justifyContent="center">
+        <Box
+          flex={isMobile ? 1 : 0}
+          display="flex"
+          justifyContent="space-between"
+          sx={{ gap: isMobile ? 2 : 0, m: "0px !important;" }}
+        >
+          <ExplorationPathsDrawer
+            isMobile={isMobile}
+            handleResetFilters={handleResetFilters}
+            selectedFilters={filters}
+            handleChangeFilters={handleChangeFilters}
+          />
           <Button
+            fullWidth={isMobile}
             variant="outlined"
             startIcon={<FilterAltIcon />}
             onClick={() => setFiltersModalOpen(true)}
-            sx={{ textTransform: "none", borderRadius: 2, minWidth: 140 }}
+            sx={{
+              textTransform: "none",
+              borderRadius: 2,
+            }}
           >
             Filters
+            {activeFiltersCount > 0 && (
+              <Chip
+                label={activeFiltersCount}
+                size="small"
+                color="primary"
+                sx={{ ml: 1 }}
+              />
+            )}
           </Button>
         </Box>
-
-        <Box flex={1} display="flex" justifyContent="flex-end">
-          {selectedResource !== 3 && (
+        <Box flex={isMobile ? 0 : 1} display="flex" justifyContent="flex-end">
+          {!isMobile && selectedResource !== 3 && (
             <SortFilter
               filters={filters}
               onFilterChange={handleChangeFilters}
@@ -67,25 +95,28 @@ export default function LocalFiltersStack({
         </Box>
       </Stack>
 
+      {/* ---------- FILTERS MODAL ---------- */}
       <Dialog
         open={filtersModalOpen}
         onClose={() => setFiltersModalOpen(false)}
+        fullScreen={isMobile}
         fullWidth
-        maxWidth={selectedResource !== 3 ? "md" : "sm"}
+        maxWidth={isMobile ? false : "md"}
         scroll="paper"
       >
+        {/* ----- HEADER ----- */}
         <DialogTitle
           sx={{
             bgcolor: "#20477B",
             color: "white",
-            textAlign: "center",
-            position: "relative",
+            position: "sticky",
+            top: 0,
+            zIndex: 10,
             py: 1.5,
           }}
         >
           Filters
           <IconButton
-            aria-label="close"
             onClick={() => setFiltersModalOpen(false)}
             sx={{ position: "absolute", right: 8, top: 8, color: "white" }}
           >
@@ -93,44 +124,54 @@ export default function LocalFiltersStack({
           </IconButton>
         </DialogTitle>
 
+        {/* ----- CONTENT ----- */}
         <DialogContent dividers>
           <Stack spacing={3}>
-            <Stack
-              direction={{ xs: "column", md: "row" }}
-              spacing={2}
-              alignItems="stretch"
-            >
-              {selectedResource !== 3 && (
-                <Box flex={1}>
-                  <DateFilter
+            {/* VERIFIED BY GRASPOS */}
+            {isMobile && (
+              <>
+                <Box>
+                  <GrasposVerifiedFilter
                     selectedFilters={filters}
                     onFilterChange={handleChangeFilters}
                   />
                 </Box>
-              )}
+                <Divider />
+              </>
+            )}
 
-              {selectedResource !== 3 && (
-                <Divider orientation="vertical" flexItem />
-              )}
+            {/* SORT FIRST ON MOBILE */}
+            {isMobile && selectedResource !== 3 && (
+              <SortFilter
+                filters={filters}
+                onFilterChange={handleChangeFilters}
+                selectedResource={selectedResource}
+              />
+            )}
 
-              <Box flex={1} display="flex" flexDirection="column" gap={2}>
-                {selectedResource !== 3 && (
-                  <LicenseAutocompleteFilter
-                    selectedFilters={filters}
-                    selectedResource={selectedResource}
-                    onFilterChange={handleChangeFilters}
-                  />
-                )}
-                <TagAutoCompleteFilter
-                  selectedFilters={filters}
-                  selectedResource={selectedResource}
-                  onFilterChange={handleChangeFilters}
-                />
-              </Box>
-            </Stack>
+            {selectedResource !== 3 && (
+              <DateFilter
+                selectedFilters={filters}
+                onFilterChange={handleChangeFilters}
+              />
+            )}
+
+            {selectedResource !== 3 && (
+              <LicenseAutocompleteFilter
+                selectedFilters={filters}
+                selectedResource={selectedResource}
+                onFilterChange={handleChangeFilters}
+              />
+            )}
+
+            <TagAutoCompleteFilter
+              selectedFilters={filters}
+              selectedResource={selectedResource}
+              onFilterChange={handleChangeFilters}
+            />
 
             {(selectedResource === 1 || selectedResource === 3) && (
-              <Stack direction="column" spacing={2}>
+              <>
                 <AssessmentFunctionalitiesFilter
                   selectedFilters={filters}
                   selectedResource={selectedResource}
@@ -141,13 +182,13 @@ export default function LocalFiltersStack({
                   selectedResource={selectedResource}
                   onFilterChange={handleChangeFilters}
                 />
-              </Stack>
+              </>
             )}
 
             {(selectedResource === 0 ||
               selectedResource === 1 ||
               selectedResource === 2) && (
-              <Stack direction="column" spacing={2}>
+              <>
                 <LanguageAutocompleteFilter
                   fieldToSearch="mapped_language"
                   field="language"
@@ -164,18 +205,30 @@ export default function LocalFiltersStack({
                   onFilterChange={handleChangeFilters}
                   selectedResource={selectedResource}
                 />
-              </Stack>
+              </>
             )}
           </Stack>
         </DialogContent>
 
-        <DialogActions sx={{ px: 3, py: 2, bgcolor: "#f8f9fa" }}>
+        {/* ----- FOOTER ----- */}
+        <DialogActions
+          sx={{
+            position: "sticky",
+            bottom: 0,
+            bgcolor: "#fff",
+            px: 2,
+            py: 1.5,
+            borderTop: "1px solid",
+            borderColor: "divider",
+          }}
+        >
           <Button
-            variant="outlined"
+            fullWidth
+            variant="contained"
+            size="large"
             onClick={() => setFiltersModalOpen(false)}
-            sx={{ borderColor: "rgba(0,0,0,0.1)", color: "text.secondary" }}
           >
-            Close
+            Apply filters
           </Button>
         </DialogActions>
       </Dialog>

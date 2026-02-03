@@ -10,238 +10,324 @@ import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import { formatDate } from "@utils/utils";
 import { renderIcon } from "@helpers/MenuItems";
 
-export function ResourceItemScopes({ resource }) {
+const resourcesDisplayFieldsFirst = [
+  {
+    publication_date: {
+      label: "Publication Date",
+      icon: CalendarMonthIcon,
+      resources: ["dataset", "tool", "document"],
+    },
+  },
+  {
+    version: {
+      label: "Version",
+      icon: HistoryIcon,
+      resources: ["dataset", "tool", "document", "service"],
+    },
+  },
+  {
+    license: {
+      label: "License",
+      icon: AssignmentIcon,
+      resources: ["dataset", "tool", "document", "service"],
+    },
+  },
+  {
+    trl: {
+      label: "Technology Readiness Level (TRL)",
+      icon: HistoryIcon,
+      resources: ["tool", "service"],
+    },
+  },
+];
+
+const resourcesDisplayAssessmentFields = [
+  {
+    scopes: { resources: ["dataset", "tool", "document", "service"] },
+  },
+  {
+    assessments: { resources: ["dataset", "tool", "document", "service"] },
+  },
+  {
+    geographical_coverage: {
+      resources: ["dataset", "tool", "document", "service"],
+    },
+  },
+];
+
+const resourcesDisplayFieldsSecond = [
+  {
+    downloads: {
+      label: "Downloads on Zenodo",
+      icon: DownloadIcon,
+      resources: ["dataset", "tool", "document"],
+    },
+  },
+  {
+    views: {
+      label: "Views on Zenodo",
+      icon: VisibilityIcon,
+      resources: ["dataset", "tool", "document"],
+    },
+  },
+  {
+    citations: {
+      label: "Citations",
+      icon: FormatQuoteIcon,
+      resources: ["dataset", "tool", "document"],
+    },
+  },
+];
+
+function ResourceItemScopes({ resource }) {
   const SIZE = 18;
   const FONT_SIZE = 12;
+
   return (
-    <AvatarGroup
-      sx={{ ml: 0 }}
-      slotProps={{
-        additionalAvatar: {
-          sx: {
-            width: SIZE,
-            height: SIZE,
-            fontSize: FONT_SIZE,
-          },
-        },
-      }}
-    >
-      {resource?.scopes?.map((scope) => (
-        <Tooltip key={scope?.id} title={scope?.description}>
-          <Avatar
-            alt={scope?.name}
-            sx={{
+    resource?.scopes.length > 0 && (
+      <AvatarGroup
+        sx={{ marginLeft: "0px !important;" }}
+        slotProps={{
+          additionalAvatar: {
+            sx: {
               width: SIZE,
               height: SIZE,
               fontSize: FONT_SIZE,
-              bgcolor: scope.bg_color ?? "#EB611F",
-            }}
-          >
-            {scope?.name?.toUpperCase()[0]}
-          </Avatar>
-        </Tooltip>
-      ))}
-    </AvatarGroup>
+              pointerEvents: "auto",
+            },
+          },
+        }}
+      >
+        {resource?.scopes?.map((scope) => (
+          <Tooltip key={scope?.id} title={scope?.description}>
+            <Avatar
+              sx={{
+                width: SIZE,
+                height: SIZE,
+                fontSize: FONT_SIZE,
+                bgcolor: scope.bg_color ?? "#EB611F",
+              }}
+            >
+              {scope?.name?.[0]?.toUpperCase()}
+            </Avatar>
+          </Tooltip>
+        ))}
+      </AvatarGroup>
+    )
   );
 }
 
-export function ResourceItemAssessments({ resource }) {
+function ResourceItemAssessments({ resource }) {
   const SIZE = 18;
   const FONT_SIZE = 12;
 
   return (
-    <AvatarGroup
-      sx={{ ml: 0 }}
-      slotProps={{
-        additionalAvatar: {
-          sx: {
-            width: SIZE,
-            height: SIZE,
-            fontSize: FONT_SIZE,
-          },
-        },
-      }}
-    >
-      {resource?.assessments?.map((assessment) => (
-        <Tooltip key={assessment?.id} title={assessment?.description}>
-          <Avatar
-            alt={assessment?.name}
-            sx={{
+    resource?.assessments?.length > 0 && (
+      <AvatarGroup
+        sx={{ marginLeft: "0px !important;" }}
+        slotProps={{
+          additionalAvatar: {
+            sx: {
               width: SIZE,
               height: SIZE,
               fontSize: FONT_SIZE,
-              bgcolor: "grey.200",
-              color: "text.primary",
-            }}
-          >
-            {renderIcon(assessment?.name)}
-          </Avatar>
-        </Tooltip>
-      ))}
-    </AvatarGroup>
+              pointerEvents: "auto",
+            },
+          },
+        }}
+      >
+        {resource?.assessments?.map((assessment) => (
+          <Tooltip key={assessment?.id} title={assessment?.description}>
+            <Avatar
+              sx={{
+                width: SIZE,
+                height: SIZE,
+                fontSize: FONT_SIZE,
+                bgcolor: "grey.200",
+                color: "text.primary",
+              }}
+            >
+              {renderIcon(assessment?.name)}
+            </Avatar>
+          </Tooltip>
+        ))}
+      </AvatarGroup>
+    )
+  );
+}
+
+function ResourceItemGeographicalCoverage({ resource }) {
+  const SIZE = 18;
+  const FONT_SIZE = 12;
+
+  const entries = Object.entries(resource?.geographical_coverage || {});
+  const visible = entries.slice(0, 5);
+  const hidden = entries.slice(5);
+
+  return (
+    entries?.length > 0 && (
+      <AvatarGroup
+        sx={{ marginLeft: "0px !important;" }}
+        slotProps={{
+          additionalAvatar: {
+            sx: {
+              width: SIZE,
+              height: SIZE,
+              fontSize: FONT_SIZE,
+              pointerEvents: "auto",
+            },
+          },
+        }}
+      >
+        {visible.map(([id, geo]) => (
+          <Tooltip key={id} title={geo.label || id}>
+            <Avatar src={geo.flag} sx={{ width: SIZE, height: SIZE }} />
+          </Tooltip>
+        ))}
+
+        {hidden.length > 0 && (
+          <Tooltip title={hidden.map(([, g]) => g.label).join(", ")}>
+            <Avatar
+              sx={{
+                width: SIZE,
+                height: SIZE,
+                fontSize: FONT_SIZE,
+                bgcolor: "grey.400",
+              }}
+            >
+              +{hidden.length}
+            </Avatar>
+          </Tooltip>
+        )}
+      </AvatarGroup>
+    )
+  );
+}
+
+function ResourceItemAssessmentFields({ resource, type }) {
+  return (
+    <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+      {resourcesDisplayAssessmentFields.map((field) => {
+        const key = Object.keys(field)[0];
+        const cfg = field[key];
+
+        if (!cfg.resources.includes(type)) return null;
+
+        if (key === "scopes")
+          return <ResourceItemScopes key={key} resource={resource} />;
+        if (key === "assessments")
+          return <ResourceItemAssessments key={key} resource={resource} />;
+        if (key === "geographical_coverage")
+          return (
+            <ResourceItemGeographicalCoverage key={key} resource={resource} />
+          );
+
+        return null;
+      })}
+    </Stack>
   );
 }
 
 export default function ResourceItemFooter({ resource, type }) {
-  const MAX_AVATARS = 5;
-  const SIZE = "1.1rem";
-  const FONT_SIZE = "0.75rem";
+  const ICON_SIZE = { xs: "1rem", sm: "1.15rem" };
+  const FONT_SIZE = { xs: "0.7rem", sm: "0.85rem" };
 
-  const geoEntries = Object.entries(resource?.geographical_coverage || {});
-  const visibleGeos = geoEntries.slice(0, MAX_AVATARS);
-  const hiddenGeos = geoEntries.slice(MAX_AVATARS);
-  const publication_date =
-    resource?.zenodo?.metadata?.publication_date || "N/A";
+  const publicationDate = resource?.zenodo?.metadata?.publication_date
+    ? formatDate(resource?.zenodo?.metadata?.publication_date)
+    : "N/A";
+
   const version =
     resource?.zenodo?.metadata?.version ||
     resource?.openaire?.metadata?.version ||
     "N/A";
+
   const license =
     resource?.zenodo?.metadata?.license?.id ||
     resource?.openaire?.metadata?.license ||
     "N/A";
+
+  const trl = resource?.trl?.trl_id
+    ? `${resource?.trl?.trl_id} - ${resource?.trl?.european_description}`
+    : "N/A";
+
   return (
-    <Stack direction="row" justifyContent="space-between" alignItems="center">
-      <Stack direction="row" spacing={2} alignItems="center">
-        {type !== "service" && (
-          <>
-            <Tooltip title="Publication date">
-              <CalendarMonthIcon sx={{ fontSize: "1.1rem" }} />
-            </Tooltip>
-            <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-              {formatDate(publication_date)}
-            </Typography>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Tooltip title="Version">
-                <HistoryIcon sx={{ fontSize: "1.1rem" }} />
-              </Tooltip>
-              <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-                {version}
-              </Typography>
-            </Stack>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Tooltip title="License">
-                <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
-              </Tooltip>
-              <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-                {license}
-              </Typography>
-              {type === "tool" && (
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <Tooltip title="TRL">
-                    <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
-                  </Tooltip>
-                  <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-                    {resource?.trl?.trl_id
-                      ? resource?.trl?.trl_id +
-                        " - " +
-                        resource?.trl?.european_description
-                      : "N/A"}
-                  </Typography>
-                </Stack>
-              )}
-            </Stack>
-          </>
-        )}
-        {type === "service" && (
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Tooltip title="TRL">
-              <AssignmentIcon sx={{ fontSize: "1.1rem" }} />
-            </Tooltip>
-            <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-              {resource?.trl?.trl_id
-                ? resource?.trl?.trl_id +
-                  " - " +
-                  resource?.trl?.european_description
-                : "N/A"}
-            </Typography>
-            <Tooltip title="Version">
-              <HistoryIcon sx={{ fontSize: "1.1rem" }} />
-            </Tooltip>
-            <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-              {version}
-            </Typography>
-          </Stack>
-        )}
+    <Stack gap={{ xs: 1, sm: 2 }}>
+      <ResourceItemAssessmentFields resource={resource} type={type} />
 
-        <ResourceItemAssessments resource={resource} />
-        <ResourceItemScopes resource={resource} />
-        {resource?.geographical_coverage && (
-          <AvatarGroup
-            sx={{ ml: 2 }}
-            slotProps={{
-              additionalAvatar: {
-                sx: {
-                  width: SIZE,
-                  height: SIZE,
-                  fontSize: FONT_SIZE,
-                },
-              },
-            }}
-          >
-            {visibleGeos.map(([geoId, geo]) => (
-              <Tooltip key={geoId} title={geo.label || geoId}>
-                <Avatar
-                  alt={geo.label || geoId}
-                  src={geo.flag}
-                  sx={{
-                    width: SIZE,
-                    height: SIZE,
-                    fontSize: FONT_SIZE,
-                  }}
-                >
-                  {geo?.label.toUpperCase()[0]}
-                </Avatar>
-              </Tooltip>
-            ))}
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Stack
+          direction="row"
+          gap={{ xs: 1, sm: 2 }}
+          flexWrap="wrap"
+          alignItems="center"
+        >
+          {resourcesDisplayFieldsFirst?.map((field) => {
+            const [key, cfg] = Object.entries(field)[0];
+            if (!cfg?.resources?.includes(type)) return null;
 
-            {hiddenGeos.length > 0 && (
-              <Tooltip
-                title={hiddenGeos.map(([, geo]) => geo?.label || "").join(", ")}
+            return (
+              <Stack
+                key={key}
+                direction="row"
+                gap={{ xs: 0.5, sm: 1 }}
+                alignItems="center"
               >
-                <Avatar
-                  sx={{
-                    width: SIZE,
-                    height: SIZE,
-                    fontSize: FONT_SIZE,
-                    ml: "-8px",
-                    bgcolor: "grey.400",
-                    zIndex: 1,
-                    pointerEvents: "auto",
-                  }}
-                >
-                  +{hiddenGeos?.length}
-                </Avatar>
-              </Tooltip>
-            )}
-          </AvatarGroup>
-        )}
-      </Stack>
-      {type !== "service" && (
-        <Stack direction="row" spacing={2} alignItems="center">
-          <Stack direction="row" spacing={2} alignItems="center">
-            <Tooltip title="Downloads on Zenodo">
-              <DownloadIcon sx={{ fontSize: "1.1rem" }} />
-            </Tooltip>
-            <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-              {resource?.zenodo?.stats?.unique_downloads ?? "N/A"}
-            </Typography>
-            <Tooltip title="Views on Zenodo">
-              <VisibilityIcon sx={{ fontSize: "1.1rem" }} />
-            </Tooltip>
-            <Typography variant="body2" sx={{ fontSize: "0.95rem", mr: 2 }}>
-              {resource?.zenodo?.stats?.unique_views ?? "N/A"}
-            </Typography>
-            <Tooltip title="Citations">
-              <FormatQuoteIcon sx={{ fontSize: "1.1rem" }} />
-            </Tooltip>
-            <Typography variant="body2" sx={{ fontSize: "0.95rem" }}>
-              {resource?.zenodo?.indicators?.citationImpact?.citationCount ??
-                "N/A"}
-            </Typography>
-          </Stack>
+                <Tooltip title={cfg?.label}>
+                  <cfg.icon
+                    sx={{ fontSize: ICON_SIZE, color: "text.secondary" }}
+                  />
+                </Tooltip>
+
+                <Typography sx={{ fontSize: FONT_SIZE }}>
+                  {key === "publication_date" && publicationDate}
+                  {key === "version" && version}
+                  {key === "license" && license}
+                  {key === "trl" && trl}
+                </Typography>
+              </Stack>
+            );
+          })}
         </Stack>
-      )}
+
+        <Stack
+          direction="row"
+          gap={{ xs: 1, sm: 2 }}
+          flexWrap="wrap"
+          justifyContent="flex-end"
+          alignItems="center"
+        >
+          {resourcesDisplayFieldsSecond?.map((field) => {
+            const [key, cfg] = Object?.entries(field)[0];
+            if (!cfg?.resources?.includes(type)) return null;
+
+            return (
+              <Stack
+                key={key}
+                direction="row"
+                gap={{ xs: 0.5, sm: 1 }}
+                alignItems="center"
+              >
+                <Tooltip title={cfg?.label}>
+                  <cfg.icon
+                    sx={{ fontSize: ICON_SIZE, color: "text.secondary" }}
+                  />
+                </Tooltip>
+
+                <Typography sx={{ fontSize: FONT_SIZE }}>
+                  {key === "downloads" &&
+                    (resource?.zenodo?.stats?.unique_downloads ?? "N/A")}
+                  {key === "views" &&
+                    (resource?.zenodo?.stats?.unique_views ?? "N/A")}
+                  {key === "citations" &&
+                    (resource?.zenodo?.indicators?.citationImpact
+                      ?.citationCount ??
+                      "N/A")}
+                </Typography>
+              </Stack>
+            );
+          })}
+        </Stack>
+      </Stack>
     </Stack>
   );
 }

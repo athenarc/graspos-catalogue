@@ -1,8 +1,6 @@
 import {
   Drawer,
   Stack,
-  useMediaQuery,
-  useTheme,
   Fab,
   Button,
   Box,
@@ -10,6 +8,7 @@ import {
   Divider,
 } from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import RouteIcon from "@mui/icons-material/Route";
 import { useState } from "react";
 
 export default function ResourcesFiltersDrawer({
@@ -27,29 +26,29 @@ export default function ResourcesFiltersDrawer({
 
   return (
     <>
-      {isMobile && (
+      {/* {isMobile && (
         <Fab
           color="primary"
           onClick={toggleDrawer}
           sx={{
             position: "fixed",
-            top: 124,
+            top: 186, // 124
             right: 24,
             width: 40,
             height: 40,
             zIndex: theme.zIndex.drawer + 2,
           }}
         >
-          <FilterAltIcon />
+          <RouteIcon />
         </Fab>
-      )}
+      )} */}
 
       <Drawer
         sx={{
           width: 400,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
-            width: 400,
+            width: !isMobile ? 400 : "80%",
             height: "100vh",
             boxSizing: "border-box",
             display: "flex",

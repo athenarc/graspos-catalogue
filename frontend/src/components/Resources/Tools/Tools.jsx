@@ -14,7 +14,7 @@ import { ResourceBasicInformation } from "../ResourcesGrid/ResourcePageComponent
 import ResourceMessage from "@helpers/ResourceMessage";
 import { useEffect } from "react";
 
-export function Tools({ tools, user }) {
+export function Tools({ tools, user, isMobile }) {
   if (tools?.isLoading) {
     return <RectangularVariants width="100%" height={300} count={4} />;
   }
@@ -42,6 +42,7 @@ export function Tools({ tools, user }) {
         resource={tool}
         type={"Tool"}
         user={user}
+        isMobile={isMobile}
       />
     ));
   }

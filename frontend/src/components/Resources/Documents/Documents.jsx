@@ -15,7 +15,7 @@ import { ResourceBasicInformation } from "../ResourcesGrid/ResourcePageComponent
 import ResourceMessage from "@helpers/ResourceMessage";
 import { useEffect } from "react";
 
-export function Documents({ documents, user }) {
+export function Documents({ documents, user, isMobile }) {
   if (documents?.isLoading) {
     return <RectangularVariants width="100%" height={300} count={4} />;
   }
@@ -45,6 +45,7 @@ export function Documents({ documents, user }) {
         resource={document}
         type={"Document"}
         user={user}
+        isMobile={isMobile}
       />
     ));
   }

@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
         queryClient.invalidateQueries(["services"]);
       }, 100);
     },
-    [queryClient]
+    [queryClient],
   );
 
   useEffect(() => {
@@ -73,12 +73,15 @@ export const AuthProvider = ({ children }) => {
 
   // ---- UPDATE USER FROM API ----
   useEffect(() => {
-    if (token && userInformation.isFetched) {
-      if (userInformation.data?.data) {
-        setUser(userInformation.data.data);
-      } else {
-        // invalid token -> logout
-        handleLogout();
+    if (token && userInformation?.isFetched) {
+      if (userInformation?.isSuccess && userInformation?.data?.data) {
+        setUser(userInformation?.data.data);
+      }
+
+      if (userInformation?.isError) {
+        if (userInformation?.error?.response?.status === 401) {
+          handleLogout();
+        }
       }
       setIsLoadingAuth(false);
     } else if (!token) {
@@ -104,7 +107,7 @@ export const AuthProvider = ({ children }) => {
               "Content-Type": "application/json",
               Authorization: `Bearer ${refreshToken}`,
             },
-          }
+          },
         );
 
         if (!res.ok) throw new Error("Refresh failed");

@@ -14,7 +14,7 @@ import ResourceMessage from "@helpers/ResourceMessage";
 import { RectangularVariants } from "@helpers/Skeleton";
 import { useEffect } from "react";
 
-export function Datasets({ datasets, user }) {
+export function Datasets({ datasets, user, isMobile }) {
   if (datasets?.isLoading) {
     return <RectangularVariants width="100%" height={300} count={4} />;
   }
@@ -42,6 +42,7 @@ export function Datasets({ datasets, user }) {
         resource={dataset}
         type={"Dataset"}
         user={user}
+        isMobile={isMobile}
       />
     ));
   }

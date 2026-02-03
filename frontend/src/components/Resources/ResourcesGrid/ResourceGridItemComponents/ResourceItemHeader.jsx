@@ -60,19 +60,19 @@ export function ResourceActionsMenu({ resource, type, user }) {
     type === "Document"
       ? deleteDocument
       : type === "Dataset"
-      ? deleteDataset
-      : type === "Tool"
-      ? deleteTool
-      : deleteService;
+        ? deleteDataset
+        : type === "Tool"
+          ? deleteTool
+          : deleteService;
 
   const patchResourceQuery =
     type === "Document"
       ? updateDocument
       : type === "Dataset"
-      ? updateDataset
-      : type === "Tool"
-      ? updateTool
-      : updateService;
+        ? updateDataset
+        : type === "Tool"
+          ? updateTool
+          : updateService;
 
   useEffect(() => {
     if (resource?.scopes) {
@@ -96,7 +96,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
           setQueryState(false);
           handleClose();
         },
-      }
+      },
     );
   };
 
@@ -133,7 +133,7 @@ export function ResourceActionsMenu({ resource, type, user }) {
     setSelectedScopes((prev) =>
       prev.includes(scopeId)
         ? prev.filter((id) => id !== scopeId)
-        : [...prev, scopeId]
+        : [...prev, scopeId],
     );
   };
 
@@ -342,11 +342,11 @@ export function ResourceItemCommunities({ resource }) {
             }}
           />
         </Tooltip>
-      )
+      ),
   );
 }
 
-export default function ResourceItemHeader({ resource, type, user }) {
+export default function ResourceItemHeader({ resource, type, user, isMobile }) {
   const title =
     resource?.zenodo?.title || resource?.openaire?.metadata?.name || "Untitled";
 
@@ -358,36 +358,27 @@ export default function ResourceItemHeader({ resource, type, user }) {
       mb={2}
       sx={{ position: "relative" }}
     >
-      <Stack direction="column" spacing={1} sx={{ flex: 1, pr: user ? 16 : 8 }}>
-        <Stack direction="row" alignItems="center">
-          <Typography
-            variant="h6"
-            sx={{
-              whiteSpace: "break",
-              overflow: "hidden",
-              textOverflow: "break-word",
-              fontWeight: "bold",
-            }}
+      <Stack direction="row" spacing={1}>
+        <Typography
+          variant="h6"
+          sx={{
+            whiteSpace: "break-spaces",
+            textAlign: "left",
+            overflow: "hidden",
+            textOverflow: "break-word",
+            fontWeight: "bold",
+          }}
+        >
+          <Link
+            to={"/" + type.toLowerCase() + "s/" + resource?.resource_url_slug}
           >
-            <Link to={"/" + type.toLowerCase() + "s/" + resource?.resource_url_slug}>
-              {title}
-            </Link>
-          </Typography>
+            {title}
+          </Link>
           <ResourceItemCommunities resource={resource} />
-        </Stack>
+        </Typography>
       </Stack>
 
-      <Stack
-        direction="row"
-        spacing={1}
-        alignItems="center"
-        sx={{
-          position: "absolute",
-          top: 8,
-          right: 8,
-          gap: 1,
-        }}
-      >
+      <Stack direction="column" spacing={1} alignItems="flex-end">
         {user && (
           <ResourceActionsMenu resource={resource} type={type} user={user} />
         )}

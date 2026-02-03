@@ -12,16 +12,23 @@ export default function ResourcesGrid({
   documents,
   tools,
   services,
+  isMobile,
 }) {
   return (
     <Box sx={{ p: 2, pt: 0 }}>
       <Grid container spacing={2}>
-        {selectedResource == 0 && <Datasets datasets={datasets} user={user} />}
-        {selectedResource == 1 && <Tools tools={tools} user={user} />}
-        {selectedResource == 2 && (
-          <Documents documents={documents} user={user} />
+        {selectedResource == 0 && (
+          <Datasets datasets={datasets} user={user} isMobile={isMobile} />
         )}
-        {selectedResource == 3 && <Services services={services} user={user} />}
+        {selectedResource == 1 && (
+          <Tools tools={tools} user={user} isMobile={isMobile} />
+        )}
+        {selectedResource == 2 && (
+          <Documents documents={documents} user={user} isMobile={isMobile} />
+        )}
+        {selectedResource == 3 && (
+          <Services services={services} user={user} isMobile={isMobile} />
+        )}
       </Grid>
     </Box>
   );

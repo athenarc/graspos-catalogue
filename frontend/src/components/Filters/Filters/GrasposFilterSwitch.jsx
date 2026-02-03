@@ -1,6 +1,8 @@
 import { Stack, Switch, FormControlLabel, Tooltip } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
+const FONT_SIZE = { xs: "0.7rem", sm: "0.85rem" };
+
 export default function GrasposVerifiedFilter({
   selectedFilters,
   onFilterChange,

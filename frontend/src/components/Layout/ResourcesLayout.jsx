@@ -16,7 +16,6 @@ import { useServices } from "@queries/service";
 import LocalFiltersStack from "../Filters/LocalFiltersStack";
 import ResourcesGrid from "../Resources/Resources";
 import { useURLFilters } from "../Filters/Filters/Utils/useURLFilters";
-import FiltersLayout from "../Filters/Layout";
 import GlobalSearchBar from "../Filters/Filters/GlobalSearchBar";
 
 function ResourcesTabs({
@@ -26,6 +25,7 @@ function ResourcesTabs({
   handleChangeFilters,
   resourcesFetched,
   loadingStatus,
+  isMobile,
 }) {
   const renderLabel = (name) => {
     const displayName = name === "Documents" ? "Templates & Guidelines" : name;
@@ -59,7 +59,10 @@ function ResourcesTabs({
           value={selectedResource}
           onChange={handleSetSelectedResource}
           aria-label="resource tabs"
-          centered
+          variant={isMobile ? "scrollable" : "standard"}
+          scrollButtons={isMobile ? "auto" : false}
+          centered={!isMobile}
+          allowScrollButtonsMobile
         >
           <Tab label={renderLabel("Datasets")} />
           <Tab label={renderLabel("Tools")} />
@@ -80,7 +83,8 @@ export default function ResourcesGridLayout({ user }) {
   };
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery("(max-width:1000px)");
+
   const [initialFetchDone, setInitialFetchDone] = useState(false);
 
   useEffect(() => {
@@ -105,7 +109,7 @@ export default function ResourcesGridLayout({ user }) {
       ? shouldFetchAll || selectedResource === 0
         ? { ...globalFilters, ...(selectedResource === 0 ? localFilters : {}) }
         : null
-      : { ...globalFilters }
+      : { ...globalFilters },
   );
 
   const tools = useTools(
@@ -113,7 +117,7 @@ export default function ResourcesGridLayout({ user }) {
       ? shouldFetchAll || selectedResource === 1
         ? { ...globalFilters, ...(selectedResource === 1 ? localFilters : {}) }
         : null
-      : { ...globalFilters }
+      : { ...globalFilters },
   );
 
   const documents = useDocuments(
@@ -121,7 +125,7 @@ export default function ResourcesGridLayout({ user }) {
       ? shouldFetchAll || selectedResource === 2
         ? { ...globalFilters, ...(selectedResource === 2 ? localFilters : {}) }
         : null
-      : { ...globalFilters }
+      : { ...globalFilters },
   );
 
   const services = useServices(
@@ -129,7 +133,7 @@ export default function ResourcesGridLayout({ user }) {
       ? shouldFetchAll || selectedResource === 3
         ? { ...globalFilters, ...(selectedResource === 3 ? localFilters : {}) }
         : null
-      : { ...globalFilters }
+      : { ...globalFilters },
   );
 
   const [resourcesFetched, setResourcesFetched] = useState({
@@ -172,19 +176,10 @@ export default function ResourcesGridLayout({ user }) {
     <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <Box
         sx={{
-          width: { xs: 0, md: 400 },
+          width: isMobile ? 0 : 400,
           flexShrink: 0,
         }}
-      >
-        <FiltersLayout
-          selectedResource={selectedResource}
-          selectedFilters={filters}
-          handleChangeFilters={handleChangeFilters}
-          onResetFilters={handleResetFilters}
-          isMobile={isMobile}
-          theme={theme}
-        />
-      </Box>
+      ></Box>
 
       <Box
         sx={{
@@ -200,6 +195,7 @@ export default function ResourcesGridLayout({ user }) {
           filters={filters}
           handleChangeFilters={handleChangeFilters}
           resourcesFetched={resourcesFetched}
+          isMobile={isMobile}
           loadingStatus={{
             Datasets: datasets.isLoading,
             Tools: tools.isLoading,
@@ -213,7 +209,9 @@ export default function ResourcesGridLayout({ user }) {
           selectedResource={selectedResource}
           filters={filters}
           handleChangeFilters={handleChangeFilters}
+          handleResetFilters={handleResetFilters}
           isMobile={isMobile}
+          theme={theme}
         />
 
         <Box sx={{ flexGrow: 1, overflowY: "auto", p: 2, pb: 12, pt: 1 }}>
@@ -224,6 +222,7 @@ export default function ResourcesGridLayout({ user }) {
             documents={documents}
             tools={tools}
             services={services}
+            isMobile={isMobile}
           />
         </Box>
       </Box>

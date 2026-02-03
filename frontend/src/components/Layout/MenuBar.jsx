@@ -19,6 +19,9 @@ export default function MenuBar({ handleLogout, user }) {
   function handleAddResource() {
     navigate("resource/add", { state: { backgroundLocation: location } });
   }
+  function handleGoToHelp() {
+    window.open("https://zenodo.org/records/17339365", "_blank");
+  }
   return (
     <Grid
       component={Box}
@@ -47,6 +50,7 @@ export default function MenuBar({ handleLogout, user }) {
           display: "flex",
           alignItems: "center",
           height: "100%",
+          py: 1,
         }}
       >
         <Link
@@ -61,7 +65,7 @@ export default function MenuBar({ handleLogout, user }) {
             src={logo}
             alt="GraspOS-Logo"
             style={{
-              height: "48px", // 6 spacing units (6 * 8px)
+              height: "42px", // 6 spacing units (6 * 8px)
               width: "auto",
               objectFit: "contain",
             }}
@@ -80,21 +84,18 @@ export default function MenuBar({ handleLogout, user }) {
           height: "100%",
         }}
       >
-        <Stack direction="row" justifyContent="flex-end">
+        <Stack direction="row" justifyContent="flex-end" alignItems="center">
+          <Link
+            to={"https://zenodo.org/records/17339365"}
+            target="_blank"
+            state={{ backgroundLocation: location }}
+          >
+            <Button variant="outlined" sx={{ color: "#fff", border: "none" }}>
+              Help
+            </Button>
+          </Link>
           {!user && (
             <Stack direction="row" spacing={1}>
-              <Link
-                to={"https://zenodo.org/records/17339365"}
-                target="_blank"
-                state={{ backgroundLocation: location }}
-              >
-                <Button
-                  variant="outlined"
-                  sx={{ color: "#fff", border: "none" }}
-                >
-                  Help
-                </Button>
-              </Link>
               <Link to={"login"} state={{ backgroundLocation: location }}>
                 <Button
                   variant="outlined"
@@ -113,6 +114,7 @@ export default function MenuBar({ handleLogout, user }) {
               handleLogout={handleLogout}
               handleZenodoUpdates={handleZenodoUpdates}
               handleAddResource={handleAddResource}
+              // handleGoToHelp={handleGoToHelp}
             />
           )}
         </Stack>

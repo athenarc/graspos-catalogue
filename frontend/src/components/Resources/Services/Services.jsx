@@ -13,7 +13,7 @@ import { ResourceBasicInformation } from "../ResourcesGrid/ResourcePageComponent
 import ResourceMessage from "@helpers/ResourceMessage";
 import { useEffect } from "react";
 
-export function Services({ services, user }) {
+export function Services({ services, user, isMobile }) {
   if (services?.isLoading) {
     return <RectangularVariants width="100%" height={300} count={4} />;
   }
@@ -41,6 +41,7 @@ export function Services({ services, user }) {
         resource={service}
         type={"Service"}
         user={user}
+        isMobile={isMobile}
       />
     ));
   }

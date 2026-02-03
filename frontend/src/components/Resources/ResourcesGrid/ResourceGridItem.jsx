@@ -3,17 +3,7 @@ import ResourceItemHeader from "./ResourceGridItemComponents/ResourceItemHeader"
 import ResourceItemContent from "./ResourceGridItemComponents/ResourceItemContent";
 import ResourceItemFooter from "./ResourceGridItemComponents/ResourceItemFooter";
 
-export default function ResourceGridItem({ resource, type, user }) {
-  const typeColors = {
-    data: { bg: "#B3E5FC", color: "#01579B" },
-    monitoring: { bg: "#C8E6C9", color: "#1B5E20" },
-    enrichment: { bg: "#F8BBD0", color: "#880E4F" },
-  };
-
-  const { bg, color } = typeColors[resource?.service_type] || {
-    bg: "#E0E0E0",
-    color: "#424242",
-  };
+export default function ResourceGridItem({ resource, type, user, isMobile }) {
   return (
     <Grid key={resource?._id} size={{ xs: 12 }}>
       <Card
@@ -34,8 +24,13 @@ export default function ResourceGridItem({ resource, type, user }) {
       >
         <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
           <CardContent sx={{ pb: 1, mb: 1 }}>
-            <ResourceItemHeader resource={resource} type={type} user={user} />
-            <ResourceItemContent resource={resource} />
+            <ResourceItemHeader
+              resource={resource}
+              type={type}
+              user={user}
+              isMobile={isMobile}
+            />
+            <ResourceItemContent resource={resource} isMobile={isMobile} />
           </CardContent>
           <CardContent
             sx={{
@@ -47,6 +42,7 @@ export default function ResourceGridItem({ resource, type, user }) {
             <ResourceItemFooter
               resource={resource}
               type={type?.toLowerCase()}
+              isMobile={isMobile}
             />
           </CardContent>
         </Box>

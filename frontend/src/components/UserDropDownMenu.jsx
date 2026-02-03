@@ -15,6 +15,7 @@ import { CircularVariants } from "@helpers/Skeleton";
 import GroupIcon from "@mui/icons-material/Group";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import AddIcon from "@mui/icons-material/Add";
+import HelpIcon from "@mui/icons-material/Help";
 
 export default function UserDropDownMenu({
   user,
@@ -23,6 +24,7 @@ export default function UserDropDownMenu({
   handleUsers,
   handleZenodoUpdates,
   handleAddResource,
+  handleGoToHelp,
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -114,6 +116,12 @@ export default function UserDropDownMenu({
             <AddIcon />
           </Avatar>
           Add resource
+        </MenuItem>
+        <MenuItem onClick={handleGoToHelp}>
+          <Avatar>
+            <HelpIcon />
+          </Avatar>
+          Help
         </MenuItem>
         <Divider />
         <MenuItem onClick={handleLogout}>
