@@ -16,7 +16,6 @@ import { useServices } from "@queries/service";
 import LocalFiltersStack from "../Filters/LocalFiltersStack";
 import ResourcesGrid from "../Resources/Resources";
 import { useURLFilters } from "../Filters/Filters/Utils/useURLFilters";
-import FiltersLayout from "../Filters/Layout";
 import GlobalSearchBar from "../Filters/Filters/GlobalSearchBar";
 
 function ResourcesTabs({
@@ -84,7 +83,8 @@ export default function ResourcesGridLayout({ user }) {
   };
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery("(max-width:1000px)");
+
   const [initialFetchDone, setInitialFetchDone] = useState(false);
 
   useEffect(() => {
@@ -176,19 +176,10 @@ export default function ResourcesGridLayout({ user }) {
     <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <Box
         sx={{
-          width: { xs: 0, md: 400 },
+          width: isMobile ? 0 : 400,
           flexShrink: 0,
         }}
-      >
-        <FiltersLayout
-          selectedResource={selectedResource}
-          selectedFilters={filters}
-          handleChangeFilters={handleChangeFilters}
-          onResetFilters={handleResetFilters}
-          isMobile={isMobile}
-          theme={theme}
-        />
-      </Box>
+      ></Box>
 
       <Box
         sx={{
@@ -218,7 +209,9 @@ export default function ResourcesGridLayout({ user }) {
           selectedResource={selectedResource}
           filters={filters}
           handleChangeFilters={handleChangeFilters}
+          handleResetFilters={handleResetFilters}
           isMobile={isMobile}
+          theme={theme}
         />
 
         <Box sx={{ flexGrow: 1, overflowY: "auto", p: 2, pb: 12, pt: 1 }}>
