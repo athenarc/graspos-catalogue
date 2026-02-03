@@ -10,8 +10,6 @@ import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import { formatDate } from "@utils/utils";
 import { renderIcon } from "@helpers/MenuItems";
 
-/* ---------------- CONFIG ---------------- */
-
 const resourcesDisplayFieldsFirst = [
   {
     publication_date: {
@@ -80,8 +78,6 @@ const resourcesDisplayFieldsSecond = [
     },
   },
 ];
-
-/* ---------------- SUB COMPONENTS ---------------- */
 
 function ResourceItemScopes({ resource }) {
   const SIZE = 18;
@@ -232,8 +228,6 @@ function ResourceItemAssessmentFields({ resource, type }) {
   );
 }
 
-/* ---------------- MAIN FOOTER ---------------- */
-
 export default function ResourceItemFooter({ resource, type }) {
   const ICON_SIZE = { xs: "1rem", sm: "1.15rem" };
   const FONT_SIZE = { xs: "0.7rem", sm: "0.85rem" };
@@ -257,16 +251,16 @@ export default function ResourceItemFooter({ resource, type }) {
     : "N/A";
 
   return (
-    <Stack spacing={{ xs: 1, sm: 2 }}>
+    <Stack gap={{ xs: 1, sm: 2 }}>
       <ResourceItemAssessmentFields resource={resource} type={type} />
 
-      <Stack
-        direction={{ xs: "row", sm: "row" }}
-        justifyContent="space-between"
-        gap={{ xs: 1, sm: 2 }}
-      >
-        {/* LEFT META */}
-        <Stack direction="row" spacing={2} flexWrap="wrap" rowGap={1}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Stack
+          direction="row"
+          gap={{ xs: 1, sm: 2 }}
+          flexWrap="wrap"
+          alignItems="center"
+        >
           {resourcesDisplayFieldsFirst?.map((field) => {
             const [key, cfg] = Object.entries(field)[0];
             if (!cfg?.resources?.includes(type)) return null;
@@ -275,15 +269,13 @@ export default function ResourceItemFooter({ resource, type }) {
               <Stack
                 key={key}
                 direction="row"
-                spacing={0.5}
+                gap={{ xs: 0.5, sm: 1 }}
                 alignItems="center"
               >
                 <Tooltip title={cfg?.label}>
-                  <span>
-                    <cfg.icon
-                      sx={{ fontSize: ICON_SIZE, color: "text.secondary" }}
-                    />
-                  </span>
+                  <cfg.icon
+                    sx={{ fontSize: ICON_SIZE, color: "text.secondary" }}
+                  />
                 </Tooltip>
 
                 <Typography sx={{ fontSize: FONT_SIZE }}>
@@ -297,13 +289,12 @@ export default function ResourceItemFooter({ resource, type }) {
           })}
         </Stack>
 
-        {/* RIGHT STATS */}
         <Stack
           direction="row"
-          spacing={2}
+          gap={{ xs: 1, sm: 2 }}
           flexWrap="wrap"
-          rowGap={1}
-          justifyContent={{ xs: "flex-end", sm: "flex-end" }}
+          justifyContent="flex-end"
+          alignItems="center"
         >
           {resourcesDisplayFieldsSecond?.map((field) => {
             const [key, cfg] = Object?.entries(field)[0];
@@ -313,15 +304,13 @@ export default function ResourceItemFooter({ resource, type }) {
               <Stack
                 key={key}
                 direction="row"
-                spacing={0.5}
+                gap={{ xs: 0.5, sm: 1 }}
                 alignItems="center"
               >
                 <Tooltip title={cfg?.label}>
-                  <span>
-                    <cfg.icon
-                      sx={{ fontSize: ICON_SIZE, color: "text.secondary" }}
-                    />
-                  </span>
+                  <cfg.icon
+                    sx={{ fontSize: ICON_SIZE, color: "text.secondary" }}
+                  />
                 </Tooltip>
 
                 <Typography sx={{ fontSize: FONT_SIZE }}>
