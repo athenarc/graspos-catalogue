@@ -6,6 +6,8 @@ import {
   Tab,
   Chip,
   Box,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -17,6 +19,50 @@ import {
   getLabelForCoveredResearchProducts,
   getLabelForCoveredFields,
 } from "@helpers/MenuItems";
+
+const assessmentSections = [
+  {
+    key: "evidence_types",
+    title: "Evidence Types",
+    items: (r) => r?.metadata?.evidence_types || [],
+    labelMap: getLabelForEvidenceType,
+    visible: () => true,
+  },
+  {
+    key: "assessment_functionalities",
+    title: "Assessment Functionalities",
+    items: (r) => r?.metadata?.assessment_functionalities || [],
+    labelMap: getLabelForAssessmentFunctionality,
+    visible: (r) =>
+      ["service", "tool"].includes(r?.resource_type?.toLowerCase()),
+  },
+  {
+    key: "assessment_values",
+    title: "Assessment Values",
+    items: (r) => r?.metadata?.assessment_values || [],
+    visible: () => true,
+  },
+  {
+    key: "covered_fields",
+    title: "Covered Fields",
+    items: (r) => r?.metadata?.covered_fields || [],
+    labelMap: getLabelForCoveredFields,
+    visible: () => true,
+  },
+  {
+    key: "covered_research_products",
+    title: "Covered Research Products",
+    items: (r) => r?.metadata?.covered_research_products || [],
+    labelMap: getLabelForCoveredResearchProducts,
+    visible: () => true,
+  },
+  {
+    key: "temporal_coverage",
+    title: "Temporal Coverage",
+    items: (r) => r?.metadata?.temporal_coverage || [],
+    visible: () => true,
+  },
+];
 
 function ExpandableChips({ items = [], labelMap = null }) {
   const itemsArray = Array.isArray(items) ? items : [items];
@@ -167,14 +213,7 @@ function TabPanel({ children, value, index }) {
   );
 }
 
-export default function ResourceItemContent({ resource, isMobile }) {
-  const description =
-    resource?.zenodo?.metadata?.description ||
-    resource?.openaire?.metadata?.description ||
-    "No description available";
-
-  const [value, setValue] = useState(0);
-
+export function AssessmentTabs({ resource, isMobile }) {
   const allTabsMapping = {
     evidence_types: {
       title: "Evidence Types",
@@ -221,6 +260,7 @@ export default function ResourceItemContent({ resource, isMobile }) {
       displayTab: true,
     },
   };
+  const [value, setValue] = useState(0);
 
   const visibleTabs = Object.entries(allTabsMapping).filter(
     ([, { displayTab }]) => displayTab,
@@ -228,8 +268,104 @@ export default function ResourceItemContent({ resource, isMobile }) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
   const tabsEntries = Object.entries(allTabsMapping);
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        border: 1,
+        borderColor: "divider",
+        borderRadius: 2,
+      }}
+    >
+      <Tabs
+        orientation={isMobile ? "horizontal" : "vertical"}
+        variant={isMobile ? "scrollable" : "standard"}
+        scrollButtons={isMobile ? "auto" : false}
+        allowScrollButtonsMobile={isMobile}
+        value={value}
+        onChange={handleChange}
+        sx={{
+          borderRight: 1,
+          borderColor: "divider",
+        }}
+      >
+        {visibleTabs?.map(
+          ([key, { title, displayTab }], index) =>
+            displayTab && (
+              <Tab
+                key={key}
+                label={
+                  <Box sx={{ textAlign: "left !important;" }}>
+                    <span>{title}</span>
+                  </Box>
+                }
+                sx={{
+                  alignItems: "flex-start",
+                  textAlign: "left",
+                  fontSize: isMobile ? "0.675rem" : "0,875rem",
+                }}
+              />
+            ),
+        )}
+      </Tabs>
+
+      {visibleTabs?.map(
+        ([key, { title, items, labelMap, displayTab }], index) =>
+          displayTab && (
+            <TabPanel key={key} value={value} index={index}>
+              <ResourceItemChipsSection
+                title={title}
+                items={resource?.[key] || []}
+                labelMap={labelMap}
+                limit={20}
+              />
+            </TabPanel>
+          ),
+      )}
+    </Box>
+  );
+}
+
+export function AssessmentTabsMobile({ resource }) {
+  /* Assessment Tabs for Mobile docstrings */
+  const sections = assessmentSections.filter((s) => s.visible(resource));
+  const [selectedKey, setSelectedKey] = useState(sections[0]?.key);
+
+  const activeSection = sections.find((s) => s.key === selectedKey);
+  return (
+    <Stack spacing={2}>
+      <Select
+        fullWidth
+        size="small"
+        value={selectedKey}
+        onChange={(e) => setSelectedKey(e.target.value)}
+      >
+        {sections.map((s) => (
+          <MenuItem key={s.key} value={s.key}>
+            {s.title}
+          </MenuItem>
+        ))}
+      </Select>
+
+      <Box>
+        <ResourceItemChipsSection
+          title={activeSection?.title}
+          items={resource?.[selectedKey] || []}
+          labelMap={activeSection?.labelMap}
+          limit={20}
+        />
+      </Box>
+    </Stack>
+  );
+}
+
+export default function ResourceItemContent({ resource, isMobile }) {
+  const description =
+    resource?.zenodo?.metadata?.description ||
+    resource?.openaire?.metadata?.description ||
+    "No description available";
+
   return (
     <Stack spacing={2}>
       {/* Description */}
@@ -247,56 +383,11 @@ export default function ResourceItemContent({ resource, isMobile }) {
       </Typography>
 
       <ResourceItemKeywords resource={resource} />
-
-      <Box
-        sx={{
-          display: "flex",
-          border: 1,
-          borderColor: "divider",
-          borderRadius: 2,
-        }}
-      >
-        <Tabs
-          orientation="vertical"
-          variant="scrollable"
-          value={value}
-          onChange={handleChange}
-          sx={{
-            borderRight: 1,
-            borderColor: "divider",
-            minWidth: 220,
-          }}
-        >
-          {visibleTabs?.map(
-            ([key, { title, icon, displayTab }], index) =>
-              displayTab && (
-                <Tab
-                  key={key}
-                  label={
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <span>{title}</span>
-                    </Box>
-                  }
-                  sx={{ alignItems: "flex-start", textAlign: "left" }}
-                />
-              ),
-          )}
-        </Tabs>
-
-        {visibleTabs?.map(
-          ([key, { title, items, labelMap, displayTab }], index) =>
-            displayTab && (
-              <TabPanel key={key} value={value} index={index}>
-                <ResourceItemChipsSection
-                  title={title}
-                  items={resource?.[key] || []}
-                  labelMap={labelMap}
-                  limit={20}
-                />
-              </TabPanel>
-            ),
-        )}
-      </Box>
+      {isMobile ? (
+        <AssessmentTabsMobile resource={resource} isMobile={isMobile} />
+      ) : (
+        <AssessmentTabs resource={resource} isMobile={isMobile} />
+      )}
     </Stack>
   );
 }
