@@ -54,6 +54,7 @@ function ResourceItemChipsSection({
   icon = null,
 }) {
   const [expanded, setExpanded] = useState(false);
+  items = Array.isArray(items) ? items : [items];
   const hasMore = items?.length > limit;
   const visible = expanded ? items : items?.slice(0, limit);
   if (!items?.length)
