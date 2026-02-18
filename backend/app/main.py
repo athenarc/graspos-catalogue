@@ -41,11 +41,11 @@ app = FastAPI(
     "API for managing the GRASPOS Catalogue, including datasets, tools, documents, and services.",
     lifespan=lifespan,
     version="1.0.0",
-    root_path=CONFIG.backend_proxy_path,
-    docs_url=CONFIG.backend_proxy_path + "/docs",
-    redoc_url=CONFIG.backend_proxy_path + "/redoc",
+    root_path="",
+    docs_url="/docs",
+    redoc_url="/redoc",
 )
-print("Base path:", app.root_path)
+
 app.include_router(openaire.router)
 app.include_router(zenodo.router)
 app.include_router(scope.router)

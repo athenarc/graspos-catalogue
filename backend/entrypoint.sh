@@ -31,4 +31,4 @@ echo "=========================="
 
 # 8. Start FastAPI
 echo "[$(date)] Starting Uvicorn..."
-exec uvicorn main:app --host 0.0.0.0 --port 8080 --reload --root-path "$REACT_APP_BACKEND_PROXY_PATH"
+exec uvicorn main:app --host 0.0.0.0 --port 8080 --reload --proxy-headers --root-path "$REACT_APP_BACKEND_PROXY_PATH"
