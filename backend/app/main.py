@@ -15,10 +15,8 @@ from models.shared import GeographicalCoverage
 from models.service import Service
 from models.openaire import OpenAIRE
 from models.trl import TRLEntry
-from db import db
 from config import CONFIG
 from fastapi.middleware.cors import CORSMiddleware
-import app.logger
 
 
 @asynccontextmanager
@@ -32,20 +30,20 @@ async def lifespan(app: FastAPI):
                           OpenAIRE, TRLEntry
                       ])
     print("Startup complete")
-    print("allowed origins:", CONFIG.allowed_origins)
+
     yield
     print("Shutdown complete")
 
+
 app = FastAPI(
     title="GRASPOS Catalogue API",
-    summary="A simple API",
+    summary=
+    "API for managing the GRASPOS Catalogue, including datasets, tools, documents, and services.",
     lifespan=lifespan,
-    version="0.1.0",
-    docs_url=None,
-    redoc_url=None,
-    openapi_url=None,
+    version="0.1.1",
+    root_path=CONFIG.backend_proxy_path,
 )
-
+print("Base path:", app.root_path)
 app.include_router(openaire.router)
 app.include_router(zenodo.router)
 app.include_router(scope.router)
@@ -69,43 +67,3 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-import secrets
-from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
-from fastapi.openapi.utils import get_openapi
-from starlette.requests import Request
-
-security = HTTPBasic()
-
-
-def get_current_username(
-        credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = secrets.compare_digest(credentials.username,
-                                              CONFIG.mongo_super_user)
-    correct_password = secrets.compare_digest(credentials.password,
-                                              CONFIG.mongo_super_user_password)
-    if not (correct_username and correct_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Basic"},
-        )
-    return credentials.username
-
-
-@app.get("/docs", include_in_schema=False)
-async def get_swagger_documentation(
-        username: str = Depends(get_current_username)):
-    return get_swagger_ui_html(openapi_url="/openapi.json", title="docs")
-
-
-@app.get("/redoc", include_in_schema=False)
-async def get_redoc_documentation(
-        username: str = Depends(get_current_username)):
-    return get_redoc_html(openapi_url="/openapi.json", title="docs")
-
-
-@app.get("/openapi.json", include_in_schema=False)
-async def openapi(username: str = Depends(get_current_username)):
-    return get_openapi(title=app.title, version=app.version, routes=app.routes)
