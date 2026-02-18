@@ -323,7 +323,7 @@ export function ResourceItemFundedByGraspOS({ resource }) {
     resource?.zenodo?.metadata?.grants ||
     resource?.openaire?.metadata?.grants ||
     [];
-  console.log("Grants:", grants);
+
   return grants.map(
     (grant) =>
       grant.acronym?.toLowerCase().includes("graspos") && (
