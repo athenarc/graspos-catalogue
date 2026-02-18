@@ -275,8 +275,9 @@ async def get_unique_metadata_values(
             responses={404: {
                 "detail": "Dataset does not exist"
             }})
-async def get_dataset_by_unique_name(unique_slug: str): 
+async def get_dataset_by_unique_name(unique_slug: str):
     dataset = await Dataset.find_one(Dataset.resource_url_slug == unique_slug,
+                                     Dataset.approved == True,
                                      fetch_links=True)
 
     if not dataset:
