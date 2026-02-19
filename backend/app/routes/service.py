@@ -272,6 +272,7 @@ async def get_service(service_id: PydanticObjectId):
             }})
 async def get_service_by_unique_slug(unique_slug: str):
     service = await Service.find_one(Service.resource_url_slug == unique_slug,
+                                     Service.approved == True,
                                      fetch_links=True)
 
     if not service:

@@ -293,7 +293,9 @@ async def get_document(document_id: PydanticObjectId):
             }})
 async def get_document_by_unique_slug(unique_slug: str):
     document = await Documents.find_one(
-        Documents.resource_url_slug == unique_slug, fetch_links=True)
+        Documents.resource_url_slug == unique_slug,
+        Documents.approved == True,
+        fetch_links=True)
 
     if not document:
         raise HTTPException(status_code=404, detail="Document does not exist")

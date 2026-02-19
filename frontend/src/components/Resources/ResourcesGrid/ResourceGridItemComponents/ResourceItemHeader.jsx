@@ -318,6 +318,32 @@ export function ResourceActionsMenu({ resource, type, user }) {
   );
 }
 
+export function ResourceItemFundedByGraspOS({ resource }) {
+  const grants =
+    resource?.zenodo?.metadata?.grants ||
+    resource?.openaire?.metadata?.grants ||
+    [];
+
+  return grants.map(
+    (grant) =>
+      grant.acronym?.toLowerCase().includes("graspos") && (
+        <Tooltip
+          key={grant.acronym}
+          title={"Funded by GraspOS " + grant.acronym}
+        >
+          <VerifiedIcon
+            color="primary"
+            sx={{
+              fontSize: "1.2rem",
+              verticalAlign: "middle",
+              ml: 1,
+            }}
+          />
+        </Tooltip>
+      ),
+  );
+}
+
 export function ResourceItemCommunities({ resource }) {
   const communities =
     resource?.zenodo?.metadata?.communities ||
@@ -374,7 +400,7 @@ export default function ResourceItemHeader({ resource, type, user, isMobile }) {
           >
             {title}
           </Link>
-          <ResourceItemCommunities resource={resource} />
+          <ResourceItemFundedByGraspOS resource={resource} />
         </Typography>
       </Stack>
 

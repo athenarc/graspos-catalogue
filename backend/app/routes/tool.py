@@ -289,6 +289,7 @@ async def get_unique_metadata_values(
             }})
 async def get_tool_by_unique_slug(unique_slug: str):
     tool = await Tool.find_one(Tool.resource_url_slug == unique_slug,
+                               Tool.approved == True,
                                fetch_links=True)
 
     if not tool:

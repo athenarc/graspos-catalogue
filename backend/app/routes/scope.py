@@ -123,8 +123,9 @@ async def delete_scope(
               response_model=ScopeView,
               status_code=status.HTTP_200_OK)
 async def update_scope(
-    scope_id: PydanticObjectId,
-    scope_update: ScopePatch,
+        scope_id: PydanticObjectId,
+        scope_update: ScopePatch,
+        user: User = Depends(current_user_mandatory),
 ) -> ScopeView:
     """
     Update an existing scope with new data.

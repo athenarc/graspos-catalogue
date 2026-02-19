@@ -31,4 +31,4 @@ echo "=========================="
 
 # 8. Start FastAPI
 echo "[$(date)] Starting Uvicorn..."
-exec uvicorn main:app --host 0.0.0.0 --port 8080 --reload
+exec uvicorn main:app --host 0.0.0.0 --port 8080 --proxy-headers --forwarded-allow-ips="*"

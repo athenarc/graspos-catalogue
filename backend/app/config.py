@@ -79,6 +79,7 @@ class Settings(BaseModel):
     mail_username: str = config("MAIL_USERNAME", default="")
     mail_password: str = config("MAIL_PASSWORD", default="")
     mail_sender: str = config("MAIL_SENDER", default="noreply@myserver.io")
-
+    backend_proxy_path: str = config("REACT_APP_BACKEND_PROXY_PATH", default="")
+    env: str = config("REACT_APP_PROD", default="dev")
 
 CONFIG = Settings()
