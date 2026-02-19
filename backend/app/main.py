@@ -30,7 +30,6 @@ async def lifespan(app: FastAPI):
                           OpenAIRE, TRLEntry
                       ])
     print("Startup complete")
-
     yield
     print("Shutdown complete")
 
@@ -41,7 +40,7 @@ app = FastAPI(
     "API for managing the GRASPOS Catalogue, including datasets, tools, documents, and services.",
     lifespan=lifespan,
     version="1.0.0",
-    root_path="",
+    root_path=CONFIG.backend_proxy_path,
     docs_url="/docs",
     redoc_url="/redoc",
 )
