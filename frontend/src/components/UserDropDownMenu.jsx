@@ -117,12 +117,6 @@ export default function UserDropDownMenu({
           </Avatar>
           Add resource
         </MenuItem>
-        <MenuItem onClick={handleGoToHelp}>
-          <Avatar>
-            <HelpIcon />
-          </Avatar>
-          Help
-        </MenuItem>
         <Divider />
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>

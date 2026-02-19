@@ -19,9 +19,6 @@ export default function MenuBar({ handleLogout, user }) {
   function handleAddResource() {
     navigate("resource/add", { state: { backgroundLocation: location } });
   }
-  function handleGoToHelp() {
-    window.open("https://zenodo.org/records/17339365", "_blank");
-  }
   return (
     <Grid
       component={Box}
@@ -114,7 +111,6 @@ export default function MenuBar({ handleLogout, user }) {
               handleLogout={handleLogout}
               handleZenodoUpdates={handleZenodoUpdates}
               handleAddResource={handleAddResource}
-              // handleGoToHelp={handleGoToHelp}
             />
           )}
         </Stack>
