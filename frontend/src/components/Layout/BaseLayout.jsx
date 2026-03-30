@@ -1,4 +1,4 @@
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useLocation, useParams } from "react-router-dom";
 import MenuBar from "./MenuBar";
 import ResourcesGridLayout from "./ResourcesLayout";
 import { Box, Typography } from "@mui/material";
@@ -6,6 +6,8 @@ import Footer from "./Footer";
 
 export default function BaseLayout({ handleLogout, user, handleLogin }) {
   const { resourceUniqueSlug } = useParams();
+  const location = useLocation();
+  const hasDrawer = !resourceUniqueSlug && location?.pathname === "/";
 
   return (
     <>
@@ -19,10 +21,12 @@ export default function BaseLayout({ handleLogout, user, handleLogin }) {
       >
         <MenuBar user={user} handleLogout={handleLogout} />
         <Box sx={{ flexGrow: 1, overflow: "auto", paddingBottom: "100px" }}>
-          {!resourceUniqueSlug && <ResourcesGridLayout user={user} />}
+          {hasDrawer && (
+            <ResourcesGridLayout user={user} />
+          )}
           <Outlet context={{ user: user, handleLogin: handleLogin }} />
         </Box>
-        <Footer />
+        <Footer hasDrawer={hasDrawer} />
       </Box>
     </>
   );

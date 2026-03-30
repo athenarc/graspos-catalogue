@@ -1,6 +1,6 @@
 import { Box, Typography, useMediaQuery } from "@mui/material";
 
-export default function Footer() {
+export default function Footer({ hasDrawer = false }) {
   const isMobile = useMediaQuery("(max-width:1000px)");
   return (
     <Box
@@ -8,7 +8,7 @@ export default function Footer() {
       sx={{
         position: "fixed",
         bottom: 0,
-        left: isMobile ? 0 : "400px",
+        left: isMobile ? 0 : (hasDrawer ? "400px" : 0),
         right: 0,
         textAlign: "center",
         padding: "16px 24px",

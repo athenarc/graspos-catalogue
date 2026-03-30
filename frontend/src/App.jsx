@@ -26,6 +26,7 @@ import EmailVerificationPage from "@helpers/EmailVerification";
 import PasswordResetModal from "@forms/PasswordResetToken";
 import ForgotPasswordModal from "@forms/PasswordResetEmail";
 import ResetPasswordForm from "@forms/ResetPasswordForm";
+import ResourceInclusionPolicy from "./components/Pages/ResourceInclusionPolicy";
 
 // ----------------------
 // Helper route wrappers
@@ -70,6 +71,12 @@ function AppRoutes() {
           <Route
             path="services/:resourceUniqueSlug"
             element={<ResourcePage />}
+          />
+
+          {/* Public static pages */}
+          <Route
+            path="resource-inclusion-policy"
+            element={<ResourceInclusionPolicy />}
           />
 
           {/* Guest-only routes */}
