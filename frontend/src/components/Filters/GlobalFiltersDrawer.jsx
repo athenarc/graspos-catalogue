@@ -54,6 +54,7 @@ export default function ResourcesFiltersDrawer({
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
+            paddingBottom: !isMobile ? "100px" : 0,
           },
         }}
         variant={isMobile ? "temporary" : "permanent"}
