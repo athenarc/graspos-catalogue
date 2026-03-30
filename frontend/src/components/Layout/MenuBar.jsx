@@ -82,6 +82,11 @@ export default function MenuBar({ handleLogout, user }) {
         }}
       >
         <Stack direction="row" justifyContent="flex-end" alignItems="center">
+          <Link to={"/resource-inclusion-policy"}>
+            <Button variant="outlined" sx={{ color: "#fff", border: "none" }}>
+              Resource inclusion policy
+            </Button>
+          </Link>
           <Link
             to={"https://zenodo.org/records/17339365"}
             target="_blank"
